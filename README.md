@@ -34,6 +34,25 @@ This guide is only as good as the community behind it. Contributions are welcome
 
 Whether it's a restaurant recommendation, a survival tip, or a correction — every contribution helps the next generation of UWC CSC students.
 
+## Deploy to GitHub Pages
+
+This site is a static website — no build tools or frameworks required.
+
+1. Push this repo to GitHub
+2. Go to **Settings** > **Pages**
+3. Under **Source**, select **Deploy from a branch**
+4. Choose `main` branch and `/ (root)` folder
+5. Click **Save**
+6. Your site will be live at `https://<your-username>.github.io/UWC-Survival-Guide/`
+
+### File structure
+
+```
+index.html   ← landing page
+styles.css   ← styling
+script.js    ← interactive effects
+```
+
 ## Disclaimer
 
 This is an unofficial, student-maintained guide. Information may become outdated. Always verify critical details (visa requirements, school policies, etc.) with official UWC CSC channels.
