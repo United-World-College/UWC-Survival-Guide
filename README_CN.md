@@ -1,12 +1,18 @@
 # UWC常熟生存指南
 
-[English](./README.md) | [简体中文](./README_CN.md)
+[English](./README.md) | [简体中文](./README_CN.md) | [繁體中文](./README_TW.md)
 
 一份由学生社区共同编写的**世界联合学院常熟校区 (UWC CSC)** 生存指南——涵盖你在校园内外所需的一切信息。
 
 ## 关于本指南
 
 来到UWC常熟可能会让人不知所措——新的国家、新的文化、新的体制。这份指南由学生编写，为学生服务，帮助你适应在江苏省昆山/常熟的UWC CSC的日常生活、学业以及方方面面。
+
+## 主编
+
+- [William Huang 黄靖然](https://www.linkedin.com/in/william-huang-6b4102332/) (University of Illinois Urbana-Champaign, UWC Changshu China 24')
+- [Tom Li 李东源](https://www.linkedin.com/in/dongyuan-li/) (University of Florida, UWC Changshu China 24')
+- [Edward Pan 潘维翰](https://www.linkedin.com/in/weihan-pan-872643333/) (Columbia University, UWC Changshu China 24')
 
 ## 目录
 

@@ -1,12 +1,18 @@
 # UWC Changshu Survival Guide
 
-[English](./README.md) | [简体中文](./README_CN.md)
+[English](./README.md) | [简体中文](./README_CN.md) | [繁體中文](./README_TW.md)
 
 A community-driven survival guide for students at **UWC Changshu China (UWC CSC)** — covering everything you need to know to thrive on campus and beyond.
 
 ## About
 
 Starting at UWC Changshu can be overwhelming — new country, new culture, new system. This guide is built by students, for students, to help you navigate daily life, academics, and everything in between at UWC CSC in Kunshan/Changshu, Jiangsu Province, China.
+
+## Editors-in-Chief
+
+- [William Huang 黄靖然](https://www.linkedin.com/in/william-huang-6b4102332/) (University of Illinois Urbana-Champaign, UWC Changshu China 24')
+- [Tom Li 李东源](https://www.linkedin.com/in/dongyuan-li/) (University of Florida, UWC Changshu China 24')
+- [Edward Pan 潘维翰](https://www.linkedin.com/in/weihan-pan-872643333/) (Columbia University, UWC Changshu China 24')
 
 ## Contents
 
