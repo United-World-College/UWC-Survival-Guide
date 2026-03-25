@@ -1,0 +1,16 @@
+title: UWC Changshu Survival Guide
+description: A student guide for life at UWC Changshu China
+baseurl: "/UWC-Survival-Guide"
+url: "https://united-world-college.github.io"
+
+collections:
+  guides:
+    output: true
+    permalink: /guides/:slug/
+
+defaults:
+  - scope:
+      path: ""
+      type: "guides"
+    values:
+      layout: "guide"

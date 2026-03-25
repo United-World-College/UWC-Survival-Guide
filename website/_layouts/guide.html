@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  {% include nav.html %}
+
+  <header class="guide-hero">
+    <div class="guide-hero-content">
+      <p class="hero-label">{{ page.category }}</p>
+      <h1>{{ page.title }}</h1>
+      {% if page.description %}
+      <p class="hero-subtitle">{{ page.description }}</p>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <article class="guide-content">
+    {{ content }}
+  </article>
+
+  <div class="divider"></div>
+
+  <!-- Other guides -->
+  <section class="section">
+    <div class="section-header">
+      <p class="section-label">Continue Reading</p>
+      <h2>More from the guide</h2>
+    </div>
+    <div class="grid-three">
+      {% assign other_guides = site.guides | where_exp: "g", "g.slug != page.slug" | slice: 0, 3 %}
+      {% for guide in other_guides %}
+      <a href="{{ guide.url | relative_url }}" class="place guide-link">
+        <h3>{{ guide.title }}</h3>
+        <p class="place-distance">{{ guide.category }}</p>
+        <p>{{ guide.description }}</p>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% include footer.html %}
+
+  <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
+</body>
+</html>

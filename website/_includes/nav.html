@@ -1,0 +1,19 @@
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="{{ '/' | relative_url }}" class="nav-logo">UWC Changshu</a>
+    <div class="nav-links">
+      {% for link in site.data.navigation %}
+      <a href="{{ link.url | relative_url }}">{{ link.title }}</a>
+      {% endfor %}
+    </div>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  {% for link in site.data.navigation %}
+  <a href="{{ link.url | relative_url }}">{{ link.title }}</a>
+  {% endfor %}
+</div>

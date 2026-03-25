@@ -1,0 +1,15 @@
+- title: Campus Living
+  description: Dormitories, dining schedules, laundry, and the small rituals that make this place feel like home.
+  link: /guides/campus-life/
+
+- title: Academics
+  description: Navigating the IB, finding your study rhythm, CAS projects, and advice from those who've been through it.
+  link: /guides/academics/
+
+- title: Wellbeing
+  description: Looking after yourself — school health services, nearby hospitals, counseling, and mental health resources.
+  link: /guides/health-wellbeing/
+
+- title: Community
+  description: Student clubs, cultural events, weekend gatherings, and the connections that last well beyond graduation.
+  link: /guides/community/

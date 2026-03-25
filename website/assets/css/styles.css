@@ -465,6 +465,123 @@ body {
   font-family: var(--serif);
 }
 
+/* ── Guide page hero ── */
+.guide-hero {
+  padding: 10rem 2.5rem 4rem;
+  text-align: center;
+}
+
+.guide-hero-content {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.guide-hero h1 {
+  font-family: var(--serif);
+  font-size: 2.8rem;
+  font-weight: 300;
+  color: var(--dark);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+/* ── Guide content (rendered from markdown) ── */
+.guide-content {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 4rem 2.5rem;
+}
+
+.guide-content h2 {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--dark);
+  margin: 3rem 0 1rem;
+}
+
+.guide-content h3 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--dark);
+  margin: 2rem 0 0.8rem;
+}
+
+.guide-content p {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.85;
+  margin-bottom: 1.2rem;
+}
+
+.guide-content ul, .guide-content ol {
+  margin: 1rem 0 1.5rem 1.2rem;
+}
+
+.guide-content li {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.85;
+  margin-bottom: 0.5rem;
+}
+
+.guide-content a {
+  color: var(--dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--warm-gray);
+  transition: text-decoration-color 0.3s;
+}
+
+.guide-content a:hover {
+  text-decoration-color: var(--dark);
+}
+
+.guide-content blockquote {
+  border-left: 2px solid var(--border);
+  padding-left: 1.5rem;
+  margin: 1.5rem 0;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.guide-content code {
+  background: var(--cream);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.88rem;
+}
+
+.guide-content hr {
+  border: none;
+  height: 1px;
+  background: var(--border);
+  margin: 3rem 0;
+}
+
+/* ── Guide link cards ── */
+.guide-link {
+  text-decoration: none;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.guide-link:hover {
+  transform: translateY(-4px);
+}
+
+/* ── Feature cards as links ── */
+a.feature {
+  text-decoration: none;
+  display: block;
+  transition: transform 0.3s;
+}
+
+a.feature:hover {
+  transform: translateY(-4px);
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .nav-links { display: none; }
