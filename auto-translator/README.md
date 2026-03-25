@@ -8,12 +8,14 @@ This CLI scans `website/_guides/default/` and `website/_guides/chinese/`, matche
 - The author's tone, structure, and code-switching
 - Markdown, HTML, Liquid tags, and image paths
 - Internal guide links, rewritten into the target language path
+- A stronger translation brief stored in `prompt_instructions.txt`
 
 ## Requirements
 
 - `uv`
 - `OPENAI_API_KEY` in the repository root `.env`
-- Optional: `OPENAI_MODEL` if you do not want the default `gpt-5-mini`
+- Optional: `OPENAI_MODEL` if you do not want the default `gpt-5.4`
+- Optional: `OPENAI_REASONING_EFFORT` if you want to override the default `medium`
 
 ## Usage
 
@@ -29,6 +31,8 @@ From the repository root:
 ```
 
 If you want to run it directly inside `auto-translator/`, use `uv run python main.py ...`.
+
+When a Simplified Chinese source exists, the translator prefers that `zh-CN` guide as the source for generating English and `zh-TW`, so regenerated variants are based on the original Chinese draft rather than on a previous machine translation.
 
 ## Authoring New Guides
 

@@ -1,7 +1,7 @@
 ---
-title: "Introduction to Majors"
+title: "Majors Overview"
 category: "College Application"
-description: "[Placeholder] Introductions to various majors and guidance on choosing."
+description: "[Placeholder] Introductions to different major pathways and advice on choosing between them."
 order: 3
 guide_id: "majors-intro"
 language_code: "en"

@@ -1,7 +1,7 @@
 ---
-title: "Terminology Overview"
+title: "Key Terms"
 category: "College Application"
-description: "Understand the roles, systems, and processes in college applications through key terms."
+description: "Use a set of core terms to understand the roles, systems, and processes involved in college applications."
 order: 2
 author: "William"
 guide_id: "terminology"
@@ -14,30 +14,30 @@ language_sort: 1
 
 *Contributed by William*
 
-I'd like to start by listing key terms to introduce several important components of the college application process. Many of these words sound like jargon the first time you hear them, but if you put them back into the concrete application process you'll find these terms correspond to different people, systems, and evaluation mechanisms. Nail these basic concepts first, and later topics like school selection, essays, and recommendation letters will be much easier to follow.
+I want to start here by laying out a few terms and using them to introduce some of the key parts of the college application process. A lot of these words sound like pure jargon the first time you hear them, but once you put them back into the actual application process and understand them in context, you realize that each one maps onto a different person, system, or evaluation mechanism. If you get these basic concepts straight first, then later, when you move on to more concrete topics like building a college list, essays, and recommendation letters, everything becomes much easier.
 
 ## Admission Officer
 
-<p><small>Chinese: 招生官；Abbrev.: AO</small></p>
+<p><small>Chinese term: 招生官; abbreviation: AO</small></p>
 
-An admission officer is the person at a university responsible for admissions. They read your application materials, evaluate your academic ability, personal experiences, and potential, and ultimately decide whether to admit you.
+An admissions officer is the person at a university who is responsible for admissions. They read your application materials, evaluate your academic ability, personal experiences, and potential, and ultimately decide whether to admit you.
 
-Beyond that, an AO's duties usually include:
+Beyond that, an AO's responsibilities usually also include:
 
-- Hosting information sessions (信息宣讲会): giving talks on campus or traveling to different places to introduce the school's highlights and the application process.
-- High school visits (高中访问): personally visiting target high schools（目标学校）to meet students and college counselors and conduct interviews or information sessions.
-- Relationship management: maintaining close contact with key high school college counselors（升学指导老师）to understand the school's curriculum and the quality of its students.
+- Hosting information sessions (Information Sessions): giving talks on campus or traveling to different places to introduce the school's distinctive features and application process.
+- High school visits (School Visits): personally visiting Target Schools and meeting with students and college counselors.
+- Relationship management: staying in close contact with college counselors at key high schools in order to understand that school's curriculum and the overall quality of its students.
 
-The role of an admission officer sounds formal and professional, but as an applicant our most direct experience usually comes from personal interactions with them and how they interpret your application. What follows are some of my observations and thoughts about AOs' work styles and professional depth.
+The work of an admissions officer sounds very formal and professional, but as applicants, the most direct experience we usually have is through our actual interactions with them, and through how they end up interpreting your application materials. What follows is more my own observations and thoughts about admissions officers' work style and depth of expertise.
 
-Personally, I often feel AOs are somewhat like HR people at companies. The recruiters at some top firms I interviewed with felt like concierge staff at a luxury hotel—extremely service-oriented, attentive to every detail, and very respectful. Recruiters at solid companies like Microsoft felt friendly and warm, like the typical servers at most American restaurants. And at some more mediocre companies the experience was much worse—overbearing, as if I were begging for a job. As for university AOs, from my encounters so far, regardless of the school, they mostly fall into the latter two categories: many are quite nice and easygoing, but some can come across as arrogant.
+I've always felt that the role admissions officers play in a university is pretty similar to the role HR plays in a company. Some of the best company recruiters I've interviewed with felt like the concierge staff at a luxury hotel: extremely service-minded, thoughtful down to the smallest detail, careful about arranging everything properly, and very respectful toward me. HR at solid companies like Microsoft felt more easygoing and warm, kind of like the servers you meet in most restaurants in the U.S. Then there are some more mediocre companies where the experience is much worse: condescending, bossy, acting like I'm begging them to give me a job. As for university AOs, at least from the ones I've met, regardless of school, I'd say they mostly fall into the latter two categories: quite a few are genuinely nice and easygoing, but some do come off as rather arrogant.
 
-From a professional-judgment perspective, though, AOs and HR are not quite the same. Many company HR people or recruiters become fairly specialized in a particular area because they review resumes and interact with hiring managers in that field every day; over time they develop practical knowledge of common backgrounds, typical projects, and expected levels. In contrast, AOs must handle applicants from all disciplines and backgrounds—from the humanities to STEM to the arts—so it's hard for them to have deeply specialized expertise in any single domain. For that reason, unless you have an outstanding prize or achievement so obviously elite that even a layperson can recognize it, admission often hinges less on technical depth alone and more on whether you can convey your story, motivation, and potential in a compelling way. I've heard some schools ask professors to help review materials, but logically many professors are already overwhelmed and may not have the bandwidth for sustained involvement; I'm not certain about this and welcome corrections from readers who know more. Going forward, as AI assistance increasingly enters admissions workflows, this situation may gradually change.
+That said, when it comes to professional judgment, AOs and HR are actually a bit different. A lot of company HR or recruiters may in fact be more familiar with a relatively specialized field, because they look at resumes in that area every day and deal constantly with hiring managers in that area. Over time, they at least develop an experience-based sense of the common backgrounds, common projects, and rough level within that field. By contrast, AOs have to deal with applicants from every discipline and every type, from humanities to STEM to the arts, so it's hard for them to have especially deep expertise in any one specific area. Precisely because of that, unless you have one of those top-tier awards that even an outsider can recognize at a glance, what gets you admitted often isn't just technical depth. It's whether you can communicate your story, motivation, and potential in a way that's compelling enough. I've heard that quite a few schools ask professors to help review applications, but logically speaking, many professors are already overwhelmed with their own work, so they may not have that much energy to invest in this kind of thing over the long term. Still, I don't know that side particularly well, so readers who do are very welcome to correct me. Looking ahead, as AI-assisted tools gradually enter the admissions process, this may slowly change as well.
 
 ## Common Application
 
-<p><small>Chinese: 通用申请系统；Abbrev.: CA</small></p>
+<p><small>Chinese term: 通用申请系统; abbreviation: CA</small></p>
 
-The Common Application (Common App) is the most widely used online application system for undergraduate admissions in the United States. Through the Common App, students can fill out basic information and general essays once, then send those materials to multiple member schools, greatly simplifying the application process.
+Common App is the most widely used online application system for undergraduate admissions in the United States. Through Common App, students can fill in their basic information and core essay once, then send those materials to multiple partner schools, which greatly simplifies the application process.
 
-However, the Common App is more like a unified entry point rather than a way of making every school the same. Many schools add their own supplemental essays, additional questions, or extra material requirements on top of the Common App. So the best way to understand the CA is not as "fill out one form and you're done," but as the foundational, most commonly used platform in the application process.
+Still, Common App is more like a unified entry point than something that turns every school into the same exact task. Many schools add their own supplemental essays, supplemental questions, or extra material requirements on top of Common App. So the best way to understand CA is not to treat it as "fill out one form and you're done," but to see it as the most basic and most commonly used underlying platform in the application process.

@@ -96,7 +96,7 @@ website/
   └── index.html    ← landing page
 ```
 
-`auto-translator/` contains a small CLI that scans `default/` and `chinese/` and creates any missing English, Simplified Chinese, or Taiwan Traditional variants with the OpenAI API.
+`auto-translator/` contains a small CLI that scans `default/` and `chinese/` and creates any missing English, Simplified Chinese, or Taiwan Traditional variants with the OpenAI API. It now defaults to `gpt-5.4`, uses a dedicated translation prompt file, and prefers the Simplified Chinese source when regenerating English or Taiwan Traditional guides.
 
 Run it from the repository root with:
 

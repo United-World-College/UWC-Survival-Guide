@@ -1,7 +1,7 @@
 ---
-title: "Reflections on Life"
-category: "Life Musings"
-description: "A heartfelt message to the next generation—reflections on growth, setbacks, and life choices."
+title: "Life Reflections"
+category: "Life Reflections"
+description: "Some heartfelt words for the next cohort—thoughts on growth, setbacks, and life choices."
 order: 0
 guide_id: "life-reflections"
 language_code: "en"

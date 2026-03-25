@@ -4,23 +4,21 @@ import argparse
 import json
 import os
 import re
-import ssl
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from urllib import error, request
+
+from dotenv import load_dotenv
+from openai import OpenAI
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_GUIDE_ROOT = REPO_ROOT / "website" / "_guides"
 ENV_FILE = REPO_ROOT / ".env"
-API_URL = "https://api.openai.com/v1/responses"
-SSL_CERT_CANDIDATES = [
-    "/etc/ssl/cert.pem",
-    "/private/etc/ssl/cert.pem",
-    "/opt/homebrew/etc/openssl@3/cert.pem",
-    "/opt/homebrew/etc/ca-certificates/cert.pem",
-]
+PROMPT_TEMPLATE_FILE = Path(__file__).with_name("prompt_instructions.txt")
+DEFAULT_MODEL = "gpt-5.4"
+DEFAULT_REASONING_EFFORT = "medium"
+DEFAULT_MAX_OUTPUT_TOKENS = 20000
 
 LANGUAGE_CONFIG: dict[str, dict[str, Any]] = {
     "en": {
@@ -29,6 +27,12 @@ LANGUAGE_CONFIG: dict[str, dict[str, Any]] = {
         "folder": "default",
         "filename_suffix": "",
         "prompt_name": "English",
+        "style_note": (
+            "Write natural, idiomatic English for internationally minded high school students "
+            "and recent graduates. Avoid calques from Chinese. The result should feel like a "
+            "thoughtful, candid alum speaking directly to younger students, not like generic "
+            "AI-polished prose."
+        ),
         "sort": 1,
     },
     "zh-CN": {
@@ -37,6 +41,10 @@ LANGUAGE_CONFIG: dict[str, dict[str, Any]] = {
         "folder": "chinese",
         "filename_suffix": "-CN",
         "prompt_name": "Simplified Chinese written for readers in mainland China",
+        "style_note": (
+            "Write fluent, contemporary Simplified Chinese that preserves the original voice, "
+            "including any intentional code-switching or informal spoken cadence."
+        ),
         "sort": 2,
     },
     "zh-TW": {
@@ -45,6 +53,11 @@ LANGUAGE_CONFIG: dict[str, dict[str, Any]] = {
         "folder": "chinese",
         "filename_suffix": "-TW",
         "prompt_name": "Taiwan Traditional Chinese written for readers in Taiwan",
+        "style_note": (
+            "Use Traditional Chinese characters and Taiwan-preferred wording when it improves "
+            "readability, but do not relocate the setting or alter mainland-specific facts, "
+            "institutions, apps, or cultural references."
+        ),
         "sort": 3,
     },
 }
@@ -54,7 +67,7 @@ KNOWN_FOLDERS = {config["folder"] for config in LANGUAGE_CONFIG.values()}
 PREFERRED_SOURCES: dict[str, tuple[str, ...]] = {
     "en": ("zh-CN", "zh-TW"),
     "zh-CN": ("en", "zh-TW"),
-    "zh-TW": ("en", "zh-CN"),
+    "zh-TW": ("zh-CN", "en"),
 }
 PREFERRED_FRONT_MATTER_ORDER = [
     "title",
@@ -74,10 +87,26 @@ LIQUID_OPEN = re.escape("{{")
 LIQUID_CLOSE = re.escape("}}")
 SUPPORTED_FOLDERS_PATTERN = "|".join(
     re.escape(folder)
-    for folder in sorted(KNOWN_FOLDERS | {"简体中文", "台湾繁体"})
+    for folder in sorted(KNOWN_FOLDERS | {"default", "chinese", "简体中文", "台湾繁体"})
 )
 GUIDE_URL_PATTERN = re.compile(
     rf"(?P<prefix>{LIQUID_OPEN}\s*['\"])/guides/(?:(?:{SUPPORTED_FOLDERS_PATTERN})/)?(?P<slug>[a-z0-9-]+(?:-(?:CN|TW))?)/(?P<suffix>['\"]\s*\|\s*relative_url\s*{LIQUID_CLOSE})"
+)
+TRANSLATION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "title": {"type": "string"},
+        "category": {"type": "string"},
+        "description": {"type": "string"},
+        "body": {"type": "string"},
+    },
+    "required": ["title", "category", "description", "body"],
+    "additionalProperties": False,
+}
+SYSTEM_PROMPT = (
+    "You are the lead translation editor for the UWC Changshu China Survival Guide. "
+    "Produce publication-ready translations that preserve the original author's voice, "
+    "tone, pacing, and meaning. Return only schema-valid output."
 )
 
 
@@ -103,25 +132,6 @@ class TranslationJob:
         target_config = LANGUAGE_CONFIG[self.target_language_code]
         filename = f"{self.source.guide_id}{target_config['filename_suffix']}.md"
         return self.guide_root / target_config["folder"] / filename
-
-
-def load_env_file(path: Path) -> None:
-    if not path.exists():
-        return
-
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-
-        key, value = line.split("=", 1)
-        key = key.strip()
-        value = value.strip()
-
-        if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
-            value = value[1:-1]
-
-        os.environ.setdefault(key, value)
 
 
 def parse_scalar(raw_value: str) -> Any:
@@ -346,12 +356,26 @@ def rewrite_internal_guide_links(body: str, target_language_code: str) -> str:
     return GUIDE_URL_PATTERN.sub(replace, body)
 
 
-def build_translation_request(job: TranslationJob, model: str) -> dict[str, Any]:
+def load_prompt_template(path: Path) -> str:
+    if not path.exists():
+        raise FileNotFoundError(f"Prompt template not found: {path}")
+    return path.read_text(encoding="utf-8").strip()
+
+
+def render_prompt_template(template: str, replacements: dict[str, str]) -> str:
+    rendered = template
+    for token, value in replacements.items():
+        rendered = rendered.replace(token, value)
+    return rendered
+
+
+def build_translation_payload(job: TranslationJob) -> dict[str, str]:
     target_config = LANGUAGE_CONFIG[job.target_language_code]
     source_config = LANGUAGE_CONFIG[job.source.language_code]
 
-    payload = {
+    return {
         "guide_id": job.source.guide_id,
+        "author": str(job.source.metadata.get("author", "")).strip(),
         "source_language": source_config["prompt_name"],
         "target_language": target_config["prompt_name"],
         "title": str(job.source.metadata.get("title", "")),
@@ -360,96 +384,92 @@ def build_translation_request(job: TranslationJob, model: str) -> dict[str, Any]
         "body": rewrite_internal_guide_links(job.source.body, job.target_language_code),
     }
 
-    instructions = "\n".join(
-        [
-            "You translate Jekyll Markdown guides among English, Simplified Chinese, and Taiwan Traditional Chinese.",
-            f"Target language: {target_config['prompt_name']}.",
-            "Return only valid JSON with the keys title, category, description, and body.",
-            "Preserve the author's tone, pacing, emphasis, and any intentional code-switching.",
-            "Preserve Markdown structure, HTML tags, Liquid tags, URLs, image paths, and separators exactly.",
-            "Keep author attribution lines exactly as written.",
-            "Do not add commentary, translator notes, or extra fields.",
-            "Do not invent or omit content.",
-            "If the target language is English, write natural idiomatic English rather than a literal word-for-word translation.",
-        ]
+
+def build_translation_prompt(job: TranslationJob, prompt_template: str) -> str:
+    target_config = LANGUAGE_CONFIG[job.target_language_code]
+    source_config = LANGUAGE_CONFIG[job.source.language_code]
+    payload = build_translation_payload(job)
+
+    return render_prompt_template(
+        prompt_template,
+        {
+            "__SOURCE_LANGUAGE__": source_config["prompt_name"],
+            "__TARGET_LANGUAGE__": target_config["prompt_name"],
+            "__TARGET_STYLE_NOTE__": target_config["style_note"],
+            "__GUIDE_PAYLOAD__": json.dumps(payload, ensure_ascii=False, indent=2),
+        },
     )
 
-    return {
+
+def supports_reasoning(model: str) -> bool:
+    return model.startswith("gpt-5")
+
+
+def build_translation_request(
+    job: TranslationJob,
+    model: str,
+    prompt_template: str,
+    reasoning_effort: str | None,
+) -> dict[str, Any]:
+    request: dict[str, Any] = {
         "model": model,
         "store": False,
-        "instructions": instructions,
         "input": [
+            {"role": "system", "content": SYSTEM_PROMPT},
             {
                 "role": "user",
-                "content": "Return valid JSON only.\n" + json.dumps(payload, ensure_ascii=False),
-            }
+                "content": build_translation_prompt(job, prompt_template),
+            },
         ],
         "text": {
             "format": {
-                "type": "json_object",
+                "type": "json_schema",
+                "name": "guide_translation",
+                "strict": True,
+                "schema": TRANSLATION_SCHEMA,
             }
         },
-        "max_output_tokens": 16000,
+        "max_output_tokens": DEFAULT_MAX_OUTPUT_TOKENS,
     }
 
+    if reasoning_effort and supports_reasoning(model):
+        request["reasoning"] = {"effort": reasoning_effort}
 
-def build_ssl_context() -> ssl.SSLContext:
-    verify_paths = ssl.get_default_verify_paths()
-    candidate_paths = [
-        os.environ.get("SSL_CERT_FILE"),
-        verify_paths.cafile,
-        verify_paths.openssl_cafile,
-        *SSL_CERT_CANDIDATES,
-    ]
-
-    for candidate in candidate_paths:
-        if candidate and Path(candidate).exists():
-            return ssl.create_default_context(cafile=candidate)
-
-    return ssl.create_default_context()
+    return request
 
 
-def post_openai(payload: dict[str, Any], api_key: str) -> dict[str, Any]:
-    req = request.Request(
-        API_URL,
-        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
-    )
-
+def post_openai(
+    job: TranslationJob,
+    client: OpenAI,
+    model: str,
+    prompt_template: str,
+    reasoning_effort: str | None,
+) -> Any:
     try:
-        with request.urlopen(req, timeout=180, context=build_ssl_context()) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(
-            f"OpenAI API request failed with HTTP {exc.code}: {detail}"
-        ) from exc
-    except error.URLError as exc:
-        raise RuntimeError(f"OpenAI API request failed: {exc.reason}") from exc
+        return client.responses.create(
+            **build_translation_request(job, model, prompt_template, reasoning_effort)
+        )
+    except Exception as exc:
+        raise RuntimeError(f"OpenAI API request failed: {exc}") from exc
 
 
-def extract_output_text(response_json: dict[str, Any]) -> str:
-    output_text = response_json.get("output_text")
+def extract_output_text(response: Any) -> str:
+    output_text = getattr(response, "output_text", None)
     if isinstance(output_text, str) and output_text.strip():
-        return output_text
+        return output_text.strip()
 
-    chunks: list[str] = []
-    for item in response_json.get("output", []):
-        if item.get("type") != "message":
-            continue
-        for content in item.get("content", []):
-            if content.get("type") == "output_text":
-                chunks.append(content.get("text", ""))
+    debug_payload = ""
+    if hasattr(response, "model_dump_json"):
+        debug_payload = response.model_dump_json(indent=2)[:1200]
+    elif hasattr(response, "model_dump"):
+        debug_payload = json.dumps(response.model_dump(), ensure_ascii=False)[:1200]
+    else:
+        debug_payload = str(response)[:1200]
 
-    merged = "".join(chunks).strip()
-    if merged:
-        return merged
-
-    raise RuntimeError("The OpenAI response did not contain any output text.")
+    raise RuntimeError(
+        "The OpenAI response did not contain output_text. "
+        f"Response excerpt: {debug_payload}"
+    )
 
 
 def parse_translation_response(raw_text: str) -> dict[str, str]:
@@ -467,7 +487,8 @@ def parse_translation_response(raw_text: str) -> dict[str, str]:
 
 
 def normalize_translated_body(body: str) -> str:
-    normalized = re.sub(r"(\}\})\s+\)", r"\1)", body)
+    normalized = body.replace("\r\n", "\n")
+    normalized = re.sub(r"(\}\})\s+\)", r"\1)", normalized)
     normalized = normalized.replace("\\\\[", "\\[").replace("\\\\]", "\\]")
     return normalized
 
@@ -523,7 +544,15 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        help="OpenAI model to use. Defaults to OPENAI_MODEL or gpt-5-mini.",
+        help=f"OpenAI model to use. Defaults to OPENAI_MODEL or {DEFAULT_MODEL}.",
+    )
+    parser.add_argument(
+        "--reasoning-effort",
+        choices=("none", "low", "medium", "high", "xhigh"),
+        help=(
+            "Reasoning effort for GPT-5 family models. "
+            f"Defaults to OPENAI_REASONING_EFFORT or {DEFAULT_REASONING_EFFORT}."
+        ),
     )
     parser.add_argument(
         "--dry-run",
@@ -535,14 +564,24 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    load_env_file(ENV_FILE)
+    load_dotenv(dotenv_path=ENV_FILE)
+
+    try:
+        prompt_template = load_prompt_template(PROMPT_TEMPLATE_FILE)
+    except FileNotFoundError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
 
     guide_root = Path(args.guide_root).expanduser().resolve()
     if not guide_root.exists():
         print(f"Guide root does not exist: {guide_root}", file=sys.stderr)
         return 1
 
-    model = args.model or os.environ.get("OPENAI_MODEL", "gpt-5-mini")
+    model = args.model or os.environ.get("OPENAI_MODEL", DEFAULT_MODEL)
+    reasoning_effort = args.reasoning_effort or os.environ.get(
+        "OPENAI_REASONING_EFFORT",
+        DEFAULT_REASONING_EFFORT,
+    )
 
     try:
         guides = discover_guides(guide_root)
@@ -569,14 +608,16 @@ def main() -> int:
         print("OPENAI_API_KEY is not set. Add it to .env or your shell environment.", file=sys.stderr)
         return 1
 
+    client = OpenAI(api_key=api_key)
+
     for job in jobs:
         print(
             f"Translating {job.source.guide_id} "
             f"from {job.source.language_code} to {job.target_language_code}..."
         )
         try:
-            response_json = post_openai(build_translation_request(job, model), api_key)
-            raw_text = extract_output_text(response_json)
+            response = post_openai(job, client, model, prompt_template, reasoning_effort)
+            raw_text = extract_output_text(response)
             translation = parse_translation_response(raw_text)
             written_path = write_translation(job, translation)
         except RuntimeError as exc:
