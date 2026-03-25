@@ -1,12 +1,12 @@
-# UWC Changshu Survival Guide
+# UWC Changshu China Survival Guide
 
 [English](./README.md) | [简体中文](./README_CN.md) | [繁體中文](./README_TW.md)
 
-A community-driven survival guide for students at **UWC Changshu China (UWC CSC)** — covering everything you need to know to thrive on campus and beyond.
+A community-driven survival guide for students at **UWC Changshu China** — covering everything you need to know to thrive on campus and beyond.
 
 ## About
 
-Starting at UWC Changshu can be overwhelming — new country, new culture, new system. This guide is built by students, for students, to help you navigate daily life, academics, and everything in between at UWC CSC in Kunshan/Changshu, Jiangsu Province, China.
+Starting at UWC Changshu China can be overwhelming — new country, new culture, new system. This guide is built by students, for students, to help you navigate daily life, academics, and everything in between at UWC Changshu China in Kunshan/Changshu, Jiangsu Province, China.
 
 ## Editors-in-Chief
 
@@ -38,7 +38,7 @@ This guide is only as good as the community behind it. Contributions are welcome
 3. Add or update content
 4. Submit a pull request
 
-Whether it's a restaurant recommendation, a survival tip, or a correction — every contribution helps the next generation of UWC CSC students.
+Whether it's a restaurant recommendation, a survival tip, or a correction — every contribution helps the next generation of UWC Changshu China students.
 
 ## Serve Locally
 
@@ -94,7 +94,7 @@ website/
 
 ## Disclaimer
 
-This is an unofficial, student-maintained guide. Information may become outdated. Always verify critical details (visa requirements, school policies, etc.) with official UWC CSC channels.
+This is an unofficial, student-maintained guide. Information may become outdated. Always verify critical details (visa requirements, school policies, etc.) with official UWC Changshu China channels.
 
 ## License
 
@@ -102,4 +102,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-*Made with love by UWC Changshu students, for UWC Changshu students.*
+*Made with love by UWC Changshu China students, for UWC Changshu China students.*
