@@ -6,3 +6,8 @@ website/.jekyll-metadata
 website/.bundle/
 website/vendor/
 website/Gemfile.lock
+
+.env
+
+auto-translator/.venv/
+auto-translator/__pycache__/

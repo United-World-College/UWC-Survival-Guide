@@ -82,17 +82,31 @@ title: UWC Changshu China — Survival Guide
   <div class="section-header">
     <p class="section-label">The Full Guide</p>
     <h2>Browse all topics</h2>
-    <p class="section-desc">Each guide is written and maintained by students. Pick a topic to read more.</p>
+    <p class="section-desc">Each guide is written and maintained by students. Browse by language, then open the topic you need.</p>
   </div>
-  <div class="grid-three">
-    {% for guide in site.guides %}
-    <a href="{{ guide.url | relative_url }}" class="place guide-link">
-      <h3>{{ guide.title }}</h3>
-      <p class="place-distance">{{ guide.category }}</p>
-      <p>{{ guide.description }}</p>
-    </a>
-    {% endfor %}
+  {% assign guide_languages = site.data.guide_languages | sort: "order" %}
+  {% for language in guide_languages %}
+  {% assign localized_guides = site.guides | where: "language_code", language.code | sort: "order" %}
+  {% if localized_guides.size > 0 %}
+  <div class="guides-language-group">
+    <div class="guides-language-header">
+      <div>
+        <p class="guides-language-label">{{ language.label }}</p>
+        <p class="guides-language-desc">{{ language.description }}</p>
+      </div>
+    </div>
+    <div class="grid-three">
+      {% for guide in localized_guides %}
+      <a href="{{ guide.url | relative_url }}" class="place guide-link">
+        <h3>{{ guide.title }}</h3>
+        <p class="place-distance">{{ guide.category }}</p>
+        <p>{{ guide.description }}</p>
+      </a>
+      {% endfor %}
+    </div>
   </div>
+  {% endif %}
+  {% endfor %}
 </section>
 
 <div class="divider"></div>

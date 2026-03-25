@@ -1,0 +1,11 @@
+---
+title: "專業介紹"
+category: "College Application"
+description: "[Placeholder] 各專業方向的介紹與選擇建議。"
+order: 3
+guide_id: "majors-intro"
+language_code: "zh-TW"
+language_name: "台灣繁體"
+language_folder: "chinese"
+language_sort: 3
+---

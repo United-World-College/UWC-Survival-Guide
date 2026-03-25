@@ -1,0 +1,18 @@
+- code: en
+  folder: default
+  file_suffix: ""
+  label: English
+  description: The default English edition of each guide.
+  order: 1
+- code: zh-CN
+  folder: chinese
+  file_suffix: "-CN"
+  label: 简体中文
+  description: 面向大陆读者的简体版本。
+  order: 2
+- code: zh-TW
+  folder: chinese
+  file_suffix: "-TW"
+  label: 台灣繁體
+  description: 面向台灣讀者調整字形與用語的繁體版本。
+  order: 3

@@ -1,20 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ page.language_code | default: site.lang | default: 'en' }}">
 <head>
   {% include head.html %}
 </head>
 <body>
   {% include nav.html %}
 
+  {% assign current_language_code = page.language_code | default: site.lang %}
+  {% assign current_language_name = page.language_name %}
+  {% if current_language_name == nil or current_language_name == '' %}
+    {% assign current_language_info = site.data.guide_languages | where: "code", current_language_code | first %}
+    {% if current_language_info %}
+      {% assign current_language_name = current_language_info.label %}
+    {% endif %}
+  {% endif %}
+  {% assign current_guide_id = page.guide_id | default: page.slug %}
+
   <header class="guide-hero">
     <div class="guide-hero-content">
-      <p class="hero-label">{{ page.category }}</p>
+      <p class="hero-label">
+        {{ page.category }}
+        {% if current_language_name %} · {{ current_language_name }}{% endif %}
+      </p>
       <h1>{{ page.title }}</h1>
       {% if page.description %}
       <p class="hero-subtitle">{{ page.description }}</p>
       {% endif %}
     </div>
   </header>
+
+  {% assign translations = site.guides | where_exp: "guide", "guide.guide_id == current_guide_id or guide.slug == current_guide_id" | sort: "language_sort" %}
+  {% if translations.size > 1 %}
+  <section class="translation-switch">
+    <p class="translation-switch-label">Available versions</p>
+    <div class="translation-switch-links">
+      {% for translation in translations %}
+      <a href="{{ translation.url | relative_url }}" class="translation-pill{% if translation.url == page.url %} is-active{% endif %}">
+        {{ translation.language_name }}
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 
   <div class="divider"></div>
 
@@ -24,13 +51,28 @@
 
   <div class="divider"></div>
 
-  <!-- Other guides [Placeholder] -->
+  {% assign more_guides = site.guides | where_exp: "guide", "guide.language_code == current_language_code and guide.slug != page.slug" | sort: "order" %}
   <section class="section">
     <div class="section-header">
-      <p class="section-label">[Placeholder]</p>
-      <h2>More from the guide</h2>
-      <p class="section-desc">[Content coming soon] — More topics will appear here as the guide grows.</p>
+      <p class="section-label">{{ current_language_name }}</p>
+      <h2>More guides in this language</h2>
+      <p class="section-desc">Keep reading in the same language without jumping between versions.</p>
     </div>
+    {% if more_guides.size > 0 %}
+    <div class="grid-three">
+      {% for guide in more_guides %}
+      <a href="{{ guide.url | relative_url }}" class="place guide-link">
+        <h3>{{ guide.title }}</h3>
+        <p class="place-distance">{{ guide.category }}</p>
+        <p>{{ guide.description }}</p>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="section-header guide-empty-state">
+      <p class="section-desc">No other guides are available in this language yet.</p>
+    </div>
+    {% endif %}
   </section>
 
   {% include footer.html %}

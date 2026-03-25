@@ -396,6 +396,35 @@ body {
   line-height: 1.7;
 }
 
+.guides-language-group + .guides-language-group {
+  margin-top: 4rem;
+}
+
+.guides-language-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.guides-language-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: 0.5rem;
+}
+
+.guides-language-desc {
+  max-width: 520px;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
 /* ── Steps ── */
 .steps {
   display: flex;
@@ -504,6 +533,50 @@ body {
 .guide-hero .hero-subtitle {
   font-size: 1.1rem;
   color: var(--dark);
+}
+
+.translation-switch {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 2.5rem 3rem;
+}
+
+.translation-switch-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: 1rem;
+}
+
+.translation-switch-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.translation-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--border);
+  color: var(--dark);
+  text-decoration: none;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.translation-pill:hover,
+.translation-pill.is-active {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: var(--ivory);
+}
+
+.guide-empty-state {
+  margin-bottom: 0;
 }
 
 /* ── Guide content (rendered from markdown) ── */
@@ -632,4 +705,6 @@ a.feature:hover {
   .section { padding: 4rem 1.5rem; }
   .nav-inner { padding: 1rem 1.5rem; }
   .hero { padding: 5rem 1.5rem 3rem; }
+  .guides-language-header { display: block; }
+  .translation-switch { padding: 0 1.5rem 2.5rem; }
 }

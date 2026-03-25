@@ -4,13 +4,32 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SITE_DIR="$ROOT_DIR/website"
 
+find_available_port() {
+  local port="$1"
+
+  if ! command -v lsof >/dev/null 2>&1; then
+    printf '%s\n' "$port"
+    return
+  fi
+
+  while lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; do
+    port=$((port + 1))
+  done
+
+  printf '%s\n' "$port"
+}
+
 cd "$SITE_DIR"
 
 export BUNDLE_APP_CONFIG=.bundle
 export BUNDLE_PATH=vendor/bundle
 
 if [ "$#" -eq 0 ]; then
-  set -- --host 127.0.0.1 --port 4000
+  PORT="$(find_available_port 4000)"
+  if [ "$PORT" != "4000" ]; then
+    echo "Port 4000 is busy; starting Jekyll on http://127.0.0.1:${PORT}/UWC-Survival-Guide/"
+  fi
+  set -- --host 127.0.0.1 --port "$PORT"
 fi
 
 if command -v rbenv >/dev/null 2>&1; then

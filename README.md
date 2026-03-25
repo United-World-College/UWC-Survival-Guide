@@ -87,12 +87,25 @@ This site is built with Jekyll and published from the `/website` directory on Gi
 ```
 website/
   ├── _config.yml   ← Jekyll configuration
-  ├── _guides/      ← guide content in Markdown
+  ├── _guides/
+  │   ├── default/  ← English guides
+  │   └── chinese/  ← Chinese guides using -CN / -TW filenames
   ├── _layouts/     ← page layouts
   ├── _includes/    ← shared partials
   ├── assets/       ← CSS, JS, images
   └── index.html    ← landing page
 ```
+
+`auto-translator/` contains a small CLI that scans `default/` and `chinese/` and creates any missing English, Simplified Chinese, or Taiwan Traditional variants with the OpenAI API.
+
+Run it from the repository root with:
+
+```bash
+./script/translate --dry-run
+./script/translate
+```
+
+The helper script executes the translator with `uv run python` inside `auto-translator/`.
 
 ## Disclaimer
 

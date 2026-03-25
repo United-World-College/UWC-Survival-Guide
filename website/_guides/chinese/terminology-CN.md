@@ -1,9 +1,14 @@
 ---
-title: 术语介绍
-category: College Application
-description: 通过核心术语理解大学申请中的角色、系统与流程。
+title: "术语介绍"
+category: "College Application"
+description: "通过核心术语理解大学申请中的角色、系统与流程。"
 order: 2
-author: William
+author: "William"
+guide_id: "terminology"
+language_code: "zh-CN"
+language_name: "简体中文"
+language_folder: "chinese"
+language_sort: 2
 ---
 
 *Contributed by William*
