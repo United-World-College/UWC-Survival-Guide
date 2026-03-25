@@ -40,6 +40,8 @@ This guide is only as good as the community behind it. Contributions are welcome
 
 Whether it's a restaurant recommendation, a survival tip, or a correction — every contribution helps the next generation of UWC Changshu China students.
 
+By submitting source code or configuration changes, you agree that those contributions may be distributed under the MIT License. By submitting guide text, images, or other non-code material, you agree that those contributions may be published under the content-rights policy described in [CONTENT_LICENSE.md](CONTENT_LICENSE.md).
+
 ## Serve Locally
 
 This site is a Jekyll project stored in the `website/` directory.
@@ -98,7 +100,9 @@ This is an unofficial, student-maintained guide. Information may become outdated
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+The source code and configuration files for this project are available under the [MIT License](LICENSE).
+
+Unless otherwise noted, the original guide text, editorial content, and media assets in this repository are copyright their respective authors and contributors. These materials are not licensed under MIT and may not be reproduced, redistributed, or adapted without prior written permission. See [CONTENT_LICENSE.md](CONTENT_LICENSE.md).
 
 ---
 
