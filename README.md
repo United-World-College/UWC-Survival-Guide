@@ -40,9 +40,38 @@ This guide is only as good as the community behind it. Contributions are welcome
 
 Whether it's a restaurant recommendation, a survival tip, or a correction — every contribution helps the next generation of UWC CSC students.
 
+## Serve Locally
+
+This site is a Jekyll project stored in the `website/` directory.
+
+1. Install Ruby `3.2.2`. On macOS, `rbenv` is recommended.
+2. Install the site dependencies from the repository root:
+
+```bash
+./script/bootstrap
+```
+
+3. Start the local development server:
+
+```bash
+./script/serve
+```
+
+4. Open `http://127.0.0.1:4000/UWC-Survival-Guide/` in your browser.
+
+Jekyll watches for changes automatically, so edits inside `website/` will rebuild on save.
+
+If you prefer the manual commands, run them from `website/` with `rbenv exec`:
+
+```bash
+cd website
+rbenv exec bundle install
+rbenv exec bundle exec jekyll serve --host 127.0.0.1 --port 4000
+```
+
 ## Deploy to GitHub Pages
 
-This site is a static website — no build tools or frameworks required.
+This site is built with Jekyll and published from the `/website` directory on GitHub Pages.
 
 1. Push this repo to GitHub
 2. Go to **Settings** > **Pages**
@@ -55,9 +84,12 @@ This site is a static website — no build tools or frameworks required.
 
 ```
 website/
-  ├── index.html   ← landing page
-  ├── styles.css   ← styling
-  └── script.js    ← interactive effects
+  ├── _config.yml   ← Jekyll configuration
+  ├── _guides/      ← guide content in Markdown
+  ├── _layouts/     ← page layouts
+  ├── _includes/    ← shared partials
+  ├── assets/       ← CSS, JS, images
+  └── index.html    ← landing page
 ```
 
 ## Disclaimer

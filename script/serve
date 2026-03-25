@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SITE_DIR="$ROOT_DIR/website"
+
+cd "$SITE_DIR"
+
+export BUNDLE_APP_CONFIG=.bundle
+export BUNDLE_PATH=vendor/bundle
+
+if [ "$#" -eq 0 ]; then
+  set -- --host 127.0.0.1 --port 4000
+fi
+
+if command -v rbenv >/dev/null 2>&1; then
+  exec rbenv exec bundle exec jekyll serve "$@"
+fi
+
+exec bundle exec jekyll serve "$@"

@@ -40,6 +40,35 @@
 
 无论是餐厅推荐、生存技巧还是内容纠错——每一份贡献都能帮助下一届UWC CSC的同学们。
 
+## 本地运行
+
+本网站是位于 `website/` 目录下的 Jekyll 项目。
+
+1. 安装 Ruby `3.2.2`。macOS 上推荐使用 `rbenv`。
+2. 在仓库根目录安装依赖：
+
+```bash
+./script/bootstrap
+```
+
+3. 启动本地开发服务器：
+
+```bash
+./script/serve
+```
+
+4. 在浏览器中打开 `http://127.0.0.1:4000/UWC-Survival-Guide/`。
+
+保存 `website/` 下的文件后，Jekyll 会自动重新生成站点。
+
+如果你更想手动运行命令，请先进入 `website/`，并使用 `rbenv exec`：
+
+```bash
+cd website
+rbenv exec bundle install
+rbenv exec bundle exec jekyll serve --host 127.0.0.1 --port 4000
+```
+
 ## 免责声明
 
 本指南为非官方、由学生维护的项目。信息可能会过时，请务必通过UWC CSC官方渠道核实重要信息（如签证要求、学校政策等）。

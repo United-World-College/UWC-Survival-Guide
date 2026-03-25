@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SITE_DIR="$ROOT_DIR/website"
+
+cd "$SITE_DIR"
+
+export BUNDLE_APP_CONFIG=.bundle
+export BUNDLE_PATH=vendor/bundle
+
+if command -v rbenv >/dev/null 2>&1; then
+  exec rbenv exec bundle install "$@"
+fi
+
+exec bundle install "$@"
