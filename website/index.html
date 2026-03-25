@@ -3,44 +3,205 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UWC Changshu Survival Guide</title>
+  <title>UWC Changshu — Survival Guide</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Fallback: ensure layout works even if Google Fonts fails to load */
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>UWC Changshu Survival Guide</h1>
-    <p class="description">
-      Everything you need to know to thrive at UWC Changshu China — built by students, for students.
-    </p>
-    <button id="explore-btn">Explore the Guide</button>
 
-    <div id="cards" class="cards hidden">
-      <div class="card">
-        <h3>Campus Life</h3>
-        <p>Dorms, dining, Wi-Fi, VPN & more</p>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">UWC Changshu</a>
+      <div class="nav-links">
+        <a href="#experiences">Experiences</a>
+        <a href="#essentials">Essentials</a>
+        <a href="#explore">Explore</a>
+        <a href="#contribute">Contribute</a>
       </div>
-      <div class="card">
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#experiences">Experiences</a>
+    <a href="#essentials">Essentials</a>
+    <a href="#explore">Explore</a>
+    <a href="#contribute">Contribute</a>
+  </div>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-content">
+      <p class="hero-label">A Student Guide</p>
+      <h1>Your life at<br>UWC Changshu</h1>
+      <p class="hero-subtitle">Everything you need to settle in, find your way,<br>and make the most of your time here.</p>
+      <a href="#experiences" class="hero-cta">Begin exploring</a>
+    </div>
+  </header>
+
+  <!-- Divider -->
+  <div class="divider"></div>
+
+  <!-- Experiences -->
+  <section class="section" id="experiences">
+    <div class="section-header">
+      <p class="section-label">Life on Campus</p>
+      <h2>Where every day begins</h2>
+      <p class="section-desc">From quiet mornings by the lake to late-night conversations in the common room — campus life shapes every part of your UWC experience.</p>
+    </div>
+    <div class="grid-two">
+      <div class="feature">
+        <div class="feature-number">01</div>
+        <h3>Campus Living</h3>
+        <p>Dormitories, dining schedules, laundry, and the small rituals that make this place feel like home.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-number">02</div>
         <h3>Academics</h3>
-        <p>IB tips, CAS ideas & study spots</p>
+        <p>Navigating the IB, finding your study rhythm, CAS projects, and advice from those who've been through it.</p>
       </div>
-      <div class="card">
-        <h3>Food & Dining</h3>
-        <p>Meituan, Eleme & nearby restaurants</p>
+      <div class="feature">
+        <div class="feature-number">03</div>
+        <h3>Wellbeing</h3>
+        <p>Looking after yourself — school health services, nearby hospitals, counseling, and mental health resources.</p>
       </div>
-      <div class="card">
-        <h3>Transportation</h3>
-        <p>Didi, metro, trains & airport transfers</p>
-      </div>
-      <div class="card">
-        <h3>Apps & Tech</h3>
-        <p>WeChat, Alipay, Baidu Maps & VPN</p>
-      </div>
-      <div class="card">
-        <h3>Travel</h3>
-        <p>Weekend trips to Suzhou & Shanghai</p>
+      <div class="feature">
+        <div class="feature-number">04</div>
+        <h3>Community</h3>
+        <p>Student clubs, cultural events, weekend gatherings, and the connections that last well beyond graduation.</p>
       </div>
     </div>
-  </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Essentials -->
+  <section class="section" id="essentials">
+    <div class="section-header">
+      <p class="section-label">Settling In</p>
+      <h2>The essentials, simplified</h2>
+      <p class="section-desc">The practical details that make daily life seamless — from payments to transportation, all in one place.</p>
+    </div>
+    <div class="essentials-list">
+      <div class="essential-item" data-detail="WeChat, Alipay, Baidu Maps, Meituan, Eleme, Didi — and a reliable VPN. These are the apps that make everything work.">
+        <div class="essential-inner">
+          <span class="essential-title">Apps & Technology</span>
+          <span class="essential-arrow">+</span>
+        </div>
+        <div class="essential-detail"></div>
+      </div>
+      <div class="essential-item" data-detail="Setting up Alipay and WeChat Pay, opening a local bank account, and understanding how money moves here.">
+        <div class="essential-inner">
+          <span class="essential-title">Money & Banking</span>
+          <span class="essential-arrow">+</span>
+        </div>
+        <div class="essential-detail"></div>
+      </div>
+      <div class="essential-item" data-detail="Didi for rides, the metro for cities, high-speed rail for weekends. Getting around is easier than you think.">
+        <div class="essential-inner">
+          <span class="essential-title">Transportation</span>
+          <span class="essential-arrow">+</span>
+        </div>
+        <div class="essential-detail"></div>
+      </div>
+      <div class="essential-item" data-detail="Taobao and JD for everything you need, the campus store for what you forgot, and nearby malls for the rest.">
+        <div class="essential-inner">
+          <span class="essential-title">Shopping & Daily Needs</span>
+          <span class="essential-arrow">+</span>
+        </div>
+        <div class="essential-detail"></div>
+      </div>
+      <div class="essential-item" data-detail="Campus meals, local restaurants worth the walk, and the food delivery apps that will become part of your routine.">
+        <div class="essential-inner">
+          <span class="essential-title">Food & Dining</span>
+          <span class="essential-arrow">+</span>
+        </div>
+        <div class="essential-detail"></div>
+      </div>
+      <div class="essential-item" data-detail="A few phrases go a long way. Basic Mandarin, local customs, and cultural nuances to help you feel at ease.">
+        <div class="essential-inner">
+          <span class="essential-title">Culture & Language</span>
+          <span class="essential-arrow">+</span>
+        </div>
+        <div class="essential-detail"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Explore -->
+  <section class="section" id="explore">
+    <div class="section-header">
+      <p class="section-label">Beyond Campus</p>
+      <h2>There is so much to see</h2>
+      <p class="section-desc">Changshu is your starting point. Suzhou, Shanghai, and the waterways of Jiangsu are all within reach.</p>
+    </div>
+    <div class="grid-three">
+      <div class="place">
+        <h3>Suzhou</h3>
+        <p class="place-distance">30 min by rail</p>
+        <p>Classical gardens, canal-side walks, and some of the best noodles in the region.</p>
+      </div>
+      <div class="place">
+        <h3>Shanghai</h3>
+        <p class="place-distance">1 hr by rail</p>
+        <p>A world city at your doorstep — for art, food, and a change of pace whenever you need it.</p>
+      </div>
+      <div class="place">
+        <h3>Kunshan Old Town</h3>
+        <p class="place-distance">Nearby</p>
+        <p>Quiet streets, local tea houses, and a glimpse of the Jiangnan life that surrounds us.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Contribute -->
+  <section class="section" id="contribute">
+    <div class="section-header">
+      <p class="section-label">Built Together</p>
+      <h2>This guide grows with us</h2>
+      <p class="section-desc">Every recommendation, correction, and insight makes this resource better for the next student who arrives.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <p>Fork the repository</p>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <p>Add or update content</p>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <p>Submit a pull request</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-brand">UWC Changshu Survival Guide</p>
+      <p class="footer-note">An unofficial, student-maintained resource.<br>Please verify critical details with official UWC CSC channels.</p>
+      <div class="footer-links">
+        <a href="https://github.com/United-World-College/UWC-Survival-Guide">GitHub</a>
+      </div>
+      <p class="footer-copy">By UWC Changshu students, for UWC Changshu students.</p>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>

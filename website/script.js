@@ -1,14 +1,56 @@
-document.getElementById("explore-btn").addEventListener("click", function () {
-  var cards = document.getElementById("cards");
-  var isHidden = cards.classList.contains("hidden");
+// ── Mobile menu toggle ──
+var toggle = document.getElementById("nav-toggle");
+var menu = document.getElementById("mobile-menu");
 
-  if (isHidden) {
-    cards.classList.remove("hidden");
-    cards.classList.add("visible");
-    this.textContent = "Hide Guide";
-  } else {
-    cards.classList.remove("visible");
-    cards.classList.add("hidden");
-    this.textContent = "Explore the Guide";
-  }
+toggle.addEventListener("click", function () {
+  toggle.classList.toggle("active");
+  menu.classList.toggle("open");
 });
+
+menu.querySelectorAll("a").forEach(function (link) {
+  link.addEventListener("click", function () {
+    toggle.classList.remove("active");
+    menu.classList.remove("open");
+  });
+});
+
+// ── Accordion ──
+document.querySelectorAll(".essential-item").forEach(function (item) {
+  item.addEventListener("click", function () {
+    var isOpen = this.classList.contains("open");
+    var detail = this.querySelector(".essential-detail");
+
+    // Close all others
+    document.querySelectorAll(".essential-item").forEach(function (other) {
+      other.classList.remove("open");
+      other.querySelector(".essential-detail").style.maxHeight = null;
+    });
+
+    if (!isOpen) {
+      this.classList.add("open");
+      var text = this.getAttribute("data-detail");
+      if (!detail.querySelector("p")) {
+        var p = document.createElement("p");
+        p.textContent = text;
+        detail.appendChild(p);
+      }
+      detail.style.maxHeight = detail.scrollHeight + "px";
+    }
+  });
+});
+
+// ── Scroll reveal ──
+var revealElements = document.querySelectorAll(".feature, .place");
+
+function reveal() {
+  revealElements.forEach(function (el) {
+    var top = el.getBoundingClientRect().top;
+    var windowHeight = window.innerHeight;
+    if (top < windowHeight - 60) {
+      el.classList.add("visible");
+    }
+  });
+}
+
+window.addEventListener("scroll", reveal);
+reveal();
