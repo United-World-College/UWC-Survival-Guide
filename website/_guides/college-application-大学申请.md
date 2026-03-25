@@ -14,12 +14,12 @@ author: William
 
 然后就应该开始选学校了。不过在此之前我想先隆重地介绍一下学校里的university counselling office。我记得我当时在学校里的时候大概有5个counsellor，每个人都会在DP1下学期被分配到一个counsellor。每个counsellor的作用就是帮助我们顺利申请上我们想去的大学，也就是一切申请事宜的primary contact。具体的情况我就拿我当时的college counselor Alison来举个例子吧。我一直都觉得Alison是个超级超级好的counsellor。说实话我那个时候还是一个有些社恐的人，就是和陌生人说话都有点紧张的那种，所以在第一次进Alison办公室前我的心情是非常忐忑的，毕竟在当时的我看来这可是我的“终身大事”。但是一推门进去见到她的那一刹那我就有种如沐春风的感觉。所有的忐忑和惴惴不安在一瞬间就烟消云散了。之后基本和她就是隔一段时间会开一次会，等DP2正式开学之后会变得稍微频繁一些。其实我觉得和counselor之间最重要的事情就是建立一种默契，这不是刻意去做什么就能做到的（或者说刻意去做是一定做不到的），是你一定要完完全全的信任她，然后对她敞开心扉，把你所有的想法/问题/困惑都对她讲，才能让她更了解你，并且在帮助你的时候也有的放矢。总之也是个spontaneous的过程吧。在这里再透露个小秘密：counselor的推荐信是三封required recommendations里最重要的，没有之一。因为counselor会和你聊很多philosophical的东西，相比于其他两封任课老师的推荐信，是最了解你这个人是什么样的，你会如何思考high-level的问题，以及你的materiality，而这些恰恰是美国大学最看中的部分。
 
-好了，下面就应该讲到选校了。本来这个Survival Guide只是应该起到“扶上马送一程”的作用，既然已经介绍了counselling office，本指南的使命就应该结束了，尤其是针对选校这么高度专业化的问题。但本人还是想从一个已经上了大学的UWC毕业生的视角聊一聊一些我希望自己当年能知道的事情。详情请见下一篇[《关于选校》]({{ '/guides/school-selection/' | relative_url }})。
+好了，下面就应该讲到选校了。本来这个Survival Guide只是应该起到“扶上马送一程”的作用，既然已经介绍了counselling office，本指南的使命就应该结束了，尤其是针对选校这么高度专业化的问题。但本人还是想从一个已经上了大学的UWC毕业生的视角聊一聊一些我希望自己当年能知道的事情。详情请见下一篇[《关于选校》]({{ '/guides/school-selection-关于选校/' | relative_url }})。
 
 ---
 
 ## 本系列文章
 
-- [关于选校]({{ '/guides/school-selection/' | relative_url }})
-- [术语介绍]({{ '/guides/terminology/' | relative_url }}) *\[Placeholder\]*
-- [专业介绍]({{ '/guides/majors-intro/' | relative_url }}) *\[Placeholder\]*
+- [关于选校]({{ '/guides/school-selection-关于选校/' | relative_url }})
+- [术语介绍]({{ '/guides/terminology-术语介绍/' | relative_url }}) *\[Placeholder\]*
+- [专业介绍]({{ '/guides/majors-intro-专业介绍/' | relative_url }}) *\[Placeholder\]*
