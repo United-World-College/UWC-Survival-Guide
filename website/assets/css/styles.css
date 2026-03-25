@@ -538,6 +538,13 @@ body {
   text-decoration-color: var(--dark);
 }
 
+.guide-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 2rem 0;
+  border-radius: 4px;
+}
+
 .guide-content blockquote {
   border-left: 2px solid var(--border);
   padding-left: 1.5rem;

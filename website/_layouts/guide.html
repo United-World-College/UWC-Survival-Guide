@@ -24,21 +24,12 @@
 
   <div class="divider"></div>
 
-  <!-- Other guides -->
+  <!-- Other guides [Placeholder] -->
   <section class="section">
     <div class="section-header">
-      <p class="section-label">Continue Reading</p>
+      <p class="section-label">[Placeholder]</p>
       <h2>More from the guide</h2>
-    </div>
-    <div class="grid-three">
-      {% assign other_guides = site.guides | where_exp: "g", "g.slug != page.slug" | slice: 0, 3 %}
-      {% for guide in other_guides %}
-      <a href="{{ guide.url | relative_url }}" class="place guide-link">
-        <h3>{{ guide.title }}</h3>
-        <p class="place-distance">{{ guide.category }}</p>
-        <p>{{ guide.description }}</p>
-      </a>
-      {% endfor %}
+      <p class="section-desc">[Content coming soon] — More topics will appear here as the guide grows.</p>
     </div>
   </section>
 
