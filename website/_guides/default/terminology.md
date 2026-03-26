@@ -4,6 +4,7 @@ category: "College Application"
 description: "Use a set of core terms to understand the roles, systems, and processes involved in college applications."
 order: 2
 author: "William"
+author_id: "william-huang"
 guide_id: "terminology"
 language_code: "en"
 language_name: "English"
@@ -11,8 +12,6 @@ language_folder: "default"
 language_sort: 1
 ---
 
-
-*Contributed by William*
 
 I want to start here by laying out a few terms and using them to introduce some of the key parts of the college application process. A lot of these words sound like pure jargon the first time you hear them, but once you put them back into the actual application process and understand them in context, you realize that each one maps onto a different person, system, or evaluation mechanism. If you get these basic concepts straight first, then later, when you move on to more concrete topics like building a college list, essays, and recommendation letters, everything becomes much easier.
 

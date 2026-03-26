@@ -12,7 +12,7 @@ Starting at UWC Changshu China can be overwhelming — new country, new culture,
 
 - [William Huang 黄靖然](https://www.linkedin.com/in/william-huang-6b4102332/) (University of Illinois Urbana-Champaign, UWC Changshu China 24')
 - [Tom Li 李东源](https://www.linkedin.com/in/dongyuan-li/) (University of Florida, UWC Changshu China 24')
-- [Edward Pan 潘维翰](https://www.linkedin.com/in/weihan-pan-872643333/) (Columbia University, UWC Changshu China 24')
+- E_P_silon (UWC Changshu China 24')
 
 ## Contents
 
@@ -40,7 +40,7 @@ This guide is only as good as the community behind it. Contributions are welcome
 
 Whether it's a restaurant recommendation, a survival tip, or a correction — every contribution helps the next generation of UWC Changshu China students.
 
-By submitting source code or configuration changes, you agree that those contributions may be distributed under the MIT License. By submitting guide text, images, or other non-code material, you agree that those contributions may be published under the content-rights policy described in [CONTENT_LICENSE.md](CONTENT_LICENSE.md).
+By submitting source code or configuration changes, you agree that those contributions may be distributed under the MIT License. By submitting guide text, portraits, photos, images, or other non-code material, you agree that those contributions may be published under the content-rights policy described in [CONTENT_LICENSE.md](CONTENT_LICENSE.md).
 
 ## Serve Locally
 
@@ -115,7 +115,7 @@ This is an unofficial, student-maintained guide. Information may become outdated
 
 The source code and configuration files for this project are available under the [MIT License](LICENSE).
 
-Unless otherwise noted, the original guide text, editorial content, and media assets in this repository are copyright their respective authors and contributors. These materials are not licensed under MIT and may not be reproduced, redistributed, or adapted without prior written permission. See [CONTENT_LICENSE.md](CONTENT_LICENSE.md).
+Unless otherwise noted, the original guide text, editorial content, contributor portraits, profile photos, photographs, and other media assets in this repository are copyright their respective authors and contributors. These materials are not licensed under MIT and may not be reproduced, redistributed, adapted, or republished without prior written permission. See [CONTENT_LICENSE.md](CONTENT_LICENSE.md).
 
 ---
 

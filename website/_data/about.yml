@@ -1,0 +1,56 @@
+project:
+  hero_label: About
+  title: UWC Changshu China Survival Guide
+  subtitle: A formal introduction to the project, its editorial mission, and the students who build it.
+  introduction:
+    - The UWC Changshu China Survival Guide is a student-run knowledge base for incoming and current students at UWC Changshu China.
+    - "It exists to preserve practical knowledge that is easy to lose between cohorts: how to settle in, how to navigate the academic system, and how to make use of the opportunities around campus and beyond."
+    - The project is maintained as a living publication. Editors set direction and uphold editorial standards, while contributors write, revise, translate, and materially improve individual articles over time.
+  principles:
+    - title: Student-built
+      description: The guide is grounded in lived student experience and focuses on what is useful in practice, not just what is formally documented.
+    - title: Editorially maintained
+      description: This is treated as a continuing publication with named leadership, clear attribution, and room for revision as the school environment changes.
+    - title: Built to outlast a cohort
+      description: The repository keeps institutional memory in one place so each graduating class can hand forward something more useful than scattered advice.
+recognition:
+  label: Recognition Policy
+  title: How contributors are recognized
+  description: Editors-in-Chief are listed separately. Core contributors are contributors who have materially contributed to five or more distinct articles. Contributors include everyone else who has written, edited, translated, or materially improved published content.
+editors_in_chief:
+  - id: william-huang
+    name: William Huang 黃靖然
+    affiliation: University of Illinois Urbana-Champaign
+    cohort: "UWC Changshu China 24'"
+    profile_label: LinkedIn
+    profile_url: "https://www.linkedin.com/in/william-huang-6b4102332/"
+    photo: "/assets/images/contributors/WH.jpeg"
+    summary: Founding editor-in-chief.
+    articles:
+      - College Application
+      - On Choosing Schools
+      - Terminology
+  - id: tom-li
+    name: Tom Li 李東源
+    affiliation: University of Florida
+    cohort: "UWC Changshu China 24'"
+    profile_label: LinkedIn
+    profile_url: "https://www.linkedin.com/in/dongyuan-li/"
+    photo:
+    summary: Founding editor-in-chief.
+  - id: e-p-silon
+    name: E_P_silon
+    affiliation:
+    cohort: "UWC Changshu China 24'"
+    profile_label:
+    profile_url:
+    photo:
+    summary: Founding editor-in-chief.
+
+# Optional `photo` paths should point to files under /assets/images/contributors/.
+# Add all non-editor contributors here. If a contributor should have an author page,
+# also create a matching file in website/_authors/ and use the same `id`.
+# Recognition is assigned automatically:
+# - 5 or more distinct articles -> Core Contributors
+# - fewer than 5 distinct articles -> Contributors
+contributors: []

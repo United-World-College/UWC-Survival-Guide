@@ -8,6 +8,17 @@
 
   {% assign current_language_code = page.language_code | default: site.lang %}
   {% assign current_language_name = page.language_name %}
+  {% assign author_records = site.data.about.editors_in_chief | concat: site.data.about.contributors %}
+  {% assign current_author = nil %}
+  {% assign current_author_page = nil %}
+  {% assign current_author_name = page.author %}
+  {% if page.author_id %}
+    {% assign current_author = author_records | where: "id", page.author_id | first %}
+    {% assign current_author_page = site.authors | where: "author_id", page.author_id | first %}
+  {% endif %}
+  {% if current_author and current_author.name %}
+    {% assign current_author_name = current_author.name %}
+  {% endif %}
   {% if current_language_name == nil or current_language_name == '' %}
     {% assign current_language_info = site.data.guide_languages | where: "code", current_language_code | first %}
     {% if current_language_info %}
@@ -23,6 +34,15 @@
         {% if current_language_name %} · {{ current_language_name }}{% endif %}
       </p>
       <h1>{{ page.title }}</h1>
+      {% if current_author_name %}
+      <p class="guide-byline">
+        {% if current_author_page %}
+        <a href="{{ current_author_page.url | relative_url }}" class="guide-author-link">By {{ current_author_name }}</a>
+        {% else %}
+        By {{ current_author_name }}
+        {% endif %}
+      </p>
+      {% endif %}
       {% if page.description %}
       <p class="hero-subtitle">{{ page.description }}</p>
       {% endif %}

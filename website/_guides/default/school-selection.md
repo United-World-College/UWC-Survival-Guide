@@ -4,6 +4,7 @@ category: "College Application"
 description: "From the flow of money to the academic ecosystem, rethinking how to choose among American universities."
 order: 1
 author: "William"
+author_id: "william-huang"
 guide_id: "school-selection"
 language_code: "en"
 language_name: "English"
@@ -11,8 +12,6 @@ language_folder: "default"
 language_sort: 1
 ---
 
-
-*Contributed by William*
 
 I wanted to use the topic of choosing colleges to talk a bit about what I only came to understand about American universities after actually getting to college. Maybe I was just pretty ignorant before, but after coming to the U.S., I realized universities here are nothing like what I had imagined.
 

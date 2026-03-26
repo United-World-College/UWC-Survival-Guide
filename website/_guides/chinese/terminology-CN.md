@@ -4,14 +4,13 @@ category: "College Application"
 description: "通过核心术语理解大学申请中的角色、系统与流程。"
 order: 2
 author: "William"
+author_id: "william-huang"
 guide_id: "terminology"
 language_code: "zh-CN"
 language_name: "简体中文"
 language_folder: "chinese"
 language_sort: 2
 ---
-
-*Contributed by William*
 
 在这里想先通过罗列术语的方式，向各位介绍一下大学申请中几个重要的组成部分。很多词第一次听都会觉得像黑话，但只要把它们放回到具体的申请流程里去理解，就会发现这些术语其实分别对应着不同的人、系统和评价机制。把这些基础概念先弄清楚，后面再去看选校、文书、推荐信这些更具体的话题时，就会容易很多。
 

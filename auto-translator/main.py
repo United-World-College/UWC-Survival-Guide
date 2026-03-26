@@ -75,6 +75,7 @@ PREFERRED_FRONT_MATTER_ORDER = [
     "description",
     "order",
     "author",
+    "author_id",
     "guide_id",
     "language_code",
     "language_name",

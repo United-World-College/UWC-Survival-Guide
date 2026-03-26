@@ -4,6 +4,7 @@ category: "大學申請"
 description: "透過核心術語理解大學申請中的角色、系統與流程。"
 order: 2
 author: "William"
+author_id: "william-huang"
 guide_id: "terminology"
 language_code: "zh-TW"
 language_name: "台灣繁體"
@@ -11,8 +12,6 @@ language_folder: "chinese"
 language_sort: 3
 ---
 
-
-*Contributed by William*
 
 在這裡想先透過羅列術語的方式，向各位介紹一下大學申請中幾個重要的組成部分。很多詞第一次聽都會覺得像黑話，但只要把它們放回到具體的申請流程裡去理解，就會發現這些術語其實分別對應著不同的人、系統和評價機制。把這些基礎概念先弄清楚，後面再去看選校、文書、推薦信這些更具體的話題時，就會容易很多。
 

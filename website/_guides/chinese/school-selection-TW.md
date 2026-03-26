@@ -4,6 +4,7 @@ category: "大學申請"
 description: "從資金流動到學術生態，重新認識美國大學選校。"
 order: 1
 author: "William"
+author_id: "william-huang"
 guide_id: "school-selection"
 language_code: "zh-TW"
 language_name: "台灣繁體"
@@ -11,8 +12,6 @@ language_folder: "chinese"
 language_sort: 3
 ---
 
-
-*Contributed by William*
 
 本篇是想藉著聊選校這個話題講一講在上了大學之後才了解到的美國大學，可能是因為本人之前比較孤陋寡聞吧，來了美國之後才發現大學和想像中的模樣天差地別。
 

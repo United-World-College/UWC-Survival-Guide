@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="{{ page.language_code | default: site.lang | default: 'en' }}">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  {% include nav.html %}
+
+  {% assign author_records = site.data.about.editors_in_chief | concat: site.data.about.contributors %}
+  {% assign current_author_id = page.author_id | default: page.slug %}
+  {% assign person = author_records | where: "id", current_author_id | first %}
+  {% assign authored_guides = site.guides | where: "author_id", current_author_id | sort: "order" %}
+  {% assign authored_guide_ids = authored_guides | map: "guide_id" | uniq %}
+  {% assign authored_article_count = authored_guide_ids | size %}
+  {% assign role_label = page.role %}
+  {% assign editor_record = site.data.about.editors_in_chief | where: "id", current_author_id | first %}
+  {% if editor_record %}
+    {% assign role_label = "Editor-in-Chief" %}
+  {% elsif role_label == nil or role_label == "" %}
+    {% assign role_label = "Contributor" %}
+  {% endif %}
+  {% assign author_name = page.title %}
+  {% if person and person.name %}
+    {% assign author_name = person.name %}
+  {% endif %}
+  {% assign author_summary = page.description %}
+  {% if person and person.summary %}
+    {% assign author_summary = person.summary %}
+  {% endif %}
+  {% assign has_author_meta = false %}
+  {% assign has_external_profile = false %}
+  {% assign has_affiliation = false %}
+  {% assign has_cohort = false %}
+  {% if person %}
+    {% if person.affiliation != nil and person.affiliation != "" %}
+      {% assign has_affiliation = true %}
+    {% endif %}
+    {% if person.cohort != nil and person.cohort != "" %}
+      {% assign has_cohort = true %}
+    {% endif %}
+    {% if has_affiliation or has_cohort %}
+      {% assign has_author_meta = true %}
+    {% endif %}
+    {% if person.profile_url != nil and person.profile_url != "" %}
+      {% assign has_external_profile = true %}
+    {% endif %}
+  {% endif %}
+
+  {% assign initials = '' %}
+  {% assign normalized_name = author_name | replace: "_", " " | replace: "-", " " %}
+  {% assign name_parts = normalized_name | split: ' ' %}
+  {% for part in name_parts %}
+    {% if part != "" and initials.size < 2 %}
+      {% assign initial = part | slice: 0, 1 %}
+      {% assign initials = initials | append: initial %}
+    {% endif %}
+  {% endfor %}
+
+  <section class="section author-header">
+    <div class="author-profile">
+      <div class="author-photo">
+        {% if person and person.photo != nil and person.photo != "" %}
+          {% if person.photo contains '://' %}
+            <img src="{{ person.photo }}" alt="Portrait of {{ author_name }}">
+          {% else %}
+            <img src="{{ person.photo | relative_url }}" alt="Portrait of {{ author_name }}">
+          {% endif %}
+        {% else %}
+          <div class="profile-placeholder" aria-hidden="true">{{ initials | upcase }}</div>
+        {% endif %}
+      </div>
+      <div class="author-copy">
+        <p class="section-label">Author</p>
+        <h1>{{ author_name }}</h1>
+        <p class="author-role">{{ role_label }}</p>
+        {% if has_author_meta %}
+          <p class="author-meta">
+            {% if has_affiliation %}{{ person.affiliation }}{% endif %}{% if has_affiliation and has_cohort %} · {% endif %}{% if has_cohort %}{{ person.cohort }}{% endif %}
+          </p>
+        {% endif %}
+        {% if author_summary %}
+          <p class="author-summary">{{ author_summary }}</p>
+        {% endif %}
+        <div class="author-stats">
+          <div class="author-stat">
+            <span class="author-stat-value">{{ authored_article_count }}</span>
+            <span class="author-stat-label">{% if authored_article_count == 1 %}Indexed article{% else %}Indexed articles{% endif %}</span>
+          </div>
+        </div>
+        {% if has_external_profile %}
+          <div class="profile-links author-links">
+            <a class="profile-link" href="{{ person.profile_url }}" target="_blank" rel="noopener noreferrer">{{ person.profile_label | default: "Profile" }}</a>
+            <a class="profile-link" href="{{ '/about/' | relative_url }}">About Project</a>
+          </div>
+        {% else %}
+          <div class="profile-links author-links">
+            <a class="profile-link" href="{{ '/about/' | relative_url }}">About Project</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {% capture author_body %}{{ content | strip }}{% endcapture %}
+  {% if author_body != "" %}
+    <div class="divider"></div>
+    <article class="guide-content author-bio">
+      {{ content }}
+    </article>
+  {% endif %}
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <div class="section-header">
+      <p class="section-label">Bibliography</p>
+      <h2>Indexed articles by {{ author_name }}</h2>
+      <p class="section-desc">Each article is listed once, with links to every published language version available on the site.</p>
+    </div>
+    {% if authored_article_count > 0 %}
+      <div class="author-articles">
+        {% for authored_guide_id in authored_guide_ids %}
+          {% assign guide_versions = authored_guides | where: "guide_id", authored_guide_id | sort: "language_sort" %}
+          {% assign primary_guide = guide_versions | where: "language_code", "en" | first %}
+          {% if primary_guide == nil %}
+            {% assign primary_guide = guide_versions | first %}
+          {% endif %}
+          <article class="author-article-card">
+            <div class="author-article-head">
+              <div>
+                <p class="author-article-category">{{ primary_guide.category }}</p>
+                <h3><a class="contributor-name-link" href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
+              </div>
+              <p class="author-article-count">{{ guide_versions.size }} {% if guide_versions.size == 1 %}version{% else %}versions{% endif %}</p>
+            </div>
+            {% if primary_guide.description %}
+              <p class="author-article-desc">{{ primary_guide.description }}</p>
+            {% endif %}
+            <div class="author-article-links">
+              {% for guide_version in guide_versions %}
+                <a href="{{ guide_version.url | relative_url }}" class="translation-pill">{{ guide_version.language_name }}</a>
+              {% endfor %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="about-empty">No published guides are indexed for this author yet.</p>
+    {% endif %}
+  </section>
+
+  {% include footer.html %}
+
+  <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
+</body>
+</html>

@@ -8,6 +8,9 @@ collections:
   guides:
     output: true
     permalink: /guides/:path/
+  authors:
+    output: true
+    permalink: /authors/:path/
 
 defaults:
   - scope:
@@ -15,3 +18,8 @@ defaults:
       type: "guides"
     values:
       layout: "guide"
+  - scope:
+      path: ""
+      type: "authors"
+    values:
+      layout: "author"

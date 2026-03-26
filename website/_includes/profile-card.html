@@ -1,0 +1,60 @@
+{% assign person = include.person %}
+{% assign author_page = nil %}
+{% assign has_affiliation = false %}
+{% assign has_cohort = false %}
+{% if person.id != nil and person.id != "" %}
+  {% assign author_page = site.authors | where: "author_id", person.id | first %}
+{% endif %}
+{% if person.affiliation != nil and person.affiliation != "" %}
+  {% assign has_affiliation = true %}
+{% endif %}
+{% if person.cohort != nil and person.cohort != "" %}
+  {% assign has_cohort = true %}
+{% endif %}
+{% assign initials = '' %}
+{% assign normalized_name = person.name | replace: "_", " " | replace: "-", " " %}
+{% assign name_parts = normalized_name | split: ' ' %}
+{% for part in name_parts %}
+  {% if part != "" and initials.size < 2 %}
+    {% assign initial = part | slice: 0, 1 %}
+  {% assign initials = initials | append: initial %}
+  {% endif %}
+{% endfor %}
+
+<article class="profile-card">
+  <div class="profile-media">
+    {% if person.photo != nil and person.photo != "" %}
+      {% if person.photo contains '://' %}
+        <img src="{{ person.photo }}" alt="Portrait of {{ person.name }}">
+      {% else %}
+        <img src="{{ person.photo | relative_url }}" alt="Portrait of {{ person.name }}">
+      {% endif %}
+    {% else %}
+      <div class="profile-placeholder" aria-hidden="true">{{ initials | upcase }}</div>
+    {% endif %}
+  </div>
+  <p class="profile-eyebrow">{{ include.label }}</p>
+  {% if author_page %}
+    <h3><a class="profile-name-link" href="{{ author_page.url | relative_url }}">{{ person.name }}</a></h3>
+  {% else %}
+    <h3>{{ person.name }}</h3>
+  {% endif %}
+  {% if has_affiliation or has_cohort %}
+    <p class="profile-meta">
+      {% if has_affiliation %}{{ person.affiliation }}{% endif %}{% if has_affiliation and has_cohort %} · {% endif %}{% if has_cohort %}{{ person.cohort }}{% endif %}
+    </p>
+  {% endif %}
+  {% if person.summary != nil and person.summary != "" %}
+    <p class="profile-summary">{{ person.summary }}</p>
+  {% endif %}
+  {% if author_page or person.profile_url != nil and person.profile_url != "" %}
+    <div class="profile-links">
+      {% if author_page %}
+        <a class="profile-link" href="{{ author_page.url | relative_url }}">Author Page</a>
+      {% endif %}
+      {% if person.profile_url != nil and person.profile_url != "" %}
+        <a class="profile-link" href="{{ person.profile_url }}" target="_blank" rel="noopener noreferrer">{{ person.profile_label | default: "Profile" }}</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</article>

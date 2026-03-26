@@ -12,7 +12,7 @@
 
 - [William Huang 黄靖然](https://www.linkedin.com/in/william-huang-6b4102332/) (University of Illinois Urbana-Champaign, UWC Changshu China 24')
 - [Tom Li 李东源](https://www.linkedin.com/in/dongyuan-li/) (University of Florida, UWC Changshu China 24')
-- [Edward Pan 潘维翰](https://www.linkedin.com/in/weihan-pan-872643333/) (Columbia University, UWC Changshu China 24')
+- E_P_silon (UWC Changshu China 24')
 
 ## 目录
 
@@ -40,7 +40,7 @@
 
 无论是餐厅推荐、生存技巧还是内容纠错——每一份贡献都能帮助下一届 UWC Changshu China 的同学们。
 
-提交源码或配置文件修改，即表示你同意这些代码类贡献可按 MIT 许可证发布；提交指南正文、图片或其他非代码内容，即表示你同意这些内容按 [内容版权说明](CONTENT_LICENSE.md) 所述方式发布。
+提交源码或配置文件修改，即表示你同意这些代码类贡献可按 MIT 许可证发布；提交指南正文、头像、照片、图片或其他非代码内容，即表示你同意这些内容按 [内容版权说明](CONTENT_LICENSE.md) 所述方式发布。
 
 ## 本地运行
 
@@ -79,7 +79,7 @@ rbenv exec bundle exec jekyll serve --host 127.0.0.1 --port 4000
 
 本项目中的源码与配置文件采用 [MIT 许可证](LICENSE)。
 
-除非另有说明，本仓库中的原创指南正文、编辑性内容与媒体素材，其版权归各自作者与贡献者所有，不适用 MIT 许可证。未经事先书面许可，不得转载、再分发或改编。详见 [内容版权说明](CONTENT_LICENSE.md)。
+除非另有说明，本仓库中的原创指南正文、编辑性内容、贡献者头像、个人照片、摄影作品及其他媒体素材，其版权归各自作者与贡献者所有，不适用 MIT 许可证。未经事先书面许可，不得转载、再分发、改编或再次发布。详见 [内容版权说明](CONTENT_LICENSE.md)。
 
 ---
 
