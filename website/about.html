@@ -162,3 +162,53 @@ permalink: /about/
     <p class="about-empty">Additional contributors will be listed here as new articles and revisions are published.</p>
   {% endif %}
 </section>
+
+<!-- Sync profile cards from Firestore -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+(function () {
+  firebase.initializeApp({
+    apiKey: "AIzaSyC2PkxnmMwJiD73ouo8Jxmk536_A2RkNy8",
+    authDomain: "uwc-survival-guide.firebaseapp.com",
+    projectId: "uwc-survival-guide"
+  });
+  var db = firebase.firestore();
+  var cards = document.querySelectorAll('.profile-card[data-author-page]');
+
+  db.collection('users').get().then(function (snap) {
+    var usersByPage = {};
+    snap.forEach(function (doc) {
+      var d = doc.data();
+      if (d.authorPage) usersByPage[d.authorPage] = d;
+    });
+
+    cards.forEach(function (card) {
+      var page = card.getAttribute('data-author-page');
+      var user = usersByPage[page];
+      if (!user) return;
+
+      // Sync name
+      if (user.displayName) {
+        var nameEl = card.querySelector('[data-card-name]');
+        if (nameEl) {
+          var link = nameEl.querySelector('a');
+          if (link) {
+            link.textContent = user.displayName;
+          } else {
+            nameEl.textContent = user.displayName;
+          }
+        }
+      }
+
+      // Sync photo
+      if (user.photoURL) {
+        var photoEl = card.querySelector('[data-card-photo]');
+        if (photoEl) {
+          photoEl.innerHTML = '<img src="' + user.photoURL + '" alt="Portrait">';
+        }
+      }
+    });
+  }).catch(function () {});
+})();
+</script>

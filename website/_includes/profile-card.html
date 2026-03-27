@@ -21,8 +21,8 @@
   {% endif %}
 {% endfor %}
 
-<article class="profile-card">
-  <div class="profile-media">
+<article class="profile-card" data-author-page="/authors/{{ person.id }}/">
+  <div class="profile-media" data-card-photo>
     {% if person.photo != nil and person.photo != "" %}
       {% if person.photo contains '://' %}
         <img src="{{ person.photo }}" alt="Portrait of {{ person.name }}">
@@ -35,9 +35,9 @@
   </div>
   <p class="profile-eyebrow">{{ include.label }}</p>
   {% if author_page %}
-    <h3><a class="profile-name-link" href="{{ author_page.url | relative_url }}">{{ person.name }}</a></h3>
+    <h3 data-card-name><a class="profile-name-link" href="{{ author_page.url | relative_url }}">{{ person.name }}</a></h3>
   {% else %}
-    <h3>{{ person.name }}</h3>
+    <h3 data-card-name>{{ person.name }}</h3>
   {% endif %}
   {% if has_affiliation or has_cohort %}
     <p class="profile-meta">

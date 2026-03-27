@@ -933,7 +933,7 @@ a.feature:hover {
 
 .author-photo {
   aspect-ratio: 4 / 5;
-  background: linear-gradient(180deg, rgba(181, 176, 168, 0.18) 0%, rgba(237, 234, 228, 0.8) 100%);
+  background: var(--cream);
   overflow: hidden;
 }
 
@@ -941,6 +941,7 @@ a.feature:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
   display: block;
 }
 
