@@ -180,8 +180,8 @@ permalink: /admin/
               <input type="password" id="admin-password" class="admin-input" placeholder="Enter admin password" />
             </div>
             <div class="admin-field">
-              <label class="admin-label" for="github-token">GitHub Token</label>
-              <input type="password" id="github-token" class="admin-input" placeholder="Paste your GitHub personal access token" />
+              <label class="admin-label" for="github-token">GitHub Token (only needed first time or to update)</label>
+              <input type="password" id="github-token" class="admin-input" placeholder="Leave blank if already saved" />
             </div>
             <button type="button" id="admin-unlock-btn" class="admin-btn">Unlock Admin Panel</button>
             <p id="admin-gate-error" class="admin-error" style="display:none;"></p>
@@ -644,7 +644,11 @@ permalink: /admin/
       if (hash === ADMIN_HASH) {
         isAdmin = true;
         var ghToken = document.getElementById('github-token').value.trim();
-        if (ghToken) sessionStorage.setItem('github_token', ghToken);
+        // Save token to Firestore if provided, otherwise load existing
+        var configRef = db.collection('config').doc('github');
+        if (ghToken) {
+          configRef.set({ token: ghToken }, { merge: true });
+        }
         document.getElementById('admin-gate').style.display = 'none';
         document.getElementById('admin-review-panel').style.display = 'block';
         loadReviewList('pending');
@@ -799,16 +803,18 @@ permalink: /admin/
       // Auto-commit to GitHub
       btn.textContent = 'Publishing to GitHub...';
       var filePath = 'website/_guides/' + slug + '.md';
-      var GITHUB_TOKEN = sessionStorage.getItem('github_token');
-      if (!GITHUB_TOKEN) {
-        alert('No GitHub token found. Please re-enter the admin panel with your token.');
-        btn.textContent = 'Approve & Publish';
-        btn.disabled = false;
-        return;
-      }
       var REPO = 'United-World-College/UWC-Survival-Guide';
 
-      fetch('https://api.github.com/repos/' + REPO + '/contents/' + filePath, {
+      // Load GitHub token from Firestore
+      db.collection('config').doc('github').get().then(function (configDoc) {
+        var GITHUB_TOKEN = configDoc.exists ? configDoc.data().token : null;
+        if (!GITHUB_TOKEN) {
+          alert('No GitHub token found. Please unlock the admin panel again and paste your token.');
+          btn.textContent = 'Approve & Publish';
+          btn.disabled = false;
+          return;
+        }
+        return fetch('https://api.github.com/repos/' + REPO + '/contents/' + filePath, {
         method: 'PUT',
         headers: {
           'Authorization': 'token ' + GITHUB_TOKEN,
@@ -845,6 +851,7 @@ permalink: /admin/
         btn.disabled = false;
         alert('Approved in Firestore but failed to publish to GitHub: ' + err.message);
       });
+      }); // end config token fetch
     }).catch(function (err) {
       console.error('Approve error:', err);
       btn.textContent = 'Approve & Publish';
