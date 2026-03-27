@@ -171,6 +171,13 @@ permalink: /admin/
           <p id="article-error" class="admin-error" style="display:none;"></p>
         </div>
 
+        <!-- Published Articles -->
+        <div id="published-articles-card" class="admin-card" style="display:none;">
+          <h2 class="admin-card-title">My Published Articles</h2>
+          <p class="admin-card-desc">Articles published on the site under your name.</p>
+          <div id="published-articles-link"></div>
+        </div>
+
         <!-- My Submissions -->
         <div class="admin-card">
           <h2 class="admin-card-title">My Submissions</h2>
@@ -180,25 +187,7 @@ permalink: /admin/
           </div>
         </div>
 
-        <!-- Admin Access Gate -->
-        <div class="admin-card">
-          <h2 class="admin-card-title">Admin Panel</h2>
-          <p class="admin-card-desc">Enter the admin password to review and manage submissions.</p>
-          <div id="admin-gate" class="admin-form">
-            <div class="admin-field">
-              <label class="admin-label" for="admin-password">Admin Password</label>
-              <input type="password" id="admin-password" class="admin-input" placeholder="Enter admin password" />
-            </div>
-            <div class="admin-field">
-              <label class="admin-label" for="github-token">GitHub Token (only needed first time or to update)</label>
-              <input type="password" id="github-token" class="admin-input" placeholder="Leave blank if already saved" />
-            </div>
-            <button type="button" id="admin-unlock-btn" class="admin-btn">Unlock Admin Panel</button>
-            <p id="admin-gate-error" class="admin-error" style="display:none;"></p>
-          </div>
-        </div>
-
-        <!-- Admin Review Panel (hidden until password entered) -->
+        <!-- Admin Review Panel (auto-shown for admin accounts) -->
         <div id="admin-review-panel" style="display:none;">
           <div class="admin-card">
             <h2 class="admin-card-title">Review Submissions</h2>
@@ -424,8 +413,11 @@ permalink: /admin/
       showView('view-dashboard');
       loadProfile(user);
       loadSubmissions(user.uid);
+      checkAdmin(user.email);
     } else {
       showView('view-signin');
+      isAdmin = false;
+      document.getElementById('admin-review-panel').style.display = 'none';
     }
   });
 
@@ -442,6 +434,15 @@ permalink: /admin/
           showAvatarImage(data.photoURL);
         } else {
           showAvatarPlaceholder(data.displayName || user.email);
+        }
+        // Show published articles link if author page exists
+        if (data.authorPage) {
+          var card = document.getElementById('published-articles-card');
+          card.style.display = 'block';
+          var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? '' : '/UWC-Survival-Guide';
+          document.getElementById('published-articles-link').innerHTML =
+            '<a href="' + baseUrl + data.authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">View all my published articles</a>';
         }
       } else {
         // Create the doc if missing
@@ -640,42 +641,17 @@ permalink: /admin/
   var isAdmin = false;
   var currentFilter = 'pending';
   var currentModalDocId = null;
-  var ADMIN_HASH = 'aa53c9e57bd511c81c6951d504e89f5948520bf21a588a322bfd1ada278ccab7';
+  var ADMIN_EMAILS = ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
 
-  // Admin password unlock
-  document.getElementById('admin-unlock-btn').addEventListener('click', function () {
-    var pwd = document.getElementById('admin-password').value;
-    var errEl = document.getElementById('admin-gate-error');
-    errEl.style.display = 'none';
-
-    crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd)).then(function (buf) {
-      var hash = Array.from(new Uint8Array(buf)).map(function (b) {
-        return b.toString(16).padStart(2, '0');
-      }).join('');
-
-      if (hash === ADMIN_HASH) {
-        isAdmin = true;
-        var ghToken = document.getElementById('github-token').value.trim();
-        // Save token to Firestore if provided, otherwise load existing
-        var configRef = db.collection('config').doc('github');
-        if (ghToken) {
-          configRef.set({ token: ghToken }, { merge: true });
-        }
-        document.getElementById('admin-gate').style.display = 'none';
-        document.getElementById('admin-review-panel').style.display = 'block';
-        loadReviewList('pending');
-        initReviewTabs();
-      } else {
-        errEl.textContent = 'Incorrect admin password.';
-        errEl.style.display = 'block';
-      }
-    });
-  });
-
-  // Allow Enter key on password field
-  document.getElementById('admin-password').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') document.getElementById('admin-unlock-btn').click();
-  });
+  // Auto-check admin on login
+  function checkAdmin(email) {
+    if (ADMIN_EMAILS.indexOf(email) !== -1) {
+      isAdmin = true;
+      document.getElementById('admin-review-panel').style.display = 'block';
+      loadReviewList('pending');
+      initReviewTabs();
+    }
+  }
 
   function initReviewTabs() {
     var tabs = document.querySelectorAll('.admin-tab');
@@ -819,6 +795,8 @@ permalink: /admin/
       md += 'description: "' + d.description.replace(/"/g, '\\"') + '"\n';
       md += 'order: 99\n';
       md += 'author: "' + d.authorName + '"\n';
+      var authorSlug = d.authorName.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+      md += 'author_id: "' + authorSlug + '"\n';
       md += 'guide_id: "' + slug + '"\n';
       md += 'language_code: "' + lang + '"\n';
       md += 'language_name: "' + langInfo.name + '"\n';
@@ -828,65 +806,150 @@ permalink: /admin/
       md += '*Contributed by ' + d.authorName + '*\n\n';
       md += d.content;
 
-      // Auto-commit to GitHub
-      btn.textContent = 'Publishing to GitHub...';
+      // Publish: local download on localhost, GitHub API on production
       var fileName = slug + langInfo.suffix + '.md';
       var filePath = 'website/_guides/' + langInfo.folder + '/' + fileName;
-      var REPO = 'United-World-College/UWC-Survival-Guide';
+      var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-      // Load GitHub token from Firestore
-      db.collection('config').doc('github').get().then(function (configDoc) {
-        var GITHUB_TOKEN = configDoc.exists ? configDoc.data().token : null;
-        if (!GITHUB_TOKEN) {
-          alert('No GitHub token found. Please unlock the admin panel again and paste your token.');
+      if (isLocal) {
+        // LOCAL MODE: save file directly to _guides/ via local server
+        btn.textContent = 'Saving locally...';
+        fetch('http://127.0.0.1:4001/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            folder: langInfo.folder,
+            filename: fileName,
+            content: md
+          })
+        }).then(function (res) {
+          if (!res.ok) throw new Error('Local save failed: ' + res.status);
+          return res.json();
+        }).then(function (result) {
+          document.getElementById('modal-actions').style.display = 'none';
+          var badge = document.getElementById('modal-status-badge');
+          badge.textContent = 'Approved (Local)';
+          badge.className = 'admin-status admin-status-approved';
+
+          var mdOutput = document.getElementById('modal-md-output');
+          // Auto-create author page locally
+          var authorFileName = authorSlug + '.md';
+          fetch('http://127.0.0.1:4001/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              folder: '../_authors',
+              filename: authorFileName,
+              content: '---\ntitle: "' + d.authorName + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\n---\n'
+            })
+          }).catch(function () {}); // ignore if already exists
+
+          // Update Firestore profile
+          if (d.uid) {
+            db.collection('users').doc(d.uid).set({
+              authorPage: '/authors/' + authorSlug + '/'
+            }, { merge: true });
+          }
+
+          document.getElementById('modal-md-content').textContent = 'File saved locally!\n\n' + result.saved + '\n\nJekyll will auto-rebuild. Refresh to see it.\nCommit and push when ready.';
+          mdOutput.style.display = 'block';
+          document.getElementById('modal-copy-md').style.display = 'none';
+
           btn.textContent = 'Approve & Publish';
           btn.disabled = false;
-          return;
-        }
-        // Check if file already exists to get its SHA
-        var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + filePath;
-        var headers = { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' };
-        return fetch(apiUrl, { headers: headers }).then(function (checkRes) {
-          var putBody = {
-            message: 'Add guide: ' + d.title + ' by ' + d.authorName,
-            content: btoa(unescape(encodeURIComponent(md)))
-          };
-          if (checkRes.ok) {
-            return checkRes.json().then(function (existing) {
-              putBody.sha = existing.sha;
-              putBody.message = 'Update guide: ' + d.title + ' by ' + d.authorName;
-              return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(putBody) });
-            });
+          loadReviewList(currentFilter);
+          var user = auth.currentUser;
+          if (user) loadSubmissions(user.uid);
+        }).catch(function (err) {
+          console.error('Local save error:', err);
+          btn.textContent = 'Approve & Publish';
+          btn.disabled = false;
+          alert('Failed to save locally. Make sure local-save-server.py is running on port 4001.\n\nRun: python3 website/local-save-server.py');
+        });
+      } else {
+        // PRODUCTION MODE: commit to GitHub via API
+        btn.textContent = 'Publishing to GitHub...';
+        var REPO = 'United-World-College/UWC-Survival-Guide';
+
+        db.collection('config').doc('github').get().then(function (configDoc) {
+          var GITHUB_TOKEN = configDoc.exists ? configDoc.data().token : null;
+          if (!GITHUB_TOKEN) {
+            alert('No GitHub token found. Please unlock the admin panel again and paste your token.');
+            btn.textContent = 'Approve & Publish';
+            btn.disabled = false;
+            return;
           }
-          return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(putBody) });
-        }).then(function (res) {
-          if (!res.ok) throw new Error('GitHub API error: ' + res.status);
-          return res.json();
-        }).then(function () {
-        document.getElementById('modal-actions').style.display = 'none';
-        var badge = document.getElementById('modal-status-badge');
-        badge.textContent = 'Approved & Published';
-        badge.className = 'admin-status admin-status-approved';
+          var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + filePath;
+          var headers = { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' };
+          return fetch(apiUrl, { headers: headers }).then(function (checkRes) {
+            var putBody = {
+              message: 'Add guide: ' + d.title + ' by ' + d.authorName,
+              content: btoa(unescape(encodeURIComponent(md)))
+            };
+            if (checkRes.ok) {
+              return checkRes.json().then(function (existing) {
+                putBody.sha = existing.sha;
+                putBody.message = 'Update guide: ' + d.title + ' by ' + d.authorName;
+                return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(putBody) });
+              });
+            }
+            return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(putBody) });
+          }).then(function (res) {
+            if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+            return res.json();
+          }).then(function () {
+            document.getElementById('modal-actions').style.display = 'none';
+            var badge = document.getElementById('modal-status-badge');
+            badge.textContent = 'Approved & Published';
+            badge.className = 'admin-status admin-status-approved';
 
-        // Show success message
-        var mdOutput = document.getElementById('modal-md-output');
-        document.getElementById('modal-md-content').textContent = 'Published to GitHub successfully!\n\nFile: ' + filePath + '\nThe site will rebuild automatically.';
-        mdOutput.style.display = 'block';
-        document.getElementById('modal-copy-md').style.display = 'none';
+            var mdOutput = document.getElementById('modal-md-output');
+            // Auto-create author page if it doesn't exist
+            var authorPagePath = 'website/_authors/' + authorSlug + '.md';
+            var authorApiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + authorPagePath;
+            fetch(authorApiUrl, { headers: headers }).then(function (aRes) {
+              if (aRes.status === 404) {
+                // Author page doesn't exist — create it
+                var authorMd = '---\n';
+                authorMd += 'title: "' + d.authorName + '"\n';
+                authorMd += 'author_id: ' + authorSlug + '\n';
+                authorMd += 'description: "Contributor to the UWC Changshu China Survival Guide."\n';
+                authorMd += '---\n';
+                return fetch(authorApiUrl, {
+                  method: 'PUT',
+                  headers: headers,
+                  body: JSON.stringify({
+                    message: 'Add author page: ' + d.authorName,
+                    content: btoa(unescape(encodeURIComponent(authorMd)))
+                  })
+                });
+              }
+            }).then(function () {
+              // Update contributor's Firestore profile with authorPage link
+              if (d.uid) {
+                db.collection('users').doc(d.uid).set({
+                  authorPage: '/authors/' + authorSlug + '/'
+                }, { merge: true });
+              }
+            }).catch(function (e) { console.error('Author page creation error:', e); });
 
-        btn.textContent = 'Approve & Publish';
-        btn.disabled = false;
+            document.getElementById('modal-md-content').textContent = 'Published to GitHub successfully!\n\nFile: ' + filePath + '\nThe site will rebuild automatically.';
+            mdOutput.style.display = 'block';
+            document.getElementById('modal-copy-md').style.display = 'none';
 
-        loadReviewList(currentFilter);
-        var user = auth.currentUser;
-        if (user) loadSubmissions(user.uid);
-      }).catch(function (err) {
-        console.error('GitHub publish error:', err);
-        btn.textContent = 'Approve & Publish';
-        btn.disabled = false;
-        alert('Approved in Firestore but failed to publish to GitHub: ' + err.message);
-      });
-      }); // end config token fetch
+            btn.textContent = 'Approve & Publish';
+            btn.disabled = false;
+            loadReviewList(currentFilter);
+            var user = auth.currentUser;
+            if (user) loadSubmissions(user.uid);
+          }).catch(function (err) {
+            console.error('GitHub publish error:', err);
+            btn.textContent = 'Approve & Publish';
+            btn.disabled = false;
+            alert('Approved in Firestore but failed to publish to GitHub: ' + err.message);
+          });
+        }); // end config token fetch
+      }
     }).catch(function (err) {
       console.error('Approve error:', err);
       btn.textContent = 'Approve & Publish';

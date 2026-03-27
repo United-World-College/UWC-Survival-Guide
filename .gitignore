@@ -6,6 +6,8 @@ website/.jekyll-metadata
 website/.bundle/
 website/vendor/
 website/Gemfile.lock
+website/local-save-server.py
+website/save-token.html
 
 .env
 
