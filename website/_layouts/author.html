@@ -58,7 +58,7 @@
 
   <section class="section author-header">
     <div class="author-profile">
-      <div class="author-photo">
+      <div class="author-photo" id="author-photo">
         {% if person and person.photo != nil and person.photo != "" %}
           {% if person.photo contains '://' %}
             <img src="{{ person.photo }}" alt="Portrait of {{ author_name }}">
@@ -71,7 +71,7 @@
       </div>
       <div class="author-copy">
         <p class="section-label">Author</p>
-        <h1>{{ author_name }}</h1>
+        <h1 id="author-name">{{ author_name }}</h1>
         <p class="author-role">{{ role_label }}</p>
         {% if has_author_meta %}
           <p class="author-meta">
@@ -87,16 +87,12 @@
             <span class="author-stat-label">{% if authored_article_count == 1 %}Indexed article{% else %}Indexed articles{% endif %}</span>
           </div>
         </div>
-        {% if has_external_profile %}
-          <div class="profile-links author-links">
+        <div class="profile-links author-links" id="author-links">
+          {% if has_external_profile %}
             <a class="profile-link" href="{{ person.profile_url }}" target="_blank" rel="noopener noreferrer">{{ person.profile_label | default: "Profile" }}</a>
-            <a class="profile-link" href="{{ '/about/' | relative_url }}">About Project</a>
-          </div>
-        {% else %}
-          <div class="profile-links author-links">
-            <a class="profile-link" href="{{ '/about/' | relative_url }}">About Project</a>
-          </div>
-        {% endif %}
+          {% endif %}
+          <a class="profile-link" href="{{ '/about/' | relative_url }}">About Project</a>
+        </div>
       </div>
     </div>
   </section>
@@ -152,5 +148,53 @@
   {% include footer.html %}
 
   <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
+
+  <!-- Load dynamic profile links from Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+  (function () {
+    firebase.initializeApp({
+      apiKey: "AIzaSyC2PkxnmMwJiD73ouo8Jxmk536_A2RkNy8",
+      authDomain: "uwc-survival-guide.firebaseapp.com",
+      projectId: "uwc-survival-guide"
+    });
+    var db = firebase.firestore();
+    var authorPage = '{{ page.url }}';
+
+    // Find user with matching authorPage
+    db.collection('users').where('authorPage', '==', authorPage).get().then(function (snap) {
+      if (snap.empty) return;
+      var data = snap.docs[0].data();
+
+      // Sync display name
+      if (data.displayName) {
+        document.getElementById('author-name').textContent = data.displayName;
+      }
+
+      // Sync profile photo
+      if (data.photoURL) {
+        var photoContainer = document.getElementById('author-photo');
+        photoContainer.innerHTML = '<img src="' + data.photoURL + '" alt="Portrait">';
+      }
+
+      // Sync profile links
+      var links = data.profileLinks || [];
+      if (links.length > 0) {
+        var container = document.getElementById('author-links');
+        var aboutLink = container.querySelector('a[href*="about"]');
+        links.forEach(function (link) {
+          var a = document.createElement('a');
+          a.className = 'profile-link';
+          a.href = link.url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = link.label;
+          container.insertBefore(a, aboutLink);
+        });
+      }
+    }).catch(function () {});
+  })();
+  </script>
 </body>
 </html>
