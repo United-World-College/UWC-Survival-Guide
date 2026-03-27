@@ -37,6 +37,9 @@
     {% endif %}
   {% endif %}
   {% assign current_guide_id = page.guide_id | default: page.slug %}
+  {% assign guide_date_format = current_locale.guide.date_format | default: "%b %-d, %Y" %}
+  {% assign published_at = page.published %}
+  {% assign updated_at = page.updated | default: page.published %}
 
   {% assign section_pages = site.pages | where: "layout", "section" | where: "language_code", current_language_code %}
   {% assign current_section_page = nil %}
@@ -63,6 +66,16 @@
         <a href="{{ current_author_page.url | relative_url }}" class="guide-author-link">{{ current_locale.guide.by_label }} {{ current_author_name }}</a>
         {% else %}
         {{ current_locale.guide.by_label }} {{ current_author_name }}
+        {% endif %}
+      </p>
+      {% endif %}
+      {% if published_at or updated_at %}
+      <p class="guide-timestamps">
+        {% if published_at %}
+        <span>{{ current_locale.guide.published_label }} {{ published_at | date: guide_date_format }}</span>
+        {% endif %}
+        {% if updated_at %}
+        <span>{{ current_locale.guide.updated_label }} {{ updated_at | date: guide_date_format }}</span>
         {% endif %}
       </p>
       {% endif %}

@@ -603,6 +603,22 @@ body {
   color: var(--warm-gray);
 }
 
+.guide-timestamps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem 1.25rem;
+  margin: 0 auto 1.2rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.guide-timestamps span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .guide-author-link {
   color: inherit;
   text-decoration: none;
