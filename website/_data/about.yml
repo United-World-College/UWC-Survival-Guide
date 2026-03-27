@@ -24,20 +24,20 @@ editors_in_chief:
     cohort: "UWC Changshu China 24'"
     profile_label:
     profile_url:
+    contacts:
+      - label: Email
+        value: jingranhuang590@gmail.com
     photo: "/assets/images/contributors/WH.JPG"
     summary: Founding Editor-in-Chief.
     summary_zh_cn: 创始主编。
     summary_zh_tw: 創始主編。
-    articles:
-      - College Application
-      - On Choosing Schools
-      - Terminology
   - id: tom-li
     name: Tom Li 李東源
     affiliation: University of Florida
     cohort: "UWC Changshu China 24'"
     profile_label:
     profile_url:
+    contacts: []
     photo: "/assets/images/contributors/TL.jpg"
     summary: Founding Editor-in-Chief.
     summary_zh_cn: 创始主编。
@@ -48,12 +48,21 @@ editors_in_chief:
     cohort: "UWC Changshu China 24'"
     profile_label:
     profile_url:
+    contacts: []
     photo:
     summary: Founding Editor-in-Chief.
     summary_zh_cn: 创始主编。
     summary_zh_tw: 創始主編。
 
 # Optional `photo` paths should point to files under /assets/images/contributors/.
+# Optional shared contact details can be added with:
+# contacts:
+#   - label: Email
+#     value: name@example.com
+#   - label: Instagram
+#     value: @yourhandle
+#     url: https://instagram.com/yourhandle
+# Use author page front matter instead when you want per-language contact labels.
 # Add all non-editor contributors here. If a contributor should have an author page,
 # also create a matching file in website/_authors/ and use the same `id`.
 # Recognition is assigned automatically:

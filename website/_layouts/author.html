@@ -37,8 +37,12 @@
   {% if person and person[summary_key] != nil and person[summary_key] != "" %}
     {% assign author_summary = person[summary_key] %}
   {% endif %}
+  {% assign legacy_profile_label = page.profile_label %}
+  {% assign legacy_profile_url = page.profile_url %}
+  {% assign author_contacts = page.contacts %}
   {% assign has_author_meta = false %}
   {% assign has_external_profile = false %}
+  {% assign has_author_contacts = false %}
   {% assign has_affiliation = false %}
   {% assign has_cohort = false %}
   {% if person %}
@@ -51,9 +55,21 @@
     {% if has_affiliation or has_cohort %}
       {% assign has_author_meta = true %}
     {% endif %}
-    {% if person.profile_url != nil and person.profile_url != "" %}
-      {% assign has_external_profile = true %}
+    {% if legacy_profile_label == nil or legacy_profile_label == "" %}
+      {% assign legacy_profile_label = person.profile_label %}
     {% endif %}
+    {% if legacy_profile_url == nil or legacy_profile_url == "" %}
+      {% assign legacy_profile_url = person.profile_url %}
+    {% endif %}
+    {% if author_contacts == nil and person.contacts != nil and person.contacts != empty %}
+      {% assign author_contacts = person.contacts %}
+    {% endif %}
+  {% endif %}
+  {% if legacy_profile_url != nil and legacy_profile_url != "" %}
+    {% assign has_external_profile = true %}
+  {% endif %}
+  {% if author_contacts != nil and author_contacts != empty %}
+    {% assign has_author_contacts = true %}
   {% endif %}
 
   {% assign initials = '' %}
@@ -97,9 +113,48 @@
             <span class="author-stat-label">{% if authored_article_count == 1 %}{{ current_locale.author.indexed_article_singular }}{% else %}{{ current_locale.author.indexed_article_plural }}{% endif %}</span>
           </div>
         </div>
+        {% if has_author_contacts %}
+          <div class="author-contact-list">
+            {% for contact in author_contacts %}
+              {% assign contact_label = contact.label %}
+              {% assign contact_value = contact.value %}
+              {% assign contact_url = contact.url %}
+              {% assign normalized_contact_label = contact_label | default: "" | downcase %}
+              {% assign normalized_contact_value = contact_value | default: "" | strip %}
+              {% if contact_url == nil or contact_url == "" %}
+                {% if normalized_contact_value != "" and normalized_contact_label contains "mail" %}
+                  {% assign contact_url = "mailto:" | append: normalized_contact_value %}
+                {% endif %}
+              {% endif %}
+              {% assign contact_display = contact_value %}
+              {% assign show_contact_label = false %}
+              {% if contact_display == nil or contact_display == "" %}
+                {% assign contact_display = contact_label %}
+              {% endif %}
+              {% if contact_display == nil or contact_display == "" %}
+                {% assign contact_display = contact_url %}
+              {% endif %}
+              {% if contact_label != nil and contact_label != "" and contact_value != nil and contact_value != "" %}
+                {% assign show_contact_label = true %}
+              {% endif %}
+              {% if contact_display != nil and contact_display != "" %}
+                <p class="author-contact-item">
+                  {% if show_contact_label %}
+                    <span class="author-contact-label">{{ contact_label }}</span>
+                  {% endif %}
+                  {% if contact_url != nil and contact_url != "" %}
+                    <a class="author-contact-value" href="{{ contact_url }}">{{ contact_display }}</a>
+                  {% else %}
+                    <span class="author-contact-value">{{ contact_display }}</span>
+                  {% endif %}
+                </p>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
         <div class="profile-links author-links" id="author-links">
           {% if has_external_profile %}
-            <a class="profile-link" href="{{ person.profile_url }}" target="_blank" rel="noopener noreferrer">{{ person.profile_label | default: current_locale.common.profile }}</a>
+            <a class="profile-link" href="{{ legacy_profile_url }}" target="_blank" rel="noopener noreferrer">{{ legacy_profile_label | default: current_locale.common.profile }}</a>
           {% endif %}
         </div>
       </div>
@@ -199,7 +254,15 @@
       var links = data.profileLinks || [];
       if (links.length > 0) {
         var container = document.getElementById('author-links');
+        var existingLinkKeys = {};
+        Array.prototype.forEach.call(container.querySelectorAll('a.profile-link'), function (existingLink) {
+          var key = (existingLink.getAttribute('href') || '') + '::' + (existingLink.textContent || '').trim();
+          existingLinkKeys[key] = true;
+        });
         links.forEach(function (link) {
+          var key = (link.url || '') + '::' + (link.label || '');
+          if (existingLinkKeys[key]) return;
+          existingLinkKeys[key] = true;
           var a = document.createElement('a');
           a.className = 'profile-link';
           a.href = link.url;

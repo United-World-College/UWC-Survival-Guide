@@ -19,8 +19,9 @@
   {% assign has_contributors = false %}
   {% for person in contributors %}
     {% assign article_count = 0 %}
-    {% if person.articles != nil and person.articles != empty %}
-      {% assign article_count = person.articles | uniq | size %}
+    {% if person.id != nil and person.id != "" %}
+      {% assign authored_guides = site.guides | where: "author_id", person.id %}
+      {% assign article_count = authored_guides | map: "guide_id" | uniq | size %}
     {% endif %}
     {% if article_count >= 5 %}
       {% assign has_core_contributors = true %}
@@ -98,8 +99,9 @@
       <div class="team-grid">
         {% for person in contributors %}
           {% assign article_count = 0 %}
-          {% if person.articles != nil and person.articles != empty %}
-            {% assign article_count = person.articles | uniq | size %}
+          {% if person.id != nil and person.id != "" %}
+            {% assign authored_guides = site.guides | where: "author_id", person.id %}
+            {% assign article_count = authored_guides | map: "guide_id" | uniq | size %}
           {% endif %}
           {% if article_count >= 5 %}
             {% include profile-card.html person=person label=about_copy.core_contributor_label %}
@@ -129,10 +131,9 @@
           {% if person[summary_key] != nil and person[summary_key] != "" %}
             {% assign localized_summary = person[summary_key] %}
           {% endif %}
-          {% if person.articles != nil and person.articles != empty %}
-            {% assign article_count = person.articles | uniq | size %}
-          {% endif %}
           {% if person.id != nil and person.id != "" %}
+            {% assign authored_guides = site.guides | where: "author_id", person.id %}
+            {% assign article_count = authored_guides | map: "guide_id" | uniq | size %}
             {% assign author_pages = site.authors | where: "author_id", person.id | sort: "language_sort" %}
             {% assign author_page = author_pages | where: "language_code", current_language_code | first %}
             {% if author_page == nil %}
@@ -157,9 +158,6 @@
                 {% endif %}
                 {% if localized_summary != nil and localized_summary != "" %}
                   <p class="contributor-summary">{{ localized_summary }}</p>
-                {% endif %}
-                {% if article_count > 0 %}
-                  <p class="contributor-articles">{{ person.articles | uniq | join: ", " }}</p>
                 {% endif %}
                 {% if author_page or person.profile_url != nil and person.profile_url != "" %}
                   <div class="profile-links contributor-links">
