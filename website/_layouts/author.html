@@ -174,10 +174,13 @@
         if (bibHeading) bibHeading.textContent = 'Indexed articles by ' + data.displayName;
       }
 
-      // Sync profile photo
-      if (data.photoURL) {
+      // Sync profile photo — only if static photo is missing or Firestore has a real URL
+      if (data.photoURL && !data.photoURL.includes('localhost')) {
         var photoContainer = document.getElementById('author-photo');
-        photoContainer.innerHTML = '<img src="' + data.photoURL + '" alt="Portrait">';
+        var hasStaticPhoto = photoContainer.querySelector('img');
+        if (!hasStaticPhoto) {
+          photoContainer.innerHTML = '<img src="' + data.photoURL + '" alt="Portrait">';
+        }
       }
 
       // Sync profile links

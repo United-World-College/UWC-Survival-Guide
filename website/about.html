@@ -201,10 +201,11 @@ permalink: /about/
         }
       }
 
-      // Sync photo
+      // Sync photo — only if static photo is missing (placeholder shown)
       if (user.photoURL) {
         var photoEl = card.querySelector('[data-card-photo]');
-        if (photoEl) {
+        var hasStaticPhoto = photoEl && photoEl.querySelector('img');
+        if (photoEl && !hasStaticPhoto && !user.photoURL.includes('localhost')) {
           photoEl.innerHTML = '<img src="' + user.photoURL + '" alt="Portrait">';
         }
       }
