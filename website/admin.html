@@ -814,20 +814,26 @@ permalink: /admin/
           btn.disabled = false;
           return;
         }
-        return fetch('https://api.github.com/repos/' + REPO + '/contents/' + filePath, {
-        method: 'PUT',
-        headers: {
-          'Authorization': 'token ' + GITHUB_TOKEN,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: 'Add guide: ' + d.title + ' by ' + d.authorName,
-          content: btoa(unescape(encodeURIComponent(md)))
-        })
-      }).then(function (res) {
-        if (!res.ok) throw new Error('GitHub API error: ' + res.status);
-        return res.json();
-      }).then(function () {
+        // Check if file already exists to get its SHA
+        var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + filePath;
+        var headers = { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' };
+        return fetch(apiUrl, { headers: headers }).then(function (checkRes) {
+          var putBody = {
+            message: 'Add guide: ' + d.title + ' by ' + d.authorName,
+            content: btoa(unescape(encodeURIComponent(md)))
+          };
+          if (checkRes.ok) {
+            return checkRes.json().then(function (existing) {
+              putBody.sha = existing.sha;
+              putBody.message = 'Update guide: ' + d.title + ' by ' + d.authorName;
+              return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(putBody) });
+            });
+          }
+          return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(putBody) });
+        }).then(function (res) {
+          if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+          return res.json();
+        }).then(function () {
         document.getElementById('modal-actions').style.display = 'none';
         var badge = document.getElementById('modal-status-badge');
         badge.textContent = 'Approved & Published';
