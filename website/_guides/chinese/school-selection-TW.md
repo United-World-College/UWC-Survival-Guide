@@ -25,7 +25,7 @@ language_sort: 3
 
 ![Top 15 U.S. University Endowments]({{ '/assets/images/endowment-chart.png' | relative_url }})
 
-*來源：[How university endowments work](https://www.cnbc.com/2025/04/01/how-university-endowments-work.html), CNBC, 2025 年 4 月。*
+*Source: [How university endowments work](https://www.cnbc.com/2025/04/01/how-university-endowments-work.html), CNBC, April 2025.*
 
 這張圖大概反映了各個大學 endowment fund 的情況，其中藍色高亮的幾所（比如德州大學系統和德州農工大學）都是公立大學，不得不說德州的學校還是很有錢的。不過這些公立大學由於人多，所以面臨著「總量豐富、人均不足」的問題，就像溫家寶那個著名的十三億乘除法問題：「在中國，任何微小的問題，只要乘以十三億，都會變成天大的難題；而再龐大的經濟總量，一旦除以十三億，也就縮減成了微不足道的數字。」所以對公立大學而言，就算 endowment fund 和 federal grant 再多，平均到其龐大學生群體的每個學生頭上也會顯得不足。但是事情真的是這樣的嗎？
 
