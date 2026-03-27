@@ -101,7 +101,8 @@
         <p class="author-role">{{ role_label }}</p>
         {% if has_author_meta %}
           <p class="author-meta">
-            {% if has_affiliation %}{{ person.affiliation }}{% endif %}{% if has_affiliation and has_cohort %} · {% endif %}{% if has_cohort %}{{ person.cohort }}{% endif %}
+            {% if has_affiliation %}<span class="person-meta-line">{{ person.affiliation }}</span>{% endif %}
+            {% if has_cohort %}<span class="person-meta-line">{{ person.cohort }}</span>{% endif %}
           </p>
         {% endif %}
         {% if author_summary %}
@@ -172,9 +173,9 @@
   <div class="divider"></div>
 
   <section class="section">
-    <div class="section-header">
+    <div class="section-header author-bibliography-header">
       <p class="section-label">{{ current_locale.author.bibliography_label }}</p>
-      <h2 id="bibliography-heading">{{ current_locale.author.bibliography_title_prefix }}{{ author_name }}{{ current_locale.author.bibliography_title_suffix }}</h2>
+      <h2 id="bibliography-heading">{% if current_locale.author.bibliography_title_prefix != nil and current_locale.author.bibliography_title_prefix != "" %}<span class="bibliography-heading-prefix">{{ current_locale.author.bibliography_title_prefix }}</span>{% endif %}<span class="bibliography-heading-name" id="bibliography-author-name">{{ author_name }}</span>{% if current_locale.author.bibliography_title_suffix != nil and current_locale.author.bibliography_title_suffix != "" %}<span class="bibliography-heading-suffix">{{ current_locale.author.bibliography_title_suffix }}</span>{% endif %}</h2>
       <p class="section-desc">{{ current_locale.author.bibliography_desc }}</p>
     </div>
     {% if authored_article_count > 0 %}
@@ -237,8 +238,8 @@
       // Sync display name everywhere
       if (data.displayName) {
         document.getElementById('author-name').textContent = data.displayName;
-        var bibHeading = document.getElementById('bibliography-heading');
-        if (bibHeading) bibHeading.textContent = '{{ current_locale.author.bibliography_title_prefix }}' + data.displayName + '{{ current_locale.author.bibliography_title_suffix }}';
+        var bibAuthorName = document.getElementById('bibliography-author-name');
+        if (bibAuthorName) bibAuthorName.textContent = data.displayName;
       }
 
       // Sync profile photo — only if static photo is missing or Firestore has a real URL

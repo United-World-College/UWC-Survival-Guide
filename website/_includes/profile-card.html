@@ -59,7 +59,8 @@
   {% endif %}
   {% if has_affiliation or has_cohort %}
     <p class="profile-meta">
-      {% if has_affiliation %}{{ person.affiliation }}{% endif %}{% if has_affiliation and has_cohort %} · {% endif %}{% if has_cohort %}{{ person.cohort }}{% endif %}
+      {% if has_affiliation %}<span class="person-meta-line">{{ person.affiliation }}</span>{% endif %}
+      {% if has_cohort %}<span class="person-meta-line">{{ person.cohort }}</span>{% endif %}
     </p>
   {% endif %}
   {% if localized_summary != nil and localized_summary != "" %}

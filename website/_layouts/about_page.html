@@ -153,7 +153,8 @@
                 {% endif %}
                 {% if person.affiliation != nil and person.affiliation != "" or person.cohort != nil and person.cohort != "" %}
                   <p class="contributor-meta">
-                    {% if person.affiliation != nil and person.affiliation != "" %}{{ person.affiliation }}{% endif %}{% if person.affiliation != nil and person.affiliation != "" and person.cohort != nil and person.cohort != "" %} · {% endif %}{% if person.cohort != nil and person.cohort != "" %}{{ person.cohort }}{% endif %}
+                    {% if person.affiliation != nil and person.affiliation != "" %}<span class="person-meta-line">{{ person.affiliation }}</span>{% endif %}
+                    {% if person.cohort != nil and person.cohort != "" %}<span class="person-meta-line">{{ person.cohort }}</span>{% endif %}
                   </p>
                 {% endif %}
                 {% if localized_summary != nil and localized_summary != "" %}

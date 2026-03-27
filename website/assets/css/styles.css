@@ -844,6 +844,8 @@ a.feature:hover {
   font-weight: 500;
   color: var(--dark);
   margin-bottom: 0.6rem;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .about-principle p:last-child {
@@ -909,6 +911,14 @@ a.feature:hover {
   color: var(--text);
   font-size: 0.95rem;
   line-height: 1.75;
+}
+
+.person-meta-line {
+  display: block;
+}
+
+.person-meta-line + .person-meta-line {
+  margin-top: 0.1rem;
 }
 
 .profile-meta {
@@ -1033,6 +1043,12 @@ a.feature:hover {
   line-height: 1.1;
   color: var(--dark);
   margin-bottom: 0.8rem;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+.author-copy .section-label::before {
+  margin: 0 0 1rem;
 }
 
 .author-role {
@@ -1062,6 +1078,22 @@ a.feature:hover {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.author-bibliography-header {
+  max-width: 760px;
+}
+
+#bibliography-heading {
+  font-size: clamp(1.85rem, 4vw, 2.2rem);
+  line-height: 1.16;
+}
+
+.bibliography-heading-name {
+  display: inline-block;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .author-contact-list {
@@ -1215,7 +1247,24 @@ a.author-contact-value:hover {
   .about-principles { grid-template-columns: 1fr; }
   .team-grid { grid-template-columns: 1fr; }
   .author-profile { grid-template-columns: 1fr; gap: 2rem; }
-  .author-copy h1 { font-size: 2.4rem; }
+  .profile-card h3,
+  .contributor-row h3 {
+    font-size: clamp(1.15rem, 5vw, 1.4rem);
+    line-height: 1.12;
+    white-space: nowrap;
+  }
+  .author-copy h1 {
+    font-size: clamp(1.55rem, 8vw, 2.4rem);
+    line-height: 1.08;
+    white-space: nowrap;
+  }
+  .author-bibliography-header {
+    max-width: 100%;
+  }
+  #bibliography-heading {
+    font-size: clamp(1.45rem, 6vw, 1.9rem);
+    line-height: 1.18;
+  }
   .author-contact-item { grid-template-columns: 1fr; gap: 0.25rem; }
   .author-article-head { display: block; }
   .author-article-count { margin-top: 0.75rem; padding-top: 0; }
