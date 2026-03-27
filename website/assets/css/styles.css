@@ -265,7 +265,16 @@ body {
 .section {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 6rem 2.5rem;
+  padding: 4rem 2.5rem;
+}
+
+.page-header {
+  padding-top: 8.5rem;
+  padding-bottom: 3.5rem;
+}
+
+.page-header > .section-header:last-child {
+  margin-bottom: 0;
 }
 
 .section-header {
@@ -281,15 +290,6 @@ body {
   text-transform: uppercase;
   color: var(--text);
   margin-bottom: 1.6rem;
-}
-
-.section-label::before {
-  content: "";
-  display: block;
-  width: 24px;
-  height: 1px;
-  background: var(--warm-gray);
-  margin: 0 auto 1rem;
 }
 
 .section h1 {
@@ -1047,10 +1047,6 @@ a.feature:hover {
   overflow-wrap: normal;
 }
 
-.author-copy .section-label::before {
-  margin: 0 0 1rem;
-}
-
 .author-role {
   font-size: 0.78rem;
   font-weight: 500;
@@ -1274,6 +1270,10 @@ a.author-contact-value:hover {
   .contributor-count { padding-top: 0; margin-top: 0.75rem; }
 
   .section { padding: 4rem 1.5rem; }
+  .page-header {
+    padding-top: 7rem;
+    padding-bottom: 2.75rem;
+  }
   .hero { padding: 5rem 1.5rem 3rem; }
   .guides-language-header { display: block; }
   .translation-switch { padding: 0 1.5rem 2.5rem; }

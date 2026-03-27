@@ -12,7 +12,7 @@
     {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
   {% endif %}
 
-  <section class="section">
+  <section class="section page-header">
     <div class="section-header">
       <p class="section-label">{{ current_locale.content_rights.label }}</p>
       <h2>{{ current_locale.content_rights.title }}</h2>
