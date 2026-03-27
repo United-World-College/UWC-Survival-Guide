@@ -14,8 +14,8 @@
   --dark: #2c2a26;
   --text: #3d3a35;
   --border: #d8d4cd;
-  --serif: "Cormorant Garamond", Georgia, serif;
-  --sans: "Inter", -apple-system, Helvetica, Arial, sans-serif;
+  --serif: "Cormorant Garamond", "Noto Serif SC", "Songti SC", "STSong", "SimSun", Georgia, serif;
+  --sans: "Inter", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, Helvetica, Arial, sans-serif;
 }
 
 html {
@@ -357,6 +357,9 @@ body {
   font-size: 0.95rem;
   color: var(--text);
   line-height: 1.7;
+  text-align: justify;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 /* ── Essentials accordion ── */
@@ -694,6 +697,9 @@ body {
   color: var(--dark);
   line-height: 1.9;
   margin-bottom: 1.3rem;
+  text-align: justify;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .guide-content ul, .guide-content ol {
