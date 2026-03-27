@@ -1,6 +1,6 @@
 ---
-title: "Academics"
-category: "Academics"
+title: "学业"
+category: "学业"
 description: "Maths, Physics, and other IB subject guides."
 order: 0
 guide_id: "academics"

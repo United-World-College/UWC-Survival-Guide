@@ -10,8 +10,8 @@
 
 ## 主编
 
-- [William Huang 黄靖然](https://www.linkedin.com/in/william-huang-6b4102332/) (University of Illinois Urbana-Champaign, UWC Changshu China 24')
-- [Tom Li 李东源](https://www.linkedin.com/in/dongyuan-li/) (University of Florida, UWC Changshu China 24')
+- William Huang 黄靖然 (University of Illinois Urbana-Champaign, UWC Changshu China 24')
+- Tom Li 李东源 (University of Florida, UWC Changshu China 24')
 - E_P_silon (UWC Changshu China 24')
 
 ## 目录

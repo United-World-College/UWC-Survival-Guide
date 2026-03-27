@@ -1,6 +1,6 @@
 ---
 title: "專業介紹"
-category: "College Application"
+category: "大學申請"
 description: "[Placeholder] 各專業方向的介紹與選擇建議。"
 order: 3
 guide_id: "majors-intro"

@@ -6,6 +6,11 @@
 <body>
   {% include nav.html %}
 
+  {% assign current_language_code = page.language_code | default: site.lang | default: 'en' %}
+  {% assign current_locale = site.data.page_copy | where: "code", current_language_code | first %}
+  {% if current_locale == nil %}
+    {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
+  {% endif %}
   {% assign section_categories = page.section_categories %}
   {% assign section_guides = "" | split: "" %}
   {% for guide in site.guides %}
@@ -19,7 +24,6 @@
 
   <section class="section author-header">
     <div class="section-header">
-      <p class="section-label">{{ page.section_category }}</p>
       <h1>{{ page.title }}</h1>
       {% if page.description %}
       <p class="section-desc">{{ page.description }}</p>
@@ -39,25 +43,28 @@
 
   <section class="section">
     <div class="section-header">
-      <p class="section-label">{{ article_count }} {% if article_count == 1 %}article{% else %}articles{% endif %}</p>
-      <h2>All articles in {{ page.section_category }}</h2>
-      <p class="section-desc">Each article is listed once, with links to every published language version available on the site.</p>
+      <p class="section-label">{{ article_count }} {% if article_count == 1 %}{{ current_locale.section.article_singular }}{% else %}{{ current_locale.section.article_plural }}{% endif %}</p>
+      <h2>{{ current_locale.section.title_prefix }}{{ page.section_category }}{{ current_locale.section.title_suffix }}</h2>
+      <p class="section-desc">{{ current_locale.section.desc }}</p>
     </div>
     {% if article_count > 0 %}
       <div class="author-articles">
         {% for gid in guide_ids %}
           {% assign guide_versions = section_guides | where: "guide_id", gid | sort: "language_sort" %}
-          {% assign primary_guide = guide_versions | where: "language_code", "en" | first %}
+          {% assign primary_guide = guide_versions | where: "language_code", current_language_code | first %}
+          {% if primary_guide == nil %}
+            {% assign primary_guide = guide_versions | where: "language_code", "en" | first %}
+          {% endif %}
           {% if primary_guide == nil %}
             {% assign primary_guide = guide_versions | first %}
           {% endif %}
           <article class="author-article-card">
             <div class="author-article-head">
               <div>
-                <p class="author-article-category">{{ primary_guide.category }}</p>
+                <p class="author-article-category">{{ page.section_category }}</p>
                 <h3><a class="contributor-name-link" href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
               </div>
-              <p class="author-article-count">{{ guide_versions.size }} {% if guide_versions.size == 1 %}version{% else %}versions{% endif %}</p>
+              <p class="author-article-count">{{ guide_versions.size }} {% if guide_versions.size == 1 %}{{ current_locale.common.version_singular }}{% else %}{{ current_locale.common.version_plural }}{% endif %}</p>
             </div>
             {% if primary_guide.description %}
               <p class="author-article-desc">{{ primary_guide.description }}</p>
@@ -71,7 +78,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <p class="about-empty">No published guides in this section yet.</p>
+      <p class="about-empty">{{ current_locale.section.empty }}</p>
     {% endif %}
   </section>
 

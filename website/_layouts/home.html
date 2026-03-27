@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="{{ page.language_code | default: site.lang | default: 'en' }}">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  {% include nav.html %}
+
+  {% assign current_language_code = page.language_code | default: site.lang | default: 'en' %}
+  {% assign current_locale = site.data.page_copy | where: "code", current_language_code | first %}
+  {% if current_locale == nil %}
+    {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
+  {% endif %}
+  {% assign language_suffix = current_language_code | downcase | replace: "-", "_" %}
+  {% if current_language_code == "en" %}
+    {% assign experiences = site.data.experiences %}
+    {% assign essentials = site.data.essentials %}
+    {% assign places = site.data.places %}
+  {% else %}
+    {% assign experiences_key = "experiences_" | append: language_suffix %}
+    {% assign essentials_key = "essentials_" | append: language_suffix %}
+    {% assign places_key = "places_" | append: language_suffix %}
+    {% assign experiences = site.data[experiences_key] | default: site.data.experiences %}
+    {% assign essentials = site.data[essentials_key] | default: site.data.essentials %}
+    {% assign places = site.data[places_key] | default: site.data.places %}
+  {% endif %}
+
+  <header class="hero">
+    <div class="hero-content">
+      <p class="hero-label">{{ current_locale.home.hero_label }}</p>
+      <h1>{{ current_locale.home.hero_title_line_one }}<br>{{ current_locale.home.hero_title_line_two }}</h1>
+      <p class="hero-subtitle">{{ current_locale.home.hero_subtitle }}</p>
+      <a href="#experiences" class="hero-cta">{{ current_locale.home.hero_cta }}</a>
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <section class="section" id="experiences">
+    <div class="section-header">
+      <p class="section-label">{{ current_locale.home.experiences_label }}</p>
+      <h2>{{ current_locale.home.experiences_title }}</h2>
+      <p class="section-desc">{{ current_locale.home.experiences_desc }}</p>
+    </div>
+    <div class="grid-two">
+      {% for item in experiences %}
+      <a href="{{ item.link | relative_url }}" class="feature">
+        <div class="feature-number">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section" id="essentials">
+    <div class="section-header">
+      <p class="section-label">{{ current_locale.home.essentials_label }}</p>
+      <h2>{{ current_locale.home.essentials_title }}</h2>
+      <p class="section-desc">{{ current_locale.home.essentials_desc }}</p>
+    </div>
+    <div class="essentials-list">
+      {% for item in essentials %}
+      <div class="essential-item" data-detail="{{ item.detail }}">
+        <div class="essential-inner">
+          <span class="essential-title">{{ item.title }}</span>
+          <span class="essential-arrow">+</span>
+        </div>
+        <div class="essential-detail"></div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section" id="explore">
+    <div class="section-header">
+      <p class="section-label">{{ current_locale.home.explore_label }}</p>
+      <h2>{{ current_locale.home.explore_title }}</h2>
+      <p class="section-desc">{{ current_locale.home.explore_desc }}</p>
+    </div>
+    <div class="grid-three">
+      {% for item in places %}
+      <div class="place">
+        <h3>{{ item.title }}</h3>
+        <p class="place-distance">{{ item.distance }}</p>
+        <p>{{ item.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section" id="guides">
+    <div class="section-header">
+      <p class="section-label">{{ current_locale.home.full_guide_label }}</p>
+      <h2>{{ current_locale.home.full_guide_title }}</h2>
+      <p class="section-desc">{{ current_locale.home.full_guide_desc }}</p>
+    </div>
+    {% if current_language_code == "zh-CN" %}
+      {% assign lang_order = "zh-CN,zh-TW,en" | split: "," %}
+    {% elsif current_language_code == "zh-TW" %}
+      {% assign lang_order = "zh-TW,zh-CN,en" | split: "," %}
+    {% else %}
+      {% assign lang_order = "en,zh-CN,zh-TW" | split: "," %}
+    {% endif %}
+    
+    {% assign sorted_guide_languages = "" | split: "" %}
+    {% for code in lang_order %}
+      {% assign lang = site.data.guide_languages | where: "code", code | first %}
+      {% if lang %}
+        {% assign sorted_guide_languages = sorted_guide_languages | push: lang %}
+      {% endif %}
+    {% endfor %}
+    
+    {% for language in sorted_guide_languages %}
+    {% assign localized_guides = site.guides | where: "language_code", language.code | sort: "order" %}
+    {% if localized_guides.size > 0 %}
+    <div class="guides-language-group">
+      <div class="guides-language-header">
+        <div>
+          <p class="guides-language-label">{{ language.label }}</p>
+          <p class="guides-language-desc">{{ language.description }}</p>
+        </div>
+      </div>
+      <div class="grid-three">
+        {% for guide in localized_guides %}
+        <a href="{{ guide.url | relative_url }}" class="place guide-link">
+          <h3>{{ guide.title }}</h3>
+          <p class="place-distance">{{ guide.category }}</p>
+          <p>{{ guide.description }}</p>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section" id="contribute">
+    <div class="section-header">
+      <p class="section-label">{{ current_locale.home.contribute_label }}</p>
+      <h2>{{ current_locale.home.contribute_title }}</h2>
+      <p class="section-desc">{{ current_locale.home.contribute_desc }}</p>
+    </div>
+    <div class="steps">
+      {% for step in current_locale.home.steps %}
+      <div class="step">
+        <span class="step-num">{{ forloop.index }}</span>
+        <p>{{ step }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% include footer.html %}
+
+  <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
+</body>
+</html>

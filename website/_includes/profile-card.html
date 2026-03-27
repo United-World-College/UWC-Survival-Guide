@@ -2,8 +2,26 @@
 {% assign author_page = nil %}
 {% assign has_affiliation = false %}
 {% assign has_cohort = false %}
+{% assign current_language_code = page.language_code | default: site.lang | default: "en" %}
+{% assign current_locale = site.data.page_copy | where: "code", current_language_code | first %}
+{% if current_locale == nil %}
+  {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
+{% endif %}
+{% assign language_suffix = current_language_code | downcase | replace: "-", "_" %}
+{% assign localized_summary = person.summary %}
+{% assign summary_key = "summary_" | append: language_suffix %}
+{% if person[summary_key] != nil and person[summary_key] != "" %}
+  {% assign localized_summary = person[summary_key] %}
+{% endif %}
 {% if person.id != nil and person.id != "" %}
-  {% assign author_page = site.authors | where: "author_id", person.id | first %}
+  {% assign author_pages = site.authors | where: "author_id", person.id | sort: "language_sort" %}
+  {% assign author_page = author_pages | where: "language_code", current_language_code | first %}
+  {% if author_page == nil %}
+    {% assign author_page = author_pages | where: "language_code", "en" | first %}
+  {% endif %}
+  {% if author_page == nil %}
+    {% assign author_page = author_pages | first %}
+  {% endif %}
 {% endif %}
 {% if person.affiliation != nil and person.affiliation != "" %}
   {% assign has_affiliation = true %}
@@ -21,7 +39,7 @@
   {% endif %}
 {% endfor %}
 
-<article class="profile-card" data-author-page="/authors/{{ person.id }}/">
+<article class="profile-card"{% if person.id != nil and person.id != "" %} data-author-page="/authors/{{ person.id }}/"{% endif %}>
   <div class="profile-media" data-card-photo>
     {% if person.photo != nil and person.photo != "" %}
       {% if person.photo contains '://' %}
@@ -44,12 +62,12 @@
       {% if has_affiliation %}{{ person.affiliation }}{% endif %}{% if has_affiliation and has_cohort %} · {% endif %}{% if has_cohort %}{{ person.cohort }}{% endif %}
     </p>
   {% endif %}
-  {% if person.summary != nil and person.summary != "" %}
-    <p class="profile-summary">{{ person.summary }}</p>
+  {% if localized_summary != nil and localized_summary != "" %}
+    <p class="profile-summary">{{ localized_summary }}</p>
   {% endif %}
   {% if author_page %}
     <div class="profile-links">
-      <a class="profile-link" href="{{ author_page.url | relative_url }}">Author Page</a>
+      <a class="profile-link" href="{{ author_page.url | relative_url }}">{{ current_locale.common.author_page }}</a>
     </div>
   {% endif %}
 </article>

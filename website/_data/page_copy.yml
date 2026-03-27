@@ -1,0 +1,411 @@
+- code: en
+  label: English
+  short_label: EN
+  path_prefix: ""
+  nav:
+    logo: UWC Changshu China
+    about: About
+    campus_life: Campus Life
+    daily_essentials: Daily Essentials
+    explore_nearby: Explore Nearby
+    all_guides: All Guides
+  language_labels:
+    en: "English"
+    zh-CN: "Simplified Chinese"
+    zh-TW: "Traditional Chinese"
+  language_shorts:
+    en: "EN"
+    zh-CN: "ZH-CN"
+    zh-TW: "ZH-TW"
+  categories:
+    "College Application": "College Application"
+    "大学申请": "College Application"
+    "大學申請": "College Application"
+    "Academics": "Academics"
+    "学业": "Academics"
+    "學業": "Academics"
+    "Life Reflections": "Life Reflections"
+    "Life Musings": "Life Reflections"
+    "人生杂谈": "Life Reflections"
+    "人生雜談": "Life Reflections"
+  common:
+    language_switch_label: Language
+    author_page: Author Page
+    profile: Profile
+    article_singular: article
+    article_plural: articles
+    version_singular: version
+    version_plural: versions
+  footer:
+    note_lines:
+      - An unofficial, student-maintained resource.
+      - Please verify critical details with official UWC Changshu China channels.
+      - Site code is licensed under MIT. Original guide text, contributor photos, and other media are all rights reserved unless otherwise noted.
+    about: About
+    content_rights: Content Rights
+    copy: By UWC Changshu China students, for UWC Changshu China students.
+  home:
+    hero_label: By Students, For Students
+    hero_title_line_one: UWC Changshu China
+    hero_title_line_two: Survival Guide
+    hero_subtitle: A student-built guide to living, studying, and finding your way here.
+    hero_cta: Begin exploring
+    experiences_label: Life on Campus
+    experiences_title: Where every day begins
+    experiences_desc: From quiet mornings by the lake to late-night conversations in the common room, campus life shapes every part of your UWC experience.
+    essentials_label: Settling In
+    essentials_title: The essentials, simplified
+    essentials_desc: The practical details that make daily life seamless, from payments to transportation, all in one place.
+    explore_label: Beyond Campus
+    explore_title: There is so much to see
+    explore_desc: Changshu is your starting point. Suzhou, Shanghai, and the waterways of Jiangsu are all within reach.
+    full_guide_label: The Full Guide
+    full_guide_title: Browse all topics
+    full_guide_desc: Each guide is written and maintained by students. Browse by language, then open the topic you need.
+    contribute_label: Built Together
+    contribute_title: This guide grows with us
+    contribute_desc: Every recommendation, correction, and insight makes this resource better for the next student who arrives.
+    steps:
+      - Fork the repository
+      - Add or update content
+      - Submit a pull request
+  about:
+    hero_label: About
+    hero_title: UWC Changshu China Survival Guide
+    hero_subtitle: A formal introduction to the project, its editorial mission, and the students who build it.
+    overview_label: Project Overview
+    overview_title: A living editorial resource for the UWC Changshu China community
+    overview_desc: The guide is intended to preserve practical student knowledge in a form that future cohorts can keep improving.
+    introduction:
+      - The UWC Changshu China Survival Guide is a student-run knowledge base for incoming and current students at UWC Changshu China.
+      - It exists to preserve practical knowledge that is easy to lose between cohorts: how to settle in, how to navigate the academic system, and how to make use of the opportunities around campus and beyond.
+      - The project is maintained as a living publication. Editors set direction and uphold editorial standards, while contributors write, revise, translate, and materially improve individual articles over time.
+    principles:
+      - title: Student-built
+        description: The guide is grounded in lived student experience and focuses on what is useful in practice, not just what is formally documented.
+      - title: Editorially maintained
+        description: This is treated as a continuing publication with named leadership, clear attribution, and room for revision as the school environment changes.
+      - title: Built to outlast a cohort
+        description: The repository keeps institutional memory in one place so each graduating class can hand forward something more useful than scattered advice.
+    recognition_label: Recognition Policy
+    recognition_title: How contributors are recognized
+    recognition_desc: Editors-in-Chief are listed separately. Core contributors are contributors who have materially contributed to five or more distinct articles. Contributors include everyone else who has written, edited, translated, or materially improved published content.
+    leadership_label: Leadership
+    leadership_title: Editors-in-Chief
+    leadership_desc: The editors-in-chief are responsible for the editorial direction of the project and for maintaining the standard of the published guide.
+    editor_in_chief_label: Editor-in-Chief
+    core_label: Contributors
+    core_title: Core Contributors
+    core_desc: Core contributors are contributors who have materially contributed to five or more distinct articles.
+    core_contributor_label: Core Contributor
+    core_empty: Additional core contributors will be listed here as the project grows.
+    contributors_label: Contributors
+    contributors_title: Contributors
+    contributors_desc: This section records everyone who has materially improved published content and is not already listed as an editor-in-chief.
+    contributors_empty: Additional contributors will be listed here as new articles and revisions are published.
+  content_rights:
+    label: Content Rights
+    title: Code and content are licensed separately
+    desc: The site's source code is open source under MIT. The original written guides, contributor photos, and other media are not.
+    paragraphs:
+      - Unless otherwise noted, the original guide text, editorial content, contributor portraits, profile photos, photographs, and other media published on this site are copyright their respective authors and contributors. All rights reserved.
+      - Contributor portraits and profile photos are published for identification within this project only. They may not be copied, redistributed, edited, republished, or used to imply endorsement without prior written permission from the relevant rights holder and, where applicable, the depicted person.
+      - You may not reproduce, redistribute, adapt, translate, or republish this material without prior written permission from the relevant copyright holder, except where applicable law independently allows it.
+      - The source code and configuration used to build this site are licensed separately under the MIT License in the repository.
+  section:
+    article_singular: article
+    article_plural: articles
+    title_prefix: "All articles in "
+    title_suffix: ""
+    desc: Each article is listed once, with links to every published language version available on the site.
+    empty: No published guides in this section yet.
+  author:
+    author_label: Author
+    role_editor_in_chief: Editor-in-Chief
+    role_contributor: Contributor
+    indexed_article_singular: Indexed article
+    indexed_article_plural: Indexed articles
+    bibliography_label: Bibliography
+    bibliography_title_prefix: "Indexed articles by "
+    bibliography_title_suffix: ""
+    bibliography_desc: Each article is listed once, with links to every published language version available on the site.
+    empty: No published guides are indexed for this author yet.
+  guide:
+    by_label: By
+    more_guides_title: More guides in this language
+    more_guides_desc: Keep reading in the same language without jumping between versions.
+    empty: No other guides are available in this language yet.
+- code: zh-CN
+  label: 简体中文
+  short_label: 简中
+  path_prefix: "/zh-cn"
+  nav:
+    logo: UWC Changshu China
+    about: 关于项目
+    campus_life: 校园生活
+    daily_essentials: 日常必备
+    explore_nearby: 周边探索
+    all_guides: 全部指南
+  language_labels:
+    en: "英文"
+    zh-CN: "简体中文"
+    zh-TW: "繁体中文"
+  language_shorts:
+    en: "EN"
+    zh-CN: "简中"
+    zh-TW: "繁中"
+  categories:
+    "College Application": "大学申请"
+    "大学申请": "大学申请"
+    "大學申請": "大学申请"
+    "Academics": "学业"
+    "学业": "学业"
+    "學業": "学业"
+    "Life Reflections": "人生杂谈"
+    "Life Musings": "人生杂谈"
+    "人生杂谈": "人生杂谈"
+    "人生雜談": "人生杂谈"
+  common:
+    language_switch_label: 语言
+    author_page: 作者页面
+    profile: 个人主页
+    article_singular: 篇文章
+    article_plural: 篇文章
+    version_singular: 个版本
+    version_plural: 个版本
+  footer:
+    note_lines:
+      - 这是一个由学生维护的非官方资源。
+      - 涉及重要信息时，请以 UWC 常熟官方渠道为准。
+      - 网站代码采用 MIT 许可证。除非另有说明，原始指南文本、贡献者照片及其他媒体素材均保留所有权利。
+    about: 关于项目
+    content_rights: 内容版权
+    copy: 由 UWC 常熟学生编写，也为 UWC 常熟学生服务。
+  home:
+    hero_label: 由学生撰写，为学生服务
+    hero_title_line_one: UWC Changshu China
+    hero_title_line_two: 生存指南
+    hero_subtitle: 一份由学生共同编写的指南，帮你在这里生活、学习，并找到自己的方向。
+    hero_cta: 开始探索
+    experiences_label: 校园生活
+    experiences_title: 每一天都从这里开始
+    experiences_desc: 从湖边安静的清晨，到公共休息室里的深夜长谈，校园生活塑造了你在 UWC 的每一天。
+    essentials_label: 初来乍到
+    essentials_title: 必备信息，一目了然
+    essentials_desc: 让日常生活更顺畅的实用细节，从支付到交通，都集中在这里。
+    explore_label: 走出校园
+    explore_title: 附近有很多值得去的地方
+    explore_desc: 常熟只是起点。苏州、上海，以及江南水乡都在可到达的范围内。
+    full_guide_label: 完整指南
+    full_guide_title: 浏览全部主题
+    full_guide_desc: 每篇指南都由学生撰写并持续维护。先按语言浏览，再打开你需要的主题。
+    contribute_label: 共同建设
+    contribute_title: 这份指南会和我们一起成长
+    contribute_desc: 每一条建议、修正和经验，都会让下一位来到这里的同学少走一些弯路。
+    steps:
+      - Fork 仓库
+      - 添加或更新内容
+      - 提交 Pull Request
+  about:
+    hero_label: 关于项目
+    hero_title: UWC 常熟生存指南
+    hero_subtitle: 对本项目、编辑宗旨以及参与学生的正式介绍。
+    overview_label: 项目概览
+    overview_title: 为 UWC 常熟社群持续维护的学生编辑资源
+    overview_desc: 本指南希望把学生之间容易随届流失的实用经验沉淀下来，让后来的同学继续补充和改进。
+    introduction:
+      - UWC 常熟生存指南是一份由学生维护的知识库，服务于即将入学和正在就读的同学。
+      - 它的目标是保存那些最容易在一届又一届之间散失的实践经验：如何安顿下来，如何适应学业体系，以及如何更好地利用校园和周边的机会。
+      - 这个项目被当作一份持续更新的出版物来维护。主编负责方向与标准，贡献者则持续撰写、修订、翻译并实质性完善各篇文章。
+    principles:
+      - title: 学生共建
+        description: 这份指南建立在真实的学生经验之上，关注的是在实际生活里真正有用的信息，而不只是正式文件上的内容。
+      - title: 编辑维护
+        description: 我们把它当作一份长期更新的出版物来对待，拥有明确署名、清晰标准，以及随着学校环境变化持续修订的空间。
+      - title: 超越一届
+        description: 仓库把学校的集体记忆集中保存下来，让每一届毕业生都能把更有用的经验交给下一届，而不是留下零散建议。
+    recognition_label: 署名规则
+    recognition_title: 贡献者如何被标注
+    recognition_desc: 主编单独列出。核心贡献者指对五篇或以上不同文章做出实质性贡献的成员。其他所有撰写、编辑、翻译或实质性改进已发布内容的人都会列为贡献者。
+    leadership_label: 项目团队
+    leadership_title: 主编
+    leadership_desc: 主编负责项目的编辑方向，并维护已发布指南的整体标准。
+    editor_in_chief_label: 主编
+    core_label: 贡献者
+    core_title: 核心贡献者
+    core_desc: 核心贡献者指对五篇或以上不同文章做出实质性贡献的成员。
+    core_contributor_label: 核心贡献者
+    core_empty: 随着项目发展，新的核心贡献者会列在这里。
+    contributors_label: 贡献者
+    contributors_title: 其他贡献者
+    contributors_desc: 本部分记录所有对已发布内容做出实质性改进且未被列为主编的成员。
+    contributors_empty: 新的贡献者和修订记录会在后续发布中加入这里。
+  content_rights:
+    label: 内容版权
+    title: 代码与内容分别授权
+    desc: 网站源代码以 MIT 协议开源；原创指南文本、贡献者照片和其他媒体素材则不在此范围内。
+    paragraphs:
+      - 除非另有说明，本站发布的原创指南文本、编辑内容、贡献者肖像、头像照片、摄影作品及其他媒体素材的版权均归各自作者和贡献者所有，并保留所有权利。
+      - 贡献者肖像和头像照片仅用于本项目内的身份识别。未经相关权利人及在适用情况下被摄者本人事先书面许可，不得复制、转载、编辑、再发布或用于暗示其认可。
+      - 除非适用法律另有独立允许，未经相关版权持有人事先书面许可，不得复制、转载、改编、翻译或再发布这些内容。
+      - 用于构建本站的源代码与配置文件在仓库中以 MIT 许可证单独授权。
+  section:
+    article_singular: 篇文章
+    article_plural: 篇文章
+    title_prefix: ""
+    title_suffix: 的全部文章
+    desc: 每篇文章只列出一次，并附上站内已发布的所有语言版本链接。
+    empty: 这个分区暂时还没有已发布的指南。
+  author:
+    author_label: 作者
+    role_editor_in_chief: 主编
+    role_contributor: 贡献者
+    indexed_article_singular: 收录文章
+    indexed_article_plural: 收录文章
+    bibliography_label: 目录
+    bibliography_title_prefix: ""
+    bibliography_title_suffix: 的收录文章
+    bibliography_desc: 每篇文章只列出一次，并附上站内已发布的所有语言版本链接。
+    empty: 这位作者暂时还没有被收录的已发布文章。
+  guide:
+    by_label: 作者
+    more_guides_title: 同语言的更多指南
+    more_guides_desc: 继续阅读同一语言的其他内容，不必在不同版本之间来回切换。
+    empty: 该语言下暂时还没有其他指南。
+- code: zh-TW
+  label: 繁體中文
+  short_label: 繁中
+  path_prefix: "/zh-tw"
+  nav:
+    logo: UWC Changshu China
+    about: 關於計畫
+    campus_life: 校園生活
+    daily_essentials: 日常必備
+    explore_nearby: 周邊探索
+    all_guides: 全部指南
+  language_labels:
+    en: "英文"
+    zh-CN: "簡體中文"
+    zh-TW: "繁體中文"
+  language_shorts:
+    en: "EN"
+    zh-CN: "簡中"
+    zh-TW: "繁中"
+  categories:
+    "College Application": "大學申請"
+    "大学申请": "大學申請"
+    "大學申請": "大學申請"
+    "Academics": "學業"
+    "学业": "學業"
+    "學業": "學業"
+    "Life Reflections": "人生雜談"
+    "Life Musings": "人生雜談"
+    "人生杂谈": "人生雜談"
+    "人生雜談": "人生雜談"
+  common:
+    language_switch_label: 語言
+    author_page: 作者頁面
+    profile: 個人頁面
+    article_singular: 篇文章
+    article_plural: 篇文章
+    version_singular: 個版本
+    version_plural: 個版本
+  footer:
+    note_lines:
+      - 這是一個由學生維護的非官方資源。
+      - 涉及重要資訊時，請以 UWC 常熟官方管道為準。
+      - 網站程式碼採用 MIT 授權。除非另有說明，原始指南文字、貢獻者照片與其他媒體素材皆保留所有權利。
+    about: 關於計畫
+    content_rights: 內容版權
+    copy: 由 UWC 常熟學生編寫，也為 UWC 常熟學生服務。
+  home:
+    hero_label: 由學生撰寫，為學生服務
+    hero_title_line_one: UWC Changshu China
+    hero_title_line_two: 生存指南
+    hero_subtitle: 一份由學生共同編寫的指南，幫你在這裡生活、學習，並找到自己的方向。
+    hero_cta: 開始探索
+    experiences_label: 校園生活
+    experiences_title: 每一天都從這裡開始
+    experiences_desc: 從湖邊安靜的清晨，到公共休息室裡的深夜長談，校園生活塑造了你在 UWC 的每一天。
+    essentials_label: 初來乍到
+    essentials_title: 必備資訊，一目了然
+    essentials_desc: 讓日常生活更順暢的實用細節，從支付到交通，都集中在這裡。
+    explore_label: 走出校園
+    explore_title: 附近有很多值得去的地方
+    explore_desc: 常熟只是起點。蘇州、上海，以及江南水鄉都在可到達的範圍內。
+    full_guide_label: 完整指南
+    full_guide_title: 瀏覽全部主題
+    full_guide_desc: 每篇指南都由學生撰寫並持續維護。先依語言瀏覽，再打開你需要的主題。
+    contribute_label: 共同建設
+    contribute_title: 這份指南會和我們一起成長
+    contribute_desc: 每一條建議、修正與經驗，都會讓下一位來到這裡的同學少走一些彎路。
+    steps:
+      - Fork 倉庫
+      - 新增或更新內容
+      - 提交 Pull Request
+  about:
+    hero_label: 關於計畫
+    hero_title: UWC 常熟生存指南
+    hero_subtitle: 對本計畫、編輯宗旨以及參與學生的正式介紹。
+    overview_label: 計畫概覽
+    overview_title: 為 UWC 常熟社群持續維護的學生編輯資源
+    overview_desc: 本指南希望把學生之間容易隨屆流失的實用經驗沉澱下來，讓後來的同學繼續補充與改進。
+    introduction:
+      - UWC 常熟生存指南是一份由學生維護的知識庫，服務於即將入學與正在就讀的同學。
+      - 它的目標是保存那些最容易在一屆又一屆之間散失的實務經驗：如何安頓下來，如何適應學業體系，以及如何更好地利用校園和周邊的機會。
+      - 這個計畫被當作一份持續更新的出版物來維護。主編負責方向與標準，貢獻者則持續撰寫、修訂、翻譯並實質性完善各篇文章。
+    principles:
+      - title: 學生共建
+        description: 這份指南建立在真實的學生經驗之上，關注的是在實際生活裡真正有用的資訊，而不只是正式文件上的內容。
+      - title: 編輯維護
+        description: 我們把它當作一份長期更新的出版物來對待，擁有明確署名、清晰標準，以及隨著學校環境變化持續修訂的空間。
+      - title: 超越一屆
+        description: 倉庫把學校的集體記憶集中保存下來，讓每一屆畢業生都能把更有用的經驗交給下一屆，而不是留下零散建議。
+    recognition_label: 署名規則
+    recognition_title: 貢獻者如何被標註
+    recognition_desc: 主編單獨列出。核心貢獻者指對五篇或以上不同文章做出實質性貢獻的成員。其他所有撰寫、編輯、翻譯或實質性改進已發布內容的人都會列為貢獻者。
+    leadership_label: 計畫團隊
+    leadership_title: 主編
+    leadership_desc: 主編負責計畫的編輯方向，並維護已發布指南的整體標準。
+    editor_in_chief_label: 主編
+    core_label: 貢獻者
+    core_title: 核心貢獻者
+    core_desc: 核心貢獻者指對五篇或以上不同文章做出實質性貢獻的成員。
+    core_contributor_label: 核心貢獻者
+    core_empty: 隨著計畫發展，新的核心貢獻者會列在這裡。
+    contributors_label: 貢獻者
+    contributors_title: 其他貢獻者
+    contributors_desc: 本部分記錄所有對已發布內容做出實質性改進且未被列為主編的成員。
+    contributors_empty: 新的貢獻者與修訂紀錄會在後續發布中加入這裡。
+  content_rights:
+    label: 內容版權
+    title: 程式碼與內容分別授權
+    desc: 網站原始碼以 MIT 協議開源；原創指南文字、貢獻者照片和其他媒體素材則不在此範圍內。
+    paragraphs:
+      - 除非另有說明，本站發布的原創指南文字、編輯內容、貢獻者肖像、頭像照片、攝影作品及其他媒體素材的版權均歸各自作者和貢獻者所有，並保留所有權利。
+      - 貢獻者肖像和頭像照片僅用於本計畫內的身分識別。未經相關權利人及在適用情況下被攝者本人事先書面許可，不得複製、轉載、編輯、再發布或用於暗示其認可。
+      - 除非適用法律另有獨立允許，未經相關著作權持有人事先書面許可，不得複製、轉載、改編、翻譯或再發布這些內容。
+      - 用於建置本站的原始碼與設定檔在倉庫中以 MIT 授權另行授權。
+  section:
+    article_singular: 篇文章
+    article_plural: 篇文章
+    title_prefix: ""
+    title_suffix: 的全部文章
+    desc: 每篇文章只列出一次，並附上站內已發布的所有語言版本連結。
+    empty: 這個分區暫時還沒有已發布的指南。
+  author:
+    author_label: 作者
+    role_editor_in_chief: 主編
+    role_contributor: 貢獻者
+    indexed_article_singular: 收錄文章
+    indexed_article_plural: 收錄文章
+    bibliography_label: 目錄
+    bibliography_title_prefix: ""
+    bibliography_title_suffix: 的收錄文章
+    bibliography_desc: 每篇文章只列出一次，並附上站內已發布的所有語言版本連結。
+    empty: 這位作者暫時還沒有被收錄的已發布文章。
+  guide:
+    by_label: 作者
+    more_guides_title: 同語言的更多指南
+    more_guides_desc: 繼續閱讀同一語言的其他內容，不必在不同版本之間來回切換。
+    empty: 該語言下暫時還沒有其他指南。

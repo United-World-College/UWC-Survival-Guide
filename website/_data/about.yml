@@ -22,10 +22,12 @@ editors_in_chief:
     name: William Huang 黃靖然
     affiliation: University of Illinois Urbana-Champaign
     cohort: "UWC Changshu China 24'"
-    profile_label: LinkedIn
-    profile_url: "https://www.linkedin.com/in/william-huang-6b4102332/"
+    profile_label:
+    profile_url:
     photo: "/assets/images/contributors/WH.JPG"
-    summary: Founding editor-in-chief.
+    summary: Founding Editor-in-Chief.
+    summary_zh_cn: 创始主编。
+    summary_zh_tw: 創始主編。
     articles:
       - College Application
       - On Choosing Schools
@@ -37,7 +39,9 @@ editors_in_chief:
     profile_label:
     profile_url:
     photo: "/assets/images/contributors/TL.jpg"
-    summary: Founding editor-in-chief.
+    summary: Founding Editor-in-Chief.
+    summary_zh_cn: 创始主编。
+    summary_zh_tw: 創始主編。
   - id: e-p-silon
     name: E_P_silon
     affiliation:
@@ -45,7 +49,9 @@ editors_in_chief:
     profile_label:
     profile_url:
     photo:
-    summary: Founding editor-in-chief.
+    summary: Founding Editor-in-Chief.
+    summary_zh_cn: 创始主编。
+    summary_zh_tw: 創始主編。
 
 # Optional `photo` paths should point to files under /assets/images/contributors/.
 # Add all non-editor contributors here. If a contributor should have an author page,

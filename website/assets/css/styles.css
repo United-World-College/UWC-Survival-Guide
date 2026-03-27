@@ -50,7 +50,7 @@ body {
   padding: 1.1rem 2.5rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
 }
 
 .nav-logo {
@@ -60,11 +60,19 @@ body {
   letter-spacing: 0.04em;
   color: var(--dark);
   text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
 }
 
 .nav-links {
   display: flex;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 .nav-links a {
@@ -79,6 +87,37 @@ body {
 
 .nav-links a:hover {
   color: var(--dark);
+}
+
+.nav-language-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+}
+
+.nav-language-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 42px;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--border);
+  color: var(--dark);
+  text-decoration: none;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.nav-language-pill:hover,
+.nav-language-pill.is-active {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: var(--ivory);
 }
 
 .nav-toggle {
@@ -167,6 +206,18 @@ body {
   margin-bottom: 2rem;
 }
 
+.hero-category-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, color 0.3s;
+}
+
+.hero-category-link:hover {
+  color: var(--dark);
+  border-bottom-color: var(--dark);
+}
+
 .hero h1 {
   font-family: var(--serif);
   font-size: 4rem;
@@ -239,6 +290,16 @@ body {
   height: 1px;
   background: var(--warm-gray);
   margin: 0 auto 1rem;
+}
+
+.section h1 {
+  font-family: var(--serif);
+  font-size: 3.2rem;
+  font-weight: 500;
+  color: var(--dark);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
 }
 
 .section h2 {
@@ -1080,6 +1141,15 @@ a.feature:hover {
   .nav-links { display: none; }
   .nav-toggle { display: block; }
   .mobile-menu { display: flex; }
+  .nav-inner { padding: 1rem 1.5rem; }
+  .nav-actions { gap: 0.65rem; }
+  .nav-language-switch { gap: 0.35rem; }
+  .nav-language-pill {
+    min-width: 0;
+    min-height: 30px;
+    padding: 0.32rem 0.45rem;
+    font-size: 0.62rem;
+  }
 
   .hero h1 { font-size: 2.6rem; }
   .hero-subtitle br { display: none; }
@@ -1098,7 +1168,6 @@ a.feature:hover {
   .contributor-count { padding-top: 0; margin-top: 0.75rem; }
 
   .section { padding: 4rem 1.5rem; }
-  .nav-inner { padding: 1rem 1.5rem; }
   .hero { padding: 5rem 1.5rem 3rem; }
   .guides-language-header { display: block; }
   .translation-switch { padding: 0 1.5rem 2.5rem; }

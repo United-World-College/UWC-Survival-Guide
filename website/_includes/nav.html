@@ -1,10 +1,46 @@
+{% assign current_language_code = page.language_code | default: site.lang | default: "en" %}
+{% assign current_locale = site.data.page_copy | where: "code", current_language_code | first %}
+{% if current_locale == nil %}
+  {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
+{% endif %}
+{% assign path_prefix = current_locale.path_prefix | default: "" %}
+{% assign translation_items = "" | split: "" %}
+{% if page.collection == "guides" %}
+  {% assign current_guide_id = page.guide_id | default: page.slug %}
+  {% assign translation_items = site.guides | where: "guide_id", current_guide_id | sort: "language_sort" %}
+  {% if translation_items.size == 0 %}
+    {% assign translation_items = site.guides | where: "slug", current_guide_id | sort: "language_sort" %}
+  {% endif %}
+{% elsif page.collection == "authors" %}
+  {% assign translation_items = site.authors | where: "author_id", page.author_id | sort: "language_sort" %}
+{% elsif page.translation_key %}
+  {% assign translation_items = site.pages | where: "translation_key", page.translation_key | sort: "language_sort" %}
+{% endif %}
+
 <nav class="nav">
   <div class="nav-inner">
-    <a href="{{ '/' | relative_url }}" class="nav-logo">UWC Changshu China</a>
-    <div class="nav-links">
-      {% for link in site.data.navigation %}
-      <a href="{{ link.url | relative_url }}">{{ link.title }}</a>
-      {% endfor %}
+    <a href="{{ path_prefix | append: '/' | relative_url }}" class="nav-logo">{{ current_locale.nav.logo }}</a>
+    <div class="nav-actions">
+      <div class="nav-links">
+        <a href="{{ path_prefix | append: '/about/' | relative_url }}">{{ current_locale.nav.about }}</a>
+        <a href="{{ path_prefix | append: '/#experiences' | relative_url }}">{{ current_locale.nav.campus_life }}</a>
+        <a href="{{ path_prefix | append: '/#essentials' | relative_url }}">{{ current_locale.nav.daily_essentials }}</a>
+        <a href="{{ path_prefix | append: '/#explore' | relative_url }}">{{ current_locale.nav.explore_nearby }}</a>
+        <a href="{{ path_prefix | append: '/#guides' | relative_url }}">{{ current_locale.nav.all_guides }}</a>
+      </div>
+      {% if translation_items.size > 1 %}
+      <div class="nav-language-switch" aria-label="{{ current_locale.common.language_switch_label }}">
+        {% for translation in translation_items %}
+          {% assign translation_locale = site.data.page_copy | where: "code", translation.language_code | first %}
+          {% if translation_locale == nil %}
+            {% assign translation_locale = site.data.page_copy | where: "code", "en" | first %}
+          {% endif %}
+          <a href="{{ translation.url | relative_url }}" class="nav-language-pill{% if translation.url == page.url %} is-active{% endif %}">
+            {{ translation_locale.short_label }}
+          </a>
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
     <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
       <span></span><span></span>
@@ -13,7 +49,9 @@
 </nav>
 
 <div class="mobile-menu" id="mobile-menu">
-  {% for link in site.data.navigation %}
-  <a href="{{ link.url | relative_url }}">{{ link.title }}</a>
-  {% endfor %}
+  <a href="{{ path_prefix | append: '/about/' | relative_url }}">{{ current_locale.nav.about }}</a>
+  <a href="{{ path_prefix | append: '/#experiences' | relative_url }}">{{ current_locale.nav.campus_life }}</a>
+  <a href="{{ path_prefix | append: '/#essentials' | relative_url }}">{{ current_locale.nav.daily_essentials }}</a>
+  <a href="{{ path_prefix | append: '/#explore' | relative_url }}">{{ current_locale.nav.explore_nearby }}</a>
+  <a href="{{ path_prefix | append: '/#guides' | relative_url }}">{{ current_locale.nav.all_guides }}</a>
 </div>

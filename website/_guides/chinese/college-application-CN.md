@@ -1,6 +1,6 @@
 ---
-title: "College Application"
-category: "College Application"
+title: "大学申请"
+category: "大学申请"
 description: "从申请到入学——选校、术语、专业介绍的总览与导读。"
 order: 0
 author: "William"

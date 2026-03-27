@@ -1,6 +1,6 @@
 ---
 title: "专业介绍"
-category: "College Application"
+category: "大学申请"
 description: "[Placeholder] 各专业方向的介绍与选择建议。"
 order: 3
 guide_id: "majors-intro"

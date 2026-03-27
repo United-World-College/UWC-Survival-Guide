@@ -1,12 +1,23 @@
+{% assign current_language_code = page.language_code | default: site.lang | default: "en" %}
+{% assign current_locale = site.data.page_copy | where: "code", current_language_code | first %}
+{% if current_locale == nil %}
+  {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
+{% endif %}
+{% assign path_prefix = current_locale.path_prefix | default: "" %}
+
 <footer class="footer">
   <div class="footer-inner">
-    <p class="footer-brand">{{ site.title }}</p>
-    <p class="footer-note">An unofficial, student-maintained resource.<br>Please verify critical details with official UWC Changshu China channels.<br>Site code is licensed under MIT. Original guide text, contributor photos, and other media are all rights reserved unless otherwise noted.</p>
+    <p class="footer-brand">{{ current_locale.nav.logo }}</p>
+    <p class="footer-note">
+      {% for line in current_locale.footer.note_lines %}
+        {{ line }}{% unless forloop.last %}<br>{% endunless %}
+      {% endfor %}
+    </p>
     <div class="footer-links">
       <a href="https://github.com/United-World-College/UWC-Survival-Guide">GitHub</a>
-      <a href="{{ '/about/' | relative_url }}">About</a>
-      <a href="{{ '/content-rights/' | relative_url }}">Content Rights</a>
+      <a href="{{ path_prefix | append: '/about/' | relative_url }}">{{ current_locale.footer.about }}</a>
+      <a href="{{ path_prefix | append: '/content-rights/' | relative_url }}">{{ current_locale.footer.content_rights }}</a>
     </div>
-    <p class="footer-copy">By UWC Changshu China students, for UWC Changshu China students.</p>
+    <p class="footer-copy">{{ current_locale.footer.copy }}</p>
   </div>
 </footer>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="{{ page.language_code | default: site.lang | default: 'en' }}">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  {% include nav.html %}
+
+  {% assign current_language_code = page.language_code | default: site.lang | default: 'en' %}
+  {% assign current_locale = site.data.page_copy | where: "code", current_language_code | first %}
+  {% if current_locale == nil %}
+    {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
+  {% endif %}
+
+  <section class="section">
+    <div class="section-header">
+      <p class="section-label">{{ current_locale.content_rights.label }}</p>
+      <h2>{{ current_locale.content_rights.title }}</h2>
+      <p class="section-desc">{{ current_locale.content_rights.desc }}</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <div class="guide-content">
+      {% for paragraph in current_locale.content_rights.paragraphs %}
+        <p>{{ paragraph }}</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% include footer.html %}
+
+  <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
+</body>
+</html>

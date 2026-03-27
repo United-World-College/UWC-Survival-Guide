@@ -1,6 +1,6 @@
 ---
 title: "术语介绍"
-category: "College Application"
+category: "大学申请"
 description: "通过核心术语理解大学申请中的角色、系统与流程。"
 order: 2
 author: "William"
