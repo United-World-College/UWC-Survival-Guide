@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="{{ page.language_code | default: site.lang | default: 'en' }}">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  {% include nav.html %}
+
+  {% assign section_categories = page.section_categories %}
+  {% assign section_guides = "" | split: "" %}
+  {% for guide in site.guides %}
+    {% if section_categories contains guide.category %}
+      {% assign section_guides = section_guides | push: guide %}
+    {% endif %}
+  {% endfor %}
+  {% assign section_guides = section_guides | sort: "order" %}
+  {% assign guide_ids = section_guides | map: "guide_id" | uniq %}
+  {% assign article_count = guide_ids | size %}
+
+  <section class="section author-header">
+    <div class="section-header">
+      <p class="section-label">{{ page.section_category }}</p>
+      <h1>{{ page.title }}</h1>
+      {% if page.description %}
+      <p class="section-desc">{{ page.description }}</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  {% capture section_body %}{{ content | strip }}{% endcapture %}
+  {% if section_body != "" %}
+    <article class="guide-content">
+      {{ content }}
+    </article>
+    <div class="divider"></div>
+  {% endif %}
+
+  <section class="section">
+    <div class="section-header">
+      <p class="section-label">{{ article_count }} {% if article_count == 1 %}article{% else %}articles{% endif %}</p>
+      <h2>All articles in {{ page.section_category }}</h2>
+      <p class="section-desc">Each article is listed once, with links to every published language version available on the site.</p>
+    </div>
+    {% if article_count > 0 %}
+      <div class="author-articles">
+        {% for gid in guide_ids %}
+          {% assign guide_versions = section_guides | where: "guide_id", gid | sort: "language_sort" %}
+          {% assign primary_guide = guide_versions | where: "language_code", "en" | first %}
+          {% if primary_guide == nil %}
+            {% assign primary_guide = guide_versions | first %}
+          {% endif %}
+          <article class="author-article-card">
+            <div class="author-article-head">
+              <div>
+                <p class="author-article-category">{{ primary_guide.category }}</p>
+                <h3><a class="contributor-name-link" href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
+              </div>
+              <p class="author-article-count">{{ guide_versions.size }} {% if guide_versions.size == 1 %}version{% else %}versions{% endif %}</p>
+            </div>
+            {% if primary_guide.description %}
+              <p class="author-article-desc">{{ primary_guide.description }}</p>
+            {% endif %}
+            <div class="author-article-links">
+              {% for guide_version in guide_versions %}
+                <a href="{{ guide_version.url | relative_url }}" class="translation-pill">{{ guide_version.language_name }}</a>
+              {% endfor %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="about-empty">No published guides in this section yet.</p>
+    {% endif %}
+  </section>
+
+  {% include footer.html %}
+
+  <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
+</body>
+</html>

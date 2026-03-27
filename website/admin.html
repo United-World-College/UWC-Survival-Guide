@@ -1,0 +1,898 @@
+---
+layout: default
+title: Contributor Portal
+permalink: /admin/
+---
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+
+<div class="admin-wrapper">
+
+  <!-- ═══ Auth Views ═══ -->
+
+  <!-- Sign In -->
+  <div id="view-signin" class="admin-login">
+    <div class="admin-login-box">
+      <p class="section-label">Contributor Portal</p>
+      <h1 class="admin-login-title">Welcome Back</h1>
+      <p class="admin-login-subtitle">Sign in with your contributor account to continue.</p>
+      <form id="signin-form" class="admin-login-form">
+        <input type="email" id="signin-email" class="admin-input" placeholder="Email address" autocomplete="email" required />
+        <input type="password" id="signin-password" class="admin-input" placeholder="Password" autocomplete="current-password" required />
+        <button type="submit" class="admin-btn" id="signin-btn">Sign In</button>
+      </form>
+      <p id="signin-error" class="admin-error" style="display:none;"></p>
+      <div class="admin-auth-links">
+        <a href="#" id="goto-signup">Create an account</a>
+        <span class="admin-auth-sep">&middot;</span>
+        <a href="#" id="goto-forgot">Forgot password?</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sign Up -->
+  <div id="view-signup" class="admin-login" style="display:none;">
+    <div class="admin-login-box">
+      <p class="section-label">Contributor Portal</p>
+      <h1 class="admin-login-title">Create Account</h1>
+      <p class="admin-login-subtitle">Register to start contributing articles.</p>
+      <form id="signup-form" class="admin-login-form">
+        <input type="email" id="signup-email" class="admin-input" placeholder="Email address" autocomplete="email" required />
+        <input type="password" id="signup-password" class="admin-input" placeholder="Password (min 6 characters)" autocomplete="new-password" required minlength="6" />
+        <input type="password" id="signup-confirm" class="admin-input" placeholder="Confirm password" autocomplete="new-password" required minlength="6" />
+        <button type="submit" class="admin-btn" id="signup-btn">Create Account</button>
+      </form>
+      <p id="signup-error" class="admin-error" style="display:none;"></p>
+      <div class="admin-auth-links">
+        <a href="#" id="goto-signin-from-signup">Back to sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password -->
+  <div id="view-forgot" class="admin-login" style="display:none;">
+    <div class="admin-login-box">
+      <p class="section-label">Contributor Portal</p>
+      <h1 class="admin-login-title">Reset Password</h1>
+      <p class="admin-login-subtitle">Enter your email and we'll send a reset link.</p>
+      <form id="forgot-form" class="admin-login-form">
+        <input type="email" id="forgot-email" class="admin-input" placeholder="Email address" autocomplete="email" required />
+        <button type="submit" class="admin-btn" id="forgot-btn">Send Reset Email</button>
+      </form>
+      <p id="forgot-error" class="admin-error" style="display:none;"></p>
+      <p id="forgot-success" class="admin-success" style="display:none;"></p>
+      <div class="admin-auth-links">
+        <a href="#" id="goto-signin-from-forgot">Back to sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Dashboard ═══ -->
+  <div id="view-dashboard" class="admin-dashboard" style="display:none;">
+
+    <div class="admin-hero">
+      <div class="admin-hero-content">
+        <p class="section-label">Dashboard</p>
+        <h1 class="admin-hero-title">Contributor Dashboard</h1>
+        <p class="admin-hero-subtitle">Manage your profile, submit articles, and track your contributions.</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="admin-section">
+      <div class="admin-panel">
+
+        <!-- Profile Card -->
+        <div class="admin-card">
+          <h2 class="admin-card-title">Your Profile</h2>
+          <p class="admin-card-desc">Update your display name and profile photo.</p>
+
+          <div class="admin-profile-layout">
+            <div class="admin-avatar-wrap">
+              <div class="admin-avatar" id="avatar-preview" title="Click to upload a new photo">
+                <span class="admin-avatar-placeholder" id="avatar-placeholder">?</span>
+                <img id="avatar-img" src="" alt="Profile photo" style="display:none;" />
+                <div class="admin-avatar-overlay">Change</div>
+              </div>
+              <input type="file" id="avatar-input" accept="image/*" style="display:none;" />
+              <p class="admin-avatar-hint">Click photo to change</p>
+            </div>
+
+            <div class="admin-profile-fields">
+              <div class="admin-field">
+                <label class="admin-label" for="profile-name">Display Name</label>
+                <input type="text" id="profile-name" class="admin-input" placeholder="Your name" />
+              </div>
+              <div class="admin-field">
+                <label class="admin-label" for="profile-email">Email</label>
+                <input type="email" id="profile-email" class="admin-input" disabled />
+              </div>
+              <button type="button" id="save-profile-btn" class="admin-btn">Save Profile</button>
+              <p id="profile-success" class="admin-success" style="display:none;"></p>
+              <p id="profile-error" class="admin-error" style="display:none;"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Article -->
+        <div class="admin-card">
+          <h2 class="admin-card-title">Submit New Article</h2>
+          <p class="admin-card-desc">Write and submit an article for review. Once approved, it will be published on the site.</p>
+
+          <form id="article-form" class="admin-form">
+            <div class="admin-field">
+              <label class="admin-label" for="article-title">Title</label>
+              <input type="text" id="article-title" class="admin-input" placeholder="e.g. My UWC Experience" required />
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="article-category">Category</label>
+              <select id="article-category" class="admin-input admin-select" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="College Application">College Application</option>
+                <option value="人生杂谈">人生杂谈</option>
+                <option value="Academics">Academics</option>
+              </select>
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="article-author">Author Name</label>
+              <input type="text" id="article-author" class="admin-input" placeholder="Your name" required disabled />
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="article-description">Description</label>
+              <input type="text" id="article-description" class="admin-input" placeholder="A brief summary of the article" required />
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="article-content">Content (Markdown)</label>
+              <textarea id="article-content" class="admin-input admin-textarea" rows="14" placeholder="Write your article content here using Markdown..." required></textarea>
+            </div>
+
+            <button type="submit" class="admin-btn" id="submit-article-btn">Submit for Review</button>
+          </form>
+          <p id="article-success" class="admin-success" style="display:none;"></p>
+          <p id="article-error" class="admin-error" style="display:none;"></p>
+        </div>
+
+        <!-- My Submissions -->
+        <div class="admin-card">
+          <h2 class="admin-card-title">My Submissions</h2>
+          <p class="admin-card-desc">Track the status of your submitted articles.</p>
+          <div id="submissions-list">
+            <p class="admin-empty-state">Loading submissions...</p>
+          </div>
+        </div>
+
+        <!-- Admin Access Gate -->
+        <div class="admin-card">
+          <h2 class="admin-card-title">Admin Panel</h2>
+          <p class="admin-card-desc">Enter the admin password to review and manage submissions.</p>
+          <div id="admin-gate" class="admin-form">
+            <div class="admin-field">
+              <label class="admin-label" for="admin-password">Admin Password</label>
+              <input type="password" id="admin-password" class="admin-input" placeholder="Enter admin password" />
+            </div>
+            <div class="admin-field">
+              <label class="admin-label" for="github-token">GitHub Token</label>
+              <input type="password" id="github-token" class="admin-input" placeholder="Paste your GitHub personal access token" />
+            </div>
+            <button type="button" id="admin-unlock-btn" class="admin-btn">Unlock Admin Panel</button>
+            <p id="admin-gate-error" class="admin-error" style="display:none;"></p>
+          </div>
+        </div>
+
+        <!-- Admin Review Panel (hidden until password entered) -->
+        <div id="admin-review-panel" style="display:none;">
+          <div class="admin-card">
+            <h2 class="admin-card-title">Review Submissions</h2>
+            <p class="admin-card-desc">Review pending articles from contributors. Approve to generate the markdown file, or reject with a reason.</p>
+            <div class="admin-review-tabs">
+              <button type="button" class="admin-tab active" data-filter="pending">Pending</button>
+              <button type="button" class="admin-tab" data-filter="approved">Approved</button>
+              <button type="button" class="admin-tab" data-filter="rejected">Rejected</button>
+              <button type="button" class="admin-tab" data-filter="all">All</button>
+            </div>
+            <div id="review-list">
+              <p class="admin-empty-state">Loading...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submission Detail Modal -->
+        <div id="review-modal" class="admin-modal" style="display:none;">
+          <div class="admin-modal-backdrop"></div>
+          <div class="admin-modal-content">
+            <div class="admin-modal-header">
+              <h2 id="modal-title" class="admin-card-title"></h2>
+              <button type="button" id="modal-close" class="admin-modal-close">&times;</button>
+            </div>
+            <div class="admin-modal-meta">
+              <span id="modal-author"></span>
+              <span class="admin-auth-sep">&middot;</span>
+              <span id="modal-category"></span>
+              <span class="admin-auth-sep">&middot;</span>
+              <span id="modal-date"></span>
+              <span class="admin-auth-sep">&middot;</span>
+              <span id="modal-status-badge" class="admin-status"></span>
+            </div>
+            <p id="modal-description" class="admin-card-desc"></p>
+            <div class="admin-modal-body">
+              <pre id="modal-content" class="admin-preview-content"></pre>
+            </div>
+            <div id="modal-actions" class="admin-modal-actions">
+              <button type="button" id="modal-approve" class="admin-btn">Approve & Publish</button>
+              <button type="button" id="modal-reject" class="admin-btn admin-btn-outline admin-btn-danger">Reject</button>
+            </div>
+            <div id="modal-md-output" style="display:none;">
+              <pre id="modal-md-content" class="admin-preview-content"></pre>
+              <button type="button" id="modal-copy-md" class="admin-btn" style="margin-top:1rem;">Copy to Clipboard</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sign Out -->
+        <div class="admin-signout-wrap">
+          <button type="button" id="signout-btn" class="admin-btn admin-btn-outline">Sign Out</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  // ── Firebase Init ──
+  var firebaseConfig = {
+    apiKey: "AIzaSyC2PkxnmMwJiD73ouo8Jxmk536_A2RkNy8",
+    authDomain: "uwc-survival-guide.firebaseapp.com",
+    projectId: "uwc-survival-guide",
+    storageBucket: "uwc-survival-guide.firebasestorage.app",
+    messagingSenderId: "239920982978",
+    appId: "1:239920982978:web:5ddd10c09ba0153956045b",
+    measurementId: "G-9NHVLYWGFV"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  var auth = firebase.auth();
+  var db = firebase.firestore();
+  var storage = firebase.storage();
+
+  // ── View Management ──
+  var views = ['view-signin', 'view-signup', 'view-forgot', 'view-dashboard'];
+
+  function showView(id) {
+    views.forEach(function (v) {
+      document.getElementById(v).style.display = v === id ? '' : 'none';
+    });
+    // Reset display mode for auth views vs dashboard
+    if (id === 'view-dashboard') {
+      document.getElementById(id).style.display = 'block';
+    } else {
+      document.getElementById(id).style.display = 'flex';
+    }
+  }
+
+  function clearErrors() {
+    var errors = document.querySelectorAll('.admin-error, .admin-success');
+    errors.forEach(function (el) { el.style.display = 'none'; el.textContent = ''; });
+  }
+
+  function showError(elId, msg) {
+    var el = document.getElementById(elId);
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function showSuccess(elId, msg) {
+    var el = document.getElementById(elId);
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function friendlyError(code) {
+    var map = {
+      'auth/email-already-in-use': 'An account with this email already exists.',
+      'auth/invalid-email': 'Please enter a valid email address.',
+      'auth/user-disabled': 'This account has been disabled.',
+      'auth/user-not-found': 'No account found with this email.',
+      'auth/wrong-password': 'Incorrect password. Please try again.',
+      'auth/weak-password': 'Password must be at least 6 characters.',
+      'auth/too-many-requests': 'Too many attempts. Please try again later.',
+      'auth/invalid-credential': 'Invalid email or password. Please try again.',
+      'auth/missing-password': 'Please enter your password.',
+      'auth/network-request-failed': 'Network error. Please check your connection.'
+    };
+    return map[code] || 'Something went wrong. Please try again.';
+  }
+
+  function setLoading(btnId, loading) {
+    var btn = document.getElementById(btnId);
+    if (loading) {
+      btn.dataset.originalText = btn.textContent;
+      btn.textContent = 'Please wait...';
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+    } else {
+      btn.textContent = btn.dataset.originalText || btn.textContent;
+      btn.disabled = false;
+      btn.style.opacity = '';
+    }
+  }
+
+  // ── Navigation between auth views ──
+  document.getElementById('goto-signup').addEventListener('click', function (e) {
+    e.preventDefault(); clearErrors(); showView('view-signup');
+  });
+  document.getElementById('goto-forgot').addEventListener('click', function (e) {
+    e.preventDefault(); clearErrors(); showView('view-forgot');
+  });
+  document.getElementById('goto-signin-from-signup').addEventListener('click', function (e) {
+    e.preventDefault(); clearErrors(); showView('view-signin');
+  });
+  document.getElementById('goto-signin-from-forgot').addEventListener('click', function (e) {
+    e.preventDefault(); clearErrors(); showView('view-signin');
+  });
+
+  // ── Sign In ──
+  document.getElementById('signin-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearErrors();
+    var email = document.getElementById('signin-email').value.trim();
+    var password = document.getElementById('signin-password').value;
+    setLoading('signin-btn', true);
+    auth.signInWithEmailAndPassword(email, password)
+      .then(function () { setLoading('signin-btn', false); })
+      .catch(function (err) {
+        setLoading('signin-btn', false);
+        showError('signin-error', friendlyError(err.code));
+      });
+  });
+
+  // ── Sign Up ──
+  document.getElementById('signup-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearErrors();
+    var email = document.getElementById('signup-email').value.trim();
+    var password = document.getElementById('signup-password').value;
+    var confirm = document.getElementById('signup-confirm').value;
+    if (password !== confirm) {
+      showError('signup-error', 'Passwords do not match.');
+      return;
+    }
+    setLoading('signup-btn', true);
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(function (cred) {
+        // Create user document in Firestore
+        return db.collection('users').doc(cred.user.uid).set({
+          displayName: '',
+          photoURL: '',
+          email: email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      })
+      .then(function () { setLoading('signup-btn', false); })
+      .catch(function (err) {
+        setLoading('signup-btn', false);
+        showError('signup-error', friendlyError(err.code));
+      });
+  });
+
+  // ── Forgot Password ──
+  document.getElementById('forgot-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearErrors();
+    var email = document.getElementById('forgot-email').value.trim();
+    setLoading('forgot-btn', true);
+    auth.sendPasswordResetEmail(email)
+      .then(function () {
+        setLoading('forgot-btn', false);
+        showSuccess('forgot-success', 'Reset email sent. Please check your inbox.');
+      })
+      .catch(function (err) {
+        setLoading('forgot-btn', false);
+        showError('forgot-error', friendlyError(err.code));
+      });
+  });
+
+  // ── Sign Out ──
+  document.getElementById('signout-btn').addEventListener('click', function () {
+    auth.signOut();
+  });
+
+  // ── Auth State Listener ──
+  auth.onAuthStateChanged(function (user) {
+    if (user) {
+      showView('view-dashboard');
+      loadProfile(user);
+      loadSubmissions(user.uid);
+    } else {
+      showView('view-signin');
+    }
+  });
+
+  // ── Profile ──
+  function loadProfile(user) {
+    document.getElementById('profile-email').value = user.email;
+    // Load from Firestore
+    db.collection('users').doc(user.uid).get().then(function (doc) {
+      if (doc.exists) {
+        var data = doc.data();
+        document.getElementById('profile-name').value = data.displayName || '';
+        document.getElementById('article-author').value = data.displayName || '';
+        if (data.photoURL) {
+          showAvatarImage(data.photoURL);
+        } else {
+          showAvatarPlaceholder(data.displayName || user.email);
+        }
+      } else {
+        // Create the doc if missing
+        db.collection('users').doc(user.uid).set({
+          displayName: '',
+          photoURL: '',
+          email: user.email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showAvatarPlaceholder(user.email);
+      }
+    });
+  }
+
+  function showAvatarImage(url) {
+    var img = document.getElementById('avatar-img');
+    var placeholder = document.getElementById('avatar-placeholder');
+    img.src = url;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+  }
+
+  function showAvatarPlaceholder(nameOrEmail) {
+    var img = document.getElementById('avatar-img');
+    var placeholder = document.getElementById('avatar-placeholder');
+    img.style.display = 'none';
+    placeholder.style.display = 'flex';
+    var initial = (nameOrEmail || '?').charAt(0).toUpperCase();
+    placeholder.textContent = initial;
+  }
+
+  // Avatar upload
+  document.getElementById('avatar-preview').addEventListener('click', function () {
+    document.getElementById('avatar-input').click();
+  });
+
+  document.getElementById('avatar-input').addEventListener('change', function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showError('profile-error', 'Please select an image file.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showError('profile-error', 'Image must be under 5 MB.');
+      return;
+    }
+    var user = auth.currentUser;
+    if (!user) return;
+    clearErrors();
+    showSuccess('profile-success', 'Uploading photo...');
+
+    var ref = storage.ref('avatars/' + user.uid);
+    ref.put(file).then(function (snapshot) {
+      return snapshot.ref.getDownloadURL();
+    }).then(function (url) {
+      return db.collection('users').doc(user.uid).update({ photoURL: url }).then(function () {
+        showAvatarImage(url);
+        document.getElementById('profile-success').style.display = 'none';
+      });
+    }).catch(function (err) {
+      document.getElementById('profile-success').style.display = 'none';
+      showError('profile-error', 'Failed to upload photo. Please try again.');
+    });
+  });
+
+  // Save profile
+  document.getElementById('save-profile-btn').addEventListener('click', function () {
+    var user = auth.currentUser;
+    if (!user) return;
+    clearErrors();
+    var name = document.getElementById('profile-name').value.trim();
+    setLoading('save-profile-btn', true);
+    db.collection('users').doc(user.uid).set({
+      displayName: name,
+      email: user.email
+    }, { merge: true }).then(function () {
+      setLoading('save-profile-btn', false);
+      showSuccess('profile-success', 'Profile saved successfully.');
+      document.getElementById('article-author').value = name;
+      // Update avatar placeholder if no photo
+      var img = document.getElementById('avatar-img');
+      if (img.style.display === 'none') {
+        showAvatarPlaceholder(name || user.email);
+      }
+      setTimeout(function () {
+        document.getElementById('profile-success').style.display = 'none';
+      }, 3000);
+    }).catch(function (err) {
+      console.error('Save profile error:', err.code, err.message);
+      setLoading('save-profile-btn', false);
+      showError('profile-error', 'Error: ' + err.message);
+    });
+  });
+
+  // ── Submit Article ──
+  document.getElementById('article-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var user = auth.currentUser;
+    if (!user) return;
+    clearErrors();
+
+    var title = document.getElementById('article-title').value.trim();
+    var category = document.getElementById('article-category').value;
+    var authorName = document.getElementById('article-author').value.trim();
+    var description = document.getElementById('article-description').value.trim();
+    var content = document.getElementById('article-content').value;
+
+    if (!title || !category || !authorName || !description || !content) {
+      showError('article-error', 'Please fill out all fields.');
+      return;
+    }
+
+    setLoading('submit-article-btn', true);
+
+    db.collection('submissions').add({
+      uid: user.uid,
+      authorName: authorName,
+      title: title,
+      category: category,
+      description: description,
+      content: content,
+      status: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+      setLoading('submit-article-btn', false);
+      showSuccess('article-success', 'Article submitted successfully! It will be reviewed before publishing.');
+      document.getElementById('article-form').reset();
+      // Re-fill author name
+      document.getElementById('article-author').value = authorName;
+      loadSubmissions(user.uid);
+      setTimeout(function () {
+        document.getElementById('article-success').style.display = 'none';
+      }, 5000);
+    }).catch(function () {
+      setLoading('submit-article-btn', false);
+      showError('article-error', 'Failed to submit article. Please try again.');
+    });
+  });
+
+  // ── My Submissions ──
+  function loadSubmissions(uid) {
+    var container = document.getElementById('submissions-list');
+    container.innerHTML = '<p class="admin-empty-state">Loading submissions...</p>';
+
+    db.collection('submissions')
+      .where('uid', '==', uid)
+      .orderBy('createdAt', 'desc')
+      .get()
+      .then(function (snapshot) {
+        if (snapshot.empty) {
+          container.innerHTML = '<p class="admin-empty-state">No submissions yet. Submit your first article above.</p>';
+          return;
+        }
+        var html = '<div class="admin-submissions">';
+        snapshot.forEach(function (doc) {
+          var d = doc.data();
+          var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Just now';
+          var statusClass = 'admin-status-' + (d.status || 'pending');
+          html += '<div class="admin-submission-item">';
+          html += '<div class="admin-submission-main">';
+          html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
+          html += '<div class="admin-submission-meta">';
+          html += '<span>' + escapeHtml(d.category) + '</span>';
+          html += '<span class="admin-auth-sep">&middot;</span>';
+          html += '<span>' + date + '</span>';
+          html += '</div>';
+          html += '</div>';
+          html += '<span class="admin-status ' + statusClass + '">' + capitalize(d.status || 'pending') + '</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+      })
+      .catch(function () {
+        container.innerHTML = '<p class="admin-empty-state">Could not load submissions. Please try again later.</p>';
+      });
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  // ══════════════════════════════════════
+  // ── Admin Review Panel ──
+  // ══════════════════════════════════════
+
+  var isAdmin = false;
+  var currentFilter = 'pending';
+  var currentModalDocId = null;
+  var ADMIN_HASH = 'aa53c9e57bd511c81c6951d504e89f5948520bf21a588a322bfd1ada278ccab7';
+
+  // Admin password unlock
+  document.getElementById('admin-unlock-btn').addEventListener('click', function () {
+    var pwd = document.getElementById('admin-password').value;
+    var errEl = document.getElementById('admin-gate-error');
+    errEl.style.display = 'none';
+
+    crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd)).then(function (buf) {
+      var hash = Array.from(new Uint8Array(buf)).map(function (b) {
+        return b.toString(16).padStart(2, '0');
+      }).join('');
+
+      if (hash === ADMIN_HASH) {
+        isAdmin = true;
+        var ghToken = document.getElementById('github-token').value.trim();
+        if (ghToken) sessionStorage.setItem('github_token', ghToken);
+        document.getElementById('admin-gate').style.display = 'none';
+        document.getElementById('admin-review-panel').style.display = 'block';
+        loadReviewList('pending');
+        initReviewTabs();
+      } else {
+        errEl.textContent = 'Incorrect admin password.';
+        errEl.style.display = 'block';
+      }
+    });
+  });
+
+  // Allow Enter key on password field
+  document.getElementById('admin-password').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') document.getElementById('admin-unlock-btn').click();
+  });
+
+  function initReviewTabs() {
+    var tabs = document.querySelectorAll('.admin-tab');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        this.classList.add('active');
+        currentFilter = this.getAttribute('data-filter');
+        loadReviewList(currentFilter);
+      });
+    });
+  }
+
+  function loadReviewList(filter) {
+    var container = document.getElementById('review-list');
+    container.innerHTML = '<p class="admin-empty-state">Loading...</p>';
+
+    db.collection('submissions').get().then(function (snapshot) {
+      // Filter and sort client-side to avoid composite index requirement
+      var docs = [];
+      snapshot.forEach(function (doc) { docs.push({ id: doc.id, data: doc.data() }); });
+      if (filter !== 'all') {
+        docs = docs.filter(function (d) { return d.data.status === filter; });
+      }
+      docs.sort(function (a, b) {
+        var ta = a.data.createdAt ? a.data.createdAt.toMillis() : 0;
+        var tb = b.data.createdAt ? b.data.createdAt.toMillis() : 0;
+        return tb - ta;
+      });
+      if (docs.length === 0) {
+        container.innerHTML = '<p class="admin-empty-state">No ' + filter + ' submissions.</p>';
+        return;
+      }
+      var html = '<div class="admin-submissions">';
+      docs.forEach(function (item) {
+        var doc = { id: item.id };
+        var d = item.data;
+        var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Just now';
+        var statusClass = 'admin-status-' + (d.status || 'pending');
+        html += '<div class="admin-submission-item admin-review-item" data-id="' + doc.id + '">';
+        html += '<div class="admin-submission-main">';
+        html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
+        html += '<div class="admin-submission-meta">';
+        html += '<span>' + escapeHtml(d.authorName || 'Unknown') + '</span>';
+        html += '<span class="admin-auth-sep">&middot;</span>';
+        html += '<span>' + escapeHtml(d.category) + '</span>';
+        html += '<span class="admin-auth-sep">&middot;</span>';
+        html += '<span>' + date + '</span>';
+        html += '</div>';
+        html += '</div>';
+        html += '<span class="admin-status ' + statusClass + '">' + capitalize(d.status || 'pending') + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+
+      // Attach click handlers
+      container.querySelectorAll('.admin-review-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+          openReviewModal(this.getAttribute('data-id'));
+        });
+      });
+    }).catch(function (err) {
+      console.error('Review load error:', err);
+      container.innerHTML = '<p class="admin-empty-state">Could not load submissions.</p>';
+    });
+  }
+
+  function openReviewModal(docId) {
+    currentModalDocId = docId;
+    var modal = document.getElementById('review-modal');
+    var mdOutput = document.getElementById('modal-md-output');
+    mdOutput.style.display = 'none';
+
+    db.collection('submissions').doc(docId).get().then(function (doc) {
+      if (!doc.exists) return;
+      var d = doc.data();
+      var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown';
+
+      document.getElementById('modal-title').textContent = d.title;
+      document.getElementById('modal-author').textContent = 'By ' + (d.authorName || 'Unknown');
+      document.getElementById('modal-category').textContent = d.category;
+      document.getElementById('modal-date').textContent = date;
+      document.getElementById('modal-description').textContent = d.description;
+      document.getElementById('modal-content').textContent = d.content;
+
+      var badge = document.getElementById('modal-status-badge');
+      badge.textContent = capitalize(d.status || 'pending');
+      badge.className = 'admin-status admin-status-' + (d.status || 'pending');
+
+      var actions = document.getElementById('modal-actions');
+      if (d.status === 'pending') {
+        actions.style.display = 'flex';
+      } else {
+        actions.style.display = 'none';
+      }
+
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    });
+  }
+
+  function closeReviewModal() {
+    document.getElementById('review-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    currentModalDocId = null;
+  }
+
+  document.getElementById('modal-close').addEventListener('click', closeReviewModal);
+  document.querySelector('.admin-modal-backdrop').addEventListener('click', closeReviewModal);
+
+  // Approve
+  document.getElementById('modal-approve').addEventListener('click', function () {
+    if (!currentModalDocId) return;
+    var btn = this;
+    btn.textContent = 'Approving...';
+    btn.disabled = true;
+
+    db.collection('submissions').doc(currentModalDocId).update({
+      status: 'approved'
+    }).then(function () {
+      return db.collection('submissions').doc(currentModalDocId).get();
+    }).then(function (doc) {
+      var d = doc.data();
+      // Generate markdown
+      var slug = d.title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+      var md = '---\n';
+      md += 'title: "' + d.title.replace(/"/g, '\\"') + '"\n';
+      md += 'category: ' + d.category + '\n';
+      md += 'description: "' + d.description.replace(/"/g, '\\"') + '"\n';
+      md += 'author: ' + d.authorName + '\n';
+      md += 'order: 99\n';
+      md += '---\n\n';
+      md += '*Contributed by ' + d.authorName + '*\n\n';
+      md += d.content;
+
+      // Auto-commit to GitHub
+      btn.textContent = 'Publishing to GitHub...';
+      var filePath = 'website/_guides/' + slug + '.md';
+      var GITHUB_TOKEN = sessionStorage.getItem('github_token');
+      if (!GITHUB_TOKEN) {
+        alert('No GitHub token found. Please re-enter the admin panel with your token.');
+        btn.textContent = 'Approve & Publish';
+        btn.disabled = false;
+        return;
+      }
+      var REPO = 'United-World-College/UWC-Survival-Guide';
+
+      fetch('https://api.github.com/repos/' + REPO + '/contents/' + filePath, {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'token ' + GITHUB_TOKEN,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: 'Add guide: ' + d.title + ' by ' + d.authorName,
+          content: btoa(unescape(encodeURIComponent(md)))
+        })
+      }).then(function (res) {
+        if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+        return res.json();
+      }).then(function () {
+        document.getElementById('modal-actions').style.display = 'none';
+        var badge = document.getElementById('modal-status-badge');
+        badge.textContent = 'Approved & Published';
+        badge.className = 'admin-status admin-status-approved';
+
+        // Show success message
+        var mdOutput = document.getElementById('modal-md-output');
+        document.getElementById('modal-md-content').textContent = 'Published to GitHub successfully!\n\nFile: ' + filePath + '\nThe site will rebuild automatically.';
+        mdOutput.style.display = 'block';
+        document.getElementById('modal-copy-md').style.display = 'none';
+
+        btn.textContent = 'Approve & Publish';
+        btn.disabled = false;
+
+        loadReviewList(currentFilter);
+        var user = auth.currentUser;
+        if (user) loadSubmissions(user.uid);
+      }).catch(function (err) {
+        console.error('GitHub publish error:', err);
+        btn.textContent = 'Approve & Publish';
+        btn.disabled = false;
+        alert('Approved in Firestore but failed to publish to GitHub: ' + err.message);
+      });
+    }).catch(function (err) {
+      console.error('Approve error:', err);
+      btn.textContent = 'Approve & Publish';
+      btn.disabled = false;
+    });
+  });
+
+  // Reject
+  document.getElementById('modal-reject').addEventListener('click', function () {
+    if (!currentModalDocId) return;
+    var reason = prompt('Rejection reason (optional):');
+    if (reason === null) return; // cancelled
+
+    var btn = this;
+    btn.textContent = 'Rejecting...';
+    btn.disabled = true;
+
+    var updateData = { status: 'rejected' };
+    if (reason) updateData.rejectionReason = reason;
+
+    db.collection('submissions').doc(currentModalDocId).update(updateData).then(function () {
+      var badge = document.getElementById('modal-status-badge');
+      badge.textContent = 'Rejected';
+      badge.className = 'admin-status admin-status-rejected';
+      document.getElementById('modal-actions').style.display = 'none';
+
+      btn.textContent = 'Reject';
+      btn.disabled = false;
+
+      loadReviewList(currentFilter);
+      var user = auth.currentUser;
+      if (user) loadSubmissions(user.uid);
+    }).catch(function (err) {
+      console.error('Reject error:', err);
+      btn.textContent = 'Reject';
+      btn.disabled = false;
+    });
+  });
+
+  // Copy MD
+  document.getElementById('modal-copy-md').addEventListener('click', function () {
+    var content = document.getElementById('modal-md-content').textContent;
+    navigator.clipboard.writeText(content).then(function () {
+      var btn = document.getElementById('modal-copy-md');
+      btn.textContent = 'Copied!';
+      setTimeout(function () { btn.textContent = 'Copy to Clipboard'; }, 2000);
+    });
+  });
+
+})();
+</script>
