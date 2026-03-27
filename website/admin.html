@@ -63,6 +63,7 @@ permalink: /admin/
         <input type="email" id="forgot-email" class="admin-input" placeholder="Email address" autocomplete="email" required />
         <button type="submit" class="admin-btn" id="forgot-btn">Send Reset Email</button>
       </form>
+      <p style="font-size:0.82rem;color:var(--warm-gray);margin-top:0.8rem;line-height:1.6;">The email may take a few minutes to arrive. Please check your junk/spam folder if you don't see it in your inbox.</p>
       <p id="forgot-error" class="admin-error" style="display:none;"></p>
       <p id="forgot-success" class="admin-success" style="display:none;"></p>
       <div class="admin-auth-links">
@@ -111,6 +112,12 @@ permalink: /admin/
               <div class="admin-field">
                 <label class="admin-label" for="profile-email">Email</label>
                 <input type="email" id="profile-email" class="admin-input" disabled />
+              </div>
+              <div class="admin-field">
+                <label class="admin-label">Profile Links</label>
+                <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">Add links to your LinkedIn, GitHub, personal website, etc. These will appear on your author page.</p>
+                <div id="profile-links-list"></div>
+                <button type="button" id="add-link-btn" class="admin-btn admin-btn-outline" style="margin-top:0.5rem;font-size:0.78rem;padding:0.5rem 1.2rem;">+ Add Link</button>
               </div>
               <button type="button" id="save-profile-btn" class="admin-btn">Save Profile</button>
               <p id="profile-success" class="admin-success" style="display:none;"></p>
@@ -435,6 +442,8 @@ permalink: /admin/
         } else {
           showAvatarPlaceholder(data.displayName || user.email);
         }
+        // Load profile links
+        loadProfileLinks(data.profileLinks || []);
         // Show published articles link if author page exists
         if (data.authorPage) {
           var card = document.getElementById('published-articles-card');
@@ -509,16 +518,56 @@ permalink: /admin/
     });
   });
 
+  // ── Profile Links ──
+  function createLinkRow(label, url) {
+    var row = document.createElement('div');
+    row.className = 'admin-link-row';
+    row.innerHTML = '<input type="text" class="admin-input admin-link-label" placeholder="e.g. LinkedIn, GitHub" value="' + escapeHtml(label || '') + '" />' +
+      '<input type="url" class="admin-input admin-link-url" placeholder="https://..." value="' + escapeHtml(url || '') + '" />' +
+      '<button type="button" class="admin-link-remove">&times;</button>';
+    row.querySelector('.admin-link-remove').addEventListener('click', function () {
+      row.remove();
+    });
+    return row;
+  }
+
+  document.getElementById('add-link-btn').addEventListener('click', function () {
+    document.getElementById('profile-links-list').appendChild(createLinkRow('', ''));
+  });
+
+  function loadProfileLinks(links) {
+    var container = document.getElementById('profile-links-list');
+    container.innerHTML = '';
+    if (links && links.length > 0) {
+      links.forEach(function (link) {
+        container.appendChild(createLinkRow(link.label, link.url));
+      });
+    }
+  }
+
+  function getProfileLinks() {
+    var rows = document.querySelectorAll('.admin-link-row');
+    var links = [];
+    rows.forEach(function (row) {
+      var label = row.querySelector('.admin-link-label').value.trim();
+      var url = row.querySelector('.admin-link-url').value.trim();
+      if (label && url) links.push({ label: label, url: url });
+    });
+    return links;
+  }
+
   // Save profile
   document.getElementById('save-profile-btn').addEventListener('click', function () {
     var user = auth.currentUser;
     if (!user) return;
     clearErrors();
     var name = document.getElementById('profile-name').value.trim();
+    var links = getProfileLinks();
     setLoading('save-profile-btn', true);
     db.collection('users').doc(user.uid).set({
       displayName: name,
-      email: user.email
+      email: user.email,
+      profileLinks: links
     }, { merge: true }).then(function () {
       setLoading('save-profile-btn', false);
       showSuccess('profile-success', 'Profile saved successfully.');

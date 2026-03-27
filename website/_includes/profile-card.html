@@ -47,14 +47,9 @@
   {% if person.summary != nil and person.summary != "" %}
     <p class="profile-summary">{{ person.summary }}</p>
   {% endif %}
-  {% if author_page or person.profile_url != nil and person.profile_url != "" %}
+  {% if author_page %}
     <div class="profile-links">
-      {% if author_page %}
-        <a class="profile-link" href="{{ author_page.url | relative_url }}">Author Page</a>
-      {% endif %}
-      {% if person.profile_url != nil and person.profile_url != "" %}
-        <a class="profile-link" href="{{ person.profile_url }}" target="_blank" rel="noopener noreferrer">{{ person.profile_label | default: "Profile" }}</a>
-      {% endif %}
+      <a class="profile-link" href="{{ author_page.url | relative_url }}">Author Page</a>
     </div>
   {% endif %}
 </article>
