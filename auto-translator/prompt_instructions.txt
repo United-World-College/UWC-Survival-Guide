@@ -14,6 +14,7 @@ __TARGET_STYLE_NOTE__
 Rules:
 - Translate reader-facing prose in `title`, `category`, `description`, and `body`.
 - Keep intentional English acronyms and institution-specific terms when students naturally use them: UWC, FP, DP1, DP2, CAS, NSF, NIH, TTAP, IOI, UIUC, and similar terms.
+- When translating between Simplified Chinese and Traditional Chinese, keep citations, source attributions, English titles of cited works, and any text intentionally already written in English in English. Only convert the surrounding Chinese text and script.
 - If the source intentionally mixes languages, preserve that effect naturally instead of flattening everything into one register.
 - Do not mirror Chinese sentence structure when translating into English. The English should feel fluent, candid, and native, while preserving the same amount of detail and the same level of intimacy.
 - For Taiwan Traditional Chinese, use Traditional characters and Taiwan-preferred wording where it sounds natural, but do not change mainland-specific realities, apps, institutions, place names, or social context.
