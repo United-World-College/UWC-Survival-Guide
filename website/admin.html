@@ -120,8 +120,8 @@ var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides 
 
             <div class="admin-profile-fields">
               <div class="admin-field">
-                <label class="admin-label" for="profile-name">Display Name</label>
-                <input type="text" id="profile-name" class="admin-input" placeholder="Your name" />
+                <label class="admin-label" for="profile-name">Display Name <span id="profile-name-count" style="font-weight:400;color:var(--warm-gray);font-size:0.75rem;"></span></label>
+                <input type="text" id="profile-name" class="admin-input" placeholder="Your name" maxlength="40" />
               </div>
               <div class="admin-field">
                 <label class="admin-label" for="profile-email">Email</label>
@@ -136,6 +136,7 @@ var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides 
                 <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">Add links to your GitHub, personal website, etc. These will appear on your author page.</p>
                 <div id="profile-links-list"></div>
                 <button type="button" id="add-link-btn" class="admin-btn admin-btn-outline" style="margin-top:0.5rem;font-size:0.78rem;padding:0.5rem 1.2rem;">+ Add Link</button>
+                <p id="links-limit-note" style="display:none;font-size:0.75rem;color:var(--warm-gray);margin-top:0.4rem;">Maximum 3 profile links.</p>
               </div>
               <button type="button" id="save-profile-btn" class="admin-btn">Save Profile</button>
               <p id="profile-success" class="admin-success" style="display:none;"></p>
@@ -583,12 +584,44 @@ var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides 
       '<button type="button" class="admin-link-remove">&times;</button>';
     row.querySelector('.admin-link-remove').addEventListener('click', function () {
       row.remove();
+      updateAddLinkBtn();
     });
     return row;
   }
 
+  var MAX_LINKS = 3;
+  var NAME_LIMIT = 40;
+
+  // Character counter for display name
+  (function () {
+    var input = document.getElementById('profile-name');
+    var counter = document.getElementById('profile-name-count');
+    function updateCount() {
+      var remaining = NAME_LIMIT - input.value.length;
+      counter.textContent = remaining + '/' + NAME_LIMIT;
+      counter.style.color = remaining <= 8 ? '#b94a48' : 'var(--warm-gray)';
+    }
+    input.addEventListener('input', updateCount);
+    updateCount();
+  })();
+
+  function updateAddLinkBtn() {
+    var count = document.querySelectorAll('.admin-link-row').length;
+    var btn = document.getElementById('add-link-btn');
+    var note = document.getElementById('links-limit-note');
+    if (count >= MAX_LINKS) {
+      btn.style.display = 'none';
+      note.style.display = 'block';
+    } else {
+      btn.style.display = '';
+      note.style.display = 'none';
+    }
+  }
+
   document.getElementById('add-link-btn').addEventListener('click', function () {
+    if (document.querySelectorAll('.admin-link-row').length >= MAX_LINKS) return;
     document.getElementById('profile-links-list').appendChild(createLinkRow('', ''));
+    updateAddLinkBtn();
   });
 
   function loadProfileLinks(links) {
@@ -599,6 +632,7 @@ var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides 
         container.appendChild(createLinkRow(link.label, link.url));
       });
     }
+    updateAddLinkBtn();
   }
 
   function getProfileLinks() {
