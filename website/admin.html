@@ -184,6 +184,16 @@ permalink: /admin/
           <p id="article-error" class="admin-error" style="display:none;"></p>
         </div>
 
+        <!-- Featured Articles -->
+        <div id="featured-articles-card" class="admin-card" style="display:none;">
+          <h2 class="admin-card-title">Featured Articles</h2>
+          <p class="admin-card-desc">Pin up to 3 articles to appear in the Featured section of your author page. Click the star to toggle.</p>
+          <div id="featured-articles-list">
+            <p class="admin-empty-state">Loading...</p>
+          </div>
+          <p id="featured-success" class="admin-success" style="display:none;"></p>
+        </div>
+
         <!-- Published Articles -->
         <div id="published-articles-card" class="admin-card" style="display:none;">
           <h2 class="admin-card-title">My Published Articles</h2>
@@ -426,6 +436,7 @@ permalink: /admin/
       showView('view-dashboard');
       loadProfile(user);
       loadSubmissions(user.uid);
+      loadFeaturedPanel(user.uid);
       checkAdmin(user.email);
     } else {
       showView('view-signin');
@@ -686,6 +697,90 @@ permalink: /admin/
     win.focus();
   }
 
+  // ── Featured Articles ──
+  var currentFeaturedIds = [];
+
+  function loadFeaturedPanel(uid) {
+    db.collection('users').doc(uid).get().then(function (doc) {
+      if (!doc.exists) return;
+      var data = doc.data();
+      if (!data.authorPage) return;
+      currentFeaturedIds = data.featuredGuideIds || [];
+      document.getElementById('featured-articles-card').style.display = 'block';
+      return db.collection('submissions')
+        .where('uid', '==', uid)
+        .where('status', '==', 'approved')
+        .get();
+    }).then(function (snapshot) {
+      if (!snapshot) return;
+      var list = document.getElementById('featured-articles-list');
+      if (snapshot.empty) {
+        list.innerHTML = '<p class="admin-empty-state">No published articles yet.</p>';
+        return;
+      }
+      var html = '<div class="admin-submissions">';
+      snapshot.forEach(function (doc) {
+        var d = doc.data();
+        var guideId = d.guide_id || '';
+        var isFeatured = currentFeaturedIds.indexOf(guideId) !== -1;
+        html += '<div class="admin-submission-item">';
+        html += '<div class="admin-submission-main">';
+        html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
+        html += '<div class="admin-submission-meta"><span>' + escapeHtml(d.category) + '</span></div>';
+        html += '</div>';
+        html += '<button type="button" class="admin-featured-star' + (isFeatured ? ' is-active' : '') + '" data-guide-id="' + escapeHtml(guideId) + '" title="' + (isFeatured ? 'Remove from featured' : 'Add to featured') + '">';
+        html += isFeatured ? '&#9733;' : '&#9734;';
+        html += '</button>';
+        html += '</div>';
+      });
+      html += '</div>';
+      list.innerHTML = html;
+      list.querySelectorAll('.admin-featured-star').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          toggleFeatured(uid, this.getAttribute('data-guide-id'), this);
+        });
+      });
+    }).catch(function () {
+      document.getElementById('featured-articles-list').innerHTML =
+        '<p class="admin-empty-state">Could not load articles.</p>';
+    });
+  }
+
+  function toggleFeatured(uid, guideId, btn) {
+    if (!guideId) return;
+    var idx = currentFeaturedIds.indexOf(guideId);
+    if (idx === -1) {
+      if (currentFeaturedIds.length >= 3) {
+        showSuccess('featured-success', 'You can feature up to 3 articles at a time.');
+        return;
+      }
+      currentFeaturedIds.push(guideId);
+    } else {
+      currentFeaturedIds.splice(idx, 1);
+    }
+    var isFeatured = currentFeaturedIds.indexOf(guideId) !== -1;
+    btn.innerHTML = isFeatured ? '&#9733;' : '&#9734;';
+    btn.classList.toggle('is-active', isFeatured);
+    btn.title = isFeatured ? 'Remove from featured' : 'Add to featured';
+    db.collection('users').doc(uid).update({ featuredGuideIds: currentFeaturedIds })
+      .then(function () {
+        showSuccess('featured-success', 'Featured articles updated.');
+        setTimeout(function () { document.getElementById('featured-success').style.display = 'none'; }, 2500);
+      })
+      .catch(function () {
+        // Revert
+        if (isFeatured) {
+          var i = currentFeaturedIds.indexOf(guideId);
+          if (i !== -1) currentFeaturedIds.splice(i, 1);
+        } else {
+          currentFeaturedIds.push(guideId);
+        }
+        isFeatured = currentFeaturedIds.indexOf(guideId) !== -1;
+        btn.innerHTML = isFeatured ? '&#9733;' : '&#9734;';
+        btn.classList.toggle('is-active', isFeatured);
+      });
+  }
+
   // ── My Submissions ──
   function loadSubmissions(uid) {
     var container = document.getElementById('submissions-list');
@@ -888,6 +983,8 @@ permalink: /admin/
 
       // Generate slug from title (ASCII + Chinese chars)
       var slug = d.title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+      // Store guide_id in submission so authors can select it as featured
+      db.collection('submissions').doc(currentModalDocId).update({ guide_id: slug }).catch(function () {});
 
       // Generate markdown with full front matter
       var md = '---\n';

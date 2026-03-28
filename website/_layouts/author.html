@@ -170,52 +170,61 @@
     </article>
   {% endif %}
 
+  <!-- Featured section (shown by JS if author has featured articles) -->
+  <div id="author-featured-section" style="display:none;">
+    <div class="divider"></div>
+    <section class="section author-section-cards">
+      <p class="section-label">Featured</p>
+      <div class="author-featured-wrap">
+        <div class="author-featured-track" id="author-featured-track"></div>
+        <div class="author-featured-nav" id="author-featured-nav" style="display:none;">
+          <button class="author-featured-btn" id="feat-prev">&#8592;</button>
+          <button class="author-featured-btn" id="feat-next">&#8594;</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <div class="divider"></div>
 
-  <section class="section">
-    <div class="section-header author-bibliography-header">
-      <p class="section-label">{{ current_locale.author.bibliography_label }}</p>
-      <h2 id="bibliography-heading">{% if current_locale.author.bibliography_title_prefix != nil and current_locale.author.bibliography_title_prefix != "" %}<span class="bibliography-heading-prefix">{{ current_locale.author.bibliography_title_prefix }}</span>{% endif %}<span class="bibliography-heading-name" id="bibliography-author-name">{{ author_name }}</span>{% if current_locale.author.bibliography_title_suffix != nil and current_locale.author.bibliography_title_suffix != "" %}<span class="bibliography-heading-suffix">{{ current_locale.author.bibliography_title_suffix }}</span>{% endif %}</h2>
-      <p class="section-desc">{{ current_locale.author.bibliography_desc }}</p>
-    </div>
-    {% if authored_article_count > 0 %}
-      <div class="author-articles">
+  <!-- Latest section (replaces bibliography) -->
+  <section class="section author-section-cards">
+    <p class="section-label">Latest</p>
+    <div class="author-latest-list" id="author-latest-list">
+      {% if authored_article_count > 0 %}
         {% for authored_guide_id in authored_guide_ids %}
           {% assign guide_versions = authored_guides | where: "guide_id", authored_guide_id | sort: "language_sort" %}
           {% assign primary_guide = guide_versions | where: "language_code", current_language_code | first %}
-          {% if primary_guide == nil %}
-            {% assign primary_guide = guide_versions | where: "language_code", "en" | first %}
-          {% endif %}
-          {% if primary_guide == nil %}
-            {% assign primary_guide = guide_versions | first %}
-          {% endif %}
-          <article class="author-article-card">
-            <div class="author-article-head">
-              <div>
-                <p class="author-article-category">{{ primary_guide.category }}</p>
-                <h3><a class="contributor-name-link" href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
-              </div>
-              <p class="author-article-count">{{ guide_versions.size }} {% if guide_versions.size == 1 %}{{ current_locale.common.version_singular }}{% else %}{{ current_locale.common.version_plural }}{% endif %}</p>
+          {% if primary_guide == nil %}{% assign primary_guide = guide_versions | where: "language_code", "en" | first %}{% endif %}
+          {% if primary_guide == nil %}{% assign primary_guide = guide_versions | first %}{% endif %}
+          <div class="author-latest-item">
+            <span class="author-latest-date">{{ primary_guide.published | date: "%b %-d, %Y" }}</span>
+            <div class="author-latest-body">
+              <p class="author-latest-category">{{ primary_guide.category }}</p>
+              <h3><a href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
+              {% if primary_guide.description %}<p class="author-latest-desc">{{ primary_guide.description }}</p>{% endif %}
+              {% if guide_versions.size > 1 %}
+                <div class="author-latest-versions">
+                  {% for v in guide_versions %}<a href="{{ v.url | relative_url }}" class="translation-pill">{{ v.language_name }}</a>{% endfor %}
+                </div>
+              {% endif %}
             </div>
-            {% if primary_guide.description %}
-              <p class="author-article-desc">{{ primary_guide.description }}</p>
-            {% endif %}
-            <div class="author-article-links">
-              {% for guide_version in guide_versions %}
-                <a href="{{ guide_version.url | relative_url }}" class="translation-pill">{{ guide_version.language_name }}</a>
-              {% endfor %}
-            </div>
-          </article>
+          </div>
         {% endfor %}
-      </div>
-    {% else %}
-      <p class="about-empty">{{ current_locale.author.empty }}</p>
-    {% endif %}
+      {% else %}
+        <p style="color:var(--warm-gray);font-size:0.9rem;">{{ current_locale.author.empty }}</p>
+      {% endif %}
+    </div>
   </section>
 
   {% include footer.html %}
 
   <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
+
+  <!-- Guide data for Featured section -->
+  <script>
+  var AUTHOR_GUIDES = [{% for gid in authored_guide_ids %}{% assign gvs = authored_guides | where: "guide_id", gid | sort: "language_sort" %}{% assign pg = gvs | where: "language_code", current_language_code | first %}{% if pg == nil %}{% assign pg = gvs | where: "language_code", "en" | first %}{% endif %}{% if pg == nil %}{% assign pg = gvs | first %}{% endif %}{"guide_id":{{ gid | jsonify }},"title":{{ pg.title | jsonify }},"description":{{ pg.description | default: "" | jsonify }},"url":{{ pg.url | relative_url | jsonify }},"published":{{ pg.published | date: "%b %-d, %Y" | jsonify }},"published_iso":{{ pg.published | jsonify }},"category":{{ pg.category | default: "" | jsonify }},"versions":[{% for v in gvs %}{"language_name":{{ v.language_name | jsonify }},"url":{{ v.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}]}{% unless forloop.last %},{% endunless %}{% endfor %}];
+  </script>
 
   <!-- Load dynamic profile links from Firestore -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -277,6 +286,42 @@
       var h = document.getElementById('author-header'); h.style.opacity = '1'; h.style.transform = 'translateY(0)';
     }).catch(function () {
       var h = document.getElementById('author-header'); h.style.opacity = '1'; h.style.transform = 'translateY(0)';
+    });
+
+    // Build Featured section from featuredGuideIds
+    db.collection('users').where('authorPage', '==', authorPage).get().then(function (snap) {
+      if (snap.empty) return;
+      var featuredIds = snap.docs[0].data().featuredGuideIds || [];
+      if (!featuredIds.length || typeof AUTHOR_GUIDES === 'undefined') return;
+      var featuredGuides = featuredIds.map(function (id) {
+        return AUTHOR_GUIDES.filter(function (g) { return g.guide_id === id; })[0];
+      }).filter(Boolean);
+      if (!featuredGuides.length) return;
+
+      function esc(s) { var d = document.createElement('div'); d.appendChild(document.createTextNode(s || '')); return d.innerHTML; }
+
+      var track = document.getElementById('author-featured-track');
+      if (!track) return;
+      track.innerHTML = featuredGuides.map(function (g) {
+        return '<a href="' + g.url + '" class="author-featured-card">' +
+          '<div class="author-featured-img"><span>' + esc(g.category) + '</span></div>' +
+          '<h3 class="author-featured-title">' + esc(g.title) + '</h3>' +
+          '<p class="author-featured-date">' + esc(g.published) + '</p>' +
+          '</a>';
+      }).join('');
+
+      document.getElementById('author-featured-section').style.display = 'block';
+
+      if (featuredGuides.length > 2) {
+        var nav = document.getElementById('author-featured-nav');
+        nav.style.display = 'flex';
+        document.getElementById('feat-prev').addEventListener('click', function () {
+          track.scrollBy({ left: -320, behavior: 'smooth' });
+        });
+        document.getElementById('feat-next').addEventListener('click', function () {
+          track.scrollBy({ left: 320, behavior: 'smooth' });
+        });
+      }
     });
   })();
   </script>
