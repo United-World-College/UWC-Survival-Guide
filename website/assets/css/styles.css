@@ -2053,7 +2053,6 @@ a.author-contact-value:hover {
 
 /* Admin register article form */
 .admin-register-article {
-  margin-top: 1.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--border);
 }
