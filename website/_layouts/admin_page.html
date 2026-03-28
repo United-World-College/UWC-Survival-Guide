@@ -94,7 +94,8 @@ var ADMIN_I18N = {
   github_error:         {{ t.github_error | jsonify }},
   approve_btn:          {{ t.approve_btn | jsonify }},
   reject_btn:           {{ t.reject_btn | jsonify }},
-  copy_md_btn:          {{ t.copy_md_btn | jsonify }}
+  copy_md_btn:          {{ t.copy_md_btn | jsonify }},
+  categories:           {{ current_locale.categories | jsonify }}
 };
 </script>
 
@@ -931,7 +932,8 @@ var ADMIN_I18N = {
         html += escapeHtml(displayTitle);
       }
       html += '</h3>';
-      if (displayCategory) html += '<div class="admin-submission-meta"><span>' + escapeHtml(displayCategory) + '</span></div>';
+      var translatedCategory = (ADMIN_I18N.categories && ADMIN_I18N.categories[displayCategory]) || displayCategory;
+      if (displayCategory) html += '<div class="admin-submission-meta"><span>' + escapeHtml(translatedCategory) + '</span></div>';
       html += '</div>';
       html += '<button type="button" class="admin-featured-star' + (isFeatured ? ' is-active' : '') + '" data-guide-id="' + escapeHtml(guideId) + '" title="' + (isFeatured ? escapeHtml(ADMIN_I18N.remove_featured) : escapeHtml(ADMIN_I18N.add_featured)) + '">';
       html += isFeatured ? '&#9733;' : '&#9734;';
