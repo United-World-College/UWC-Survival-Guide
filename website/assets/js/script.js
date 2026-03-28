@@ -54,3 +54,28 @@ function reveal() {
 
 window.addEventListener("scroll", reveal);
 reveal();
+
+// ── External links open in a new tab ──
+document.querySelectorAll('a[href]').forEach(function (link) {
+  if (link.hasAttribute("target")) {
+    return;
+  }
+
+  var href = link.getAttribute("href");
+  if (!href || href.startsWith("#")) {
+    return;
+  }
+
+  try {
+    var url = new URL(href, window.location.href);
+    var isHttp = url.protocol === "http:" || url.protocol === "https:";
+    var isExternal = url.origin !== window.location.origin;
+
+    if (isHttp && isExternal) {
+      link.setAttribute("target", "_blank");
+      link.setAttribute("rel", "noopener noreferrer");
+    }
+  } catch (error) {
+    // Ignore malformed or non-standard href values.
+  }
+});
