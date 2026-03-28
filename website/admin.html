@@ -176,16 +176,22 @@ permalink: /admin/
                 <div class="admin-editor-tabs">
                   <button type="button" class="admin-editor-tab active" id="tab-edit">Edit</button>
                   <button type="button" class="admin-editor-tab" id="tab-preview">Preview</button>
+                  <button type="button" class="admin-editor-tab admin-editor-tab-newtab" id="tab-open-newtab" title="Open preview in new tab">&#8599;</button>
                 </div>
               </div>
               <textarea id="article-content" class="admin-input admin-textarea" rows="14" placeholder="Write your article content here using Markdown..." required></textarea>
               <div id="article-preview-panel" style="display:none;">
-                <div class="article-preview-mock">
-                  <p class="article-preview-category" id="preview-category"></p>
-                  <h1 class="article-preview-title" id="preview-title">Untitled Article</h1>
-                  <p class="article-preview-byline" id="preview-byline"></p>
-                  <p class="article-preview-desc" id="preview-desc"></p>
-                  <div class="article-preview-body" id="preview-body"></div>
+                <div class="article-preview-inline">
+                  <header class="guide-hero">
+                    <div class="guide-hero-content">
+                      <p class="hero-label" id="preview-category"></p>
+                      <h1 id="preview-title"></h1>
+                      <p class="guide-byline" id="preview-byline"></p>
+                      <p class="hero-subtitle" id="preview-desc"></p>
+                    </div>
+                  </header>
+                  <div class="divider"></div>
+                  <article class="guide-content" id="preview-body"></article>
                 </div>
               </div>
             </div>
@@ -678,23 +684,60 @@ permalink: /admin/
     document.getElementById('article-preview-panel').style.display = 'none';
   });
 
+  document.getElementById('tab-open-newtab').addEventListener('click', function () {
+    openPreviewTab();
+  });
+
+  function getArticleFields() {
+    return {
+      title: document.getElementById('article-title').value.trim() || 'Untitled Article',
+      category: document.getElementById('article-category').value || '',
+      author: document.getElementById('article-author').value.trim() || '',
+      description: document.getElementById('article-description').value.trim() || '',
+      content: document.getElementById('article-content').value || ''
+    };
+  }
+
   function renderArticlePreview() {
-    var title = document.getElementById('article-title').value.trim() || 'Untitled Article';
-    var category = document.getElementById('article-category').value || '';
-    var author = document.getElementById('article-author').value.trim() || '';
-    var description = document.getElementById('article-description').value.trim() || '';
-    var content = document.getElementById('article-content').value || '';
+    var f = getArticleFields();
+    document.getElementById('preview-title').textContent = f.title;
+    document.getElementById('preview-category').textContent = f.category;
+    document.getElementById('preview-byline').textContent = f.author ? 'By ' + f.author : '';
+    document.getElementById('preview-desc').textContent = f.description;
+    document.getElementById('preview-body').innerHTML = typeof marked !== 'undefined'
+      ? marked.parse(f.content) : escapeHtml(f.content);
+  }
 
-    document.getElementById('preview-title').textContent = title;
-    document.getElementById('preview-category').textContent = category;
-    document.getElementById('preview-byline').textContent = author ? 'By ' + author : '';
-    document.getElementById('preview-desc').textContent = description;
-
-    if (typeof marked !== 'undefined') {
-      document.getElementById('preview-body').innerHTML = marked.parse(content);
-    } else {
-      document.getElementById('preview-body').textContent = content;
-    }
+  function openPreviewTab() {
+    var f = getArticleFields();
+    var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
+    var renderedContent = typeof marked !== 'undefined' ? marked.parse(f.content) : escapeHtml(f.content);
+    var win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write('<!DOCTYPE html><html lang="en"><head>' +
+      '<meta charset="UTF-8">' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+      '<title>PREVIEW \u2014 ' + escapeHtml(f.title) + '</title>' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">' +
+      (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
+      '<style>body{font-family:"Inter",-apple-system,Helvetica,Arial,sans-serif;}' +
+      '.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;' +
+      'padding:0.55rem 1rem;font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;}' +
+      '</style>' +
+      '</head><body>' +
+      '<div class="preview-banner">Preview &mdash; Draft &middot; Not yet published</div>' +
+      '<header class="guide-hero"><div class="guide-hero-content">' +
+      '<p class="hero-label">' + escapeHtml(f.category) + '</p>' +
+      '<h1>' + escapeHtml(f.title) + '</h1>' +
+      (f.author ? '<p class="guide-byline">By ' + escapeHtml(f.author) + '</p>' : '') +
+      (f.description ? '<p class="hero-subtitle">' + escapeHtml(f.description) + '</p>' : '') +
+      '</div></header>' +
+      '<div class="divider"></div>' +
+      '<article class="guide-content">' + renderedContent + '</article>' +
+      '</body></html>');
+    win.document.close();
   }
 
   // ── My Submissions ──

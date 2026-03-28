@@ -1965,123 +1965,36 @@ a.author-contact-value:hover {
   color: var(--ivory);
 }
 
-.article-preview-mock {
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 2rem 2rem 1.5rem;
-  background: var(--ivory);
-  min-height: 200px;
-}
-
-.article-preview-category {
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--warm-gray);
-  margin-bottom: 0.8rem;
-}
-
-.article-preview-title {
-  font-family: var(--serif);
-  font-size: 1.9rem;
-  font-weight: 500;
-  color: var(--dark);
-  letter-spacing: -0.01em;
-  margin-bottom: 0.5rem;
-  line-height: 1.3;
-}
-
-.article-preview-byline {
-  font-size: 0.88rem;
-  color: var(--warm-gray);
-  margin-bottom: 0.4rem;
-}
-
-.article-preview-desc {
+.admin-editor-tab-newtab {
   font-size: 1rem;
-  color: var(--text);
-  line-height: 1.7;
-  margin-bottom: 1.5rem;
-  font-style: italic;
-}
-
-.article-preview-body {
-  font-size: 0.97rem;
-  color: var(--text);
-  line-height: 1.85;
-  border-top: 1px solid var(--border);
-  padding-top: 1.5rem;
-}
-
-.article-preview-body h1,
-.article-preview-body h2,
-.article-preview-body h3 {
-  font-family: var(--serif);
-  font-weight: 500;
-  color: var(--dark);
-  margin: 1.5rem 0 0.6rem;
-  letter-spacing: -0.01em;
-}
-
-.article-preview-body h1 { font-size: 1.5rem; }
-.article-preview-body h2 { font-size: 1.25rem; }
-.article-preview-body h3 { font-size: 1.05rem; }
-
-.article-preview-body p {
-  margin: 0 0 1rem;
-}
-
-.article-preview-body ul,
-.article-preview-body ol {
-  padding-left: 1.5rem;
-  margin: 0 0 1rem;
-}
-
-.article-preview-body li {
-  margin-bottom: 0.3rem;
-}
-
-.article-preview-body blockquote {
-  border-left: 3px solid var(--border);
-  margin: 1rem 0;
-  padding: 0.5rem 0 0.5rem 1.2rem;
+  padding: 0.35rem 0.7rem;
   color: var(--warm-gray);
-  font-style: italic;
 }
 
-.article-preview-body code {
-  font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 0.85em;
+.admin-editor-tab-newtab:hover {
   background: var(--cream);
-  padding: 0.1em 0.4em;
-  border-radius: 3px;
-}
-
-.article-preview-body pre {
-  background: var(--cream);
-  border: 1px solid var(--border);
-  padding: 1rem;
-  overflow-x: auto;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-}
-
-.article-preview-body pre code {
-  background: none;
-  padding: 0;
-}
-
-.article-preview-body a {
   color: var(--dark);
-  text-decoration: underline;
-  text-underline-offset: 2px;
 }
 
-.article-preview-body hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 1.5rem 0;
+/* Inline preview wrapper — uses real guide classes with overrides */
+.article-preview-inline {
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--ivory);
 }
 
-.article-preview-body strong { font-weight: 600; }
-.article-preview-body em { font-style: italic; }
+.article-preview-inline .guide-hero {
+  padding: 2.8rem 2.5rem 2rem;
+}
+
+.article-preview-inline .guide-hero h1 {
+  font-size: 2.2rem;
+}
+
+.article-preview-inline .guide-hero .hero-subtitle {
+  margin-bottom: 0;
+}
+
+.article-preview-inline .guide-content {
+  padding: 2rem 2.5rem 2.5rem;
+}
