@@ -411,7 +411,7 @@
   admin:
     portal_label: 贡献者门户
     signin_title: 欢迎回来
-    signin_subtitle: 使用你的贡献者账号登录。
+    signin_subtitle: 使用您的贡献者账号登录。
     email_placeholder: 电子邮箱
     password_placeholder: 密码
     signin_btn: 登录
@@ -424,24 +424,24 @@
     signup_btn: 创建账号
     back_to_signin: 返回登录
     forgot_title: 重置密码
-    forgot_subtitle: 输入邮箱，我们将向你发送重置链接。
+    forgot_subtitle: 输入邮箱，我们将向您发送重置链接。
     forgot_btn: 发送重置邮件
     forgot_hint: 邮件可能需要几分钟才能到达。如果收件箱中没有，请检查垃圾邮件文件夹。
     dashboard_label: 控制台
     dashboard_title: 贡献者控制台
-    dashboard_subtitle: 管理你的个人资料、提交文章并追踪贡献记录。
+    dashboard_subtitle: 管理您的个人资料、提交文章并追踪贡献记录。
     profile_title: 个人资料
-    profile_desc: 更新你的显示名称和头像。
+    profile_desc: 更新您的显示名称和头像。
     avatar_upload_title: 点击上传新头像
     avatar_alt: 头像
     avatar_overlay: 更换
     avatar_hint: 点击头像以更换
     display_name_label: 显示名称
-    display_name_placeholder: 你的姓名
+    display_name_placeholder: 您的姓名
     email_label: 电子邮箱
     role_label: 身份
     profile_links_label: 个人主页链接
-    profile_links_hint: 添加你的 GitHub、个人网站等链接，将显示在你的作者页面上。
+    profile_links_hint: 添加您的 GitHub、个人网站等链接，将显示在您的作者页面上。
     add_link_btn: "+ 添加链接"
     links_limit: 最多添加 3 个链接。
     save_profile_btn: 保存资料
@@ -454,7 +454,7 @@
     language_label: 语言
     language_placeholder: 选择文章语言
     author_name_label: 作者姓名
-    author_name_placeholder: 你的姓名
+    author_name_placeholder: 您的姓名
     description_label: 简介
     description_placeholder: 文章简短摘要
     content_label: 正文（Markdown）
@@ -462,16 +462,16 @@
     preview_btn: "预览 \u2197"
     submit_btn: 提交审核
     featured_title: 精选文章
-    featured_desc: 最多置顶 3 篇文章，显示在你的作者页面精选区域。点击星号进行切换。
+    featured_desc: 最多置顶 3 篇文章，显示在您的作者页面精选区域。点击星号进行切换。
     loading: 加载中……
     register_label: 注册文章
-    register_hint: 如果你的文章是直接发布的（未通过此门户），请在此处填写详情以添加它。
+    register_hint: 如果您的文章是直接发布的（未通过此门户），请在此处填写详情以添加它。
     add_article_btn: 添加文章
     published_title: 我的已发布文章
-    published_desc: 以你的名义在网站上发布的文章。
+    published_desc: 以您的名义在网站上发布的文章。
     view_published: 查看我所有已发布的文章
     submissions_title: 我的投稿
-    submissions_desc: 追踪你已投稿文章的状态。
+    submissions_desc: 追踪您已投稿文章的状态。
     review_title: 审核投稿
     review_desc: 审核贡献者提交的文章。批准后生成 Markdown 文件，或附理由拒绝。
     filter_pending: 待审核
@@ -491,7 +491,7 @@
     err_too_many_requests: 尝试次数过多，请稍后再试。
     err_invalid_credential: 邮箱或密码无效，请重试。
     err_missing_password: 请输入密码。
-    err_network: 网络错误，请检查你的连接。
+    err_network: 网络错误，请检查您的连接。
     err_generic: 出了点问题，请重试。
     please_wait: 请稍候……
     passwords_no_match: 两次密码不一致。
@@ -506,15 +506,15 @@
     article_submitted: 文章提交成功！将在审核后发布。
     article_failed: 文章提交失败，请重试。
     featured_max: 最多精选 3 篇文章。
-    all_registered: 你的所有文章均已注册
+    all_registered: 您的所有文章均已注册
     select_register: 选择要注册的文章……
-    loading_panel_select: 加载你的文章中……
-    no_articles: 暂无已注册文章。请使用下方表单添加你的文章。
+    loading_panel_select: 加载您的文章中……
+    no_articles: 暂无已注册文章。请使用下方表单添加您的文章。
     load_articles_failed: 无法加载文章。
     featured_updated: 精选文章已更新。
     remove_featured: 从精选中移除
     add_featured: 添加到精选
-    no_submissions: 暂无投稿记录。在上方提交你的第一篇文章吧。
+    no_submissions: 暂无投稿记录。在上方提交您的第一篇文章吧。
     load_submissions_failed: 无法加载投稿记录，请稍后再试。
     just_now: 刚刚
     by_prefix: "作者："
@@ -535,7 +535,7 @@
     approving: 批准中……
     rejection_prompt: 拒绝原因（可选）：
     copied: 已复制！
-    no_token: 未找到 GitHub Token，请重新解锁管理面板并粘贴你的 Token。
+    no_token: 未找到 GitHub Token，请重新解锁管理面板并粘贴您的 Token。
     local_save_error: "本地保存失败。请确保 local-save-server.py 正在 4001 端口运行。\n\n运行：python3 website/local-save-server.py"
     github_error: "已在 Firestore 中批准，但发布到 GitHub 失败："
 - code: zh-TW
@@ -681,7 +681,7 @@
   admin:
     portal_label: 貢獻者門戶
     signin_title: 歡迎回來
-    signin_subtitle: 使用你的貢獻者帳號登入。
+    signin_subtitle: 使用您的貢獻者帳號登入。
     email_placeholder: 電子郵件
     password_placeholder: 密碼
     signin_btn: 登入
@@ -694,24 +694,24 @@
     signup_btn: 建立帳號
     back_to_signin: 返回登入
     forgot_title: 重設密碼
-    forgot_subtitle: 輸入郵件，我們將向你傳送重設連結。
+    forgot_subtitle: 輸入郵件，我們將向您傳送重設連結。
     forgot_btn: 傳送重設郵件
     forgot_hint: 郵件可能需要幾分鐘才能抵達。若收件匣中沒有，請檢查垃圾郵件資料夾。
     dashboard_label: 控制台
     dashboard_title: 貢獻者控制台
-    dashboard_subtitle: 管理你的個人資料、提交文章並追蹤貢獻紀錄。
+    dashboard_subtitle: 管理您的個人資料、提交文章並追蹤貢獻紀錄。
     profile_title: 個人資料
-    profile_desc: 更新你的顯示名稱和大頭貼。
+    profile_desc: 更新您的顯示名稱和大頭貼。
     avatar_upload_title: 點擊上傳新大頭貼
     avatar_alt: 大頭貼
     avatar_overlay: 更換
     avatar_hint: 點擊大頭貼以更換
     display_name_label: 顯示名稱
-    display_name_placeholder: 你的姓名
+    display_name_placeholder: 您的姓名
     email_label: 電子郵件
     role_label: 身分
     profile_links_label: 個人頁面連結
-    profile_links_hint: 新增你的 GitHub、個人網站等連結，將顯示在你的作者頁面上。
+    profile_links_hint: 新增您的 GitHub、個人網站等連結，將顯示在您的作者頁面上。
     add_link_btn: "+ 新增連結"
     links_limit: 最多新增 3 個連結。
     save_profile_btn: 儲存資料
@@ -724,7 +724,7 @@
     language_label: 語言
     language_placeholder: 選擇文章語言
     author_name_label: 作者姓名
-    author_name_placeholder: 你的姓名
+    author_name_placeholder: 您的姓名
     description_label: 簡介
     description_placeholder: 文章簡短摘要
     content_label: 正文（Markdown）
@@ -732,16 +732,16 @@
     preview_btn: "預覽 \u2197"
     submit_btn: 提交審核
     featured_title: 精選文章
-    featured_desc: 最多置頂 3 篇文章，顯示在你的作者頁面精選區域。點擊星號進行切換。
+    featured_desc: 最多置頂 3 篇文章，顯示在您的作者頁面精選區域。點擊星號進行切換。
     loading: 載入中……
     register_label: 註冊文章
-    register_hint: 如果你的文章是直接發布的（未透過此門戶），請在此填寫詳情以新增它。
+    register_hint: 如果您的文章是直接發布的（未透過此門戶），請在此填寫詳情以新增它。
     add_article_btn: 新增文章
     published_title: 我的已發布文章
-    published_desc: 以你名義在網站上發布的文章。
+    published_desc: 以您的名義在網站上發布的文章。
     view_published: 查看我所有已發布的文章
     submissions_title: 我的投稿
-    submissions_desc: 追蹤你已投稿文章的狀態。
+    submissions_desc: 追蹤您已投稿文章的狀態。
     review_title: 審核投稿
     review_desc: 審核貢獻者提交的文章。批准後生成 Markdown 檔案，或附理由拒絕。
     filter_pending: 待審核
@@ -761,7 +761,7 @@
     err_too_many_requests: 嘗試次數過多，請稍後再試。
     err_invalid_credential: 郵件或密碼無效，請重試。
     err_missing_password: 請輸入密碼。
-    err_network: 網路錯誤，請確認你的連線。
+    err_network: 網路錯誤，請確認您的連線。
     err_generic: 出了點問題，請重試。
     please_wait: 請稍候……
     passwords_no_match: 兩次密碼不一致。
@@ -776,15 +776,15 @@
     article_submitted: 文章提交成功！將在審核後發布。
     article_failed: 文章提交失敗，請重試。
     featured_max: 最多精選 3 篇文章。
-    all_registered: 你的所有文章均已註冊
+    all_registered: 您的所有文章均已註冊
     select_register: 選擇要註冊的文章……
-    loading_panel_select: 載入你的文章中……
-    no_articles: 暫無已註冊文章。請使用下方表單新增你的文章。
+    loading_panel_select: 載入您的文章中……
+    no_articles: 暫無已註冊文章。請使用下方表單新增您的文章。
     load_articles_failed: 無法載入文章。
     featured_updated: 精選文章已更新。
     remove_featured: 從精選中移除
     add_featured: 新增至精選
-    no_submissions: 暫無投稿記錄。在上方提交你的第一篇文章吧。
+    no_submissions: 暫無投稿記錄。在上方提交您的第一篇文章吧。
     load_submissions_failed: 無法載入投稿記錄，請稍後再試。
     just_now: 剛才
     by_prefix: "作者："
@@ -805,6 +805,6 @@
     approving: 批准中……
     rejection_prompt: 拒絕原因（可選）：
     copied: 已複製！
-    no_token: 未找到 GitHub Token，請重新解鎖管理面板並貼上你的 Token。
+    no_token: 未找到 GitHub Token，請重新解鎖管理面板並貼上您的 Token。
     local_save_error: "本機儲存失敗。請確保 local-save-server.py 正在 4001 埠運行。\n\n執行：python3 website/local-save-server.py"
     github_error: "已在 Firestore 中批准，但發布至 GitHub 失敗："

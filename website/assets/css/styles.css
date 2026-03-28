@@ -1645,6 +1645,9 @@ a.author-contact-value:hover {
   padding: 1.1rem 0;
   border-bottom: 1px solid var(--border);
 }
+.admin-submission-item:last-child {
+  border-bottom: none;
+}
 
 .admin-submission-main {
   flex: 1;
