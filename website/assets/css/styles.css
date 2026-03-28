@@ -2113,6 +2113,24 @@ a.author-contact-value:hover {
   margin-top: 0.75rem;
 }
 
+/* Admin register article form */
+.admin-register-article {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.admin-register-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-register-row .admin-input {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
 /* Admin featured star button */
 .admin-featured-star {
   background: none;

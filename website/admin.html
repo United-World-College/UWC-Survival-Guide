@@ -191,6 +191,15 @@ permalink: /admin/
           <div id="featured-articles-list">
             <p class="admin-empty-state">Loading...</p>
           </div>
+          <div class="admin-register-article">
+            <label class="admin-label">Register an Article</label>
+            <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">If your article was published directly (not through this portal), enter its details to add it here.</p>
+            <div class="admin-register-row">
+              <input type="text" id="register-guide-id" class="admin-input" placeholder="Guide ID (e.g. my-uwc-experience)" />
+              <input type="text" id="register-guide-title" class="admin-input" placeholder="Title" />
+              <button type="button" id="register-article-btn" class="admin-btn" style="white-space:nowrap;">Add Article</button>
+            </div>
+          </div>
           <p id="featured-success" class="admin-success" style="display:none;"></p>
         </div>
 
@@ -436,7 +445,7 @@ permalink: /admin/
       showView('view-dashboard');
       loadProfile(user);
       loadSubmissions(user.uid);
-      loadFeaturedPanel(user.uid);
+      initFeaturedPanel(user.uid);
       checkAdmin(user.email);
     } else {
       showView('view-signin');
@@ -699,6 +708,29 @@ permalink: /admin/
 
   // ── Featured Articles ──
   var currentFeaturedIds = [];
+  var currentUserId = null;
+  var featuredPanelInitialized = false;
+
+  function initFeaturedPanel(uid) {
+    currentUserId = uid;
+    if (!featuredPanelInitialized) {
+      featuredPanelInitialized = true;
+      document.getElementById('register-article-btn').addEventListener('click', function () {
+        var rawId = document.getElementById('register-guide-id').value.trim();
+        var guideId = rawId.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+        var title = document.getElementById('register-guide-title').value.trim() || guideId;
+        if (!guideId || !currentUserId) return;
+        db.collection('users').doc(currentUserId).update({
+          publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: guideId, title: title, category: '' })
+        }).then(function () {
+          document.getElementById('register-guide-id').value = '';
+          document.getElementById('register-guide-title').value = '';
+          loadFeaturedPanel(currentUserId);
+        });
+      });
+    }
+    loadFeaturedPanel(uid);
+  }
 
   function loadFeaturedPanel(uid) {
     db.collection('users').doc(uid).get().then(function (doc) {
@@ -707,42 +739,39 @@ permalink: /admin/
       if (!data.authorPage) return;
       currentFeaturedIds = data.featuredGuideIds || [];
       document.getElementById('featured-articles-card').style.display = 'block';
-      return db.collection('submissions')
-        .where('uid', '==', uid)
-        .where('status', '==', 'approved')
-        .get();
-    }).then(function (snapshot) {
-      if (!snapshot) return;
-      var list = document.getElementById('featured-articles-list');
-      if (snapshot.empty) {
-        list.innerHTML = '<p class="admin-empty-state">No published articles yet.</p>';
-        return;
-      }
-      var html = '<div class="admin-submissions">';
-      snapshot.forEach(function (doc) {
-        var d = doc.data();
-        var guideId = d.guide_id || '';
-        var isFeatured = currentFeaturedIds.indexOf(guideId) !== -1;
-        html += '<div class="admin-submission-item">';
-        html += '<div class="admin-submission-main">';
-        html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
-        html += '<div class="admin-submission-meta"><span>' + escapeHtml(d.category) + '</span></div>';
-        html += '</div>';
-        html += '<button type="button" class="admin-featured-star' + (isFeatured ? ' is-active' : '') + '" data-guide-id="' + escapeHtml(guideId) + '" title="' + (isFeatured ? 'Remove from featured' : 'Add to featured') + '">';
-        html += isFeatured ? '&#9733;' : '&#9734;';
-        html += '</button>';
-        html += '</div>';
-      });
-      html += '</div>';
-      list.innerHTML = html;
-      list.querySelectorAll('.admin-featured-star').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          toggleFeatured(uid, this.getAttribute('data-guide-id'), this);
-        });
-      });
+      renderFeaturedList(uid, data.publishedArticles || []);
     }).catch(function () {
       document.getElementById('featured-articles-list').innerHTML =
         '<p class="admin-empty-state">Could not load articles.</p>';
+    });
+  }
+
+  function renderFeaturedList(uid, articles) {
+    var list = document.getElementById('featured-articles-list');
+    if (!articles.length) {
+      list.innerHTML = '<p class="admin-empty-state">No articles registered yet. Use the form below to add your articles.</p>';
+      return;
+    }
+    var html = '<div class="admin-submissions">';
+    articles.forEach(function (article) {
+      var guideId = article.guide_id || '';
+      var isFeatured = currentFeaturedIds.indexOf(guideId) !== -1;
+      html += '<div class="admin-submission-item">';
+      html += '<div class="admin-submission-main">';
+      html += '<h3 class="admin-submission-title">' + escapeHtml(article.title || guideId) + '</h3>';
+      if (article.category) html += '<div class="admin-submission-meta"><span>' + escapeHtml(article.category) + '</span></div>';
+      html += '</div>';
+      html += '<button type="button" class="admin-featured-star' + (isFeatured ? ' is-active' : '') + '" data-guide-id="' + escapeHtml(guideId) + '" title="' + (isFeatured ? 'Remove from featured' : 'Add to featured') + '">';
+      html += isFeatured ? '&#9733;' : '&#9734;';
+      html += '</button>';
+      html += '</div>';
+    });
+    html += '</div>';
+    list.innerHTML = html;
+    list.querySelectorAll('.admin-featured-star').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        toggleFeatured(uid, this.getAttribute('data-guide-id'), this);
+      });
     });
   }
 
@@ -768,7 +797,6 @@ permalink: /admin/
         setTimeout(function () { document.getElementById('featured-success').style.display = 'none'; }, 2500);
       })
       .catch(function () {
-        // Revert
         if (isFeatured) {
           var i = currentFeaturedIds.indexOf(guideId);
           if (i !== -1) currentFeaturedIds.splice(i, 1);
@@ -1044,9 +1072,10 @@ permalink: /admin/
 
           // Update Firestore profile
           if (d.uid) {
-            db.collection('users').doc(d.uid).set({
-              authorPage: '/authors/' + authorSlug + '/'
-            }, { merge: true });
+            db.collection('users').doc(d.uid).set({ authorPage: '/authors/' + authorSlug + '/' }, { merge: true });
+            db.collection('users').doc(d.uid).update({
+              publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: slug, title: d.title, category: d.category })
+            }).catch(function () {});
           }
 
           // Auto-add to about.yml locally — read, check, append
@@ -1152,9 +1181,10 @@ permalink: /admin/
             }).then(function () {
               // Update contributor's Firestore profile with authorPage link
               if (d.uid) {
-                db.collection('users').doc(d.uid).set({
-                  authorPage: '/authors/' + authorSlug + '/'
-                }, { merge: true });
+                db.collection('users').doc(d.uid).set({ authorPage: '/authors/' + authorSlug + '/' }, { merge: true });
+                db.collection('users').doc(d.uid).update({
+                  publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: slug, title: d.title, category: d.category })
+                }).catch(function () {});
               }
 
               // Auto-add contributor to about.yml if not already listed
