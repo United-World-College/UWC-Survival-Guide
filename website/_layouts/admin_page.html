@@ -24,7 +24,7 @@ var EIC_IDS = [{% for p in site.data.about.editors_in_chief %}{{ p.id | jsonify 
 <!-- Site guide data for article registration validation -->
 <script>
 {% assign all_site_guide_ids = site.guides | map: "guide_id" | uniq %}
-var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides | where: "guide_id", gid | where: "language_code", "en" | first %}{% if g == nil %}{% assign g = site.guides | where: "guide_id", gid | first %}{% endif %}{"guide_id":{{ g.guide_id | jsonify }},"title":{{ g.title | jsonify }},"category":{{ g.category | default: "" | jsonify }},"author_id":{{ g.author_id | default: "" | jsonify }},"url":{{ g.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}];
+var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides | where: "guide_id", gid | where: "language_code", current_language_code | first %}{% if g == nil %}{% assign g = site.guides | where: "guide_id", gid | where: "language_code", "en" | first %}{% endif %}{% if g == nil %}{% assign g = site.guides | where: "guide_id", gid | first %}{% endif %}{"guide_id":{{ g.guide_id | jsonify }},"title":{{ g.title | jsonify }},"category":{{ g.category | default: "" | jsonify }},"author_id":{{ g.author_id | default: "" | jsonify }},"url":{{ g.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}];
 </script>
 
 <!-- Localised JS strings -->
@@ -95,7 +95,8 @@ var ADMIN_I18N = {
   approve_btn:          {{ t.approve_btn | jsonify }},
   reject_btn:           {{ t.reject_btn | jsonify }},
   copy_md_btn:          {{ t.copy_md_btn | jsonify }},
-  categories:           {{ current_locale.categories | jsonify }}
+  categories:           {{ current_locale.categories | jsonify }},
+  lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }}
 };
 </script>
 
@@ -585,7 +586,7 @@ var ADMIN_I18N = {
           var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? '' : '/UWC-Survival-Guide';
           document.getElementById('published-articles-link').innerHTML =
-            '<a href="' + baseUrl + data.authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">' + ADMIN_I18N.view_published + '</a>';
+            '<a href="' + baseUrl + ADMIN_I18N.lang_prefix + data.authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">' + ADMIN_I18N.view_published + '</a>';
         }
       } else {
         db.collection('users').doc(user.uid).set({
