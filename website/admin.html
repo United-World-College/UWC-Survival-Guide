@@ -502,6 +502,10 @@ var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides 
   function showAvatarImage(url) {
     var img = document.getElementById('avatar-img');
     var placeholder = document.getElementById('avatar-placeholder');
+    img.onerror = function () {
+      img.style.display = 'none';
+      placeholder.style.display = 'flex';
+    };
     img.src = url;
     img.style.display = 'block';
     placeholder.style.display = 'none';
