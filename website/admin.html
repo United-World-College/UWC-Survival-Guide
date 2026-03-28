@@ -7,6 +7,12 @@ permalink: /admin/
 <!-- Markdown renderer -->
 <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
 
+<!-- Site guide data for article registration validation -->
+<script>
+{% assign all_site_guide_ids = site.guides | map: "guide_id" | uniq %}
+var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides | where: "guide_id", gid | first %}{"guide_id":{{ g.guide_id | jsonify }},"title":{{ g.title | jsonify }},"category":{{ g.category | default: "" | jsonify }},"author_id":{{ g.author_id | default: "" | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}];
+</script>
+
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -195,8 +201,9 @@ permalink: /admin/
             <label class="admin-label">Register an Article</label>
             <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">If your article was published directly (not through this portal), enter its details to add it here.</p>
             <div class="admin-register-row">
-              <input type="text" id="register-guide-id" class="admin-input" placeholder="Guide ID (e.g. my-uwc-experience)" />
-              <input type="text" id="register-guide-title" class="admin-input" placeholder="Title" />
+              <select id="register-guide-select" class="admin-input admin-select">
+                <option value="">Loading your articles...</option>
+              </select>
               <button type="button" id="register-article-btn" class="admin-btn" style="white-space:nowrap;">Add Article</button>
             </div>
           </div>
@@ -716,15 +723,15 @@ permalink: /admin/
     if (!featuredPanelInitialized) {
       featuredPanelInitialized = true;
       document.getElementById('register-article-btn').addEventListener('click', function () {
-        var rawId = document.getElementById('register-guide-id').value.trim();
-        var guideId = rawId.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
-        var title = document.getElementById('register-guide-title').value.trim() || guideId;
+        var sel = document.getElementById('register-guide-select');
+        var opt = sel.options[sel.selectedIndex];
+        var guideId = sel.value;
         if (!guideId || !currentUserId) return;
+        var title = opt.getAttribute('data-title') || guideId;
+        var category = opt.getAttribute('data-category') || '';
         db.collection('users').doc(currentUserId).update({
-          publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: guideId, title: title, category: '' })
+          publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: guideId, title: title, category: category })
         }).then(function () {
-          document.getElementById('register-guide-id').value = '';
-          document.getElementById('register-guide-title').value = '';
           loadFeaturedPanel(currentUserId);
         });
       });
@@ -739,6 +746,25 @@ permalink: /admin/
       if (!data.authorPage) return;
       currentFeaturedIds = data.featuredGuideIds || [];
       document.getElementById('featured-articles-card').style.display = 'block';
+
+      // Populate dropdown with guides belonging to this author that aren't yet registered
+      var authorId = (data.authorPage || '').replace(/^\/authors\//, '').replace(/\/$/, '');
+      var registered = (data.publishedArticles || []).map(function (a) { return a.guide_id; });
+      var sel = document.getElementById('register-guide-select');
+      if (typeof SITE_GUIDES !== 'undefined') {
+        var available = SITE_GUIDES.filter(function (g) {
+          return g.author_id === authorId && registered.indexOf(g.guide_id) === -1;
+        });
+        if (!available.length) {
+          sel.innerHTML = '<option value="">All your articles are registered</option>';
+        } else {
+          sel.innerHTML = '<option value="">Select an article to register…</option>' +
+            available.map(function (g) {
+              return '<option value="' + escapeHtml(g.guide_id) + '" data-title="' + escapeHtml(g.title) + '" data-category="' + escapeHtml(g.category) + '">' + escapeHtml(g.title) + '</option>';
+            }).join('');
+        }
+      }
+
       renderFeaturedList(uid, data.publishedArticles || []);
     }).catch(function () {
       document.getElementById('featured-articles-list').innerHTML =

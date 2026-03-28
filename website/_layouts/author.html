@@ -302,10 +302,20 @@
 
       var track = document.getElementById('author-featured-track');
       if (!track) return;
+      var categoryColors = {
+        'College Application': '#4a3828',
+        'Life Reflections': '#2d3e32',
+        'Life Musings': '#2d3e32',
+        'Academics': '#28303e'
+      };
+
       track.innerHTML = featuredGuides.map(function (g) {
+        var bg = categoryColors[g.category] || '#2c2a26';
         return '<a href="' + g.url + '" class="author-featured-card">' +
-          '<div class="author-featured-img"><span>' + esc(g.category) + '</span></div>' +
+          '<div class="author-featured-img" style="background:' + bg + ';">' +
+          '<span class="author-featured-cat">' + esc(g.category) + '</span>' +
           '<h3 class="author-featured-title">' + esc(g.title) + '</h3>' +
+          '</div>' +
           '<p class="author-featured-date">' + esc(g.published) + '</p>' +
           '</a>';
       }).join('');
