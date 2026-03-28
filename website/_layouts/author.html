@@ -175,13 +175,7 @@
     <div class="divider"></div>
     <section class="section author-section-cards">
       <p class="section-label">Featured</p>
-      <div class="author-featured-wrap">
-        <div class="author-featured-track" id="author-featured-track"></div>
-        <div class="author-featured-nav" id="author-featured-nav" style="display:none;">
-          <button class="author-featured-btn" id="feat-prev">&#8592;</button>
-          <button class="author-featured-btn" id="feat-next">&#8594;</button>
-        </div>
-      </div>
+      <div class="author-latest-list" id="author-featured-list"></div>
     </section>
   </div>
 
@@ -300,38 +294,28 @@
 
       function esc(s) { var d = document.createElement('div'); d.appendChild(document.createTextNode(s || '')); return d.innerHTML; }
 
-      var track = document.getElementById('author-featured-track');
-      if (!track) return;
-      var categoryColors = {
-        'College Application': '#4a3828',
-        'Life Reflections': '#2d3e32',
-        'Life Musings': '#2d3e32',
-        'Academics': '#28303e'
-      };
+      var featuredList = document.getElementById('author-featured-list');
+      if (!featuredList) return;
 
-      track.innerHTML = featuredGuides.map(function (g) {
-        var bg = categoryColors[g.category] || '#2c2a26';
-        return '<a href="' + g.url + '" class="author-featured-card">' +
-          '<div class="author-featured-img" style="background:' + bg + ';">' +
-          '<span class="author-featured-cat">' + esc(g.category) + '</span>' +
-          '<h3 class="author-featured-title">' + esc(g.title) + '</h3>' +
+      featuredList.innerHTML = featuredGuides.map(function (g) {
+        var versionsHtml = g.versions && g.versions.length > 1
+          ? '<div class="author-latest-versions">' +
+            g.versions.map(function (v) {
+              return '<a href="' + v.url + '" class="translation-pill">' + esc(v.language_name) + '</a>';
+            }).join('') + '</div>'
+          : '';
+        return '<div class="author-latest-item">' +
+          '<span class="author-latest-date">' + esc(g.published) + '</span>' +
+          '<div class="author-latest-body">' +
+          '<p class="author-latest-category">' + esc(g.category) + '</p>' +
+          '<h3><a href="' + g.url + '">' + esc(g.title) + '</a></h3>' +
+          (g.description ? '<p class="author-latest-desc">' + esc(g.description) + '</p>' : '') +
+          versionsHtml +
           '</div>' +
-          '<p class="author-featured-date">' + esc(g.published) + '</p>' +
-          '</a>';
+          '</div>';
       }).join('');
 
       document.getElementById('author-featured-section').style.display = 'block';
-
-      if (featuredGuides.length > 2) {
-        var nav = document.getElementById('author-featured-nav');
-        nav.style.display = 'flex';
-        document.getElementById('feat-prev').addEventListener('click', function () {
-          track.scrollBy({ left: -320, behavior: 'smooth' });
-        });
-        document.getElementById('feat-next').addEventListener('click', function () {
-          track.scrollBy({ left: 320, behavior: 'smooth' });
-        });
-      }
     });
   })();
   </script>

@@ -1962,93 +1962,6 @@ a.author-contact-value:hover {
   margin: 0 auto;
 }
 
-.author-featured-wrap {
-  position: relative;
-}
-
-.author-featured-track {
-  display: flex;
-  gap: 1.5rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  padding-bottom: 0.25rem;
-}
-
-.author-featured-track::-webkit-scrollbar { display: none; }
-
-.author-featured-card {
-  flex: 0 0 calc(50% - 0.75rem);
-  min-width: 240px;
-  text-decoration: none;
-  color: var(--dark);
-  scroll-snap-align: start;
-  display: block;
-  transition: opacity 0.2s;
-}
-
-.author-featured-card:hover { opacity: 0.8; }
-
-.author-featured-img {
-  width: 100%;
-  aspect-ratio: 3 / 2;
-  background: var(--dark);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.1rem 1.2rem 1.3rem;
-  margin-bottom: 0.8rem;
-}
-
-.author-featured-cat {
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: rgba(246, 244, 240, 0.45);
-}
-
-.author-featured-title {
-  font-family: var(--serif);
-  font-size: 1.35rem;
-  font-weight: 500;
-  line-height: 1.25;
-  color: var(--ivory);
-}
-
-.author-featured-date {
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-
-.author-featured-nav {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 1.25rem;
-}
-
-.author-featured-btn {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--border);
-  background: none;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--dark);
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.author-featured-btn:hover {
-  background: var(--dark);
-  border-color: var(--dark);
-  color: var(--ivory);
-}
 
 /* Latest list */
 .author-latest-list {
@@ -2154,7 +2067,6 @@ a.author-contact-value:hover {
 }
 
 @media (max-width: 768px) {
-  .author-featured-card { flex: 0 0 80%; }
   .author-latest-item { grid-template-columns: 1fr; gap: 0.5rem; }
   .author-latest-date { padding-top: 0; }
 }
