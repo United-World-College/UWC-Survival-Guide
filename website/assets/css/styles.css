@@ -1555,7 +1555,9 @@ a.author-contact-value:hover {
 
 .admin-avatar-wrap {
   flex-shrink: 0;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .admin-avatar {
