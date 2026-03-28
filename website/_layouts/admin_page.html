@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="{{ page.language_code | default: site.lang | default: 'en' }}">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  {% include nav.html %}
+
+  {% assign current_language_code = page.language_code | default: site.lang | default: 'en' %}
+  {% assign current_locale = site.data.page_copy | where: "code", current_language_code | first %}
+  {% if current_locale == nil %}
+    {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
+  {% endif %}
+  {% assign t = current_locale.admin %}
+
+<!-- Markdown renderer -->
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+
+<!-- EIC IDs for role display -->
+<script>
+var EIC_IDS = [{% for p in site.data.about.editors_in_chief %}{{ p.id | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}];
+</script>
+
+<!-- Site guide data for article registration validation -->
+<script>
+{% assign all_site_guide_ids = site.guides | map: "guide_id" | uniq %}
+var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides | where: "guide_id", gid | where: "language_code", "en" | first %}{% if g == nil %}{% assign g = site.guides | where: "guide_id", gid | first %}{% endif %}{"guide_id":{{ g.guide_id | jsonify }},"title":{{ g.title | jsonify }},"category":{{ g.category | default: "" | jsonify }},"author_id":{{ g.author_id | default: "" | jsonify }},"url":{{ g.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}];
+</script>
+
+<!-- Localised JS strings -->
+<script>
+var ADMIN_I18N = {
+  err_email_exists:     {{ t.err_email_exists | jsonify }},
+  err_invalid_email:    {{ t.err_invalid_email | jsonify }},
+  err_user_disabled:    {{ t.err_user_disabled | jsonify }},
+  err_user_not_found:   {{ t.err_user_not_found | jsonify }},
+  err_wrong_password:   {{ t.err_wrong_password | jsonify }},
+  err_weak_password:    {{ t.err_weak_password | jsonify }},
+  err_too_many_requests:{{ t.err_too_many_requests | jsonify }},
+  err_invalid_credential:{{ t.err_invalid_credential | jsonify }},
+  err_missing_password: {{ t.err_missing_password | jsonify }},
+  err_network:          {{ t.err_network | jsonify }},
+  err_generic:          {{ t.err_generic | jsonify }},
+  please_wait:          {{ t.please_wait | jsonify }},
+  passwords_no_match:   {{ t.passwords_no_match | jsonify }},
+  reset_email_sent:     {{ t.reset_email_sent | jsonify }},
+  image_file_only:      {{ t.image_file_only | jsonify }},
+  image_too_large:      {{ t.image_too_large | jsonify }},
+  uploading_photo:      {{ t.uploading_photo | jsonify }},
+  photo_failed:         {{ t.photo_failed | jsonify }},
+  link_label_ph:        {{ t.link_label_ph | jsonify }},
+  profile_saved:        {{ t.profile_saved | jsonify }},
+  err_fill_all:         {{ t.err_fill_all | jsonify }},
+  article_submitted:    {{ t.article_submitted | jsonify }},
+  article_failed:       {{ t.article_failed | jsonify }},
+  featured_max:         {{ t.featured_max | jsonify }},
+  all_registered:       {{ t.all_registered | jsonify }},
+  select_register:      {{ t.select_register | jsonify }},
+  loading_panel_select: {{ t.loading_panel_select | jsonify }},
+  no_articles:          {{ t.no_articles | jsonify }},
+  load_articles_failed: {{ t.load_articles_failed | jsonify }},
+  featured_updated:     {{ t.featured_updated | jsonify }},
+  remove_featured:      {{ t.remove_featured | jsonify }},
+  add_featured:         {{ t.add_featured | jsonify }},
+  no_submissions:       {{ t.no_submissions | jsonify }},
+  load_submissions_failed: {{ t.load_submissions_failed | jsonify }},
+  just_now:             {{ t.just_now | jsonify }},
+  by_prefix:            {{ t.by_prefix | jsonify }},
+  author_unknown:       {{ t.author_unknown | jsonify }},
+  no_filter_prefix:     {{ t.no_filter_prefix | jsonify }},
+  no_filter_sep:        {{ t.no_filter_sep | jsonify }},
+  no_filter_suffix:     {{ t.no_filter_suffix | jsonify }},
+  load_review_failed:   {{ t.load_review_failed | jsonify }},
+  loading_submissions:  {{ t.loading_submissions | jsonify }},
+  loading:              {{ t.loading | jsonify }},
+  preview_banner:       {{ t.preview_banner | jsonify }},
+  preview_by:           {{ t.preview_by | jsonify }},
+  status_pending:       {{ t.status_pending | jsonify }},
+  status_approved:      {{ t.status_approved | jsonify }},
+  status_rejected:      {{ t.status_rejected | jsonify }},
+  filter_pending:       {{ t.filter_pending | jsonify }},
+  filter_approved:      {{ t.filter_approved | jsonify }},
+  filter_rejected:      {{ t.filter_rejected | jsonify }},
+  filter_all:           {{ t.filter_all | jsonify }},
+  role_eic:             {{ t.role_eic | jsonify }},
+  role_contributor:     {{ t.role_contributor | jsonify }},
+  rejecting:            {{ t.rejecting | jsonify }},
+  approving:            {{ t.approving | jsonify }},
+  rejection_prompt:     {{ t.rejection_prompt | jsonify }},
+  copied:               {{ t.copied | jsonify }},
+  view_published:       {{ t.view_published | jsonify }},
+  no_token:             {{ t.no_token | jsonify }},
+  local_save_error:     {{ t.local_save_error | jsonify }},
+  github_error:         {{ t.github_error | jsonify }},
+  approve_btn:          {{ t.approve_btn | jsonify }},
+  reject_btn:           {{ t.reject_btn | jsonify }},
+  copy_md_btn:          {{ t.copy_md_btn | jsonify }}
+};
+</script>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+
+<div class="admin-wrapper">
+
+  <!-- ═══ Auth Views ═══ -->
+
+  <!-- Sign In -->
+  <div id="view-signin" class="admin-login">
+    <div class="admin-login-box">
+      <p class="section-label">{{ t.portal_label }}</p>
+      <h1 class="admin-login-title">{{ t.signin_title }}</h1>
+      <p class="admin-login-subtitle">{{ t.signin_subtitle }}</p>
+      <form id="signin-form" class="admin-login-form">
+        <input type="email" id="signin-email" class="admin-input" placeholder="{{ t.email_placeholder }}" autocomplete="email" required />
+        <input type="password" id="signin-password" class="admin-input" placeholder="{{ t.password_placeholder }}" autocomplete="current-password" required />
+        <button type="submit" class="admin-btn" id="signin-btn">{{ t.signin_btn }}</button>
+      </form>
+      <p id="signin-error" class="admin-error" style="display:none;"></p>
+      <div class="admin-auth-links">
+        <a href="#" id="goto-signup">{{ t.create_account_link }}</a>
+        <span class="admin-auth-sep">&middot;</span>
+        <a href="#" id="goto-forgot">{{ t.forgot_link }}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sign Up -->
+  <div id="view-signup" class="admin-login" style="display:none;">
+    <div class="admin-login-box">
+      <p class="section-label">{{ t.portal_label }}</p>
+      <h1 class="admin-login-title">{{ t.signup_title }}</h1>
+      <p class="admin-login-subtitle">{{ t.signup_subtitle }}</p>
+      <form id="signup-form" class="admin-login-form">
+        <input type="email" id="signup-email" class="admin-input" placeholder="{{ t.email_placeholder }}" autocomplete="email" required />
+        <input type="password" id="signup-password" class="admin-input" placeholder="{{ t.password_min_placeholder }}" autocomplete="new-password" required minlength="6" />
+        <input type="password" id="signup-confirm" class="admin-input" placeholder="{{ t.confirm_placeholder }}" autocomplete="new-password" required minlength="6" />
+        <button type="submit" class="admin-btn" id="signup-btn">{{ t.signup_btn }}</button>
+      </form>
+      <p id="signup-error" class="admin-error" style="display:none;"></p>
+      <div class="admin-auth-links">
+        <a href="#" id="goto-signin-from-signup">{{ t.back_to_signin }}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password -->
+  <div id="view-forgot" class="admin-login" style="display:none;">
+    <div class="admin-login-box">
+      <p class="section-label">{{ t.portal_label }}</p>
+      <h1 class="admin-login-title">{{ t.forgot_title }}</h1>
+      <p class="admin-login-subtitle">{{ t.forgot_subtitle }}</p>
+      <form id="forgot-form" class="admin-login-form">
+        <input type="email" id="forgot-email" class="admin-input" placeholder="{{ t.email_placeholder }}" autocomplete="email" required />
+        <button type="submit" class="admin-btn" id="forgot-btn">{{ t.forgot_btn }}</button>
+      </form>
+      <p style="font-size:0.82rem;color:var(--warm-gray);margin-top:0.8rem;line-height:1.6;">{{ t.forgot_hint }}</p>
+      <p id="forgot-error" class="admin-error" style="display:none;"></p>
+      <p id="forgot-success" class="admin-success" style="display:none;"></p>
+      <div class="admin-auth-links">
+        <a href="#" id="goto-signin-from-forgot">{{ t.back_to_signin }}</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Dashboard ═══ -->
+  <div id="view-dashboard" class="admin-dashboard" style="display:none;">
+
+    <div class="admin-hero">
+      <div class="admin-hero-content">
+        <p class="section-label">{{ t.dashboard_label }}</p>
+        <h1 class="admin-hero-title">{{ t.dashboard_title }}</h1>
+        <p class="admin-hero-subtitle">{{ t.dashboard_subtitle }}</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="admin-section">
+      <div class="admin-panel">
+
+        <!-- Profile Card -->
+        <div class="admin-card">
+          <h2 class="admin-card-title">{{ t.profile_title }}</h2>
+          <p class="admin-card-desc">{{ t.profile_desc }}</p>
+
+          <div class="admin-profile-layout">
+            <div class="admin-avatar-wrap">
+              <div class="admin-avatar" id="avatar-preview" title="{{ t.avatar_upload_title }}">
+                <span class="admin-avatar-placeholder" id="avatar-placeholder">?</span>
+                <img id="avatar-img" src="" alt="{{ t.avatar_alt }}" style="display:none;" />
+                <div class="admin-avatar-overlay">{{ t.avatar_overlay }}</div>
+              </div>
+              <input type="file" id="avatar-input" accept="image/*" style="display:none;" />
+              <p class="admin-avatar-hint">{{ t.avatar_hint }}</p>
+            </div>
+
+            <div class="admin-profile-fields">
+              <div class="admin-field">
+                <label class="admin-label" for="profile-name">{{ t.display_name_label }} <span id="profile-name-count" style="font-weight:400;color:var(--warm-gray);font-size:0.75rem;"></span></label>
+                <input type="text" id="profile-name" class="admin-input" placeholder="{{ t.display_name_placeholder }}" maxlength="40" />
+              </div>
+              <div class="admin-field">
+                <label class="admin-label" for="profile-email">{{ t.email_label }}</label>
+                <input type="email" id="profile-email" class="admin-input" disabled />
+              </div>
+              <div class="admin-field" id="profile-role-field" style="display:none;">
+                <label class="admin-label">{{ t.role_label }}</label>
+                <span id="profile-role-badge" class="admin-role-badge"></span>
+              </div>
+              <div class="admin-field">
+                <label class="admin-label">{{ t.profile_links_label }}</label>
+                <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">{{ t.profile_links_hint }}</p>
+                <div id="profile-links-list"></div>
+                <button type="button" id="add-link-btn" class="admin-btn admin-btn-outline" style="margin-top:0.5rem;font-size:0.78rem;padding:0.5rem 1.2rem;">{{ t.add_link_btn }}</button>
+                <p id="links-limit-note" style="display:none;font-size:0.75rem;color:var(--warm-gray);margin-top:0.4rem;">{{ t.links_limit }}</p>
+              </div>
+              <button type="button" id="save-profile-btn" class="admin-btn">{{ t.save_profile_btn }}</button>
+              <p id="profile-success" class="admin-success" style="display:none;"></p>
+              <p id="profile-error" class="admin-error" style="display:none;"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Article -->
+        <div class="admin-card">
+          <h2 class="admin-card-title">{{ t.submit_title }}</h2>
+          <p class="admin-card-desc">{{ t.submit_desc }}</p>
+
+          <form id="article-form" class="admin-form">
+            <div class="admin-field">
+              <label class="admin-label" for="article-title">{{ t.article_title_label }}</label>
+              <input type="text" id="article-title" class="admin-input" placeholder="{{ t.article_title_placeholder }}" required />
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="article-category">{{ t.category_label }}</label>
+              <select id="article-category" class="admin-input admin-select" required>
+                <option value="" disabled selected>{{ t.category_placeholder }}</option>
+                <option value="College Application">College Application</option>
+                <option value="Life Reflections">人生杂谈 / Life Reflections</option>
+                <option value="Academics">Academics</option>
+              </select>
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="article-language">{{ t.language_label }}</label>
+              <select id="article-language" class="admin-input admin-select" required>
+                <option value="" disabled selected>{{ t.language_placeholder }}</option>
+                <option value="en">English</option>
+                <option value="zh-CN">简体中文</option>
+                <option value="zh-TW">台灣繁體</option>
+              </select>
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="article-author">{{ t.author_name_label }}</label>
+              <input type="text" id="article-author" class="admin-input" placeholder="{{ t.author_name_placeholder }}" required disabled />
+            </div>
+
+            <div class="admin-field">
+              <label class="admin-label" for="article-description">{{ t.description_label }}</label>
+              <input type="text" id="article-description" class="admin-input" placeholder="{{ t.description_placeholder }}" required />
+            </div>
+
+            <div class="admin-field">
+              <div class="admin-editor-header">
+                <label class="admin-label" for="article-content">{{ t.content_label }}</label>
+                <button type="button" class="admin-editor-tab admin-editor-tab-newtab" id="tab-open-newtab" title="{{ t.preview_btn }}">{{ t.preview_btn }}</button>
+              </div>
+              <textarea id="article-content" class="admin-input admin-textarea" rows="14" placeholder="{{ t.content_placeholder }}" required></textarea>
+            </div>
+
+            <button type="submit" class="admin-btn" id="submit-article-btn">{{ t.submit_btn }}</button>
+          </form>
+          <p id="article-success" class="admin-success" style="display:none;"></p>
+          <p id="article-error" class="admin-error" style="display:none;"></p>
+        </div>
+
+        <!-- Featured Articles -->
+        <div id="featured-articles-card" class="admin-card" style="display:none;">
+          <h2 class="admin-card-title">{{ t.featured_title }}</h2>
+          <p class="admin-card-desc">{{ t.featured_desc }}</p>
+          <div id="featured-articles-list">
+            <p class="admin-empty-state">{{ t.loading }}</p>
+          </div>
+          <div class="admin-register-article">
+            <label class="admin-label">{{ t.register_label }}</label>
+            <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">{{ t.register_hint }}</p>
+            <div class="admin-register-row">
+              <select id="register-guide-select" class="admin-input admin-select">
+                <option value="">{{ t.loading_panel_select }}</option>
+              </select>
+              <button type="button" id="register-article-btn" class="admin-btn" style="white-space:nowrap;">{{ t.add_article_btn }}</button>
+            </div>
+          </div>
+          <p id="featured-success" class="admin-success" style="display:none;"></p>
+        </div>
+
+        <!-- Published Articles -->
+        <div id="published-articles-card" class="admin-card" style="display:none;">
+          <h2 class="admin-card-title">{{ t.published_title }}</h2>
+          <p class="admin-card-desc">{{ t.published_desc }}</p>
+          <div id="published-articles-link"></div>
+        </div>
+
+        <!-- My Submissions -->
+        <div class="admin-card">
+          <h2 class="admin-card-title">{{ t.submissions_title }}</h2>
+          <p class="admin-card-desc">{{ t.submissions_desc }}</p>
+          <div id="submissions-list">
+            <p class="admin-empty-state">{{ t.loading_submissions }}</p>
+          </div>
+        </div>
+
+        <!-- Admin Review Panel (auto-shown for admin accounts) -->
+        <div id="admin-review-panel" style="display:none;">
+          <div class="admin-card">
+            <h2 class="admin-card-title">{{ t.review_title }}</h2>
+            <p class="admin-card-desc">{{ t.review_desc }}</p>
+            <div class="admin-review-tabs">
+              <button type="button" class="admin-tab active" data-filter="pending">{{ t.filter_pending }}</button>
+              <button type="button" class="admin-tab" data-filter="approved">{{ t.filter_approved }}</button>
+              <button type="button" class="admin-tab" data-filter="rejected">{{ t.filter_rejected }}</button>
+              <button type="button" class="admin-tab" data-filter="all">{{ t.filter_all }}</button>
+            </div>
+            <div id="review-list">
+              <p class="admin-empty-state">{{ t.loading }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submission Detail Modal -->
+        <div id="review-modal" class="admin-modal" style="display:none;">
+          <div class="admin-modal-backdrop"></div>
+          <div class="admin-modal-content">
+            <div class="admin-modal-header">
+              <h2 id="modal-title" class="admin-card-title"></h2>
+              <button type="button" id="modal-close" class="admin-modal-close">&times;</button>
+            </div>
+            <div class="admin-modal-meta">
+              <span id="modal-author"></span>
+              <span class="admin-auth-sep">&middot;</span>
+              <span id="modal-category"></span>
+              <span class="admin-auth-sep">&middot;</span>
+              <span id="modal-date"></span>
+              <span class="admin-auth-sep">&middot;</span>
+              <span id="modal-status-badge" class="admin-status"></span>
+            </div>
+            <p id="modal-description" class="admin-card-desc"></p>
+            <div class="admin-modal-body">
+              <pre id="modal-content" class="admin-preview-content"></pre>
+            </div>
+            <div id="modal-actions" class="admin-modal-actions">
+              <button type="button" id="modal-approve" class="admin-btn">{{ t.approve_btn }}</button>
+              <button type="button" id="modal-reject" class="admin-btn admin-btn-outline admin-btn-danger">{{ t.reject_btn }}</button>
+            </div>
+            <div id="modal-md-output" style="display:none;">
+              <pre id="modal-md-content" class="admin-preview-content"></pre>
+              <button type="button" id="modal-copy-md" class="admin-btn" style="margin-top:1rem;">{{ t.copy_md_btn }}</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sign Out -->
+        <div class="admin-signout-wrap">
+          <button type="button" id="signout-btn" class="admin-btn admin-btn-outline">{{ t.signout_btn }}</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  // ── Firebase Init ──
+  var firebaseConfig = {
+    apiKey: "AIzaSyC2PkxnmMwJiD73ouo8Jxmk536_A2RkNy8",
+    authDomain: "uwc-survival-guide.firebaseapp.com",
+    projectId: "uwc-survival-guide",
+    storageBucket: "uwc-survival-guide.firebasestorage.app",
+    messagingSenderId: "239920982978",
+    appId: "1:239920982978:web:5ddd10c09ba0153956045b",
+    measurementId: "G-9NHVLYWGFV"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  var auth = firebase.auth();
+  var db = firebase.firestore();
+  var storage = firebase.storage();
+
+  // ── View Management ──
+  var views = ['view-signin', 'view-signup', 'view-forgot', 'view-dashboard'];
+
+  function showView(id) {
+    views.forEach(function (v) {
+      document.getElementById(v).style.display = v === id ? '' : 'none';
+    });
+    if (id === 'view-dashboard') {
+      document.getElementById(id).style.display = 'block';
+    } else {
+      document.getElementById(id).style.display = 'flex';
+    }
+  }
+
+  function clearErrors() {
+    var errors = document.querySelectorAll('.admin-error, .admin-success');
+    errors.forEach(function (el) { el.style.display = 'none'; el.textContent = ''; });
+  }
+
+  function showError(elId, msg) {
+    var el = document.getElementById(elId);
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function showSuccess(elId, msg) {
+    var el = document.getElementById(elId);
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function friendlyError(code) {
+    var map = {
+      'auth/email-already-in-use': ADMIN_I18N.err_email_exists,
+      'auth/invalid-email':        ADMIN_I18N.err_invalid_email,
+      'auth/user-disabled':        ADMIN_I18N.err_user_disabled,
+      'auth/user-not-found':       ADMIN_I18N.err_user_not_found,
+      'auth/wrong-password':       ADMIN_I18N.err_wrong_password,
+      'auth/weak-password':        ADMIN_I18N.err_weak_password,
+      'auth/too-many-requests':    ADMIN_I18N.err_too_many_requests,
+      'auth/invalid-credential':   ADMIN_I18N.err_invalid_credential,
+      'auth/missing-password':     ADMIN_I18N.err_missing_password,
+      'auth/network-request-failed': ADMIN_I18N.err_network
+    };
+    return map[code] || ADMIN_I18N.err_generic;
+  }
+
+  function getStatusLabel(status) {
+    return ADMIN_I18N['status_' + status] || (status.charAt(0).toUpperCase() + status.slice(1));
+  }
+
+  function setLoading(btnId, loading) {
+    var btn = document.getElementById(btnId);
+    if (loading) {
+      btn.dataset.originalText = btn.textContent;
+      btn.textContent = ADMIN_I18N.please_wait;
+      btn.disabled = true;
+      btn.style.opacity = '0.6';
+    } else {
+      btn.textContent = btn.dataset.originalText || btn.textContent;
+      btn.disabled = false;
+      btn.style.opacity = '';
+    }
+  }
+
+  // ── Navigation between auth views ──
+  document.getElementById('goto-signup').addEventListener('click', function (e) {
+    e.preventDefault(); clearErrors(); showView('view-signup');
+  });
+  document.getElementById('goto-forgot').addEventListener('click', function (e) {
+    e.preventDefault(); clearErrors(); showView('view-forgot');
+  });
+  document.getElementById('goto-signin-from-signup').addEventListener('click', function (e) {
+    e.preventDefault(); clearErrors(); showView('view-signin');
+  });
+  document.getElementById('goto-signin-from-forgot').addEventListener('click', function (e) {
+    e.preventDefault(); clearErrors(); showView('view-signin');
+  });
+
+  // ── Sign In ──
+  document.getElementById('signin-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearErrors();
+    var email = document.getElementById('signin-email').value.trim();
+    var password = document.getElementById('signin-password').value;
+    setLoading('signin-btn', true);
+    auth.signInWithEmailAndPassword(email, password)
+      .then(function () { setLoading('signin-btn', false); })
+      .catch(function (err) {
+        setLoading('signin-btn', false);
+        showError('signin-error', friendlyError(err.code));
+      });
+  });
+
+  // ── Sign Up ──
+  document.getElementById('signup-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearErrors();
+    var email = document.getElementById('signup-email').value.trim();
+    var password = document.getElementById('signup-password').value;
+    var confirm = document.getElementById('signup-confirm').value;
+    if (password !== confirm) {
+      showError('signup-error', ADMIN_I18N.passwords_no_match);
+      return;
+    }
+    setLoading('signup-btn', true);
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(function (cred) {
+        return db.collection('users').doc(cred.user.uid).set({
+          displayName: '',
+          photoURL: '',
+          email: email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      })
+      .then(function () { setLoading('signup-btn', false); })
+      .catch(function (err) {
+        setLoading('signup-btn', false);
+        showError('signup-error', friendlyError(err.code));
+      });
+  });
+
+  // ── Forgot Password ──
+  document.getElementById('forgot-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearErrors();
+    var email = document.getElementById('forgot-email').value.trim();
+    setLoading('forgot-btn', true);
+    auth.sendPasswordResetEmail(email)
+      .then(function () {
+        setLoading('forgot-btn', false);
+        showSuccess('forgot-success', ADMIN_I18N.reset_email_sent);
+      })
+      .catch(function (err) {
+        setLoading('forgot-btn', false);
+        showError('forgot-error', friendlyError(err.code));
+      });
+  });
+
+  // ── Sign Out ──
+  document.getElementById('signout-btn').addEventListener('click', function () {
+    auth.signOut();
+  });
+
+  // ── Auth State Listener ──
+  auth.onAuthStateChanged(function (user) {
+    if (user) {
+      showView('view-dashboard');
+      loadProfile(user);
+      loadSubmissions(user.uid);
+      initFeaturedPanel(user.uid);
+      checkAdmin(user.email);
+    } else {
+      showView('view-signin');
+      isAdmin = false;
+      document.getElementById('admin-review-panel').style.display = 'none';
+    }
+  });
+
+  // ── Profile ──
+  function loadProfile(user) {
+    document.getElementById('profile-email').value = user.email;
+    db.collection('users').doc(user.uid).get().then(function (doc) {
+      if (doc.exists) {
+        var data = doc.data();
+        document.getElementById('profile-name').value = data.displayName || '';
+        document.getElementById('article-author').value = data.displayName || '';
+        if (data.photoURL) {
+          showAvatarImage(data.photoURL);
+        } else {
+          showAvatarPlaceholder(data.displayName || user.email);
+        }
+        loadProfileLinks(data.profileLinks || []);
+        // Show role badge
+        if (data.authorPage) {
+          var authorId = (data.authorPage || '').replace(/^\/authors\//, '').replace(/\/$/, '');
+          var isEIC = EIC_IDS.indexOf(authorId) !== -1;
+          var roleField = document.getElementById('profile-role-field');
+          var roleBadge = document.getElementById('profile-role-badge');
+          roleBadge.textContent = isEIC ? ADMIN_I18N.role_eic : ADMIN_I18N.role_contributor;
+          roleBadge.className = 'admin-role-badge' + (isEIC ? ' admin-role-badge-eic' : '');
+          roleField.style.display = 'block';
+        }
+        // Show published articles link
+        if (data.authorPage) {
+          var card = document.getElementById('published-articles-card');
+          card.style.display = 'block';
+          var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? '' : '/UWC-Survival-Guide';
+          document.getElementById('published-articles-link').innerHTML =
+            '<a href="' + baseUrl + data.authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">' + ADMIN_I18N.view_published + '</a>';
+        }
+      } else {
+        db.collection('users').doc(user.uid).set({
+          displayName: '',
+          photoURL: '',
+          email: user.email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showAvatarPlaceholder(user.email);
+      }
+    });
+  }
+
+  function showAvatarImage(url) {
+    var img = document.getElementById('avatar-img');
+    var placeholder = document.getElementById('avatar-placeholder');
+    img.onerror = function () {
+      img.style.display = 'none';
+      placeholder.style.display = 'flex';
+    };
+    img.src = url;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+  }
+
+  function showAvatarPlaceholder(nameOrEmail) {
+    var img = document.getElementById('avatar-img');
+    var placeholder = document.getElementById('avatar-placeholder');
+    img.style.display = 'none';
+    placeholder.style.display = 'flex';
+    var initial = (nameOrEmail || '?').charAt(0).toUpperCase();
+    placeholder.textContent = initial;
+  }
+
+  // Avatar upload
+  document.getElementById('avatar-preview').addEventListener('click', function () {
+    document.getElementById('avatar-input').click();
+  });
+
+  document.getElementById('avatar-input').addEventListener('change', function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showError('profile-error', ADMIN_I18N.image_file_only);
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showError('profile-error', ADMIN_I18N.image_too_large);
+      return;
+    }
+    var user = auth.currentUser;
+    if (!user) return;
+    clearErrors();
+    showSuccess('profile-success', ADMIN_I18N.uploading_photo);
+
+    var ref = storage.ref('avatars/' + user.uid);
+    ref.put(file).then(function (snapshot) {
+      return snapshot.ref.getDownloadURL();
+    }).then(function (url) {
+      return db.collection('users').doc(user.uid).update({ photoURL: url }).then(function () {
+        showAvatarImage(url);
+        document.getElementById('profile-success').style.display = 'none';
+      });
+    }).catch(function () {
+      document.getElementById('profile-success').style.display = 'none';
+      showError('profile-error', ADMIN_I18N.photo_failed);
+    });
+  });
+
+  // ── Profile Links ──
+  function createLinkRow(label, url) {
+    var row = document.createElement('div');
+    row.className = 'admin-link-row';
+    row.innerHTML = '<input type="text" class="admin-input admin-link-label" placeholder="' + escapeHtml(ADMIN_I18N.link_label_ph) + '" value="' + escapeHtml(label || '') + '" />' +
+      '<input type="url" class="admin-input admin-link-url" placeholder="https://..." value="' + escapeHtml(url || '') + '" />' +
+      '<button type="button" class="admin-link-remove">&times;</button>';
+    row.querySelector('.admin-link-remove').addEventListener('click', function () {
+      row.remove();
+      updateAddLinkBtn();
+    });
+    return row;
+  }
+
+  var MAX_LINKS = 3;
+  var NAME_LIMIT = 40;
+
+  // Character counter for display name
+  (function () {
+    var input = document.getElementById('profile-name');
+    var counter = document.getElementById('profile-name-count');
+    function updateCount() {
+      var remaining = NAME_LIMIT - input.value.length;
+      counter.textContent = remaining + '/' + NAME_LIMIT;
+      counter.style.color = remaining <= 8 ? '#b94a48' : 'var(--warm-gray)';
+    }
+    input.addEventListener('input', updateCount);
+    updateCount();
+  })();
+
+  function updateAddLinkBtn() {
+    var count = document.querySelectorAll('.admin-link-row').length;
+    var btn = document.getElementById('add-link-btn');
+    var note = document.getElementById('links-limit-note');
+    if (count >= MAX_LINKS) {
+      btn.style.display = 'none';
+      note.style.display = 'block';
+    } else {
+      btn.style.display = '';
+      note.style.display = 'none';
+    }
+  }
+
+  document.getElementById('add-link-btn').addEventListener('click', function () {
+    if (document.querySelectorAll('.admin-link-row').length >= MAX_LINKS) return;
+    document.getElementById('profile-links-list').appendChild(createLinkRow('', ''));
+    updateAddLinkBtn();
+  });
+
+  function loadProfileLinks(links) {
+    var container = document.getElementById('profile-links-list');
+    container.innerHTML = '';
+    if (links && links.length > 0) {
+      links.forEach(function (link) {
+        container.appendChild(createLinkRow(link.label, link.url));
+      });
+    }
+    updateAddLinkBtn();
+  }
+
+  function getProfileLinks() {
+    var rows = document.querySelectorAll('.admin-link-row');
+    var links = [];
+    rows.forEach(function (row) {
+      var label = row.querySelector('.admin-link-label').value.trim();
+      var url = row.querySelector('.admin-link-url').value.trim();
+      if (label && url) links.push({ label: label, url: url });
+    });
+    return links;
+  }
+
+  // Save profile
+  document.getElementById('save-profile-btn').addEventListener('click', function () {
+    var user = auth.currentUser;
+    if (!user) return;
+    clearErrors();
+    var name = document.getElementById('profile-name').value.trim();
+    var links = getProfileLinks();
+    setLoading('save-profile-btn', true);
+    db.collection('users').doc(user.uid).set({
+      displayName: name,
+      email: user.email,
+      profileLinks: links
+    }, { merge: true }).then(function () {
+      setLoading('save-profile-btn', false);
+      showSuccess('profile-success', ADMIN_I18N.profile_saved);
+      document.getElementById('article-author').value = name;
+      var img = document.getElementById('avatar-img');
+      if (img.style.display === 'none') {
+        showAvatarPlaceholder(name || user.email);
+      }
+      setTimeout(function () {
+        document.getElementById('profile-success').style.display = 'none';
+      }, 3000);
+    }).catch(function (err) {
+      console.error('Save profile error:', err.code, err.message);
+      setLoading('save-profile-btn', false);
+      showError('profile-error', 'Error: ' + err.message);
+    });
+  });
+
+  // ── Submit Article ──
+  document.getElementById('article-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var user = auth.currentUser;
+    if (!user) return;
+    clearErrors();
+
+    var title = document.getElementById('article-title').value.trim();
+    var category = document.getElementById('article-category').value;
+    var language = document.getElementById('article-language').value;
+    var authorName = document.getElementById('article-author').value.trim();
+    var description = document.getElementById('article-description').value.trim();
+    var content = document.getElementById('article-content').value;
+
+    if (!title || !category || !language || !authorName || !description || !content) {
+      showError('article-error', ADMIN_I18N.err_fill_all);
+      return;
+    }
+
+    setLoading('submit-article-btn', true);
+
+    db.collection('submissions').add({
+      uid: user.uid,
+      authorName: authorName,
+      title: title,
+      category: category,
+      language: language,
+      description: description,
+      content: content,
+      status: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+      setLoading('submit-article-btn', false);
+      showSuccess('article-success', ADMIN_I18N.article_submitted);
+      document.getElementById('article-form').reset();
+      document.getElementById('article-author').value = authorName;
+      loadSubmissions(user.uid);
+      setTimeout(function () {
+        document.getElementById('article-success').style.display = 'none';
+      }, 5000);
+    }).catch(function () {
+      setLoading('submit-article-btn', false);
+      showError('article-error', ADMIN_I18N.article_failed);
+    });
+  });
+
+  // ── Article Preview ──
+  document.getElementById('tab-open-newtab').addEventListener('click', openPreviewTab);
+
+  function getArticleFields() {
+    return {
+      title: document.getElementById('article-title').value.trim() || 'Untitled Article',
+      category: document.getElementById('article-category').value || '',
+      author: document.getElementById('article-author').value.trim() || '',
+      description: document.getElementById('article-description').value.trim() || '',
+      content: document.getElementById('article-content').value || ''
+    };
+  }
+
+  function openPreviewTab() {
+    var f = getArticleFields();
+    var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
+    var renderedContent = typeof marked !== 'undefined' ? marked.parse(f.content) : escapeHtml(f.content);
+    var win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write('<!DOCTYPE html><html lang="en"><head>' +
+      '<meta charset="UTF-8">' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+      '<title>PREVIEW \u2014 ' + escapeHtml(f.title) + '</title>' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">' +
+      (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
+      '<style>body{font-family:"Inter",-apple-system,Helvetica,Arial,sans-serif;}' +
+      '.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;' +
+      'padding:0.55rem 1rem;font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;}' +
+      '</style>' +
+      '</head><body>' +
+      '<div class="preview-banner">' + escapeHtml(ADMIN_I18N.preview_banner) + '</div>' +
+      '<header class="guide-hero"><div class="guide-hero-content">' +
+      '<p class="hero-label">' + escapeHtml(f.category) + '</p>' +
+      '<h1>' + escapeHtml(f.title) + '</h1>' +
+      (f.author ? '<p class="guide-byline">' + escapeHtml(ADMIN_I18N.preview_by) + escapeHtml(f.author) + '</p>' : '') +
+      (f.description ? '<p class="hero-subtitle">' + escapeHtml(f.description) + '</p>' : '') +
+      '</div></header>' +
+      '<div class="divider"></div>' +
+      '<article class="guide-content">' + renderedContent + '</article>' +
+      '</body></html>');
+    win.document.close();
+    win.focus();
+  }
+
+  // ── Featured Articles ──
+  var currentFeaturedIds = [];
+  var currentPublishedArticles = [];
+  var currentUserId = null;
+  var featuredPanelInitialized = false;
+
+  function initFeaturedPanel(uid) {
+    currentUserId = uid;
+    if (!featuredPanelInitialized) {
+      featuredPanelInitialized = true;
+      document.getElementById('register-article-btn').addEventListener('click', function () {
+        var sel = document.getElementById('register-guide-select');
+        var opt = sel.options[sel.selectedIndex];
+        var guideId = sel.value;
+        if (!guideId || !currentUserId) return;
+        var title = opt.getAttribute('data-title') || guideId;
+        var category = opt.getAttribute('data-category') || '';
+        db.collection('users').doc(currentUserId).update({
+          publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: guideId, title: title, category: category })
+        }).then(function () {
+          loadFeaturedPanel(currentUserId);
+        });
+      });
+    }
+    loadFeaturedPanel(uid);
+  }
+
+  function loadFeaturedPanel(uid) {
+    db.collection('users').doc(uid).get().then(function (doc) {
+      if (!doc.exists) return;
+      var data = doc.data();
+      if (!data.authorPage) return;
+      currentFeaturedIds = data.featuredGuideIds || [];
+      currentPublishedArticles = data.publishedArticles || [];
+      document.getElementById('featured-articles-card').style.display = 'block';
+
+      var authorId = (data.authorPage || '').replace(/^\/authors\//, '').replace(/\/$/, '');
+      var registered = (data.publishedArticles || []).map(function (a) { return a.guide_id; });
+      var sel = document.getElementById('register-guide-select');
+      if (typeof SITE_GUIDES !== 'undefined') {
+        var available = SITE_GUIDES.filter(function (g) {
+          return g.author_id === authorId && registered.indexOf(g.guide_id) === -1;
+        });
+        if (!available.length) {
+          sel.innerHTML = '<option value="">' + escapeHtml(ADMIN_I18N.all_registered) + '</option>';
+        } else {
+          sel.innerHTML = '<option value="">' + escapeHtml(ADMIN_I18N.select_register) + '</option>' +
+            available.map(function (g) {
+              return '<option value="' + escapeHtml(g.guide_id) + '" data-title="' + escapeHtml(g.title) + '" data-category="' + escapeHtml(g.category) + '">' + escapeHtml(g.title) + '</option>';
+            }).join('');
+        }
+      }
+
+      renderFeaturedList(uid, currentPublishedArticles);
+    }).catch(function () {
+      document.getElementById('featured-articles-list').innerHTML =
+        '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.load_articles_failed) + '</p>';
+    });
+  }
+
+  function renderFeaturedList(uid, articles) {
+    var list = document.getElementById('featured-articles-list');
+    if (!articles.length) {
+      list.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.no_articles) + '</p>';
+      return;
+    }
+    var html = '<div class="admin-submissions">';
+    articles.forEach(function (article) {
+      var guideId = article.guide_id || '';
+      var siteGuide = typeof SITE_GUIDES !== 'undefined'
+        ? SITE_GUIDES.filter(function (g) { return g.guide_id === guideId; })[0] : null;
+      var displayTitle = siteGuide ? siteGuide.title : (article.title || guideId);
+      var displayCategory = siteGuide ? siteGuide.category : (article.category || '');
+      var isFeatured = currentFeaturedIds.indexOf(guideId) !== -1;
+      html += '<div class="admin-submission-item">';
+      var displayUrl = siteGuide ? siteGuide.url : null;
+      html += '<div class="admin-submission-main">';
+      html += '<h3 class="admin-submission-title">';
+      if (displayUrl) {
+        html += '<a href="' + escapeHtml(displayUrl) + '" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid var(--border);">' + escapeHtml(displayTitle) + '</a>';
+      } else {
+        html += escapeHtml(displayTitle);
+      }
+      html += '</h3>';
+      if (displayCategory) html += '<div class="admin-submission-meta"><span>' + escapeHtml(displayCategory) + '</span></div>';
+      html += '</div>';
+      html += '<button type="button" class="admin-featured-star' + (isFeatured ? ' is-active' : '') + '" data-guide-id="' + escapeHtml(guideId) + '" title="' + (isFeatured ? escapeHtml(ADMIN_I18N.remove_featured) : escapeHtml(ADMIN_I18N.add_featured)) + '">';
+      html += isFeatured ? '&#9733;' : '&#9734;';
+      html += '</button>';
+      html += '</div>';
+    });
+    html += '</div>';
+    list.innerHTML = html;
+    list.querySelectorAll('.admin-featured-star').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        toggleFeatured(uid, this.getAttribute('data-guide-id'), this);
+      });
+    });
+  }
+
+  function toggleFeatured(uid, guideId, btn) {
+    if (!guideId) return;
+    var idx = currentFeaturedIds.indexOf(guideId);
+    if (idx === -1) {
+      if (currentFeaturedIds.length >= 3) {
+        showSuccess('featured-success', ADMIN_I18N.featured_max);
+        return;
+      }
+      currentFeaturedIds.push(guideId);
+    } else {
+      currentFeaturedIds.splice(idx, 1);
+    }
+    var isFeatured = currentFeaturedIds.indexOf(guideId) !== -1;
+    btn.innerHTML = isFeatured ? '&#9733;' : '&#9734;';
+    btn.classList.toggle('is-active', isFeatured);
+    btn.title = isFeatured ? ADMIN_I18N.remove_featured : ADMIN_I18N.add_featured;
+    db.collection('users').doc(uid).update({ featuredGuideIds: currentFeaturedIds })
+      .then(function () {
+        showSuccess('featured-success', ADMIN_I18N.featured_updated);
+        setTimeout(function () { document.getElementById('featured-success').style.display = 'none'; }, 2500);
+      })
+      .catch(function () {
+        if (isFeatured) {
+          var i = currentFeaturedIds.indexOf(guideId);
+          if (i !== -1) currentFeaturedIds.splice(i, 1);
+        } else {
+          currentFeaturedIds.push(guideId);
+        }
+        isFeatured = currentFeaturedIds.indexOf(guideId) !== -1;
+        btn.innerHTML = isFeatured ? '&#9733;' : '&#9734;';
+        btn.classList.toggle('is-active', isFeatured);
+      });
+  }
+
+  // ── My Submissions ──
+  function loadSubmissions(uid) {
+    var container = document.getElementById('submissions-list');
+    container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.loading_submissions) + '</p>';
+
+    db.collection('submissions')
+      .where('uid', '==', uid)
+      .orderBy('createdAt', 'desc')
+      .get()
+      .then(function (snapshot) {
+        if (snapshot.empty) {
+          container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.no_submissions) + '</p>';
+          return;
+        }
+        var html = '<div class="admin-submissions">';
+        snapshot.forEach(function (doc) {
+          var d = doc.data();
+          var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : ADMIN_I18N.just_now;
+          var statusClass = 'admin-status-' + (d.status || 'pending');
+          html += '<div class="admin-submission-item">';
+          html += '<div class="admin-submission-main">';
+          html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
+          html += '<div class="admin-submission-meta">';
+          html += '<span>' + escapeHtml(d.category) + '</span>';
+          html += '<span class="admin-auth-sep">&middot;</span>';
+          html += '<span>' + date + '</span>';
+          html += '</div>';
+          html += '</div>';
+          html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(d.status || 'pending')) + '</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+      })
+      .catch(function () {
+        container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.load_submissions_failed) + '</p>';
+      });
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+
+  // ══════════════════════════════════════
+  // ── Admin Review Panel ──
+  // ══════════════════════════════════════
+
+  var isAdmin = false;
+  var currentFilter = 'pending';
+  var currentModalDocId = null;
+  var ADMIN_EMAILS = ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
+
+  function checkAdmin(email) {
+    if (ADMIN_EMAILS.indexOf(email) !== -1) {
+      isAdmin = true;
+      document.getElementById('admin-review-panel').style.display = 'block';
+      loadReviewList('pending');
+      initReviewTabs();
+    }
+  }
+
+  function initReviewTabs() {
+    var tabs = document.querySelectorAll('.admin-tab');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        this.classList.add('active');
+        currentFilter = this.getAttribute('data-filter');
+        loadReviewList(currentFilter);
+      });
+    });
+  }
+
+  function loadReviewList(filter) {
+    var container = document.getElementById('review-list');
+    container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.loading) + '</p>';
+
+    db.collection('submissions').get().then(function (snapshot) {
+      var docs = [];
+      snapshot.forEach(function (doc) { docs.push({ id: doc.id, data: doc.data() }); });
+      if (filter !== 'all') {
+        docs = docs.filter(function (d) { return d.data.status === filter; });
+      }
+      docs.sort(function (a, b) {
+        var ta = a.data.createdAt ? a.data.createdAt.toMillis() : 0;
+        var tb = b.data.createdAt ? b.data.createdAt.toMillis() : 0;
+        return tb - ta;
+      });
+      if (docs.length === 0) {
+        var filterLabel = ADMIN_I18N['filter_' + filter] || filter;
+        var msg = ADMIN_I18N.no_filter_prefix + ADMIN_I18N.no_filter_sep + filterLabel + ADMIN_I18N.no_filter_sep + ADMIN_I18N.no_filter_suffix;
+        container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(msg) + '</p>';
+        return;
+      }
+      var html = '<div class="admin-submissions">';
+      docs.forEach(function (item) {
+        var doc = { id: item.id };
+        var d = item.data;
+        var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : ADMIN_I18N.just_now;
+        var statusClass = 'admin-status-' + (d.status || 'pending');
+        html += '<div class="admin-submission-item admin-review-item" data-id="' + doc.id + '">';
+        html += '<div class="admin-submission-main">';
+        html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
+        html += '<div class="admin-submission-meta">';
+        html += '<span>' + escapeHtml(d.authorName || ADMIN_I18N.author_unknown) + '</span>';
+        html += '<span class="admin-auth-sep">&middot;</span>';
+        html += '<span>' + escapeHtml(d.category) + '</span>';
+        html += '<span class="admin-auth-sep">&middot;</span>';
+        html += '<span>' + date + '</span>';
+        html += '</div>';
+        html += '</div>';
+        html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(d.status || 'pending')) + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+      container.innerHTML = html;
+
+      container.querySelectorAll('.admin-review-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+          openReviewModal(this.getAttribute('data-id'));
+        });
+      });
+    }).catch(function (err) {
+      console.error('Review load error:', err);
+      container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.load_review_failed) + '</p>';
+    });
+  }
+
+  function openReviewModal(docId) {
+    currentModalDocId = docId;
+    var modal = document.getElementById('review-modal');
+    var mdOutput = document.getElementById('modal-md-output');
+    mdOutput.style.display = 'none';
+
+    db.collection('submissions').doc(docId).get().then(function (doc) {
+      if (!doc.exists) return;
+      var d = doc.data();
+      var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ADMIN_I18N.author_unknown;
+
+      document.getElementById('modal-title').textContent = d.title;
+      document.getElementById('modal-author').textContent = ADMIN_I18N.by_prefix + (d.authorName || ADMIN_I18N.author_unknown);
+      document.getElementById('modal-category').textContent = d.category;
+      document.getElementById('modal-date').textContent = date;
+      document.getElementById('modal-description').textContent = d.description;
+      document.getElementById('modal-content').textContent = d.content;
+
+      var badge = document.getElementById('modal-status-badge');
+      badge.textContent = getStatusLabel(d.status || 'pending');
+      badge.className = 'admin-status admin-status-' + (d.status || 'pending');
+
+      var actions = document.getElementById('modal-actions');
+      actions.style.display = d.status === 'pending' ? 'flex' : 'none';
+
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    });
+  }
+
+  function closeReviewModal() {
+    document.getElementById('review-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    currentModalDocId = null;
+  }
+
+  document.getElementById('modal-close').addEventListener('click', closeReviewModal);
+  document.querySelector('.admin-modal-backdrop').addEventListener('click', closeReviewModal);
+
+  // Approve
+  document.getElementById('modal-approve').addEventListener('click', function () {
+    if (!currentModalDocId) return;
+    var btn = this;
+    btn.textContent = ADMIN_I18N.approving;
+    btn.disabled = true;
+
+    db.collection('submissions').doc(currentModalDocId).update({
+      status: 'approved'
+    }).then(function () {
+      return db.collection('submissions').doc(currentModalDocId).get();
+    }).then(function (doc) {
+      var d = doc.data();
+      var lang = d.language || 'en';
+      var langMap = {
+        'en':    { name: 'English',  folder: 'default', sort: 1, suffix: '' },
+        'zh-CN': { name: '简体中文', folder: 'chinese', sort: 2, suffix: '-CN' },
+        'zh-TW': { name: '台灣繁體', folder: 'chinese', sort: 3, suffix: '-TW' }
+      };
+      var langInfo = langMap[lang] || langMap['en'];
+
+      var slug = d.title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+      db.collection('submissions').doc(currentModalDocId).update({ guide_id: slug }).catch(function () {});
+
+      var md = '---\n';
+      md += 'title: "' + d.title.replace(/"/g, '\\"') + '"\n';
+      md += 'category: "' + d.category + '"\n';
+      md += 'description: "' + d.description.replace(/"/g, '\\"') + '"\n';
+      md += 'order: 99\n';
+      md += 'author: "' + d.authorName + '"\n';
+      var authorSlug = d.authorName.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+      md += 'author_id: "' + authorSlug + '"\n';
+      md += 'guide_id: "' + slug + '"\n';
+      md += 'language_code: "' + lang + '"\n';
+      md += 'language_name: "' + langInfo.name + '"\n';
+      md += 'language_folder: "' + langInfo.folder + '"\n';
+      md += 'language_sort: ' + langInfo.sort + '\n';
+      md += '---\n\n';
+      md += '*Contributed by ' + d.authorName + '*\n\n';
+      md += d.content;
+
+      var fileName = slug + langInfo.suffix + '.md';
+      var filePath = 'website/_guides/' + langInfo.folder + '/' + fileName;
+      var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+      if (isLocal) {
+        btn.textContent = 'Saving locally...';
+        fetch('http://127.0.0.1:4001/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            folder: langInfo.folder,
+            filename: fileName,
+            content: md
+          })
+        }).then(function (res) {
+          if (!res.ok) throw new Error('Local save failed: ' + res.status);
+          return res.json();
+        }).then(function (result) {
+          document.getElementById('modal-actions').style.display = 'none';
+          var badge = document.getElementById('modal-status-badge');
+          badge.textContent = 'Approved (Local)';
+          badge.className = 'admin-status admin-status-approved';
+
+          var authorFileName = authorSlug + '.md';
+          fetch('http://127.0.0.1:4001/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              folder: '../_authors',
+              filename: authorFileName,
+              content: '---\ntitle: "' + d.authorName + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\n---\n'
+            })
+          }).catch(function () {});
+
+          if (d.uid) {
+            db.collection('users').doc(d.uid).set({ authorPage: '/authors/' + authorSlug + '/' }, { merge: true });
+            db.collection('users').doc(d.uid).update({
+              publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: slug, title: d.title, category: d.category })
+            }).catch(function () {});
+          }
+
+          fetch('http://127.0.0.1:4001/read-about').then(function (r) {
+            if (!r.ok) return null;
+            return r.json();
+          }).then(function (aboutData) {
+            if (!aboutData || !aboutData.content) return;
+            if (aboutData.content.indexOf('id: ' + authorSlug) !== -1) return;
+            var newEntry = '\n  - id: ' + authorSlug + '\n';
+            newEntry += '    name: "' + d.authorName + '"\n';
+            newEntry += '    affiliation:\n';
+            newEntry += '    cohort:\n';
+            newEntry += '    profile_label:\n';
+            newEntry += '    profile_url:\n';
+            newEntry += '    contacts: []\n';
+            newEntry += '    photo:\n';
+            newEntry += '    summary: "Contributor."\n';
+            var updated = aboutData.content.replace('contributors: []', 'contributors:' + newEntry);
+            if (updated === aboutData.content) {
+              updated = aboutData.content.trimEnd() + newEntry;
+            }
+            return fetch('http://127.0.0.1:4001/save', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ folder: '../_data', filename: 'about.yml', content: updated })
+            });
+          }).catch(function () {});
+
+          document.getElementById('modal-md-content').textContent = 'File saved locally!\n\n' + result.saved + '\n\nJekyll will auto-rebuild. Refresh to see it.\nCommit and push when ready.';
+          document.getElementById('modal-md-output').style.display = 'block';
+          document.getElementById('modal-copy-md').style.display = 'none';
+
+          btn.textContent = ADMIN_I18N.approve_btn;
+          btn.disabled = false;
+          loadReviewList(currentFilter);
+          var user = auth.currentUser;
+          if (user) loadSubmissions(user.uid);
+        }).catch(function (err) {
+          console.error('Local save error:', err);
+          btn.textContent = ADMIN_I18N.approve_btn;
+          btn.disabled = false;
+          alert(ADMIN_I18N.local_save_error);
+        });
+      } else {
+        btn.textContent = 'Publishing to GitHub...';
+        var REPO = 'United-World-College/UWC-Survival-Guide';
+
+        db.collection('config').doc('github').get().then(function (configDoc) {
+          var GITHUB_TOKEN = configDoc.exists ? configDoc.data().token : null;
+          if (!GITHUB_TOKEN) {
+            alert(ADMIN_I18N.no_token);
+            btn.textContent = ADMIN_I18N.approve_btn;
+            btn.disabled = false;
+            return;
+          }
+          var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + filePath;
+          var headers = { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' };
+          return fetch(apiUrl, { headers: headers }).then(function (checkRes) {
+            var putBody = {
+              message: 'Add guide: ' + d.title + ' by ' + d.authorName,
+              content: btoa(unescape(encodeURIComponent(md)))
+            };
+            if (checkRes.ok) {
+              return checkRes.json().then(function (existing) {
+                putBody.sha = existing.sha;
+                putBody.message = 'Update guide: ' + d.title + ' by ' + d.authorName;
+                return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(putBody) });
+              });
+            }
+            return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(putBody) });
+          }).then(function (res) {
+            if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+            return res.json();
+          }).then(function () {
+            document.getElementById('modal-actions').style.display = 'none';
+            var badge = document.getElementById('modal-status-badge');
+            badge.textContent = 'Approved & Published';
+            badge.className = 'admin-status admin-status-approved';
+
+            var authorPagePath = 'website/_authors/' + authorSlug + '.md';
+            var authorApiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + authorPagePath;
+            fetch(authorApiUrl, { headers: headers }).then(function (aRes) {
+              if (aRes.status === 404) {
+                var authorMd = '---\ntitle: "' + d.authorName + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\n---\n';
+                return fetch(authorApiUrl, {
+                  method: 'PUT',
+                  headers: headers,
+                  body: JSON.stringify({
+                    message: 'Add author page: ' + d.authorName,
+                    content: btoa(unescape(encodeURIComponent(authorMd)))
+                  })
+                });
+              }
+            }).then(function () {
+              if (d.uid) {
+                db.collection('users').doc(d.uid).set({ authorPage: '/authors/' + authorSlug + '/' }, { merge: true });
+                db.collection('users').doc(d.uid).update({
+                  publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: slug, title: d.title, category: d.category })
+                }).catch(function () {});
+              }
+
+              var aboutPath = 'website/_data/about.yml';
+              var aboutApiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + aboutPath;
+              fetch(aboutApiUrl, { headers: headers }).then(function (aboutRes) {
+                if (!aboutRes.ok) return;
+                return aboutRes.json();
+              }).then(function (aboutFile) {
+                if (!aboutFile) return;
+                var aboutContent = decodeURIComponent(escape(atob(aboutFile.content)));
+                if (aboutContent.indexOf('id: ' + authorSlug) !== -1) return;
+                var newEntry = '\n  - id: ' + authorSlug + '\n';
+                newEntry += '    name: "' + d.authorName + '"\n';
+                newEntry += '    affiliation:\n';
+                newEntry += '    cohort:\n';
+                newEntry += '    profile_label:\n';
+                newEntry += '    profile_url:\n';
+                newEntry += '    contacts: []\n';
+                newEntry += '    photo:\n';
+                newEntry += '    summary: "Contributor."\n';
+                var updatedContent = aboutContent.replace('contributors: []', 'contributors:' + newEntry);
+                if (updatedContent === aboutContent) {
+                  updatedContent = aboutContent.trimEnd() + newEntry;
+                }
+                return fetch(aboutApiUrl, {
+                  method: 'PUT',
+                  headers: headers,
+                  body: JSON.stringify({
+                    message: 'Add contributor: ' + d.authorName,
+                    content: btoa(unescape(encodeURIComponent(updatedContent))),
+                    sha: aboutFile.sha
+                  })
+                });
+              }).catch(function (e) { console.error('About.yml update error:', e); });
+            }).catch(function (e) { console.error('Author page creation error:', e); });
+
+            document.getElementById('modal-md-content').textContent = 'Published to GitHub successfully!\n\nFile: ' + filePath + '\nThe site will rebuild automatically.';
+            document.getElementById('modal-md-output').style.display = 'block';
+            document.getElementById('modal-copy-md').style.display = 'none';
+
+            btn.textContent = ADMIN_I18N.approve_btn;
+            btn.disabled = false;
+            loadReviewList(currentFilter);
+            var user = auth.currentUser;
+            if (user) loadSubmissions(user.uid);
+          }).catch(function (err) {
+            console.error('GitHub publish error:', err);
+            btn.textContent = ADMIN_I18N.approve_btn;
+            btn.disabled = false;
+            alert(ADMIN_I18N.github_error + err.message);
+          });
+        });
+      }
+    }).catch(function (err) {
+      console.error('Approve error:', err);
+      btn.textContent = ADMIN_I18N.approve_btn;
+      btn.disabled = false;
+    });
+  });
+
+  // Reject
+  document.getElementById('modal-reject').addEventListener('click', function () {
+    if (!currentModalDocId) return;
+    var reason = prompt(ADMIN_I18N.rejection_prompt);
+    if (reason === null) return;
+
+    var btn = this;
+    btn.textContent = ADMIN_I18N.rejecting;
+    btn.disabled = true;
+
+    var updateData = { status: 'rejected' };
+    if (reason) updateData.rejectionReason = reason;
+
+    db.collection('submissions').doc(currentModalDocId).update(updateData).then(function () {
+      var badge = document.getElementById('modal-status-badge');
+      badge.textContent = getStatusLabel('rejected');
+      badge.className = 'admin-status admin-status-rejected';
+      document.getElementById('modal-actions').style.display = 'none';
+
+      btn.textContent = ADMIN_I18N.reject_btn;
+      btn.disabled = false;
+
+      loadReviewList(currentFilter);
+      var user = auth.currentUser;
+      if (user) loadSubmissions(user.uid);
+    }).catch(function (err) {
+      console.error('Reject error:', err);
+      btn.textContent = ADMIN_I18N.reject_btn;
+      btn.disabled = false;
+    });
+  });
+
+  // Copy MD
+  document.getElementById('modal-copy-md').addEventListener('click', function () {
+    var content = document.getElementById('modal-md-content').textContent;
+    navigator.clipboard.writeText(content).then(function () {
+      var btn = document.getElementById('modal-copy-md');
+      btn.textContent = ADMIN_I18N.copied;
+      setTimeout(function () { btn.textContent = ADMIN_I18N.copy_md_btn; }, 2000);
+    });
+  });
+
+})();
+</script>
+
+  {% include footer.html %}
+</body>
+</html>

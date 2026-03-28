@@ -138,6 +138,136 @@
     more_guides_title: More guides in this language
     more_guides_desc: Keep reading in the same language without jumping between versions.
     empty: No other guides are available in this language yet.
+  admin:
+    portal_label: Contributor Portal
+    signin_title: Welcome Back
+    signin_subtitle: Sign in with your contributor account to continue.
+    email_placeholder: Email address
+    password_placeholder: Password
+    signin_btn: Sign In
+    create_account_link: Create an account
+    forgot_link: Forgot password?
+    signup_title: Create Account
+    signup_subtitle: Register to start contributing articles.
+    password_min_placeholder: "Password (min 6 characters)"
+    confirm_placeholder: Confirm password
+    signup_btn: Create Account
+    back_to_signin: Back to sign in
+    forgot_title: Reset Password
+    forgot_subtitle: "Enter your email and we'll send a reset link."
+    forgot_btn: Send Reset Email
+    forgot_hint: "The email may take a few minutes to arrive. Please check your junk/spam folder if you don't see it in your inbox."
+    dashboard_label: Dashboard
+    dashboard_title: Contributor Dashboard
+    dashboard_subtitle: "Manage your profile, submit articles, and track your contributions."
+    profile_title: Your Profile
+    profile_desc: Update your display name and profile photo.
+    avatar_upload_title: Click to upload a new photo
+    avatar_alt: Profile photo
+    avatar_overlay: Change
+    avatar_hint: Click photo to change
+    display_name_label: Display Name
+    display_name_placeholder: Your name
+    email_label: Email
+    role_label: Role
+    profile_links_label: Profile Links
+    profile_links_hint: "Add links to your GitHub, personal website, etc. These will appear on your author page."
+    add_link_btn: "+ Add Link"
+    links_limit: Maximum 3 profile links.
+    save_profile_btn: Save Profile
+    submit_title: Submit New Article
+    submit_desc: "Write and submit an article for review. Once approved, it will be published on the site."
+    article_title_label: Title
+    article_title_placeholder: "e.g. My UWC Experience"
+    category_label: Category
+    category_placeholder: Select a category
+    language_label: Language
+    language_placeholder: Select the language of your article
+    author_name_label: Author Name
+    author_name_placeholder: Your name
+    description_label: Description
+    description_placeholder: A brief summary of the article
+    content_label: "Content (Markdown)"
+    content_placeholder: "Write your article content here using Markdown..."
+    preview_btn: "Preview \u2197"
+    submit_btn: Submit for Review
+    featured_title: Featured Articles
+    featured_desc: "Pin up to 3 articles to appear in the Featured section of your author page. Click the star to toggle."
+    loading: "Loading..."
+    register_label: Register an Article
+    register_hint: "If your article was published directly (not through this portal), enter its details to add it here."
+    add_article_btn: Add Article
+    published_title: My Published Articles
+    published_desc: Articles published on the site under your name.
+    view_published: View all my published articles
+    submissions_title: My Submissions
+    submissions_desc: Track the status of your submitted articles.
+    review_title: Review Submissions
+    review_desc: "Review pending articles from contributors. Approve to generate the markdown file, or reject with a reason."
+    filter_pending: Pending
+    filter_approved: Approved
+    filter_rejected: Rejected
+    filter_all: All
+    approve_btn: "Approve & Publish"
+    reject_btn: Reject
+    copy_md_btn: Copy to Clipboard
+    signout_btn: Sign Out
+    err_email_exists: An account with this email already exists.
+    err_invalid_email: Please enter a valid email address.
+    err_user_disabled: This account has been disabled.
+    err_user_not_found: No account found with this email.
+    err_wrong_password: Incorrect password. Please try again.
+    err_weak_password: Password must be at least 6 characters.
+    err_too_many_requests: Too many attempts. Please try again later.
+    err_invalid_credential: Invalid email or password. Please try again.
+    err_missing_password: Please enter your password.
+    err_network: "Network error. Please check your connection."
+    err_generic: Something went wrong. Please try again.
+    please_wait: "Please wait..."
+    passwords_no_match: Passwords do not match.
+    reset_email_sent: Reset email sent. Please check your inbox.
+    image_file_only: Please select an image file.
+    image_too_large: Image must be under 5 MB.
+    uploading_photo: "Uploading photo..."
+    photo_failed: Failed to upload photo. Please try again.
+    link_label_ph: "e.g. GitHub, personal website"
+    profile_saved: Profile saved successfully.
+    err_fill_all: Please fill out all fields.
+    article_submitted: "Article submitted successfully! It will be reviewed before publishing."
+    article_failed: Failed to submit article. Please try again.
+    featured_max: You can feature up to 3 articles at a time.
+    all_registered: All your articles are registered
+    select_register: "Select an article to register\u2026"
+    loading_panel_select: "Loading your articles..."
+    no_articles: No articles registered yet. Use the form below to add your articles.
+    load_articles_failed: Could not load articles.
+    featured_updated: Featured articles updated.
+    remove_featured: Remove from featured
+    add_featured: Add to featured
+    no_submissions: No submissions yet. Submit your first article above.
+    load_submissions_failed: Could not load submissions. Please try again later.
+    just_now: Just now
+    by_prefix: "By "
+    author_unknown: Unknown
+    no_filter_prefix: "No"
+    no_filter_sep: " "
+    no_filter_suffix: submissions.
+    load_review_failed: Could not load submissions.
+    loading_submissions: "Loading submissions..."
+    preview_banner: "Preview \u2014 Draft \u00b7 Not yet published"
+    preview_by: "By "
+    status_pending: Pending
+    status_approved: Approved
+    status_rejected: Rejected
+    role_eic: Editor-in-Chief
+    role_contributor: Contributor
+    rejecting: "Rejecting..."
+    approving: "Approving..."
+    rejection_prompt: "Rejection reason (optional):"
+    copied: "Copied!"
+    no_token: "No GitHub token found. Please unlock the admin panel again and paste your token."
+    local_save_error: "Failed to save locally. Make sure local-save-server.py is running on port 4001.\n\nRun: python3 website/local-save-server.py"
+    github_error: "Approved in Firestore but failed to publish to GitHub: "
 - code: zh-CN
   label: 简体中文
   short_label: 简中
@@ -278,6 +408,136 @@
     more_guides_title: 同语言的更多指南
     more_guides_desc: 继续阅读同一语言的其他内容，不必在不同版本之间来回切换。
     empty: 该语言下暂时还没有其他指南。
+  admin:
+    portal_label: 贡献者门户
+    signin_title: 欢迎回来
+    signin_subtitle: 使用你的贡献者账号登录。
+    email_placeholder: 电子邮箱
+    password_placeholder: 密码
+    signin_btn: 登录
+    create_account_link: 创建账号
+    forgot_link: 忘记密码？
+    signup_title: 创建账号
+    signup_subtitle: 注册后即可开始投稿。
+    password_min_placeholder: 密码（至少 6 位）
+    confirm_placeholder: 确认密码
+    signup_btn: 创建账号
+    back_to_signin: 返回登录
+    forgot_title: 重置密码
+    forgot_subtitle: 输入邮箱，我们将向你发送重置链接。
+    forgot_btn: 发送重置邮件
+    forgot_hint: 邮件可能需要几分钟才能到达。如果收件箱中没有，请检查垃圾邮件文件夹。
+    dashboard_label: 控制台
+    dashboard_title: 贡献者控制台
+    dashboard_subtitle: 管理你的个人资料、提交文章并追踪贡献记录。
+    profile_title: 个人资料
+    profile_desc: 更新你的显示名称和头像。
+    avatar_upload_title: 点击上传新头像
+    avatar_alt: 头像
+    avatar_overlay: 更换
+    avatar_hint: 点击头像以更换
+    display_name_label: 显示名称
+    display_name_placeholder: 你的姓名
+    email_label: 电子邮箱
+    role_label: 身份
+    profile_links_label: 个人主页链接
+    profile_links_hint: 添加你的 GitHub、个人网站等链接，将显示在你的作者页面上。
+    add_link_btn: "+ 添加链接"
+    links_limit: 最多添加 3 个链接。
+    save_profile_btn: 保存资料
+    submit_title: 提交新文章
+    submit_desc: 撰写文章并提交审核，通过后将发布到网站上。
+    article_title_label: 标题
+    article_title_placeholder: 例：我的 UWC 经历
+    category_label: 分类
+    category_placeholder: 选择分类
+    language_label: 语言
+    language_placeholder: 选择文章语言
+    author_name_label: 作者姓名
+    author_name_placeholder: 你的姓名
+    description_label: 简介
+    description_placeholder: 文章简短摘要
+    content_label: 正文（Markdown）
+    content_placeholder: 在此使用 Markdown 撰写文章正文……
+    preview_btn: "预览 \u2197"
+    submit_btn: 提交审核
+    featured_title: 精选文章
+    featured_desc: 最多置顶 3 篇文章，显示在你的作者页面精选区域。点击星号进行切换。
+    loading: 加载中……
+    register_label: 注册文章
+    register_hint: 如果你的文章是直接发布的（未通过此门户），请在此处填写详情以添加它。
+    add_article_btn: 添加文章
+    published_title: 我的已发布文章
+    published_desc: 以你的名义在网站上发布的文章。
+    view_published: 查看我所有已发布的文章
+    submissions_title: 我的投稿
+    submissions_desc: 追踪你已投稿文章的状态。
+    review_title: 审核投稿
+    review_desc: 审核贡献者提交的文章。批准后生成 Markdown 文件，或附理由拒绝。
+    filter_pending: 待审核
+    filter_approved: 已批准
+    filter_rejected: 已拒绝
+    filter_all: 全部
+    approve_btn: 批准并发布
+    reject_btn: 拒绝
+    copy_md_btn: 复制到剪贴板
+    signout_btn: 退出登录
+    err_email_exists: 该邮箱已被注册。
+    err_invalid_email: 请输入有效的电子邮箱地址。
+    err_user_disabled: 该账号已被禁用。
+    err_user_not_found: 找不到该邮箱对应的账号。
+    err_wrong_password: 密码错误，请重试。
+    err_weak_password: 密码至少需要 6 位字符。
+    err_too_many_requests: 尝试次数过多，请稍后再试。
+    err_invalid_credential: 邮箱或密码无效，请重试。
+    err_missing_password: 请输入密码。
+    err_network: 网络错误，请检查你的连接。
+    err_generic: 出了点问题，请重试。
+    please_wait: 请稍候……
+    passwords_no_match: 两次密码不一致。
+    reset_email_sent: 重置邮件已发送，请查收。
+    image_file_only: 请选择图片文件。
+    image_too_large: 图片大小不能超过 5 MB。
+    uploading_photo: 正在上传头像……
+    photo_failed: 头像上传失败，请重试。
+    link_label_ph: 例：GitHub、个人网站
+    profile_saved: 资料保存成功。
+    err_fill_all: 请填写所有字段。
+    article_submitted: 文章提交成功！将在审核后发布。
+    article_failed: 文章提交失败，请重试。
+    featured_max: 最多精选 3 篇文章。
+    all_registered: 你的所有文章均已注册
+    select_register: 选择要注册的文章……
+    loading_panel_select: 加载你的文章中……
+    no_articles: 暂无已注册文章。请使用下方表单添加你的文章。
+    load_articles_failed: 无法加载文章。
+    featured_updated: 精选文章已更新。
+    remove_featured: 从精选中移除
+    add_featured: 添加到精选
+    no_submissions: 暂无投稿记录。在上方提交你的第一篇文章吧。
+    load_submissions_failed: 无法加载投稿记录，请稍后再试。
+    just_now: 刚刚
+    by_prefix: "作者："
+    author_unknown: 未知
+    no_filter_prefix: 暂无
+    no_filter_sep: ""
+    no_filter_suffix: 投稿。
+    load_review_failed: 无法加载投稿记录。
+    loading_submissions: 加载投稿中……
+    preview_banner: "预览 \u2014 草稿 \u00b7 尚未发布"
+    preview_by: "作者："
+    status_pending: 待审核
+    status_approved: 已批准
+    status_rejected: 已拒绝
+    role_eic: 主编
+    role_contributor: 贡献者
+    rejecting: 拒绝中……
+    approving: 批准中……
+    rejection_prompt: 拒绝原因（可选）：
+    copied: 已复制！
+    no_token: 未找到 GitHub Token，请重新解锁管理面板并粘贴你的 Token。
+    local_save_error: "本地保存失败。请确保 local-save-server.py 正在 4001 端口运行。\n\n运行：python3 website/local-save-server.py"
+    github_error: "已在 Firestore 中批准，但发布到 GitHub 失败："
 - code: zh-TW
   label: 繁體中文
   short_label: 繁中
@@ -418,3 +678,133 @@
     more_guides_title: 同語言的更多指南
     more_guides_desc: 繼續閱讀同一語言的其他內容，不必在不同版本之間來回切換。
     empty: 該語言下暫時還沒有其他指南。
+  admin:
+    portal_label: 貢獻者門戶
+    signin_title: 歡迎回來
+    signin_subtitle: 使用你的貢獻者帳號登入。
+    email_placeholder: 電子郵件
+    password_placeholder: 密碼
+    signin_btn: 登入
+    create_account_link: 建立帳號
+    forgot_link: 忘記密碼？
+    signup_title: 建立帳號
+    signup_subtitle: 註冊後即可開始投稿。
+    password_min_placeholder: 密碼（至少 6 位）
+    confirm_placeholder: 確認密碼
+    signup_btn: 建立帳號
+    back_to_signin: 返回登入
+    forgot_title: 重設密碼
+    forgot_subtitle: 輸入郵件，我們將向你傳送重設連結。
+    forgot_btn: 傳送重設郵件
+    forgot_hint: 郵件可能需要幾分鐘才能抵達。若收件匣中沒有，請檢查垃圾郵件資料夾。
+    dashboard_label: 控制台
+    dashboard_title: 貢獻者控制台
+    dashboard_subtitle: 管理你的個人資料、提交文章並追蹤貢獻紀錄。
+    profile_title: 個人資料
+    profile_desc: 更新你的顯示名稱和大頭貼。
+    avatar_upload_title: 點擊上傳新大頭貼
+    avatar_alt: 大頭貼
+    avatar_overlay: 更換
+    avatar_hint: 點擊大頭貼以更換
+    display_name_label: 顯示名稱
+    display_name_placeholder: 你的姓名
+    email_label: 電子郵件
+    role_label: 身分
+    profile_links_label: 個人頁面連結
+    profile_links_hint: 新增你的 GitHub、個人網站等連結，將顯示在你的作者頁面上。
+    add_link_btn: "+ 新增連結"
+    links_limit: 最多新增 3 個連結。
+    save_profile_btn: 儲存資料
+    submit_title: 提交新文章
+    submit_desc: 撰寫文章並提交審核，通過後將發布至網站。
+    article_title_label: 標題
+    article_title_placeholder: 例：我的 UWC 經歷
+    category_label: 分類
+    category_placeholder: 選擇分類
+    language_label: 語言
+    language_placeholder: 選擇文章語言
+    author_name_label: 作者姓名
+    author_name_placeholder: 你的姓名
+    description_label: 簡介
+    description_placeholder: 文章簡短摘要
+    content_label: 正文（Markdown）
+    content_placeholder: 在此使用 Markdown 撰寫文章正文……
+    preview_btn: "預覽 \u2197"
+    submit_btn: 提交審核
+    featured_title: 精選文章
+    featured_desc: 最多置頂 3 篇文章，顯示在你的作者頁面精選區域。點擊星號進行切換。
+    loading: 載入中……
+    register_label: 註冊文章
+    register_hint: 如果你的文章是直接發布的（未透過此門戶），請在此填寫詳情以新增它。
+    add_article_btn: 新增文章
+    published_title: 我的已發布文章
+    published_desc: 以你名義在網站上發布的文章。
+    view_published: 查看我所有已發布的文章
+    submissions_title: 我的投稿
+    submissions_desc: 追蹤你已投稿文章的狀態。
+    review_title: 審核投稿
+    review_desc: 審核貢獻者提交的文章。批准後生成 Markdown 檔案，或附理由拒絕。
+    filter_pending: 待審核
+    filter_approved: 已批准
+    filter_rejected: 已拒絕
+    filter_all: 全部
+    approve_btn: 批准並發布
+    reject_btn: 拒絕
+    copy_md_btn: 複製到剪貼簿
+    signout_btn: 登出
+    err_email_exists: 該郵件已被註冊。
+    err_invalid_email: 請輸入有效的電子郵件地址。
+    err_user_disabled: 該帳號已被停用。
+    err_user_not_found: 找不到該郵件對應的帳號。
+    err_wrong_password: 密碼錯誤，請重試。
+    err_weak_password: 密碼至少需要 6 位字元。
+    err_too_many_requests: 嘗試次數過多，請稍後再試。
+    err_invalid_credential: 郵件或密碼無效，請重試。
+    err_missing_password: 請輸入密碼。
+    err_network: 網路錯誤，請確認你的連線。
+    err_generic: 出了點問題，請重試。
+    please_wait: 請稍候……
+    passwords_no_match: 兩次密碼不一致。
+    reset_email_sent: 重設郵件已傳送，請查收。
+    image_file_only: 請選擇圖片檔案。
+    image_too_large: 圖片大小不能超過 5 MB。
+    uploading_photo: 正在上傳大頭貼……
+    photo_failed: 大頭貼上傳失敗，請重試。
+    link_label_ph: 例：GitHub、個人網站
+    profile_saved: 資料儲存成功。
+    err_fill_all: 請填寫所有欄位。
+    article_submitted: 文章提交成功！將在審核後發布。
+    article_failed: 文章提交失敗，請重試。
+    featured_max: 最多精選 3 篇文章。
+    all_registered: 你的所有文章均已註冊
+    select_register: 選擇要註冊的文章……
+    loading_panel_select: 載入你的文章中……
+    no_articles: 暫無已註冊文章。請使用下方表單新增你的文章。
+    load_articles_failed: 無法載入文章。
+    featured_updated: 精選文章已更新。
+    remove_featured: 從精選中移除
+    add_featured: 新增至精選
+    no_submissions: 暫無投稿記錄。在上方提交你的第一篇文章吧。
+    load_submissions_failed: 無法載入投稿記錄，請稍後再試。
+    just_now: 剛才
+    by_prefix: "作者："
+    author_unknown: 未知
+    no_filter_prefix: 暫無
+    no_filter_sep: ""
+    no_filter_suffix: 投稿。
+    load_review_failed: 無法載入投稿記錄。
+    loading_submissions: 載入投稿中……
+    preview_banner: "預覽 \u2014 草稿 \u00b7 尚未發布"
+    preview_by: "作者："
+    status_pending: 待審核
+    status_approved: 已批准
+    status_rejected: 已拒絕
+    role_eic: 主編
+    role_contributor: 貢獻者
+    rejecting: 拒絕中……
+    approving: 批准中……
+    rejection_prompt: 拒絕原因（可選）：
+    copied: 已複製！
+    no_token: 未找到 GitHub Token，請重新解鎖管理面板並貼上你的 Token。
+    local_save_error: "本機儲存失敗。請確保 local-save-server.py 正在 4001 埠運行。\n\n執行：python3 website/local-save-server.py"
+    github_error: "已在 Firestore 中批准，但發布至 GitHub 失敗："
