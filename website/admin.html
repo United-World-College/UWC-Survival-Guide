@@ -4,6 +4,9 @@ title: Contributor Portal
 permalink: /admin/
 ---
 
+<!-- Markdown renderer -->
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -168,8 +171,23 @@ permalink: /admin/
             </div>
 
             <div class="admin-field">
-              <label class="admin-label" for="article-content">Content (Markdown)</label>
+              <div class="admin-editor-header">
+                <label class="admin-label" for="article-content">Content (Markdown)</label>
+                <div class="admin-editor-tabs">
+                  <button type="button" class="admin-editor-tab active" id="tab-edit">Edit</button>
+                  <button type="button" class="admin-editor-tab" id="tab-preview">Preview</button>
+                </div>
+              </div>
               <textarea id="article-content" class="admin-input admin-textarea" rows="14" placeholder="Write your article content here using Markdown..." required></textarea>
+              <div id="article-preview-panel" style="display:none;">
+                <div class="article-preview-mock">
+                  <p class="article-preview-category" id="preview-category"></p>
+                  <h1 class="article-preview-title" id="preview-title">Untitled Article</h1>
+                  <p class="article-preview-byline" id="preview-byline"></p>
+                  <p class="article-preview-desc" id="preview-desc"></p>
+                  <div class="article-preview-body" id="preview-body"></div>
+                </div>
+              </div>
             </div>
 
             <button type="submit" class="admin-btn" id="submit-article-btn">Submit for Review</button>
@@ -624,6 +642,12 @@ permalink: /admin/
       document.getElementById('article-form').reset();
       // Re-fill author name
       document.getElementById('article-author').value = authorName;
+      // Reset preview to edit mode
+      previewActive = false;
+      document.getElementById('tab-edit').classList.add('active');
+      document.getElementById('tab-preview').classList.remove('active');
+      document.getElementById('article-content').style.display = '';
+      document.getElementById('article-preview-panel').style.display = 'none';
       loadSubmissions(user.uid);
       setTimeout(function () {
         document.getElementById('article-success').style.display = 'none';
@@ -633,6 +657,45 @@ permalink: /admin/
       showError('article-error', 'Failed to submit article. Please try again.');
     });
   });
+
+  // ── Article Preview ──
+  var previewActive = false;
+
+  document.getElementById('tab-preview').addEventListener('click', function () {
+    previewActive = true;
+    document.getElementById('tab-preview').classList.add('active');
+    document.getElementById('tab-edit').classList.remove('active');
+    document.getElementById('article-content').style.display = 'none';
+    document.getElementById('article-preview-panel').style.display = 'block';
+    renderArticlePreview();
+  });
+
+  document.getElementById('tab-edit').addEventListener('click', function () {
+    previewActive = false;
+    document.getElementById('tab-edit').classList.add('active');
+    document.getElementById('tab-preview').classList.remove('active');
+    document.getElementById('article-content').style.display = '';
+    document.getElementById('article-preview-panel').style.display = 'none';
+  });
+
+  function renderArticlePreview() {
+    var title = document.getElementById('article-title').value.trim() || 'Untitled Article';
+    var category = document.getElementById('article-category').value || '';
+    var author = document.getElementById('article-author').value.trim() || '';
+    var description = document.getElementById('article-description').value.trim() || '';
+    var content = document.getElementById('article-content').value || '';
+
+    document.getElementById('preview-title').textContent = title;
+    document.getElementById('preview-category').textContent = category;
+    document.getElementById('preview-byline').textContent = author ? 'By ' + author : '';
+    document.getElementById('preview-desc').textContent = description;
+
+    if (typeof marked !== 'undefined') {
+      document.getElementById('preview-body').innerHTML = marked.parse(content);
+    } else {
+      document.getElementById('preview-body').textContent = content;
+    }
+  }
 
   // ── My Submissions ──
   function loadSubmissions(uid) {
