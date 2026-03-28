@@ -10,7 +10,7 @@ permalink: /admin/
 <!-- Site guide data for article registration validation -->
 <script>
 {% assign all_site_guide_ids = site.guides | map: "guide_id" | uniq %}
-var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides | where: "guide_id", gid | first %}{"guide_id":{{ g.guide_id | jsonify }},"title":{{ g.title | jsonify }},"category":{{ g.category | default: "" | jsonify }},"author_id":{{ g.author_id | default: "" | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}];
+var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides | where: "guide_id", gid | where: "language_code", "en" | first %}{% if g == nil %}{% assign g = site.guides | where: "guide_id", gid | first %}{% endif %}{"guide_id":{{ g.guide_id | jsonify }},"title":{{ g.title | jsonify }},"category":{{ g.category | default: "" | jsonify }},"author_id":{{ g.author_id | default: "" | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}];
 </script>
 
 <!-- Firebase SDKs -->
@@ -715,6 +715,7 @@ var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides 
 
   // ── Featured Articles ──
   var currentFeaturedIds = [];
+  var currentPublishedArticles = [];
   var currentUserId = null;
   var featuredPanelInitialized = false;
 
@@ -745,6 +746,7 @@ var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides 
       var data = doc.data();
       if (!data.authorPage) return;
       currentFeaturedIds = data.featuredGuideIds || [];
+      currentPublishedArticles = data.publishedArticles || [];
       document.getElementById('featured-articles-card').style.display = 'block';
 
       // Populate dropdown with guides belonging to this author that aren't yet registered
@@ -765,7 +767,7 @@ var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides 
         }
       }
 
-      renderFeaturedList(uid, data.publishedArticles || []);
+      renderFeaturedList(uid, currentPublishedArticles);
     }).catch(function () {
       document.getElementById('featured-articles-list').innerHTML =
         '<p class="admin-empty-state">Could not load articles.</p>';
@@ -781,15 +783,21 @@ var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides 
     var html = '<div class="admin-submissions">';
     articles.forEach(function (article) {
       var guideId = article.guide_id || '';
+      // Always look up English title/category from site data
+      var siteGuide = typeof SITE_GUIDES !== 'undefined'
+        ? SITE_GUIDES.filter(function (g) { return g.guide_id === guideId; })[0] : null;
+      var displayTitle = siteGuide ? siteGuide.title : (article.title || guideId);
+      var displayCategory = siteGuide ? siteGuide.category : (article.category || '');
       var isFeatured = currentFeaturedIds.indexOf(guideId) !== -1;
       html += '<div class="admin-submission-item">';
       html += '<div class="admin-submission-main">';
-      html += '<h3 class="admin-submission-title">' + escapeHtml(article.title || guideId) + '</h3>';
-      if (article.category) html += '<div class="admin-submission-meta"><span>' + escapeHtml(article.category) + '</span></div>';
+      html += '<h3 class="admin-submission-title">' + escapeHtml(displayTitle) + '</h3>';
+      if (displayCategory) html += '<div class="admin-submission-meta"><span>' + escapeHtml(displayCategory) + '</span></div>';
       html += '</div>';
       html += '<button type="button" class="admin-featured-star' + (isFeatured ? ' is-active' : '') + '" data-guide-id="' + escapeHtml(guideId) + '" title="' + (isFeatured ? 'Remove from featured' : 'Add to featured') + '">';
       html += isFeatured ? '&#9733;' : '&#9734;';
       html += '</button>';
+      html += '<button type="button" class="admin-link-remove" data-remove-id="' + escapeHtml(guideId) + '" title="Remove article">&times;</button>';
       html += '</div>';
     });
     html += '</div>';
@@ -798,6 +806,22 @@ var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides 
       btn.addEventListener('click', function () {
         toggleFeatured(uid, this.getAttribute('data-guide-id'), this);
       });
+    });
+    list.querySelectorAll('.admin-link-remove[data-remove-id]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        removePublishedArticle(uid, this.getAttribute('data-remove-id'));
+      });
+    });
+  }
+
+  function removePublishedArticle(uid, guideId) {
+    var updated = currentPublishedArticles.filter(function (a) { return a.guide_id !== guideId; });
+    var featuredUpdated = currentFeaturedIds.filter(function (id) { return id !== guideId; });
+    db.collection('users').doc(uid).update({
+      publishedArticles: updated,
+      featuredGuideIds: featuredUpdated
+    }).then(function () {
+      loadFeaturedPanel(uid);
     });
   }
 
