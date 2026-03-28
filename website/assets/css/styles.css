@@ -1938,63 +1938,20 @@ a.author-contact-value:hover {
   margin-bottom: 0;
 }
 
-.admin-editor-tabs {
-  display: flex;
+.admin-editor-tab-newtab {
+  background: none;
   border: 1px solid var(--border);
   border-radius: 6px;
-  overflow: hidden;
-}
-
-.admin-editor-tab {
-  background: none;
-  border: none;
-  padding: 0.35rem 0.9rem;
+  padding: 0.3rem 0.8rem;
   font-size: 0.82rem;
   font-family: inherit;
   color: var(--warm-gray);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-
-.admin-editor-tab + .admin-editor-tab {
-  border-left: 1px solid var(--border);
-}
-
-.admin-editor-tab.active {
-  background: var(--dark);
-  color: var(--ivory);
-}
-
-.admin-editor-tab-newtab {
-  font-size: 1rem;
-  padding: 0.35rem 0.7rem;
-  color: var(--warm-gray);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .admin-editor-tab-newtab:hover {
   background: var(--cream);
+  border-color: var(--dark);
   color: var(--dark);
-}
-
-/* Inline preview wrapper — uses real guide classes with overrides */
-.article-preview-inline {
-  border: 1px solid var(--border);
-  overflow: hidden;
-  background: var(--ivory);
-}
-
-.article-preview-inline .guide-hero {
-  padding: 2.8rem 2.5rem 2rem;
-}
-
-.article-preview-inline .guide-hero h1 {
-  font-size: 2.2rem;
-}
-
-.article-preview-inline .guide-hero .hero-subtitle {
-  margin-bottom: 0;
-}
-
-.article-preview-inline .guide-content {
-  padding: 2rem 2.5rem 2.5rem;
 }
