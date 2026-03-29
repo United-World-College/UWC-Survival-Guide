@@ -1664,16 +1664,28 @@ a.author-contact-value:hover {
 
 .admin-submission-meta {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.2rem;
+  flex-direction: column;
+  gap: 0.15rem;
   font-size: 0.78rem;
   color: var(--warm-gray);
   letter-spacing: 0.06em;
+  margin-top: 0.2rem;
 }
 
-.admin-submission-meta .admin-auth-sep {
-  margin: 0 0.4rem;
+.admin-submission-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.admin-author-link {
+  color: var(--warm-gray);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.admin-author-link:hover {
+  color: var(--dark);
 }
 
 .admin-status {

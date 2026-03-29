@@ -1347,11 +1347,10 @@ var ADMIN_I18N = {
           html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
           html += '<div class="admin-submission-meta">';
           html += '<span>' + escapeHtml(d.category) + '</span>';
-          html += '<span class="admin-auth-sep">&middot;</span>';
           html += '<span>' + date + '</span>';
-          html += '<span class="admin-auth-sep">&middot;</span>';
+          html += '</div>';
+          html += '<div class="admin-submission-actions">';
           html += '<button class="admin-btn admin-btn-small" data-preview="' + doc.id + '">' + escapeHtml(ADMIN_I18N.preview_btn) + '</button>';
-          html += '<span class="admin-auth-sep">&middot;</span>';
           html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(status)) + '</span>';
           html += '</div>';
           html += renderSubmissionThread(d);
@@ -1396,6 +1395,14 @@ var ADMIN_I18N = {
   var currentModalDocId = null;
   var currentModalData = null;
   var ADMIN_EMAILS = ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
+
+  function getAuthorPageUrl(name) {
+    if (!name) return '';
+    var slug = name.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+    var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? '' : '/UWC-Survival-Guide';
+    return baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + slug + '/';
+  }
 
   function checkAdmin(email) {
     if (ADMIN_EMAILS.indexOf(email) !== -1) {
@@ -1449,10 +1456,13 @@ var ADMIN_I18N = {
         html += '<div class="admin-submission-main">';
         html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
         html += '<div class="admin-submission-meta">';
-        html += '<span>' + escapeHtml(d.authorName || ADMIN_I18N.author_unknown) + '</span>';
-        html += '<span class="admin-auth-sep">&middot;</span>';
+        var authorUrl = getAuthorPageUrl(d.authorName);
+        if (d.authorName && authorUrl) {
+          html += '<a href="' + authorUrl + '" target="_blank" rel="noopener noreferrer" class="admin-author-link" onclick="event.stopPropagation();">' + escapeHtml(d.authorName) + '</a>';
+        } else {
+          html += '<span>' + escapeHtml(d.authorName || ADMIN_I18N.author_unknown) + '</span>';
+        }
         html += '<span>' + escapeHtml(d.category) + '</span>';
-        html += '<span class="admin-auth-sep">&middot;</span>';
         html += '<span>' + date + '</span>';
         html += '</div>';
         html += '</div>';
@@ -1574,7 +1584,13 @@ var ADMIN_I18N = {
       var date = d.createdAt ? (function(dt){ return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); })(d.createdAt.toDate()) : ADMIN_I18N.author_unknown;
 
       document.getElementById('modal-title').textContent = d.title;
-      document.getElementById('modal-author').textContent = ADMIN_I18N.by_prefix + (d.authorName || ADMIN_I18N.author_unknown);
+      var modalAuthorEl = document.getElementById('modal-author');
+      var authorUrl = getAuthorPageUrl(d.authorName);
+      if (d.authorName && authorUrl) {
+        modalAuthorEl.innerHTML = escapeHtml(ADMIN_I18N.by_prefix) + '<a href="' + escapeHtml(authorUrl) + '" target="_blank" rel="noopener noreferrer" class="admin-author-link">' + escapeHtml(d.authorName) + '</a>';
+      } else {
+        modalAuthorEl.textContent = ADMIN_I18N.by_prefix + (d.authorName || ADMIN_I18N.author_unknown);
+      }
       document.getElementById('modal-category').textContent = d.category;
       document.getElementById('modal-date').textContent = date;
       document.getElementById('modal-description').textContent = d.description;
