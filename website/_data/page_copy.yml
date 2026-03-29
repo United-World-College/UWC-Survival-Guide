@@ -276,6 +276,7 @@
     resubmit_btn: "Edit & Resubmit"
     resubmitting: "Resubmitting..."
     resubmit_success: "Your revised article has been resubmitted for review."
+    close_tab: "Close Tab"
     author_message_label: "Message to Reviewer (optional)"
     author_message_placeholder: "Briefly describe the changes you made..."
     author_message_to_reviewer: "Author's Note"
@@ -561,6 +562,7 @@
     resubmit_btn: 编辑并重新投稿
     resubmitting: 重新投稿中……
     resubmit_success: 您的修改稿已重新提交审核。
+    close_tab: 关闭标签页
     author_message_label: 给审稿人的留言（可选）
     author_message_placeholder: 简要说明您所做的修改……
     author_message_to_reviewer: 作者留言
@@ -846,6 +848,7 @@
     resubmit_btn: 編輯並重新投稿
     resubmitting: 重新投稿中……
     resubmit_success: 您的修改稿已重新提交審核。
+    close_tab: 關閉分頁
     author_message_label: 給審稿人的留言（選填）
     author_message_placeholder: 簡要說明您所做的修改……
     author_message_to_reviewer: 作者留言

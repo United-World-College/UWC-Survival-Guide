@@ -110,6 +110,8 @@ var ADMIN_I18N = {
   author_message_label: {{ t.author_message_label | jsonify }},
   author_message_placeholder: {{ t.author_message_placeholder | jsonify }},
   author_message_to_reviewer: {{ t.author_message_to_reviewer | jsonify }},
+  preview_btn:          {{ t.preview_btn | jsonify }},
+  close_tab:            {{ t.close_tab | jsonify }},
   copy_md_btn:          {{ t.copy_md_btn | jsonify }},
   categories:           {{ current_locale.categories | jsonify }},
   lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }}
@@ -1038,7 +1040,6 @@ var ADMIN_I18N = {
     var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
     var labels = {
       resubmit_btn:            ADMIN_I18N.resubmit_btn,
-      rnr_cancel:              ADMIN_I18N.rnr_cancel,
       resubmitting:            ADMIN_I18N.resubmitting,
       resubmit_success:        ADMIN_I18N.resubmit_success,
       article_failed:          ADMIN_I18N.article_failed,
@@ -1047,6 +1048,10 @@ var ADMIN_I18N = {
       author_message_label:    ADMIN_I18N.author_message_label,
       author_message_placeholder: ADMIN_I18N.author_message_placeholder,
       author_message_to_reviewer: ADMIN_I18N.author_message_to_reviewer,
+      preview_btn:             ADMIN_I18N.preview_btn,
+      preview_banner:          ADMIN_I18N.preview_banner,
+      preview_by:              ADMIN_I18N.preview_by,
+      close_tab:               ADMIN_I18N.close_tab,
       round_label:             'Round'
     };
     win.document.write('<!DOCTYPE html><html lang="en"><head>' +
@@ -1056,17 +1061,16 @@ var ADMIN_I18N = {
       '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
       '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">' +
       (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
-      '<style>' +
-      'body{margin:0;padding:0;}' +
-      '.rs-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;padding:0.55rem 1rem;' +
-        'font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;text-align:center;}' +
-      '.rs-wrap{max-width:860px;margin:0 auto;padding:2.5rem 2rem 4rem;}' +
-      '.rs-heading{font-family:var(--serif,"Cormorant Garamond",serif);font-size:1.5rem;margin-bottom:1.5rem;}' +
-      '.rs-success{background:#e8f2e8;border:1px solid #a3c4a7;padding:1rem 1.2rem;border-radius:6px;color:#3a6040;margin-top:1rem;}' +
-      '<\/style>' +
+      '<style>body{margin:0;padding:0;}<\/style>' +
       '<\/head><body>' +
-      '<div class="rs-banner" id="rs-banner">' + escapeHtml(labels.resubmit_btn) + '<\/div>' +
-      '<div class="rs-wrap"><div id="rs-app"><p class="admin-empty-state">Loading...<\/p><\/div><\/div>' +
+      '<div class="admin-wrapper">' +
+      '<div class="admin-hero"><div class="admin-hero-content">' +
+      '<h1 class="admin-hero-title" id="rs-hero-title">' + escapeHtml(labels.resubmit_btn) + '<\/h1>' +
+      '<\/div><\/div>' +
+      '<div class="admin-section"><div class="admin-panel">' +
+      '<div class="admin-card" id="rs-app"><p class="admin-empty-state">Loading...<\/p><\/div>' +
+      '<\/div><\/div><\/div>' +
+      '<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"><\/script>' +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"><\/script>' +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"><\/script>' +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"><\/script>' +
@@ -1074,6 +1078,7 @@ var ADMIN_I18N = {
       '(function(){' +
       'var DOC_ID=' + JSON.stringify(docId) + ';' +
       'var L=' + JSON.stringify(labels) + ';' +
+      'var STYLESHEET=' + JSON.stringify(stylesheetHref) + ';' +
       'firebase.initializeApp({apiKey:"AIzaSyC2PkxnmMwJiD73ouo8Jxmk536_A2RkNy8",authDomain:"uwc-survival-guide.firebaseapp.com",' +
         'projectId:"uwc-survival-guide",storageBucket:"uwc-survival-guide.firebasestorage.app",' +
         'messagingSenderId:"239920982978",appId:"1:239920982978:web:5ddd10c09ba0153956045b"});' +
@@ -1089,14 +1094,30 @@ var ADMIN_I18N = {
       'function fmtDate(s){if(!s)return"";try{return new Date(s).toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"});}catch(e){return s;}}' +
       'function counter(ta,el,max){var n=ta.value.length;el.textContent=n+" / "+max;el.className="admin-char-counter";' +
         'if(n>=max)el.classList.add("admin-char-at-limit");else if(n>=max*0.85)el.classList.add("admin-char-near-limit");}' +
+      'function openPreview(title,category,author,desc,content){' +
+        'var rendered=typeof marked!=="undefined"?marked.parse(content):esc(content);' +
+        'var pw=window.open("","_blank");if(!pw)return;' +
+        'pw.document.write("<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content=\\"width=device-width,initial-scale=1\\">' +
+          '<title>PREVIEW \\u2014 "+esc(title)+"<\\/title>' +
+          '<link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin>' +
+          '<link href=\\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap\\" rel=stylesheet>"' +
+          '+(STYLESHEET?"<link rel=stylesheet href=\\""+STYLESHEET+"\\">":"")' +
+          '+"<style>body{font-family:Inter,-apple-system,Helvetica,Arial,sans-serif;}.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;padding:0.55rem 1rem;font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;}<\\/style>' +
+          '<\\/head><body><div class=preview-banner>"+esc(L.preview_banner)+"<\\/div>' +
+          '<header class=guide-hero><div class=guide-hero-content><p class=hero-label>"+esc(category)+"<\\/p><h1>"+esc(title)+"<\\/h1>"' +
+          '+(author?"<p class=guide-byline>"+esc(L.preview_by)+esc(author)+"<\\/p>":"")' +
+          '+(desc?"<p class=hero-subtitle>"+esc(desc)+"<\\/p>":"")' +
+          '+"<\\/div><\\/header><div class=divider><\\/div><article class=guide-content>"+rendered+"<\\/article><\\/body><\\/html>");' +
+        'pw.document.close();pw.focus();}' +
       'function render(d){' +
         'var history=d.revisionHistory||(d.reviewerComments?[{round:1,reviewerComments:d.reviewerComments,' +
           'reviewedAt:null,authorMessage:d.authorMessage||null,resubmittedAt:null}]:[]);' +
-        'document.getElementById("rs-banner").textContent=L.resubmit_btn+(d.title?" \u2014 "+d.title:"");' +
-        'var h="";' +
+        'document.getElementById("rs-hero-title").textContent=L.resubmit_btn+(d.title?" \\u2014 "+d.title:"");' +
+        'var h="<h2 class=\\"admin-card-title\\">"+esc(L.resubmit_btn)+"<\/h2>";' +
+        /* revision thread */
         'if(history.length){' +
           'h+="<div class=\\"admin-revision-thread\\">";' +
-          'history.forEach(function(e){' +
+          'history.forEach(function(e,i){' +
             'h+="<div class=\\"admin-revision-entry\\">";' +
             'h+="<p class=\\"admin-revision-round-label\\">"+esc(L.round_label)+" "+e.round+"<\/p>";' +
             'if(e.reviewerComments){' +
@@ -1104,6 +1125,7 @@ var ADMIN_I18N = {
               'h+="<p class=\\"admin-rnr-feedback-label\\">"+esc(L.revision_feedback_label)+"<\/p>";' +
               'h+="<p class=\\"admin-rnr-feedback-body\\">"+esc(e.reviewerComments)+"<\/p>";' +
               'if(e.reviewedAt)h+="<p class=\\"admin-revision-timestamp\\">"+fmtDate(e.reviewedAt)+"<\/p>";' +
+              'if(e.contentSnapshot)h+="<button class=\\"admin-btn admin-btn-small rs-view-ver\\" data-round=\\""+i+"\\">"+esc(L.preview_btn)+" (v"+e.round+")<\/button>";' +
               'h+="<\/div>";' +
             '}' +
             'if(e.authorMessage){' +
@@ -1117,7 +1139,7 @@ var ADMIN_I18N = {
           '});' +
           'h+="<\/div>";' +
         '}' +
-        'h+="<h2 class=\\"rs-heading\\">"+esc(L.resubmit_btn)+"<\/h2>";' +
+        /* form */
         'h+="<form id=\\"rs-form\\" class=\\"admin-form\\">";' +
         'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Title<\/label><input id=\\"rs-title\\" class=\\"admin-input\\" required><\/div>";' +
         'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Category<\/label>";' +
@@ -1135,24 +1157,44 @@ var ADMIN_I18N = {
         'h+="<option value=\\"zh-TW\\">台灣繁體<\/option>";' +
         'h+="<\/select><\/div>";' +
         'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Description<\/label><input id=\\"rs-desc\\" class=\\"admin-input\\" required><\/div>";' +
-        'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Content<\/label><textarea id=\\"rs-content\\" class=\\"admin-input admin-textarea\\" rows=\\"16\\" required><\/textarea><\/div>";' +
+        'h+="<div class=\\"admin-field\\"><div class=\\"admin-editor-header\\"><label class=\\"admin-label\\">Content<\/label>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-editor-tab admin-editor-tab-newtab\\" id=\\"rs-preview\\">"+esc(L.preview_btn)+"<\/button><\/div>";' +
+        'h+="<textarea id=\\"rs-content\\" class=\\"admin-input admin-textarea\\" rows=\\"14\\" required><\/textarea><\/div>";' +
         'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">"+esc(L.author_message_label)+"<\/label>";' +
         'h+="<textarea id=\\"rs-msg\\" class=\\"admin-input admin-textarea\\" rows=\\"3\\" placeholder=\\""+esc(L.author_message_placeholder)+"\\" maxlength=\\"500\\"><\/textarea>";' +
         'h+="<p class=\\"admin-char-counter\\" id=\\"rs-counter\\">0 / 500<\/p><\/div>";' +
-        'h+="<div class=\\"admin-modal-actions\\">";' +
         'h+="<button type=\\"submit\\" class=\\"admin-btn\\" id=\\"rs-submit\\">"+esc(L.resubmit_btn)+"<\/button>";' +
-        'h+="<\/div><\/form>";' +
+        'h+="<\/form>";' +
         'h+="<p id=\\"rs-error\\" class=\\"admin-error\\" style=\\"display:none;margin-top:1rem;\\"><\/p>";' +
         'document.getElementById("rs-app").innerHTML=h;' +
+        /* populate fields */
         'var tTitle=document.getElementById("rs-title");' +
         'tTitle.value=d.title||"";' +
         'document.getElementById("rs-cat").value=d.category||"";' +
         'document.getElementById("rs-lang").value=d.language||"";' +
         'document.getElementById("rs-desc").value=d.description||"";' +
         'document.getElementById("rs-content").value=d.content||"";' +
+        /* preview button */
+        'document.getElementById("rs-preview").addEventListener("click",function(){' +
+          'openPreview(document.getElementById("rs-title").value.trim()||"Untitled",' +
+            'document.getElementById("rs-cat").value,' +
+            'd.authorName||"",' +
+            'document.getElementById("rs-desc").value.trim(),' +
+            'document.getElementById("rs-content").value);' +
+        '});' +
+        /* view version buttons */
+        'document.querySelectorAll(".rs-view-ver").forEach(function(btn){' +
+          'btn.addEventListener("click",function(){' +
+            'var idx=parseInt(this.getAttribute("data-round"));' +
+            'var snap=history[idx].contentSnapshot;' +
+            'if(snap)openPreview(snap.title||d.title,snap.category||d.category,d.authorName||"",snap.description||d.description,snap.content||"");' +
+          '});' +
+        '});' +
+        /* char counter */
         'var msgTa=document.getElementById("rs-msg");' +
         'var ctr=document.getElementById("rs-counter");' +
         'msgTa.addEventListener("input",function(){counter(msgTa,ctr,500);});' +
+        /* submit handler */
         'document.getElementById("rs-form").addEventListener("submit",function(ev){' +
           'ev.preventDefault();' +
           'var title=tTitle.value.trim();' +
@@ -1168,7 +1210,7 @@ var ADMIN_I18N = {
           'btn.textContent=L.resubmitting;btn.disabled=true;' +
           'db.collection("submissions").doc(DOC_ID).get().then(function(snap){' +
             'var hist=(snap.data().revisionHistory||[]).slice();' +
-            'if(hist.length&&!hist[hist.length-1].authorMessage){' +
+            'if(hist.length&&!hist[hist.length-1].resubmittedAt){' +
               'hist[hist.length-1].authorMessage=msg||null;' +
               'hist[hist.length-1].resubmittedAt=new Date().toISOString();' +
             '}' +
@@ -1179,7 +1221,12 @@ var ADMIN_I18N = {
             'return db.collection("submissions").doc(DOC_ID).update(upd);' +
           '}).then(function(){' +
             'document.getElementById("rs-form").style.display="none";' +
-            'document.getElementById("rs-app").insertAdjacentHTML("beforeend","<div class=\\"rs-success\\">"+esc(L.resubmit_success)+"<\/div>");' +
+            'document.getElementById("rs-error").style.display="none";' +
+            'var sc=document.createElement("div");sc.className="admin-success";sc.style.cssText="margin-top:1.5rem;padding:1.2rem;text-align:center;";' +
+            'sc.innerHTML="<p style=\\"margin:0 0 1rem;font-size:1.05rem;\\">"+esc(L.resubmit_success)+"<\/p>"' +
+              '+"<button class=\\"admin-btn\\" id=\\"rs-close-tab\\">"+esc(L.close_tab)+"<\/button>";' +
+            'document.getElementById("rs-app").appendChild(sc);' +
+            'document.getElementById("rs-close-tab").addEventListener("click",function(){window.close();});' +
             'if(window.opener&&!window.opener.closed){' +
               'try{window.opener.location.reload();}catch(e){}' +
             '}' +
@@ -1196,6 +1243,79 @@ var ADMIN_I18N = {
   }
 
   // ── My Submissions ──
+  function openSubmissionPreview(docId) {
+    db.collection('submissions').doc(docId).get().then(function (doc) {
+      if (!doc.exists) return;
+      var d = doc.data();
+      var renderedContent = typeof marked !== 'undefined' ? marked.parse(d.content || '') : escapeHtml(d.content || '');
+      var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
+      var win = window.open('', '_blank');
+      if (!win) return;
+      win.document.write('<!DOCTYPE html><html lang="en"><head>' +
+        '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+        '<title>PREVIEW \u2014 ' + escapeHtml(d.title) + '</title>' +
+        '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+        '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">' +
+        (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
+        '<style>body{font-family:"Inter",-apple-system,Helvetica,Arial,sans-serif;}' +
+        '.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;' +
+        'padding:0.55rem 1rem;font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;}</style>' +
+        '</head><body>' +
+        '<div class="preview-banner">' + escapeHtml(ADMIN_I18N.preview_banner) + '</div>' +
+        '<header class="guide-hero"><div class="guide-hero-content">' +
+        '<p class="hero-label">' + escapeHtml(d.category) + '</p>' +
+        '<h1>' + escapeHtml(d.title) + '</h1>' +
+        (d.authorName ? '<p class="guide-byline">' + escapeHtml(ADMIN_I18N.preview_by) + escapeHtml(d.authorName) + '</p>' : '') +
+        (d.description ? '<p class="hero-subtitle">' + escapeHtml(d.description) + '</p>' : '') +
+        '</div></header>' +
+        '<div class="divider"></div>' +
+        '<article class="guide-content">' + renderedContent + '</article>' +
+        '</body></html>');
+      win.document.close();
+      win.focus();
+    });
+  }
+
+  function renderSubmissionThread(d) {
+    var history = d.revisionHistory;
+    if (!history || !history.length) {
+      if (d.reviewerComments) {
+        history = [{ round: 1, reviewerComments: d.reviewerComments, reviewedAt: null,
+                     authorMessage: d.authorMessage || null, resubmittedAt: null }];
+      } else {
+        return '';
+      }
+    }
+    function fmtDate(s) {
+      if (!s) return '';
+      try { return new Date(s).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+      catch (e) { return s; }
+    }
+    var html = '<div class="admin-revision-thread">';
+    history.forEach(function (entry) {
+      html += '<div class="admin-revision-entry">';
+      html += '<p class="admin-revision-round-label">Round ' + entry.round + '</p>';
+      if (entry.reviewerComments) {
+        html += '<div class="admin-rnr-feedback">';
+        html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.revision_feedback_label) + '</p>';
+        html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.reviewerComments) + '</p>';
+        if (entry.reviewedAt) html += '<p class="admin-revision-timestamp">' + fmtDate(entry.reviewedAt) + '</p>';
+        html += '</div>';
+      }
+      if (entry.authorMessage) {
+        html += '<div class="admin-rnr-feedback">';
+        html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.author_message_to_reviewer) + '</p>';
+        html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.authorMessage) + '</p>';
+        if (entry.resubmittedAt) html += '<p class="admin-revision-timestamp">' + fmtDate(entry.resubmittedAt) + '</p>';
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
   function loadSubmissions(uid) {
     var container = document.getElementById('submissions-list');
     container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.loading_submissions) + '</p>';
@@ -1223,12 +1343,11 @@ var ADMIN_I18N = {
           html += '<span>' + escapeHtml(d.category) + '</span>';
           html += '<span class="admin-auth-sep">&middot;</span>';
           html += '<span>' + date + '</span>';
+          html += '<span class="admin-auth-sep">&middot;</span>';
+          html += '<button class="admin-btn admin-btn-small" data-preview="' + doc.id + '">' + escapeHtml(ADMIN_I18N.preview_btn) + '</button>';
           html += '</div>';
-          if (isRnR && d.reviewerComments) {
-            html += '<div class="admin-rnr-feedback">';
-            html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.revision_feedback_label) + '</p>';
-            html += '<p class="admin-rnr-feedback-body">' + escapeHtml(d.reviewerComments) + '</p>';
-            html += '</div>';
+          html += renderSubmissionThread(d);
+          if (isRnR) {
             html += '<button class="admin-btn admin-btn-small" style="margin-top:0.75rem;" data-resubmit="' + doc.id + '">' + escapeHtml(ADMIN_I18N.resubmit_btn) + '</button>';
           }
           html += '</div>';
@@ -1241,6 +1360,12 @@ var ADMIN_I18N = {
         container.querySelectorAll('[data-resubmit]').forEach(function (btn) {
           btn.addEventListener('click', function () {
             resubmitArticle(this.getAttribute('data-resubmit'));
+          });
+        });
+        container.querySelectorAll('[data-preview]').forEach(function (btn) {
+          btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            openSubmissionPreview(this.getAttribute('data-preview'));
           });
         });
       })
@@ -1728,8 +1853,10 @@ var ADMIN_I18N = {
     var now = new Date().toISOString();
 
     db.collection('submissions').doc(currentModalDocId).get().then(function (snap) {
-      var hist = (snap.data().revisionHistory || []).slice();
-      hist.push({ round: hist.length + 1, reviewerComments: comments, reviewedAt: now });
+      var data = snap.data();
+      var hist = (data.revisionHistory || []).slice();
+      hist.push({ round: hist.length + 1, reviewerComments: comments, reviewedAt: now,
+                  contentSnapshot: { title: data.title, category: data.category, language: data.language, description: data.description, content: data.content } });
       return db.collection('submissions').doc(currentModalDocId).update({
         status: 'revise_resubmit',
         reviewerComments: comments,
