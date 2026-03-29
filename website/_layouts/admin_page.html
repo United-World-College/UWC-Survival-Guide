@@ -107,6 +107,9 @@ var ADMIN_I18N = {
   resubmit_btn:         {{ t.resubmit_btn | jsonify }},
   resubmitting:         {{ t.resubmitting | jsonify }},
   resubmit_success:     {{ t.resubmit_success | jsonify }},
+  author_message_label: {{ t.author_message_label | jsonify }},
+  author_message_placeholder: {{ t.author_message_placeholder | jsonify }},
+  author_message_to_reviewer: {{ t.author_message_to_reviewer | jsonify }},
   copy_md_btn:          {{ t.copy_md_btn | jsonify }},
   categories:           {{ current_locale.categories | jsonify }},
   lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }}
@@ -289,7 +292,6 @@ var ADMIN_I18N = {
               <textarea id="article-content" class="admin-input admin-textarea" rows="14" placeholder="{{ t.content_placeholder }}" required></textarea>
             </div>
 
-            <input type="hidden" id="article-edit-id" value="" />
             <button type="submit" class="admin-btn" id="submit-article-btn">{{ t.submit_btn }}</button>
           </form>
           <p id="article-success" class="admin-success" style="display:none;"></p>
@@ -375,6 +377,10 @@ var ADMIN_I18N = {
               <p class="admin-rnr-feedback-label" id="modal-rnr-feedback-label"></p>
               <p class="admin-rnr-feedback-body" id="modal-rnr-feedback-body"></p>
             </div>
+            <div id="modal-author-message" style="display:none;" class="admin-rnr-feedback" style="border-color:#c8d8c8;background:#f5f8f5;">
+              <p class="admin-rnr-feedback-label" id="modal-author-message-label"></p>
+              <p class="admin-rnr-feedback-body" id="modal-author-message-body"></p>
+            </div>
             <div id="modal-actions" class="admin-modal-actions">
               <button type="button" id="modal-approve" class="admin-btn">{{ t.approve_btn }}</button>
               <button type="button" id="modal-revise" class="admin-btn admin-btn-outline">{{ t.revise_resubmit_btn }}</button>
@@ -382,7 +388,8 @@ var ADMIN_I18N = {
             </div>
             <div id="modal-rnr-form" style="display:none;" class="admin-rnr-form">
               <p class="admin-rnr-form-title">{{ t.rnr_comments_label }}</p>
-              <textarea id="modal-rnr-comments" class="admin-input admin-textarea" rows="5" placeholder="{{ t.rnr_comments_placeholder }}"></textarea>
+              <textarea id="modal-rnr-comments" class="admin-input admin-textarea" rows="5" placeholder="{{ t.rnr_comments_placeholder }}" maxlength="1000"></textarea>
+              <p class="admin-char-counter" id="modal-rnr-comments-counter">0 / 1000</p>
               <div class="admin-modal-actions" style="margin-top:0.75rem;">
                 <button type="button" id="modal-rnr-submit" class="admin-btn">{{ t.rnr_submit }}</button>
                 <button type="button" id="modal-rnr-cancel" class="admin-btn admin-btn-outline">{{ t.rnr_cancel }}</button>
@@ -392,6 +399,63 @@ var ADMIN_I18N = {
               <pre id="modal-md-content" class="admin-preview-content"></pre>
               <button type="button" id="modal-copy-md" class="admin-btn" style="margin-top:1rem;">{{ t.copy_md_btn }}</button>
             </div>
+          </div>
+        </div>
+
+        <!-- Author Resubmit Modal -->
+        <div id="resubmit-modal" class="admin-modal" style="display:none;">
+          <div class="admin-modal-backdrop" id="resubmit-modal-backdrop"></div>
+          <div class="admin-modal-content admin-modal-content-wide">
+            <div class="admin-modal-header">
+              <h2 class="admin-card-title">{{ t.resubmit_btn }}</h2>
+              <button type="button" id="resubmit-modal-close" class="admin-modal-close">&times;</button>
+            </div>
+            <div id="resubmit-reviewer-feedback" style="display:none;" class="admin-rnr-feedback">
+              <p class="admin-rnr-feedback-label">{{ t.revision_feedback_label }}</p>
+              <p class="admin-rnr-feedback-body" id="resubmit-feedback-body"></p>
+            </div>
+            <form id="resubmit-form" class="admin-form" style="margin-top:1.25rem;">
+              <div class="admin-field">
+                <label class="admin-label" for="resubmit-title">{{ t.article_title_label }}</label>
+                <input type="text" id="resubmit-title" class="admin-input" required />
+              </div>
+              <div class="admin-field">
+                <label class="admin-label" for="resubmit-category">{{ t.category_label }}</label>
+                <select id="resubmit-category" class="admin-input admin-select" required>
+                  <option value="" disabled>{{ t.category_placeholder }}</option>
+                  <option value="College Application">College Application</option>
+                  <option value="Life Reflections">人生杂谈 / Life Reflections</option>
+                  <option value="Academics">Academics</option>
+                </select>
+              </div>
+              <div class="admin-field">
+                <label class="admin-label" for="resubmit-language">{{ t.language_label }}</label>
+                <select id="resubmit-language" class="admin-input admin-select" required>
+                  <option value="" disabled>{{ t.language_placeholder }}</option>
+                  <option value="en">English</option>
+                  <option value="zh-CN">简体中文</option>
+                  <option value="zh-TW">台灣繁體</option>
+                </select>
+              </div>
+              <div class="admin-field">
+                <label class="admin-label" for="resubmit-description">{{ t.description_label }}</label>
+                <input type="text" id="resubmit-description" class="admin-input" required />
+              </div>
+              <div class="admin-field">
+                <label class="admin-label" for="resubmit-content">{{ t.content_label }}</label>
+                <textarea id="resubmit-content" class="admin-input admin-textarea" rows="14" required></textarea>
+              </div>
+              <div class="admin-field">
+                <label class="admin-label" for="resubmit-message">{{ t.author_message_label }}</label>
+                <textarea id="resubmit-message" class="admin-input admin-textarea" rows="3" placeholder="{{ t.author_message_placeholder }}" maxlength="500"></textarea>
+                <p class="admin-char-counter" id="resubmit-message-counter">0 / 500</p>
+              </div>
+              <div class="admin-modal-actions">
+                <button type="submit" class="admin-btn" id="resubmit-submit-btn">{{ t.resubmit_btn }}</button>
+                <button type="button" class="admin-btn admin-btn-outline" id="resubmit-cancel-btn">{{ t.rnr_cancel }}</button>
+              </div>
+            </form>
+            <p id="resubmit-error" class="admin-error" style="display:none;margin-top:1rem;"></p>
           </div>
         </div>
 
@@ -798,7 +862,6 @@ var ADMIN_I18N = {
     var authorName = document.getElementById('article-author').value.trim();
     var description = document.getElementById('article-description').value.trim();
     var content = document.getElementById('article-content').value;
-    var editId = document.getElementById('article-edit-id').value;
 
     if (!title || !category || !language || !authorName || !description || !content) {
       showError('article-error', ADMIN_I18N.err_fill_all);
@@ -807,56 +870,29 @@ var ADMIN_I18N = {
 
     setLoading('submit-article-btn', true);
 
-    if (editId) {
-      db.collection('submissions').doc(editId).update({
-        title: title,
-        category: category,
-        language: language,
-        authorName: authorName,
-        description: description,
-        content: content,
-        status: 'pending',
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(function () {
-        setLoading('submit-article-btn', false);
-        document.getElementById('submit-article-btn').textContent = ADMIN_I18N.submit_btn;
-        document.getElementById('article-edit-id').value = '';
-        showSuccess('article-success', ADMIN_I18N.resubmit_success);
-        document.getElementById('article-form').reset();
-        document.getElementById('article-author').value = authorName;
-        loadSubmissions(user.uid);
-        setTimeout(function () {
-          document.getElementById('article-success').style.display = 'none';
-        }, 5000);
-      }).catch(function () {
-        setLoading('submit-article-btn', false);
-        showError('article-error', ADMIN_I18N.article_failed);
-      });
-    } else {
-      db.collection('submissions').add({
-        uid: user.uid,
-        authorName: authorName,
-        title: title,
-        category: category,
-        language: language,
-        description: description,
-        content: content,
-        status: 'pending',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(function () {
-        setLoading('submit-article-btn', false);
-        showSuccess('article-success', ADMIN_I18N.article_submitted);
-        document.getElementById('article-form').reset();
-        document.getElementById('article-author').value = authorName;
-        loadSubmissions(user.uid);
-        setTimeout(function () {
-          document.getElementById('article-success').style.display = 'none';
-        }, 5000);
-      }).catch(function () {
-        setLoading('submit-article-btn', false);
-        showError('article-error', ADMIN_I18N.article_failed);
-      });
-    }
+    db.collection('submissions').add({
+      uid: user.uid,
+      authorName: authorName,
+      title: title,
+      category: category,
+      language: language,
+      description: description,
+      content: content,
+      status: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+      setLoading('submit-article-btn', false);
+      showSuccess('article-success', ADMIN_I18N.article_submitted);
+      document.getElementById('article-form').reset();
+      document.getElementById('article-author').value = authorName;
+      loadSubmissions(user.uid);
+      setTimeout(function () {
+        document.getElementById('article-success').style.display = 'none';
+      }, 5000);
+    }).catch(function () {
+      setLoading('submit-article-btn', false);
+      showError('article-error', ADMIN_I18N.article_failed);
+    });
   });
 
   // ── Article Preview ──
@@ -1040,21 +1076,117 @@ var ADMIN_I18N = {
       });
   }
 
-  // ── Resubmit Article (pre-fill form from an R&R submission) ──
+  // ── Resubmit Modal ──
+  var currentResubmitDocId = null;
+
   function resubmitArticle(docId) {
     db.collection('submissions').doc(docId).get().then(function (doc) {
       if (!doc.exists) return;
       var d = doc.data();
-      document.getElementById('article-title').value = d.title || '';
-      document.getElementById('article-category').value = d.category || '';
-      document.getElementById('article-language').value = d.language || '';
-      document.getElementById('article-description').value = d.description || '';
-      document.getElementById('article-content').value = d.content || '';
-      document.getElementById('article-edit-id').value = docId;
-      document.getElementById('submit-article-btn').textContent = ADMIN_I18N.resubmit_btn;
-      document.getElementById('article-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      currentResubmitDocId = docId;
+
+      document.getElementById('resubmit-title').value = d.title || '';
+      document.getElementById('resubmit-category').value = d.category || '';
+      document.getElementById('resubmit-language').value = d.language || '';
+      document.getElementById('resubmit-description').value = d.description || '';
+      document.getElementById('resubmit-content').value = d.content || '';
+      document.getElementById('resubmit-message').value = '';
+      updateCharCounter('resubmit-message', 'resubmit-message-counter', 500);
+
+      var feedbackBox = document.getElementById('resubmit-reviewer-feedback');
+      if (d.reviewerComments) {
+        document.getElementById('resubmit-feedback-body').textContent = d.reviewerComments;
+        feedbackBox.style.display = 'block';
+      } else {
+        feedbackBox.style.display = 'none';
+      }
+
+      document.getElementById('resubmit-error').style.display = 'none';
+      document.getElementById('resubmit-submit-btn').textContent = ADMIN_I18N.resubmit_btn;
+      document.getElementById('resubmit-submit-btn').disabled = false;
+
+      document.getElementById('resubmit-modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
     });
   }
+
+  function closeResubmitModal() {
+    document.getElementById('resubmit-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    currentResubmitDocId = null;
+  }
+
+  document.getElementById('resubmit-modal-close').addEventListener('click', closeResubmitModal);
+  document.getElementById('resubmit-modal-backdrop').addEventListener('click', closeResubmitModal);
+  document.getElementById('resubmit-cancel-btn').addEventListener('click', closeResubmitModal);
+
+  document.getElementById('resubmit-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!currentResubmitDocId) return;
+
+    var title = document.getElementById('resubmit-title').value.trim();
+    var category = document.getElementById('resubmit-category').value;
+    var language = document.getElementById('resubmit-language').value;
+    var description = document.getElementById('resubmit-description').value.trim();
+    var content = document.getElementById('resubmit-content').value;
+    var message = document.getElementById('resubmit-message').value.trim();
+
+    if (!title || !category || !language || !description || !content) {
+      document.getElementById('resubmit-error').textContent = ADMIN_I18N.err_fill_all;
+      document.getElementById('resubmit-error').style.display = 'block';
+      return;
+    }
+
+    var btn = document.getElementById('resubmit-submit-btn');
+    btn.textContent = ADMIN_I18N.resubmitting;
+    btn.disabled = true;
+
+    var updateData = {
+      title: title,
+      category: category,
+      language: language,
+      description: description,
+      content: content,
+      status: 'pending',
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (message) updateData.authorMessage = message;
+
+    db.collection('submissions').doc(currentResubmitDocId).update(updateData).then(function () {
+      closeResubmitModal();
+      var user = auth.currentUser;
+      if (user) loadSubmissions(user.uid);
+    }).catch(function (err) {
+      console.error('Resubmit error:', err);
+      btn.textContent = ADMIN_I18N.resubmit_btn;
+      btn.disabled = false;
+      document.getElementById('resubmit-error').textContent = ADMIN_I18N.article_failed;
+      document.getElementById('resubmit-error').style.display = 'block';
+    });
+  });
+
+  // ── Character counters ──
+  function updateCharCounter(textareaId, counterId, max) {
+    var ta = document.getElementById(textareaId);
+    var counter = document.getElementById(counterId);
+    if (!ta || !counter) return;
+    var len = ta.value.length;
+    counter.textContent = len + ' / ' + max;
+    counter.className = 'admin-char-counter';
+    if (len >= max) {
+      counter.classList.add('admin-char-at-limit');
+    } else if (len >= max * 0.85) {
+      counter.classList.add('admin-char-near-limit');
+    }
+  }
+
+  document.getElementById('modal-rnr-comments').addEventListener('input', function () {
+    updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
+  });
+
+  document.getElementById('resubmit-message').addEventListener('input', function () {
+    updateCharCounter('resubmit-message', 'resubmit-message-counter', 500);
+  });
 
   // ── My Submissions ──
   function loadSubmissions(uid) {
@@ -1232,8 +1364,18 @@ var ADMIN_I18N = {
         rnrFeedback.style.display = 'none';
       }
 
+      var authorMsgBox = document.getElementById('modal-author-message');
+      if (d.authorMessage) {
+        document.getElementById('modal-author-message-label').textContent = ADMIN_I18N.author_message_to_reviewer;
+        document.getElementById('modal-author-message-body').textContent = d.authorMessage;
+        authorMsgBox.style.display = 'block';
+      } else {
+        authorMsgBox.style.display = 'none';
+      }
+
       document.getElementById('modal-rnr-form').style.display = 'none';
       document.getElementById('modal-rnr-comments').value = '';
+      updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
 
       var actions = document.getElementById('modal-actions');
       actions.style.display = (d.status === 'pending' || d.status === 'revise_resubmit') ? 'flex' : 'none';
@@ -1247,6 +1389,7 @@ var ADMIN_I18N = {
     document.getElementById('review-modal').style.display = 'none';
     document.getElementById('modal-rnr-form').style.display = 'none';
     document.getElementById('modal-rnr-comments').value = '';
+    updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
     document.body.style.overflow = '';
     currentModalDocId = null;
   }
@@ -1534,6 +1677,7 @@ var ADMIN_I18N = {
   document.getElementById('modal-rnr-cancel').addEventListener('click', function () {
     document.getElementById('modal-rnr-form').style.display = 'none';
     document.getElementById('modal-rnr-comments').value = '';
+    updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
   });
 
   document.getElementById('modal-rnr-submit').addEventListener('click', function () {

@@ -1744,6 +1744,25 @@ a.author-contact-value:hover {
   margin-bottom: 0.5rem;
 }
 
+.admin-char-counter {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 0.3rem;
+}
+
+.admin-char-counter.admin-char-near-limit {
+  color: #9a8a5a;
+}
+
+.admin-char-counter.admin-char-at-limit {
+  color: #a65a4e;
+}
+
+.admin-modal-content-wide {
+  max-width: 860px;
+}
+
 .admin-empty-state {
   font-size: 0.95rem;
   color: var(--muted);
