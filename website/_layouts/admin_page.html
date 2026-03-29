@@ -159,6 +159,7 @@ var ADMIN_I18N = {
       <h1 class="admin-login-title">{{ t.signup_title }}</h1>
       <p class="admin-login-subtitle">{{ t.signup_subtitle }}</p>
       <form id="signup-form" class="admin-login-form">
+        <input type="text" id="signup-name" class="admin-input" placeholder="{{ t.display_name_placeholder }}" autocomplete="name" required />
         <input type="email" id="signup-email" class="admin-input" placeholder="{{ t.email_placeholder }}" autocomplete="email" required />
         <input type="password" id="signup-password" class="admin-input" placeholder="{{ t.password_min_placeholder }}" autocomplete="new-password" required minlength="6" />
         <input type="password" id="signup-confirm" class="admin-input" placeholder="{{ t.confirm_placeholder }}" autocomplete="new-password" required minlength="6" />
@@ -550,22 +551,60 @@ var ADMIN_I18N = {
   document.getElementById('signup-form').addEventListener('submit', function (e) {
     e.preventDefault();
     clearErrors();
+    var displayName = document.getElementById('signup-name').value.trim();
     var email = document.getElementById('signup-email').value.trim();
     var password = document.getElementById('signup-password').value;
     var confirm = document.getElementById('signup-confirm').value;
+    if (!displayName) {
+      document.getElementById('signup-name').focus();
+      return;
+    }
     if (password !== confirm) {
       showError('signup-error', ADMIN_I18N.passwords_no_match);
       return;
     }
     setLoading('signup-btn', true);
+    var authorSlug = displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    var authorPage = '/authors/' + authorSlug + '/';
     auth.createUserWithEmailAndPassword(email, password)
       .then(function (cred) {
         return db.collection('users').doc(cred.user.uid).set({
-          displayName: '',
+          displayName: displayName,
           photoURL: '',
           email: email,
+          authorPage: authorPage,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+      })
+      .then(function () {
+        // Create author page file
+        var authorMd = '---\ntitle: "' + displayName.replace(/"/g, '\\"') + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\n---\n';
+        var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isLocal) {
+          return fetch('http://127.0.0.1:4001/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ folder: '../_authors', filename: authorSlug + '.md', content: authorMd })
+          }).catch(function () {});
+        } else {
+          return db.collection('config').doc('github').get().then(function (configDoc) {
+            var token = configDoc.exists ? configDoc.data().token : null;
+            if (!token) return;
+            var apiUrl = 'https://api.github.com/repos/United-World-College/UWC-Survival-Guide/contents/website/_authors/' + authorSlug + '.md';
+            var headers = { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' };
+            return fetch(apiUrl, { headers: headers }).then(function (checkRes) {
+              if (checkRes.ok) return; // already exists
+              return fetch(apiUrl, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify({
+                  message: 'Add author page: ' + displayName,
+                  content: btoa(unescape(encodeURIComponent(authorMd)))
+                })
+              });
+            });
+          }).catch(function () {});
+        }
       })
       .then(function () { setLoading('signup-btn', false); })
       .catch(function (err) {
