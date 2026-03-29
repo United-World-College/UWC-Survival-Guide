@@ -1763,6 +1763,38 @@ a.author-contact-value:hover {
   max-width: 860px;
 }
 
+.admin-revision-thread {
+  margin-bottom: 1.25rem;
+}
+
+.admin-revision-entry {
+  border-left: 2px solid var(--border);
+  padding-left: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-revision-round-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+}
+
+.admin-revision-entry .admin-rnr-feedback + .admin-rnr-feedback {
+  margin-top: 0.5rem;
+  margin-left: 0.75rem;
+  border-color: #a3c4a7;
+  background: rgba(163, 196, 167, 0.1);
+}
+
+.admin-revision-timestamp {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
+
 .admin-empty-state {
   font-size: 0.95rem;
   color: var(--muted);

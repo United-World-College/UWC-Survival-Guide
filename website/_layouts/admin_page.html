@@ -373,14 +373,7 @@ var ADMIN_I18N = {
             <div class="admin-modal-body">
               <pre id="modal-content" class="admin-preview-content"></pre>
             </div>
-            <div id="modal-rnr-feedback" style="display:none;" class="admin-rnr-feedback">
-              <p class="admin-rnr-feedback-label" id="modal-rnr-feedback-label"></p>
-              <p class="admin-rnr-feedback-body" id="modal-rnr-feedback-body"></p>
-            </div>
-            <div id="modal-author-message" style="display:none;" class="admin-rnr-feedback" style="border-color:#c8d8c8;background:#f5f8f5;">
-              <p class="admin-rnr-feedback-label" id="modal-author-message-label"></p>
-              <p class="admin-rnr-feedback-body" id="modal-author-message-body"></p>
-            </div>
+            <div id="modal-revision-thread" style="display:none;" class="admin-revision-thread"></div>
             <div id="modal-actions" class="admin-modal-actions">
               <button type="button" id="modal-approve" class="admin-btn">{{ t.approve_btn }}</button>
               <button type="button" id="modal-revise" class="admin-btn admin-btn-outline">{{ t.revise_resubmit_btn }}</button>
@@ -399,63 +392,6 @@ var ADMIN_I18N = {
               <pre id="modal-md-content" class="admin-preview-content"></pre>
               <button type="button" id="modal-copy-md" class="admin-btn" style="margin-top:1rem;">{{ t.copy_md_btn }}</button>
             </div>
-          </div>
-        </div>
-
-        <!-- Author Resubmit Modal -->
-        <div id="resubmit-modal" class="admin-modal" style="display:none;">
-          <div class="admin-modal-backdrop" id="resubmit-modal-backdrop"></div>
-          <div class="admin-modal-content admin-modal-content-wide">
-            <div class="admin-modal-header">
-              <h2 class="admin-card-title">{{ t.resubmit_btn }}</h2>
-              <button type="button" id="resubmit-modal-close" class="admin-modal-close">&times;</button>
-            </div>
-            <div id="resubmit-reviewer-feedback" style="display:none;" class="admin-rnr-feedback">
-              <p class="admin-rnr-feedback-label">{{ t.revision_feedback_label }}</p>
-              <p class="admin-rnr-feedback-body" id="resubmit-feedback-body"></p>
-            </div>
-            <form id="resubmit-form" class="admin-form" style="margin-top:1.25rem;">
-              <div class="admin-field">
-                <label class="admin-label" for="resubmit-title">{{ t.article_title_label }}</label>
-                <input type="text" id="resubmit-title" class="admin-input" required />
-              </div>
-              <div class="admin-field">
-                <label class="admin-label" for="resubmit-category">{{ t.category_label }}</label>
-                <select id="resubmit-category" class="admin-input admin-select" required>
-                  <option value="" disabled>{{ t.category_placeholder }}</option>
-                  <option value="College Application">College Application</option>
-                  <option value="Life Reflections">人生杂谈 / Life Reflections</option>
-                  <option value="Academics">Academics</option>
-                </select>
-              </div>
-              <div class="admin-field">
-                <label class="admin-label" for="resubmit-language">{{ t.language_label }}</label>
-                <select id="resubmit-language" class="admin-input admin-select" required>
-                  <option value="" disabled>{{ t.language_placeholder }}</option>
-                  <option value="en">English</option>
-                  <option value="zh-CN">简体中文</option>
-                  <option value="zh-TW">台灣繁體</option>
-                </select>
-              </div>
-              <div class="admin-field">
-                <label class="admin-label" for="resubmit-description">{{ t.description_label }}</label>
-                <input type="text" id="resubmit-description" class="admin-input" required />
-              </div>
-              <div class="admin-field">
-                <label class="admin-label" for="resubmit-content">{{ t.content_label }}</label>
-                <textarea id="resubmit-content" class="admin-input admin-textarea" rows="14" required></textarea>
-              </div>
-              <div class="admin-field">
-                <label class="admin-label" for="resubmit-message">{{ t.author_message_label }}</label>
-                <textarea id="resubmit-message" class="admin-input admin-textarea" rows="3" placeholder="{{ t.author_message_placeholder }}" maxlength="500"></textarea>
-                <p class="admin-char-counter" id="resubmit-message-counter">0 / 500</p>
-              </div>
-              <div class="admin-modal-actions">
-                <button type="submit" class="admin-btn" id="resubmit-submit-btn">{{ t.resubmit_btn }}</button>
-                <button type="button" class="admin-btn admin-btn-outline" id="resubmit-cancel-btn">{{ t.rnr_cancel }}</button>
-              </div>
-            </form>
-            <p id="resubmit-error" class="admin-error" style="display:none;margin-top:1rem;"></p>
           </div>
         </div>
 
@@ -1076,95 +1012,6 @@ var ADMIN_I18N = {
       });
   }
 
-  // ── Resubmit Modal ──
-  var currentResubmitDocId = null;
-
-  function resubmitArticle(docId) {
-    db.collection('submissions').doc(docId).get().then(function (doc) {
-      if (!doc.exists) return;
-      var d = doc.data();
-      currentResubmitDocId = docId;
-
-      document.getElementById('resubmit-title').value = d.title || '';
-      document.getElementById('resubmit-category').value = d.category || '';
-      document.getElementById('resubmit-language').value = d.language || '';
-      document.getElementById('resubmit-description').value = d.description || '';
-      document.getElementById('resubmit-content').value = d.content || '';
-      document.getElementById('resubmit-message').value = '';
-      updateCharCounter('resubmit-message', 'resubmit-message-counter', 500);
-
-      var feedbackBox = document.getElementById('resubmit-reviewer-feedback');
-      if (d.reviewerComments) {
-        document.getElementById('resubmit-feedback-body').textContent = d.reviewerComments;
-        feedbackBox.style.display = 'block';
-      } else {
-        feedbackBox.style.display = 'none';
-      }
-
-      document.getElementById('resubmit-error').style.display = 'none';
-      document.getElementById('resubmit-submit-btn').textContent = ADMIN_I18N.resubmit_btn;
-      document.getElementById('resubmit-submit-btn').disabled = false;
-
-      document.getElementById('resubmit-modal').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-    });
-  }
-
-  function closeResubmitModal() {
-    document.getElementById('resubmit-modal').style.display = 'none';
-    document.body.style.overflow = '';
-    currentResubmitDocId = null;
-  }
-
-  document.getElementById('resubmit-modal-close').addEventListener('click', closeResubmitModal);
-  document.getElementById('resubmit-modal-backdrop').addEventListener('click', closeResubmitModal);
-  document.getElementById('resubmit-cancel-btn').addEventListener('click', closeResubmitModal);
-
-  document.getElementById('resubmit-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (!currentResubmitDocId) return;
-
-    var title = document.getElementById('resubmit-title').value.trim();
-    var category = document.getElementById('resubmit-category').value;
-    var language = document.getElementById('resubmit-language').value;
-    var description = document.getElementById('resubmit-description').value.trim();
-    var content = document.getElementById('resubmit-content').value;
-    var message = document.getElementById('resubmit-message').value.trim();
-
-    if (!title || !category || !language || !description || !content) {
-      document.getElementById('resubmit-error').textContent = ADMIN_I18N.err_fill_all;
-      document.getElementById('resubmit-error').style.display = 'block';
-      return;
-    }
-
-    var btn = document.getElementById('resubmit-submit-btn');
-    btn.textContent = ADMIN_I18N.resubmitting;
-    btn.disabled = true;
-
-    var updateData = {
-      title: title,
-      category: category,
-      language: language,
-      description: description,
-      content: content,
-      status: 'pending',
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    if (message) updateData.authorMessage = message;
-
-    db.collection('submissions').doc(currentResubmitDocId).update(updateData).then(function () {
-      closeResubmitModal();
-      var user = auth.currentUser;
-      if (user) loadSubmissions(user.uid);
-    }).catch(function (err) {
-      console.error('Resubmit error:', err);
-      btn.textContent = ADMIN_I18N.resubmit_btn;
-      btn.disabled = false;
-      document.getElementById('resubmit-error').textContent = ADMIN_I18N.article_failed;
-      document.getElementById('resubmit-error').style.display = 'block';
-    });
-  });
-
   // ── Character counters ──
   function updateCharCounter(textareaId, counterId, max) {
     var ta = document.getElementById(textareaId);
@@ -1184,9 +1031,169 @@ var ADMIN_I18N = {
     updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
   });
 
-  document.getElementById('resubmit-message').addEventListener('input', function () {
-    updateCharCounter('resubmit-message', 'resubmit-message-counter', 500);
-  });
+  // ── Resubmit — open in new tab ──
+  function resubmitArticle(docId) {
+    var win = window.open('', '_blank');
+    if (!win) return;
+    var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
+    var labels = {
+      resubmit_btn:            ADMIN_I18N.resubmit_btn,
+      rnr_cancel:              ADMIN_I18N.rnr_cancel,
+      resubmitting:            ADMIN_I18N.resubmitting,
+      resubmit_success:        ADMIN_I18N.resubmit_success,
+      article_failed:          ADMIN_I18N.article_failed,
+      err_fill_all:            ADMIN_I18N.err_fill_all,
+      revision_feedback_label: ADMIN_I18N.revision_feedback_label,
+      author_message_label:    ADMIN_I18N.author_message_label,
+      author_message_placeholder: ADMIN_I18N.author_message_placeholder,
+      author_message_to_reviewer: ADMIN_I18N.author_message_to_reviewer,
+      round_label:             'Round'
+    };
+    win.document.write('<!DOCTYPE html><html lang="en"><head>' +
+      '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>' + escapeHtml(labels.resubmit_btn) + '<\/title>' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">' +
+      (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
+      '<style>' +
+      'body{margin:0;padding:0;}' +
+      '.rs-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;padding:0.55rem 1rem;' +
+        'font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;text-align:center;}' +
+      '.rs-wrap{max-width:860px;margin:0 auto;padding:2.5rem 2rem 4rem;}' +
+      '.rs-heading{font-family:var(--serif,"Cormorant Garamond",serif);font-size:1.5rem;margin-bottom:1.5rem;}' +
+      '.rs-success{background:#e8f2e8;border:1px solid #a3c4a7;padding:1rem 1.2rem;border-radius:6px;color:#3a6040;margin-top:1rem;}' +
+      '<\/style>' +
+      '<\/head><body>' +
+      '<div class="rs-banner" id="rs-banner">' + escapeHtml(labels.resubmit_btn) + '<\/div>' +
+      '<div class="rs-wrap"><div id="rs-app"><p class="admin-empty-state">Loading...<\/p><\/div><\/div>' +
+      '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"><\/script>' +
+      '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"><\/script>' +
+      '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"><\/script>' +
+      '<script>' +
+      '(function(){' +
+      'var DOC_ID=' + JSON.stringify(docId) + ';' +
+      'var L=' + JSON.stringify(labels) + ';' +
+      'firebase.initializeApp({apiKey:"AIzaSyC2PkxnmMwJiD73ouo8Jxmk536_A2RkNy8",authDomain:"uwc-survival-guide.firebaseapp.com",' +
+        'projectId:"uwc-survival-guide",storageBucket:"uwc-survival-guide.firebasestorage.app",' +
+        'messagingSenderId:"239920982978",appId:"1:239920982978:web:5ddd10c09ba0153956045b"});' +
+      'var auth=firebase.auth();var db=firebase.firestore();' +
+      'auth.onAuthStateChanged(function(user){' +
+        'if(!user){document.getElementById("rs-app").innerHTML="<p>Please sign in first.<\/p>";return;}' +
+        'db.collection("submissions").doc(DOC_ID).get().then(function(doc){' +
+          'if(!doc.exists){document.getElementById("rs-app").innerHTML="<p>Submission not found.<\/p>";return;}' +
+          'render(doc.data());' +
+        '}).catch(function(){document.getElementById("rs-app").innerHTML="<p>Could not load submission.<\/p>";});' +
+      '});' +
+      'function esc(s){var d=document.createElement("div");d.appendChild(document.createTextNode(s||""));return d.innerHTML;}' +
+      'function fmtDate(s){if(!s)return"";try{return new Date(s).toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"});}catch(e){return s;}}' +
+      'function counter(ta,el,max){var n=ta.value.length;el.textContent=n+" / "+max;el.className="admin-char-counter";' +
+        'if(n>=max)el.classList.add("admin-char-at-limit");else if(n>=max*0.85)el.classList.add("admin-char-near-limit");}' +
+      'function render(d){' +
+        'var history=d.revisionHistory||(d.reviewerComments?[{round:1,reviewerComments:d.reviewerComments,' +
+          'reviewedAt:null,authorMessage:d.authorMessage||null,resubmittedAt:null}]:[]);' +
+        'document.getElementById("rs-banner").textContent=L.resubmit_btn+(d.title?" \u2014 "+d.title:"");' +
+        'var h="";' +
+        'if(history.length){' +
+          'h+="<div class=\\"admin-revision-thread\\">";' +
+          'history.forEach(function(e){' +
+            'h+="<div class=\\"admin-revision-entry\\">";' +
+            'h+="<p class=\\"admin-revision-round-label\\">"+esc(L.round_label)+" "+e.round+"<\/p>";' +
+            'if(e.reviewerComments){' +
+              'h+="<div class=\\"admin-rnr-feedback\\">";' +
+              'h+="<p class=\\"admin-rnr-feedback-label\\">"+esc(L.revision_feedback_label)+"<\/p>";' +
+              'h+="<p class=\\"admin-rnr-feedback-body\\">"+esc(e.reviewerComments)+"<\/p>";' +
+              'if(e.reviewedAt)h+="<p class=\\"admin-revision-timestamp\\">"+fmtDate(e.reviewedAt)+"<\/p>";' +
+              'h+="<\/div>";' +
+            '}' +
+            'if(e.authorMessage){' +
+              'h+="<div class=\\"admin-rnr-feedback\\">";' +
+              'h+="<p class=\\"admin-rnr-feedback-label\\">"+esc(L.author_message_to_reviewer)+"<\/p>";' +
+              'h+="<p class=\\"admin-rnr-feedback-body\\">"+esc(e.authorMessage)+"<\/p>";' +
+              'if(e.resubmittedAt)h+="<p class=\\"admin-revision-timestamp\\">"+fmtDate(e.resubmittedAt)+"<\/p>";' +
+              'h+="<\/div>";' +
+            '}' +
+            'h+="<\/div>";' +
+          '});' +
+          'h+="<\/div>";' +
+        '}' +
+        'h+="<h2 class=\\"rs-heading\\">"+esc(L.resubmit_btn)+"<\/h2>";' +
+        'h+="<form id=\\"rs-form\\" class=\\"admin-form\\">";' +
+        'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Title<\/label><input id=\\"rs-title\\" class=\\"admin-input\\" required><\/div>";' +
+        'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Category<\/label>";' +
+        'h+="<select id=\\"rs-cat\\" class=\\"admin-input admin-select\\" required>";' +
+        'h+="<option value=\\"\\" disabled>Select...<\/option>";' +
+        'h+="<option value=\\"College Application\\">College Application<\/option>";' +
+        'h+="<option value=\\"Life Reflections\\">人生杂谈 / Life Reflections<\/option>";' +
+        'h+="<option value=\\"Academics\\">Academics<\/option>";' +
+        'h+="<\/select><\/div>";' +
+        'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Language<\/label>";' +
+        'h+="<select id=\\"rs-lang\\" class=\\"admin-input admin-select\\" required>";' +
+        'h+="<option value=\\"\\" disabled>Select...<\/option>";' +
+        'h+="<option value=\\"en\\">English<\/option>";' +
+        'h+="<option value=\\"zh-CN\\">简体中文<\/option>";' +
+        'h+="<option value=\\"zh-TW\\">台灣繁體<\/option>";' +
+        'h+="<\/select><\/div>";' +
+        'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Description<\/label><input id=\\"rs-desc\\" class=\\"admin-input\\" required><\/div>";' +
+        'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Content<\/label><textarea id=\\"rs-content\\" class=\\"admin-input admin-textarea\\" rows=\\"16\\" required><\/textarea><\/div>";' +
+        'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">"+esc(L.author_message_label)+"<\/label>";' +
+        'h+="<textarea id=\\"rs-msg\\" class=\\"admin-input admin-textarea\\" rows=\\"3\\" placeholder=\\""+esc(L.author_message_placeholder)+"\\" maxlength=\\"500\\"><\/textarea>";' +
+        'h+="<p class=\\"admin-char-counter\\" id=\\"rs-counter\\">0 / 500<\/p><\/div>";' +
+        'h+="<div class=\\"admin-modal-actions\\">";' +
+        'h+="<button type=\\"submit\\" class=\\"admin-btn\\" id=\\"rs-submit\\">"+esc(L.resubmit_btn)+"<\/button>";' +
+        'h+="<\/div><\/form>";' +
+        'h+="<p id=\\"rs-error\\" class=\\"admin-error\\" style=\\"display:none;margin-top:1rem;\\"><\/p>";' +
+        'document.getElementById("rs-app").innerHTML=h;' +
+        'var tTitle=document.getElementById("rs-title");' +
+        'tTitle.value=d.title||"";' +
+        'document.getElementById("rs-cat").value=d.category||"";' +
+        'document.getElementById("rs-lang").value=d.language||"";' +
+        'document.getElementById("rs-desc").value=d.description||"";' +
+        'document.getElementById("rs-content").value=d.content||"";' +
+        'var msgTa=document.getElementById("rs-msg");' +
+        'var ctr=document.getElementById("rs-counter");' +
+        'msgTa.addEventListener("input",function(){counter(msgTa,ctr,500);});' +
+        'document.getElementById("rs-form").addEventListener("submit",function(ev){' +
+          'ev.preventDefault();' +
+          'var title=tTitle.value.trim();' +
+          'var cat=document.getElementById("rs-cat").value;' +
+          'var lang=document.getElementById("rs-lang").value;' +
+          'var desc=document.getElementById("rs-desc").value.trim();' +
+          'var content=document.getElementById("rs-content").value;' +
+          'var msg=msgTa.value.trim();' +
+          'if(!title||!cat||!lang||!desc||!content){' +
+            'var err=document.getElementById("rs-error");' +
+            'err.textContent=L.err_fill_all;err.style.display="block";return;}' +
+          'var btn=document.getElementById("rs-submit");' +
+          'btn.textContent=L.resubmitting;btn.disabled=true;' +
+          'db.collection("submissions").doc(DOC_ID).get().then(function(snap){' +
+            'var hist=(snap.data().revisionHistory||[]).slice();' +
+            'if(hist.length&&!hist[hist.length-1].authorMessage){' +
+              'hist[hist.length-1].authorMessage=msg||null;' +
+              'hist[hist.length-1].resubmittedAt=new Date().toISOString();' +
+            '}' +
+            'var upd={title:title,category:cat,language:lang,description:desc,content:content,' +
+              'status:"pending",updatedAt:firebase.firestore.FieldValue.serverTimestamp(),' +
+              'revisionHistory:hist};' +
+            'if(msg)upd.authorMessage=msg;' +
+            'return db.collection("submissions").doc(DOC_ID).update(upd);' +
+          '}).then(function(){' +
+            'document.getElementById("rs-form").style.display="none";' +
+            'document.getElementById("rs-app").insertAdjacentHTML("beforeend","<div class=\\"rs-success\\">"+esc(L.resubmit_success)+"<\/div>");' +
+            'if(window.opener&&!window.opener.closed){' +
+              'try{window.opener.location.reload();}catch(e){}' +
+            '}' +
+          '}).catch(function(e){' +
+            'console.error(e);btn.textContent=L.resubmit_btn;btn.disabled=false;' +
+            'var err=document.getElementById("rs-error");err.textContent=L.article_failed;err.style.display="block";' +
+          '});' +
+        '});' +
+      '}' +
+      '})();' +
+      '<\/script><\/body><\/html>');
+    win.document.close();
+    win.focus();
+  }
 
   // ── My Submissions ──
   function loadSubmissions(uid) {
@@ -1333,6 +1340,50 @@ var ADMIN_I18N = {
     });
   }
 
+  function renderRevisionThread(d) {
+    var threadEl = document.getElementById('modal-revision-thread');
+    // Build history — fall back to legacy flat fields for old submissions
+    var history = d.revisionHistory;
+    if (!history || !history.length) {
+      if (d.reviewerComments) {
+        history = [{ round: 1, reviewerComments: d.reviewerComments, reviewedAt: null,
+                     authorMessage: d.authorMessage || null, resubmittedAt: null }];
+      } else {
+        threadEl.style.display = 'none';
+        return;
+      }
+    }
+
+    function fmtDate(s) {
+      if (!s) return '';
+      try { return new Date(s).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+      catch (e) { return s; }
+    }
+
+    var html = '';
+    history.forEach(function (entry) {
+      html += '<div class="admin-revision-entry">';
+      html += '<p class="admin-revision-round-label">Round ' + entry.round + '</p>';
+      if (entry.reviewerComments) {
+        html += '<div class="admin-rnr-feedback">';
+        html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.revision_feedback_label) + '</p>';
+        html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.reviewerComments) + '</p>';
+        if (entry.reviewedAt) html += '<p class="admin-revision-timestamp">' + fmtDate(entry.reviewedAt) + '</p>';
+        html += '</div>';
+      }
+      if (entry.authorMessage) {
+        html += '<div class="admin-rnr-feedback">';
+        html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.author_message_to_reviewer) + '</p>';
+        html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.authorMessage) + '</p>';
+        if (entry.resubmittedAt) html += '<p class="admin-revision-timestamp">' + fmtDate(entry.resubmittedAt) + '</p>';
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+    threadEl.innerHTML = html;
+    threadEl.style.display = 'block';
+  }
+
   function openReviewModal(docId) {
     currentModalDocId = docId;
     var modal = document.getElementById('review-modal');
@@ -1355,23 +1406,7 @@ var ADMIN_I18N = {
       badge.textContent = getStatusLabel(d.status || 'pending');
       badge.className = 'admin-status admin-status-' + (d.status || 'pending');
 
-      var rnrFeedback = document.getElementById('modal-rnr-feedback');
-      if (d.status === 'revise_resubmit' && d.reviewerComments) {
-        document.getElementById('modal-rnr-feedback-label').textContent = ADMIN_I18N.revision_feedback_label;
-        document.getElementById('modal-rnr-feedback-body').textContent = d.reviewerComments;
-        rnrFeedback.style.display = 'block';
-      } else {
-        rnrFeedback.style.display = 'none';
-      }
-
-      var authorMsgBox = document.getElementById('modal-author-message');
-      if (d.authorMessage) {
-        document.getElementById('modal-author-message-label').textContent = ADMIN_I18N.author_message_to_reviewer;
-        document.getElementById('modal-author-message-body').textContent = d.authorMessage;
-        authorMsgBox.style.display = 'block';
-      } else {
-        authorMsgBox.style.display = 'none';
-      }
+      renderRevisionThread(d);
 
       document.getElementById('modal-rnr-form').style.display = 'none';
       document.getElementById('modal-rnr-comments').value = '';
@@ -1389,6 +1424,8 @@ var ADMIN_I18N = {
     document.getElementById('review-modal').style.display = 'none';
     document.getElementById('modal-rnr-form').style.display = 'none';
     document.getElementById('modal-rnr-comments').value = '';
+    document.getElementById('modal-revision-thread').style.display = 'none';
+    document.getElementById('modal-revision-thread').innerHTML = '';
     updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
     document.body.style.overflow = '';
     currentModalDocId = null;
@@ -1688,20 +1725,24 @@ var ADMIN_I18N = {
     var btn = this;
     btn.textContent = ADMIN_I18N.revising;
     btn.disabled = true;
+    var now = new Date().toISOString();
 
-    db.collection('submissions').doc(currentModalDocId).update({
-      status: 'revise_resubmit',
-      reviewerComments: comments,
-      reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function () {
+    db.collection('submissions').doc(currentModalDocId).get().then(function (snap) {
+      var hist = (snap.data().revisionHistory || []).slice();
+      hist.push({ round: hist.length + 1, reviewerComments: comments, reviewedAt: now });
+      return db.collection('submissions').doc(currentModalDocId).update({
+        status: 'revise_resubmit',
+        reviewerComments: comments,
+        reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        revisionHistory: hist
+      }).then(function () { return hist; });
+    }).then(function (hist) {
       var badge = document.getElementById('modal-status-badge');
       badge.textContent = getStatusLabel('revise_resubmit');
       badge.className = 'admin-status admin-status-revise_resubmit';
       document.getElementById('modal-actions').style.display = 'none';
       document.getElementById('modal-rnr-form').style.display = 'none';
-      document.getElementById('modal-rnr-feedback-label').textContent = ADMIN_I18N.revision_feedback_label;
-      document.getElementById('modal-rnr-feedback-body').textContent = comments;
-      document.getElementById('modal-rnr-feedback').style.display = 'block';
+      renderRevisionThread({ revisionHistory: hist });
 
       btn.textContent = ADMIN_I18N.rnr_submit;
       btn.disabled = false;
