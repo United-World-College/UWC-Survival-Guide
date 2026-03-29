@@ -377,6 +377,10 @@ var ADMIN_I18N = {
             </div>
             <p id="modal-description" class="admin-card-desc"></p>
             <div class="admin-modal-body">
+              <div class="admin-editor-header">
+                <span></span>
+                <button type="button" class="admin-editor-tab admin-editor-tab-newtab" id="modal-preview-btn">{{ t.preview_btn }}</button>
+              </div>
               <pre id="modal-content" class="admin-preview-content"></pre>
             </div>
             <div id="modal-revision-thread" style="display:none;" class="admin-revision-thread"></div>
@@ -1119,7 +1123,7 @@ var ADMIN_I18N = {
         '}).catch(function(){document.getElementById("rs-app").innerHTML="<p>Could not load submission.<\/p>";});' +
       '});' +
       'function esc(s){var d=document.createElement("div");d.appendChild(document.createTextNode(s||""));return d.innerHTML;}' +
-      'function fmtDate(s){if(!s)return"";try{return new Date(s).toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"});}catch(e){return s;}}' +
+      'function fmtDate(s){if(!s)return"";try{var dt=new Date(s);return dt.toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"})+" "+dt.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",timeZone:"UTC",timeZoneName:"short"});}catch(e){return s;}}' +
       'function counter(ta,el,max){var n=ta.value.length;el.textContent=n+" / "+max;el.className="admin-char-counter";' +
         'if(n>=max)el.classList.add("admin-char-at-limit");else if(n>=max*0.85)el.classList.add("admin-char-near-limit");}' +
       'function openPreview(title,category,author,desc,content){' +
@@ -1275,33 +1279,7 @@ var ADMIN_I18N = {
     db.collection('submissions').doc(docId).get().then(function (doc) {
       if (!doc.exists) return;
       var d = doc.data();
-      var renderedContent = typeof marked !== 'undefined' ? marked.parse(d.content || '') : escapeHtml(d.content || '');
-      var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
-      var win = window.open('', '_blank');
-      if (!win) return;
-      win.document.write('<!DOCTYPE html><html lang="en"><head>' +
-        '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-        '<title>PREVIEW \u2014 ' + escapeHtml(d.title) + '</title>' +
-        '<link rel="preconnect" href="https://fonts.googleapis.com">' +
-        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-        '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">' +
-        (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
-        '<style>body{font-family:"Inter",-apple-system,Helvetica,Arial,sans-serif;}' +
-        '.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;' +
-        'padding:0.55rem 1rem;font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;}</style>' +
-        '</head><body>' +
-        '<div class="preview-banner">' + escapeHtml(ADMIN_I18N.preview_banner) + '</div>' +
-        '<header class="guide-hero"><div class="guide-hero-content">' +
-        '<p class="hero-label">' + escapeHtml(d.category) + '</p>' +
-        '<h1>' + escapeHtml(d.title) + '</h1>' +
-        (d.authorName ? '<p class="guide-byline">' + escapeHtml(ADMIN_I18N.preview_by) + escapeHtml(d.authorName) + '</p>' : '') +
-        (d.description ? '<p class="hero-subtitle">' + escapeHtml(d.description) + '</p>' : '') +
-        '</div></header>' +
-        '<div class="divider"></div>' +
-        '<article class="guide-content">' + renderedContent + '</article>' +
-        '</body></html>');
-      win.document.close();
-      win.focus();
+      openContentPreview(d.title, d.category, d.authorName || '', d.description, d.content);
     });
   }
 
@@ -1317,7 +1295,7 @@ var ADMIN_I18N = {
     }
     function fmtDate(s) {
       if (!s) return '';
-      try { return new Date(s).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+      try { var dt = new Date(s); return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); }
       catch (e) { return s; }
     }
     var html = '<div class="admin-revision-thread">';
@@ -1360,7 +1338,7 @@ var ADMIN_I18N = {
         var html = '<div class="admin-submissions">';
         snapshot.forEach(function (doc) {
           var d = doc.data();
-          var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : ADMIN_I18N.just_now;
+          var date = d.createdAt ? (function(dt){ return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); })(d.createdAt.toDate()) : ADMIN_I18N.just_now;
           var status = d.status || 'pending';
           var statusClass = 'admin-status-' + status;
           var isRnR = status === 'revise_resubmit';
@@ -1416,6 +1394,7 @@ var ADMIN_I18N = {
   var isAdmin = false;
   var currentFilter = 'pending';
   var currentModalDocId = null;
+  var currentModalData = null;
   var ADMIN_EMAILS = ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
 
   function checkAdmin(email) {
@@ -1464,7 +1443,7 @@ var ADMIN_I18N = {
       docs.forEach(function (item) {
         var doc = { id: item.id };
         var d = item.data;
-        var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : ADMIN_I18N.just_now;
+        var date = d.createdAt ? (function(dt){ return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); })(d.createdAt.toDate()) : ADMIN_I18N.just_now;
         var statusClass = 'admin-status-' + (d.status || 'pending');
         html += '<div class="admin-submission-item admin-review-item" data-id="' + doc.id + '">';
         html += '<div class="admin-submission-main">';
@@ -1494,6 +1473,36 @@ var ADMIN_I18N = {
     });
   }
 
+  function openContentPreview(title, category, author, description, content) {
+    var renderedContent = typeof marked !== 'undefined' ? marked.parse(content || '') : escapeHtml(content || '');
+    var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
+    var win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write('<!DOCTYPE html><html lang="en"><head>' +
+      '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>PREVIEW \u2014 ' + escapeHtml(title) + '</title>' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">' +
+      (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
+      '<style>body{font-family:"Inter",-apple-system,Helvetica,Arial,sans-serif;}' +
+      '.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;' +
+      'padding:0.55rem 1rem;font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;}</style>' +
+      '</head><body>' +
+      '<div class="preview-banner">' + escapeHtml(ADMIN_I18N.preview_banner) + '</div>' +
+      '<header class="guide-hero"><div class="guide-hero-content">' +
+      '<p class="hero-label">' + escapeHtml(category) + '</p>' +
+      '<h1>' + escapeHtml(title) + '</h1>' +
+      (author ? '<p class="guide-byline">' + escapeHtml(ADMIN_I18N.preview_by) + escapeHtml(author) + '</p>' : '') +
+      (description ? '<p class="hero-subtitle">' + escapeHtml(description) + '</p>' : '') +
+      '</div></header>' +
+      '<div class="divider"></div>' +
+      '<article class="guide-content">' + renderedContent + '</article>' +
+      '</body></html>');
+    win.document.close();
+    win.focus();
+  }
+
   function renderRevisionThread(d) {
     var threadEl = document.getElementById('modal-revision-thread');
     // Build history — fall back to legacy flat fields for old submissions
@@ -1510,12 +1519,12 @@ var ADMIN_I18N = {
 
     function fmtDate(s) {
       if (!s) return '';
-      try { return new Date(s).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+      try { var dt = new Date(s); return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); }
       catch (e) { return s; }
     }
 
     var html = '';
-    history.forEach(function (entry) {
+    history.forEach(function (entry, idx) {
       html += '<div class="admin-revision-entry">';
       html += '<p class="admin-revision-round-label">Round ' + entry.round + '</p>';
       if (entry.reviewerComments) {
@@ -1523,6 +1532,9 @@ var ADMIN_I18N = {
         html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.revision_feedback_label) + '</p>';
         html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.reviewerComments) + '</p>';
         if (entry.reviewedAt) html += '<p class="admin-revision-timestamp">' + fmtDate(entry.reviewedAt) + '</p>';
+        if (entry.contentSnapshot) {
+          html += '<button class="admin-btn admin-btn-small modal-view-ver" data-ver-idx="' + idx + '">' + escapeHtml(ADMIN_I18N.preview_btn) + ' (v' + entry.round + ')</button>';
+        }
         html += '</div>';
       }
       if (entry.authorMessage) {
@@ -1536,6 +1548,17 @@ var ADMIN_I18N = {
     });
     threadEl.innerHTML = html;
     threadEl.style.display = 'block';
+
+    // Wire up version preview buttons
+    threadEl.querySelectorAll('.modal-view-ver').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(this.getAttribute('data-ver-idx'));
+        var snap = history[idx].contentSnapshot;
+        if (snap) {
+          openContentPreview(snap.title || d.title, snap.category || d.category, d.authorName || '', snap.description || d.description, snap.content || '');
+        }
+      });
+    });
   }
 
   function openReviewModal(docId) {
@@ -1547,7 +1570,8 @@ var ADMIN_I18N = {
     db.collection('submissions').doc(docId).get().then(function (doc) {
       if (!doc.exists) return;
       var d = doc.data();
-      var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ADMIN_I18N.author_unknown;
+      currentModalData = d;
+      var date = d.createdAt ? (function(dt){ return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); })(d.createdAt.toDate()) : ADMIN_I18N.author_unknown;
 
       document.getElementById('modal-title').textContent = d.title;
       document.getElementById('modal-author').textContent = ADMIN_I18N.by_prefix + (d.authorName || ADMIN_I18N.author_unknown);
@@ -1589,7 +1613,14 @@ var ADMIN_I18N = {
     updateCharCounter('modal-approve-comments', 'modal-approve-comments-counter', 500);
     document.body.style.overflow = '';
     currentModalDocId = null;
+    currentModalData = null;
   }
+
+  document.getElementById('modal-preview-btn').addEventListener('click', function () {
+    if (!currentModalData) return;
+    var d = currentModalData;
+    openContentPreview(d.title, d.category, d.authorName || '', d.description, d.content);
+  });
 
   document.getElementById('modal-close').addEventListener('click', closeReviewModal);
   document.querySelector('.admin-modal-backdrop').addEventListener('click', closeReviewModal);

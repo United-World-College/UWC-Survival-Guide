@@ -1883,6 +1883,26 @@ a.author-contact-value:hover {
   color: var(--dark);
   border-color: var(--dark);
 }
+.admin-tab.active[data-filter="pending"] {
+  color: #9a8a5a;
+  border-color: #d8cf9f;
+  background: rgba(216, 207, 159, 0.15);
+}
+.admin-tab.active[data-filter="approved"] {
+  color: #5a7a5e;
+  border-color: #a3c4a7;
+  background: rgba(163, 196, 167, 0.15);
+}
+.admin-tab.active[data-filter="rejected"] {
+  color: #a65a4e;
+  border-color: #d4a29a;
+  background: rgba(212, 162, 154, 0.15);
+}
+.admin-tab.active[data-filter="revise_resubmit"] {
+  color: #7a5f2a;
+  border-color: #c9a96e;
+  background: rgba(201, 169, 110, 0.15);
+}
 
 .admin-tab:hover {
   color: var(--dark);
