@@ -94,6 +94,19 @@ var ADMIN_I18N = {
   github_error:         {{ t.github_error | jsonify }},
   approve_btn:          {{ t.approve_btn | jsonify }},
   reject_btn:           {{ t.reject_btn | jsonify }},
+  submit_btn:           {{ t.submit_btn | jsonify }},
+  filter_revise_resubmit: {{ t.filter_revise_resubmit | jsonify }},
+  status_revise_resubmit: {{ t.status_revise_resubmit | jsonify }},
+  revise_resubmit_btn:  {{ t.revise_resubmit_btn | jsonify }},
+  revising:             {{ t.revising | jsonify }},
+  rnr_comments_label:   {{ t.rnr_comments_label | jsonify }},
+  rnr_comments_placeholder: {{ t.rnr_comments_placeholder | jsonify }},
+  rnr_submit:           {{ t.rnr_submit | jsonify }},
+  rnr_cancel:           {{ t.rnr_cancel | jsonify }},
+  revision_feedback_label: {{ t.revision_feedback_label | jsonify }},
+  resubmit_btn:         {{ t.resubmit_btn | jsonify }},
+  resubmitting:         {{ t.resubmitting | jsonify }},
+  resubmit_success:     {{ t.resubmit_success | jsonify }},
   copy_md_btn:          {{ t.copy_md_btn | jsonify }},
   categories:           {{ current_locale.categories | jsonify }},
   lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }}
@@ -276,6 +289,7 @@ var ADMIN_I18N = {
               <textarea id="article-content" class="admin-input admin-textarea" rows="14" placeholder="{{ t.content_placeholder }}" required></textarea>
             </div>
 
+            <input type="hidden" id="article-edit-id" value="" />
             <button type="submit" class="admin-btn" id="submit-article-btn">{{ t.submit_btn }}</button>
           </form>
           <p id="article-success" class="admin-success" style="display:none;"></p>
@@ -327,6 +341,7 @@ var ADMIN_I18N = {
               <button type="button" class="admin-tab active" data-filter="pending">{{ t.filter_pending }}</button>
               <button type="button" class="admin-tab" data-filter="approved">{{ t.filter_approved }}</button>
               <button type="button" class="admin-tab" data-filter="rejected">{{ t.filter_rejected }}</button>
+              <button type="button" class="admin-tab" data-filter="revise_resubmit">{{ t.filter_revise_resubmit }}</button>
               <button type="button" class="admin-tab" data-filter="all">{{ t.filter_all }}</button>
             </div>
             <div id="review-list">
@@ -356,9 +371,22 @@ var ADMIN_I18N = {
             <div class="admin-modal-body">
               <pre id="modal-content" class="admin-preview-content"></pre>
             </div>
+            <div id="modal-rnr-feedback" style="display:none;" class="admin-rnr-feedback">
+              <p class="admin-rnr-feedback-label" id="modal-rnr-feedback-label"></p>
+              <p class="admin-rnr-feedback-body" id="modal-rnr-feedback-body"></p>
+            </div>
             <div id="modal-actions" class="admin-modal-actions">
               <button type="button" id="modal-approve" class="admin-btn">{{ t.approve_btn }}</button>
+              <button type="button" id="modal-revise" class="admin-btn admin-btn-outline">{{ t.revise_resubmit_btn }}</button>
               <button type="button" id="modal-reject" class="admin-btn admin-btn-outline admin-btn-danger">{{ t.reject_btn }}</button>
+            </div>
+            <div id="modal-rnr-form" style="display:none;" class="admin-rnr-form">
+              <p class="admin-rnr-form-title">{{ t.rnr_comments_label }}</p>
+              <textarea id="modal-rnr-comments" class="admin-input admin-textarea" rows="5" placeholder="{{ t.rnr_comments_placeholder }}"></textarea>
+              <div class="admin-modal-actions" style="margin-top:0.75rem;">
+                <button type="button" id="modal-rnr-submit" class="admin-btn">{{ t.rnr_submit }}</button>
+                <button type="button" id="modal-rnr-cancel" class="admin-btn admin-btn-outline">{{ t.rnr_cancel }}</button>
+              </div>
             </div>
             <div id="modal-md-output" style="display:none;">
               <pre id="modal-md-content" class="admin-preview-content"></pre>
@@ -770,6 +798,7 @@ var ADMIN_I18N = {
     var authorName = document.getElementById('article-author').value.trim();
     var description = document.getElementById('article-description').value.trim();
     var content = document.getElementById('article-content').value;
+    var editId = document.getElementById('article-edit-id').value;
 
     if (!title || !category || !language || !authorName || !description || !content) {
       showError('article-error', ADMIN_I18N.err_fill_all);
@@ -778,29 +807,56 @@ var ADMIN_I18N = {
 
     setLoading('submit-article-btn', true);
 
-    db.collection('submissions').add({
-      uid: user.uid,
-      authorName: authorName,
-      title: title,
-      category: category,
-      language: language,
-      description: description,
-      content: content,
-      status: 'pending',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function () {
-      setLoading('submit-article-btn', false);
-      showSuccess('article-success', ADMIN_I18N.article_submitted);
-      document.getElementById('article-form').reset();
-      document.getElementById('article-author').value = authorName;
-      loadSubmissions(user.uid);
-      setTimeout(function () {
-        document.getElementById('article-success').style.display = 'none';
-      }, 5000);
-    }).catch(function () {
-      setLoading('submit-article-btn', false);
-      showError('article-error', ADMIN_I18N.article_failed);
-    });
+    if (editId) {
+      db.collection('submissions').doc(editId).update({
+        title: title,
+        category: category,
+        language: language,
+        authorName: authorName,
+        description: description,
+        content: content,
+        status: 'pending',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function () {
+        setLoading('submit-article-btn', false);
+        document.getElementById('submit-article-btn').textContent = ADMIN_I18N.submit_btn;
+        document.getElementById('article-edit-id').value = '';
+        showSuccess('article-success', ADMIN_I18N.resubmit_success);
+        document.getElementById('article-form').reset();
+        document.getElementById('article-author').value = authorName;
+        loadSubmissions(user.uid);
+        setTimeout(function () {
+          document.getElementById('article-success').style.display = 'none';
+        }, 5000);
+      }).catch(function () {
+        setLoading('submit-article-btn', false);
+        showError('article-error', ADMIN_I18N.article_failed);
+      });
+    } else {
+      db.collection('submissions').add({
+        uid: user.uid,
+        authorName: authorName,
+        title: title,
+        category: category,
+        language: language,
+        description: description,
+        content: content,
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function () {
+        setLoading('submit-article-btn', false);
+        showSuccess('article-success', ADMIN_I18N.article_submitted);
+        document.getElementById('article-form').reset();
+        document.getElementById('article-author').value = authorName;
+        loadSubmissions(user.uid);
+        setTimeout(function () {
+          document.getElementById('article-success').style.display = 'none';
+        }, 5000);
+      }).catch(function () {
+        setLoading('submit-article-btn', false);
+        showError('article-error', ADMIN_I18N.article_failed);
+      });
+    }
   });
 
   // ── Article Preview ──
@@ -984,6 +1040,22 @@ var ADMIN_I18N = {
       });
   }
 
+  // ── Resubmit Article (pre-fill form from an R&R submission) ──
+  function resubmitArticle(docId) {
+    db.collection('submissions').doc(docId).get().then(function (doc) {
+      if (!doc.exists) return;
+      var d = doc.data();
+      document.getElementById('article-title').value = d.title || '';
+      document.getElementById('article-category').value = d.category || '';
+      document.getElementById('article-language').value = d.language || '';
+      document.getElementById('article-description').value = d.description || '';
+      document.getElementById('article-content').value = d.content || '';
+      document.getElementById('article-edit-id').value = docId;
+      document.getElementById('submit-article-btn').textContent = ADMIN_I18N.resubmit_btn;
+      document.getElementById('article-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
   // ── My Submissions ──
   function loadSubmissions(uid) {
     var container = document.getElementById('submissions-list');
@@ -1002,7 +1074,9 @@ var ADMIN_I18N = {
         snapshot.forEach(function (doc) {
           var d = doc.data();
           var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : ADMIN_I18N.just_now;
-          var statusClass = 'admin-status-' + (d.status || 'pending');
+          var status = d.status || 'pending';
+          var statusClass = 'admin-status-' + status;
+          var isRnR = status === 'revise_resubmit';
           html += '<div class="admin-submission-item">';
           html += '<div class="admin-submission-main">';
           html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
@@ -1011,12 +1085,25 @@ var ADMIN_I18N = {
           html += '<span class="admin-auth-sep">&middot;</span>';
           html += '<span>' + date + '</span>';
           html += '</div>';
+          if (isRnR && d.reviewerComments) {
+            html += '<div class="admin-rnr-feedback">';
+            html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.revision_feedback_label) + '</p>';
+            html += '<p class="admin-rnr-feedback-body">' + escapeHtml(d.reviewerComments) + '</p>';
+            html += '</div>';
+            html += '<button class="admin-btn admin-btn-small" style="margin-top:0.75rem;" data-resubmit="' + doc.id + '">' + escapeHtml(ADMIN_I18N.resubmit_btn) + '</button>';
+          }
           html += '</div>';
-          html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(d.status || 'pending')) + '</span>';
+          html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(status)) + '</span>';
           html += '</div>';
         });
         html += '</div>';
         container.innerHTML = html;
+
+        container.querySelectorAll('[data-resubmit]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            resubmitArticle(this.getAttribute('data-resubmit'));
+          });
+        });
       })
       .catch(function () {
         container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.load_submissions_failed) + '</p>';
@@ -1136,8 +1223,20 @@ var ADMIN_I18N = {
       badge.textContent = getStatusLabel(d.status || 'pending');
       badge.className = 'admin-status admin-status-' + (d.status || 'pending');
 
+      var rnrFeedback = document.getElementById('modal-rnr-feedback');
+      if (d.status === 'revise_resubmit' && d.reviewerComments) {
+        document.getElementById('modal-rnr-feedback-label').textContent = ADMIN_I18N.revision_feedback_label;
+        document.getElementById('modal-rnr-feedback-body').textContent = d.reviewerComments;
+        rnrFeedback.style.display = 'block';
+      } else {
+        rnrFeedback.style.display = 'none';
+      }
+
+      document.getElementById('modal-rnr-form').style.display = 'none';
+      document.getElementById('modal-rnr-comments').value = '';
+
       var actions = document.getElementById('modal-actions');
-      actions.style.display = d.status === 'pending' ? 'flex' : 'none';
+      actions.style.display = (d.status === 'pending' || d.status === 'revise_resubmit') ? 'flex' : 'none';
 
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
@@ -1146,6 +1245,8 @@ var ADMIN_I18N = {
 
   function closeReviewModal() {
     document.getElementById('review-modal').style.display = 'none';
+    document.getElementById('modal-rnr-form').style.display = 'none';
+    document.getElementById('modal-rnr-comments').value = '';
     document.body.style.overflow = '';
     currentModalDocId = null;
   }
@@ -1420,6 +1521,53 @@ var ADMIN_I18N = {
     }).catch(function (err) {
       console.error('Reject error:', err);
       btn.textContent = ADMIN_I18N.reject_btn;
+      btn.disabled = false;
+    });
+  });
+
+  // Revise & Resubmit — toggle feedback form
+  document.getElementById('modal-revise').addEventListener('click', function () {
+    var form = document.getElementById('modal-rnr-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  });
+
+  document.getElementById('modal-rnr-cancel').addEventListener('click', function () {
+    document.getElementById('modal-rnr-form').style.display = 'none';
+    document.getElementById('modal-rnr-comments').value = '';
+  });
+
+  document.getElementById('modal-rnr-submit').addEventListener('click', function () {
+    if (!currentModalDocId) return;
+    var comments = document.getElementById('modal-rnr-comments').value.trim();
+    if (!comments) { document.getElementById('modal-rnr-comments').focus(); return; }
+
+    var btn = this;
+    btn.textContent = ADMIN_I18N.revising;
+    btn.disabled = true;
+
+    db.collection('submissions').doc(currentModalDocId).update({
+      status: 'revise_resubmit',
+      reviewerComments: comments,
+      reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+      var badge = document.getElementById('modal-status-badge');
+      badge.textContent = getStatusLabel('revise_resubmit');
+      badge.className = 'admin-status admin-status-revise_resubmit';
+      document.getElementById('modal-actions').style.display = 'none';
+      document.getElementById('modal-rnr-form').style.display = 'none';
+      document.getElementById('modal-rnr-feedback-label').textContent = ADMIN_I18N.revision_feedback_label;
+      document.getElementById('modal-rnr-feedback-body').textContent = comments;
+      document.getElementById('modal-rnr-feedback').style.display = 'block';
+
+      btn.textContent = ADMIN_I18N.rnr_submit;
+      btn.disabled = false;
+
+      loadReviewList(currentFilter);
+      var user = auth.currentUser;
+      if (user) loadSubmissions(user.uid);
+    }).catch(function (err) {
+      console.error('R&R error:', err);
+      btn.textContent = ADMIN_I18N.rnr_submit;
       btn.disabled = false;
     });
   });

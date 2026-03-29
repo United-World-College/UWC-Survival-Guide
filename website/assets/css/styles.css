@@ -1701,6 +1701,49 @@ a.author-contact-value:hover {
   background: rgba(212, 162, 154, 0.15);
 }
 
+.admin-status-revise_resubmit {
+  color: #7a5f2a;
+  border-color: #c9a96e;
+  background: rgba(201, 169, 110, 0.15);
+}
+
+.admin-rnr-feedback {
+  background: #faf7f0;
+  border: 1px solid #e8dfc8;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+}
+
+.admin-rnr-feedback-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9a8a5a;
+  margin-bottom: 0.4rem;
+}
+
+.admin-rnr-feedback-body {
+  font-size: 0.88rem;
+  color: var(--ink);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.admin-rnr-form {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.admin-rnr-form-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
 .admin-empty-state {
   font-size: 0.95rem;
   color: var(--muted);

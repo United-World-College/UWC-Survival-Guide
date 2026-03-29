@@ -264,6 +264,18 @@
     rejecting: "Rejecting..."
     approving: "Approving..."
     rejection_prompt: "Rejection reason (optional):"
+    filter_revise_resubmit: "Revision Requested"
+    status_revise_resubmit: "Revision Requested"
+    revise_resubmit_btn: "Revise & Resubmit"
+    revising: "Sending..."
+    rnr_comments_label: "Reviewer Comments"
+    rnr_comments_placeholder: "Provide detailed feedback on what the author should revise..."
+    rnr_submit: "Send Feedback"
+    rnr_cancel: Cancel
+    revision_feedback_label: "Reviewer Feedback"
+    resubmit_btn: "Edit & Resubmit"
+    resubmitting: "Resubmitting..."
+    resubmit_success: "Your revised article has been resubmitted for review."
     copied: "Copied!"
     no_token: "No GitHub token found. Please unlock the admin panel again and paste your token."
     local_save_error: "Failed to save locally. Make sure local-save-server.py is running on port 4001.\n\nRun: python3 website/local-save-server.py"
@@ -534,6 +546,18 @@
     rejecting: 拒绝中……
     approving: 批准中……
     rejection_prompt: 拒绝原因（可选）：
+    filter_revise_resubmit: 需要修改
+    status_revise_resubmit: 需要修改
+    revise_resubmit_btn: 修改后重投
+    revising: 发送中……
+    rnr_comments_label: 审稿意见
+    rnr_comments_placeholder: 请详细说明作者应修改的内容……
+    rnr_submit: 发送反馈
+    rnr_cancel: 取消
+    revision_feedback_label: 审稿反馈
+    resubmit_btn: 编辑并重新投稿
+    resubmitting: 重新投稿中……
+    resubmit_success: 您的修改稿已重新提交审核。
     copied: 已复制！
     no_token: 未找到 GitHub Token，请重新解锁管理面板并粘贴您的 Token。
     local_save_error: "本地保存失败。请确保 local-save-server.py 正在 4001 端口运行。\n\n运行：python3 website/local-save-server.py"
@@ -804,6 +828,18 @@
     rejecting: 拒絕中……
     approving: 批准中……
     rejection_prompt: 拒絕原因（可選）：
+    filter_revise_resubmit: 需要修改
+    status_revise_resubmit: 需要修改
+    revise_resubmit_btn: 修改後重投
+    revising: 傳送中……
+    rnr_comments_label: 審稿意見
+    rnr_comments_placeholder: 請詳細說明作者應修改的內容……
+    rnr_submit: 傳送反饋
+    rnr_cancel: 取消
+    revision_feedback_label: 審稿反饋
+    resubmit_btn: 編輯並重新投稿
+    resubmitting: 重新投稿中……
+    resubmit_success: 您的修改稿已重新提交審核。
     copied: 已複製！
     no_token: 未找到 GitHub Token，請重新解鎖管理面板並貼上您的 Token。
     local_save_error: "本機儲存失敗。請確保 local-save-server.py 正在 4001 埠運行。\n\n執行：python3 website/local-save-server.py"
