@@ -134,6 +134,8 @@
     by_label: By
     published_label: Published
     updated_label: Updated
+    submitted_label: Submitted
+    editor_label: "Editor:"
     date_format: "%b %-d, %Y"
     more_guides_title: More guides in this language
     more_guides_desc: Keep reading in the same language without jumping between versions.
@@ -210,6 +212,9 @@
     filter_all: All
     approve_btn: "Approve & Publish"
     reject_btn: Reject
+    delete_btn: Delete
+    deleting: "Deleting..."
+    delete_confirm: "Are you sure you want to permanently delete this submission?"
     copy_md_btn: Copy to Clipboard
     signout_btn: Sign Out
     err_email_exists: An account with this email already exists.
@@ -424,6 +429,8 @@
     by_label: 作者
     published_label: 发布于
     updated_label: 更新于
+    submitted_label: 投稿于
+    editor_label: 责任编辑：
     date_format: "%Y年%-m月%-d日"
     more_guides_title: 同语言的更多指南
     more_guides_desc: 继续阅读同一语言的其他内容，不必在不同版本之间来回切换。
@@ -500,6 +507,9 @@
     filter_all: 全部
     approve_btn: 批准并发布
     reject_btn: 拒绝
+    delete_btn: 删除
+    deleting: 删除中……
+    delete_confirm: 确定要永久删除此投稿吗？
     copy_md_btn: 复制到剪贴板
     signout_btn: 退出登录
     err_email_exists: 该邮箱已被注册。
@@ -714,6 +724,8 @@
     by_label: 作者
     published_label: 發布於
     updated_label: 更新於
+    submitted_label: 投稿於
+    editor_label: 責任編輯：
     date_format: "%Y年%-m月%-d日"
     more_guides_title: 同語言的更多指南
     more_guides_desc: 繼續閱讀同一語言的其他內容，不必在不同版本之間來回切換。
@@ -790,6 +802,9 @@
     filter_all: 全部
     approve_btn: 批准並發布
     reject_btn: 拒絕
+    delete_btn: 刪除
+    deleting: 刪除中……
+    delete_confirm: 確定要永久刪除此投稿嗎？
     copy_md_btn: 複製到剪貼簿
     signout_btn: 登出
     err_email_exists: 該郵件已被註冊。

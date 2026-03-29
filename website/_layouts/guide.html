@@ -69,13 +69,35 @@
         {% endif %}
       </p>
       {% endif %}
-      {% if published_at or updated_at %}
+      {% assign submitted_at = page.submitted %}
+      {% if published_at or updated_at or submitted_at %}
       <p class="guide-timestamps">
+        {% if submitted_at %}
+        <span>{{ current_locale.guide.submitted_label }} {{ submitted_at | date: guide_date_format }}</span>
+        {% endif %}
         {% if published_at %}
         <span>{{ current_locale.guide.published_label }} {{ published_at | date: guide_date_format }}</span>
         {% endif %}
         {% if updated_at %}
         <span>{{ current_locale.guide.updated_label }} {{ updated_at | date: guide_date_format }}</span>
+        {% endif %}
+      </p>
+      {% endif %}
+      {% if page.editor %}
+      <p class="guide-editor">
+        {{ current_locale.guide.editor_label }}
+        {% if page.editor_id %}
+          {% assign editor_pages = site.authors | where: "author_id", page.editor_id | sort: "language_sort" %}
+          {% assign editor_page = editor_pages | where: "language_code", current_language_code | first %}
+          {% if editor_page == nil %}{% assign editor_page = editor_pages | where: "language_code", "en" | first %}{% endif %}
+          {% if editor_page == nil %}{% assign editor_page = editor_pages | first %}{% endif %}
+          {% if editor_page %}
+            <a href="{{ editor_page.url | relative_url }}" class="guide-author-link">{{ page.editor }}</a>
+          {% else %}
+            {{ page.editor }}
+          {% endif %}
+        {% else %}
+          {{ page.editor }}
         {% endif %}
       </p>
       {% endif %}

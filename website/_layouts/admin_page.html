@@ -116,6 +116,9 @@ var ADMIN_I18N = {
   reject_comments_placeholder: {{ t.reject_comments_placeholder | jsonify }},
   approve_message_label: {{ t.approve_message_label | jsonify }},
   approve_message_placeholder: {{ t.approve_message_placeholder | jsonify }},
+  delete_btn:           {{ t.delete_btn | jsonify }},
+  deleting:             {{ t.deleting | jsonify }},
+  delete_confirm:       {{ t.delete_confirm | jsonify }},
   copy_md_btn:          {{ t.copy_md_btn | jsonify }},
   categories:           {{ current_locale.categories | jsonify }},
   lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }}
@@ -390,6 +393,9 @@ var ADMIN_I18N = {
               <button type="button" id="modal-revise" class="admin-btn admin-btn-outline">{{ t.revise_resubmit_btn }}</button>
               <button type="button" id="modal-reject" class="admin-btn admin-btn-outline admin-btn-danger">{{ t.reject_btn }}</button>
             </div>
+            <div class="admin-modal-actions" style="margin-top:0.5rem;">
+              <button type="button" id="modal-delete" class="admin-btn admin-btn-outline admin-btn-danger" style="font-size:0.75rem;">{{ t.delete_btn }}</button>
+            </div>
             <div id="modal-rnr-form" style="display:none;" class="admin-rnr-form">
               <p class="admin-rnr-form-title">{{ t.rnr_comments_label }}</p>
               <textarea id="modal-rnr-comments" class="admin-input admin-textarea" rows="5" placeholder="{{ t.rnr_comments_placeholder }}" maxlength="1000"></textarea>
@@ -578,19 +584,19 @@ var ADMIN_I18N = {
       })
       .then(function () {
         // Create author page file
-        var authorMd = '---\ntitle: "' + displayName.replace(/"/g, '\\"') + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\n---\n';
+        var authorMd = '---\ntitle: "' + displayName.replace(/"/g, '\\"') + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\npermalink: /authors/' + authorSlug + '/\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n';
         var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         if (isLocal) {
           return fetch('http://127.0.0.1:4001/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ folder: '../_authors', filename: authorSlug + '.md', content: authorMd })
+            body: JSON.stringify({ folder: '../_authors/default', filename: authorSlug + '.md', content: authorMd })
           }).catch(function () {});
         } else {
           return db.collection('config').doc('github').get().then(function (configDoc) {
             var token = configDoc.exists ? configDoc.data().token : null;
             if (!token) return;
-            var apiUrl = 'https://api.github.com/repos/United-World-College/UWC-Survival-Guide/contents/website/_authors/' + authorSlug + '.md';
+            var apiUrl = 'https://api.github.com/repos/United-World-College/UWC-Survival-Guide/contents/website/_authors/default/' + authorSlug + '.md';
             var headers = { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' };
             return fetch(apiUrl, { headers: headers }).then(function (checkRes) {
               if (checkRes.ok) return; // already exists
@@ -1736,6 +1742,10 @@ var ADMIN_I18N = {
       var slug = d.title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
       db.collection('submissions').doc(currentModalDocId).update({ guide_id: slug }).catch(function () {});
 
+      var today = new Date().toISOString().slice(0, 10);
+      var submittedDate = d.createdAt ? d.createdAt.toDate().toISOString().slice(0, 10) : '';
+      var editorName = document.getElementById('profile-name').value.trim() || '';
+
       var md = '---\n';
       md += 'title: "' + d.title.replace(/"/g, '\\"') + '"\n';
       md += 'category: "' + d.category + '"\n';
@@ -1749,8 +1759,15 @@ var ADMIN_I18N = {
       md += 'language_name: "' + langInfo.name + '"\n';
       md += 'language_folder: "' + langInfo.folder + '"\n';
       md += 'language_sort: ' + langInfo.sort + '\n';
+      if (submittedDate) md += 'submitted: ' + submittedDate + '\n';
+      md += 'published: ' + today + '\n';
+      md += 'updated: ' + today + '\n';
+      if (editorName) {
+        var editorSlug = editorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        md += 'editor: "' + editorName.replace(/"/g, '\\"') + '"\n';
+        md += 'editor_id: "' + editorSlug + '"\n';
+      }
       md += '---\n\n';
-      md += '*Contributed by ' + d.authorName + '*\n\n';
       md += d.content;
 
       var fileName = slug + langInfo.suffix + '.md';
@@ -1782,9 +1799,9 @@ var ADMIN_I18N = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              folder: '../_authors',
+              folder: '../_authors/default',
               filename: authorFileName,
-              content: '---\ntitle: "' + d.authorName + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\n---\n'
+              content: '---\ntitle: "' + d.authorName + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\npermalink: /authors/' + authorSlug + '/\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n'
             })
           }).catch(function () {});
 
@@ -1873,11 +1890,11 @@ var ADMIN_I18N = {
             badge.textContent = 'Approved & Published';
             badge.className = 'admin-status admin-status-approved';
 
-            var authorPagePath = 'website/_authors/' + authorSlug + '.md';
+            var authorPagePath = 'website/_authors/default/' + authorSlug + '.md';
             var authorApiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + authorPagePath;
             fetch(authorApiUrl, { headers: headers }).then(function (aRes) {
               if (aRes.status === 404) {
-                var authorMd = '---\ntitle: "' + d.authorName + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\n---\n';
+                var authorMd = '---\ntitle: "' + d.authorName + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\npermalink: /authors/' + authorSlug + '/\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n';
                 return fetch(authorApiUrl, {
                   method: 'PUT',
                   headers: headers,
@@ -1994,6 +2011,25 @@ var ADMIN_I18N = {
     }).catch(function (err) {
       console.error('Reject error:', err);
       btn.textContent = ADMIN_I18N.reject_btn;
+      btn.disabled = false;
+    });
+  });
+
+  // Delete submission
+  document.getElementById('modal-delete').addEventListener('click', function () {
+    if (!currentModalDocId) return;
+    if (!confirm(ADMIN_I18N.delete_confirm)) return;
+    var btn = this;
+    btn.textContent = ADMIN_I18N.deleting;
+    btn.disabled = true;
+    db.collection('submissions').doc(currentModalDocId).delete().then(function () {
+      closeReviewModal();
+      loadReviewList(currentFilter);
+      var user = auth.currentUser;
+      if (user) loadSubmissions(user.uid);
+    }).catch(function (err) {
+      console.error('Delete error:', err);
+      btn.textContent = ADMIN_I18N.delete_btn;
       btn.disabled = false;
     });
   });

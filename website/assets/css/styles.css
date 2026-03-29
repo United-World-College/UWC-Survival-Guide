@@ -619,6 +619,13 @@ body {
   gap: 0.35rem;
 }
 
+.guide-editor {
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
 .guide-author-link {
   color: inherit;
   text-decoration: none;
