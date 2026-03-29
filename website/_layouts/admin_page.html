@@ -1678,7 +1678,7 @@ var ADMIN_I18N = {
 
       var actions = document.getElementById('modal-actions');
       actions.style.display = (d.status === 'pending' || d.status === 'revise_resubmit') ? 'flex' : 'none';
-      document.getElementById('modal-delete').parentElement.style.display = d.status === 'approved' ? 'flex' : 'none';
+      document.getElementById('modal-delete').parentElement.style.display = 'flex';
 
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
@@ -2054,8 +2054,21 @@ var ADMIN_I18N = {
 
     // Delete from Firestore
     db.collection('submissions').doc(docId).delete().then(function () {
-      // If approved, also delete the guide file from GitHub
+      // If approved, clean up: remove from user's publishedArticles + delete guide file
       if (d && d.status === 'approved' && d.guide_id) {
+        // Remove from user's publishedArticles array
+        if (d.uid) {
+          db.collection('users').doc(d.uid).get().then(function (userDoc) {
+            if (!userDoc.exists) return;
+            var articles = userDoc.data().publishedArticles || [];
+            var filtered = articles.filter(function (a) { return a.guide_id !== d.guide_id; });
+            if (filtered.length !== articles.length) {
+              return db.collection('users').doc(d.uid).update({ publishedArticles: filtered });
+            }
+          }).catch(function (e) { console.error('User cleanup error:', e); });
+        }
+
+        // Delete the guide file from GitHub / local
         var lang = d.language || 'en';
         var langMap = {
           'en':    { folder: 'default', suffix: '' },

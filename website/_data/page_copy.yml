@@ -90,6 +90,10 @@
     recognition_label: Recognition Policy
     recognition_title: How contributors are recognized
     recognition_desc: Editors-in-Chief are listed separately. Core contributors are contributors who have materially contributed to five or more distinct articles. Contributors include everyone else who has written, edited, translated, or materially improved published content.
+    cfa_label: Call for Articles
+    cfa_title: We are looking for contributors
+    cfa_desc: The Survival Guide is only as useful as the knowledge its contributors choose to share. If you are a current or former UWC Changshu China student and have practical advice worth preserving, we invite you to write for the guide.
+    cfa_portal_btn: Go to Contributor Portal
     leadership_label: Leadership
     leadership_title: Editors-in-Chief
     leadership_desc: The editors-in-chief are responsible for the editorial direction of the project and for maintaining the standard of the published guide.
@@ -385,6 +389,10 @@
     recognition_label: 署名规则
     recognition_title: 贡献者如何被标注
     recognition_desc: 主编单独列出。核心贡献者指对五篇或以上不同文章做出实质性贡献的成员。其他所有撰写、编辑、翻译或实质性改进已发布内容的人都会列为贡献者。
+    cfa_label: 征稿启事
+    cfa_title: 我们正在寻找贡献者
+    cfa_desc: 生存指南的价值取决于贡献者愿意分享的知识。如果你是 UWC 常熟的在读或往届学生，并有值得留存的实用建议，我们邀请你为本指南撰稿。
+    cfa_portal_btn: 前往贡献者门户
     leadership_label: 项目团队
     leadership_title: 主编
     leadership_desc: 主编负责项目的编辑方向，并维护已发布指南的整体标准。
@@ -680,6 +688,10 @@
     recognition_label: 署名規則
     recognition_title: 貢獻者如何被標註
     recognition_desc: 主編單獨列出。核心貢獻者指對五篇或以上不同文章做出實質性貢獻的成員。其他所有撰寫、編輯、翻譯或實質性改進已發布內容的人都會列為貢獻者。
+    cfa_label: 徵稿啟事
+    cfa_title: 我們正在尋找貢獻者
+    cfa_desc: 生存指南的價值取決於貢獻者願意分享的知識。如果你是 UWC 常熟的在讀或往屆學生，並有值得留存的實用建議，我們邀請你為本指南撰稿。
+    cfa_portal_btn: 前往貢獻者門戶
     leadership_label: 計畫團隊
     leadership_title: 主編
     leadership_desc: 主編負責計畫的編輯方向，並維護已發布指南的整體標準。

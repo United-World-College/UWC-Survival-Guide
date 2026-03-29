@@ -824,6 +824,29 @@ a.feature:hover {
   margin-top: 1.4rem;
 }
 
+.cfa-body {
+  text-align: center;
+}
+.cfa-body p {
+  text-align: left;
+}
+.cfa-portal-btn {
+  display: inline-block;
+  margin-top: 2rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  background: var(--dark);
+  padding: 0.7rem 2rem;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.cfa-portal-btn:hover {
+  opacity: 0.85;
+}
+
 .about-principles {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

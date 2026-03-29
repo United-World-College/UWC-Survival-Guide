@@ -254,19 +254,27 @@
         }
       }
 
-      // Sync profile links
-      var links = data.profileLinks || [];
+      // Sync profile links — merge static + Firestore, sort alphabetically, render on one line
+      var links = (data.profileLinks || []).slice();
       if (links.length > 0) {
         var container = document.getElementById('author-links');
-        var existingLinkKeys = {};
-        Array.prototype.forEach.call(container.querySelectorAll('a.profile-link'), function (existingLink) {
-          var key = (existingLink.getAttribute('href') || '') + '::' + (existingLink.textContent || '').trim();
-          existingLinkKeys[key] = true;
+        // Collect existing static links
+        var allLinks = [];
+        Array.prototype.forEach.call(container.querySelectorAll('a.profile-link'), function (el) {
+          allLinks.push({ label: el.textContent.trim(), url: el.getAttribute('href') || '' });
         });
+        // Merge Firestore links (deduplicate)
+        var seen = {};
+        allLinks.forEach(function (l) { seen[l.url + '::' + l.label] = true; });
         links.forEach(function (link) {
           var key = (link.url || '') + '::' + (link.label || '');
-          if (existingLinkKeys[key]) return;
-          existingLinkKeys[key] = true;
+          if (!seen[key]) { allLinks.push(link); seen[key] = true; }
+        });
+        // Sort alphabetically by label
+        allLinks.sort(function (a, b) { return (a.label || '').localeCompare(b.label || ''); });
+        // Re-render
+        container.innerHTML = '';
+        allLinks.forEach(function (link) {
           var a = document.createElement('a');
           a.className = 'profile-link';
           a.href = link.url;

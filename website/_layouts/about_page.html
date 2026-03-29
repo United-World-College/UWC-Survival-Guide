@@ -76,6 +76,21 @@
 
   <section class="section">
     <div class="section-header">
+      <p class="section-label">{{ about_copy.cfa_label }}</p>
+      <h2>{{ about_copy.cfa_title }}</h2>
+      <p class="section-desc">{{ about_copy.cfa_desc }}</p>
+    </div>
+    <div class="about-intro cfa-body">
+      {% capture cfa_content %}{% include cfa/{{ current_language_code }}.md %}{% endcapture %}
+      {{ cfa_content | markdownify }}
+      <a href="{{ current_locale.path_prefix | default: '' }}/admin/" class="cfa-portal-btn">{{ about_copy.cfa_portal_btn }}</a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <div class="section-header">
       <p class="section-label">{{ about_copy.leadership_label }}</p>
       <h2>{{ about_copy.leadership_title }}</h2>
       <p class="section-desc">{{ about_copy.leadership_desc }}</p>
