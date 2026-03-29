@@ -119,6 +119,7 @@ var ADMIN_I18N = {
   delete_btn:           {{ t.delete_btn | jsonify }},
   deleting:             {{ t.deleting | jsonify }},
   delete_confirm:       {{ t.delete_confirm | jsonify }},
+  submitted_label:      {{ current_locale.guide.submitted_label | jsonify }},
   copy_md_btn:          {{ t.copy_md_btn | jsonify }},
   categories:           {{ current_locale.categories | jsonify }},
   lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }}
@@ -370,13 +371,14 @@ var ADMIN_I18N = {
               <h2 id="modal-title" class="admin-card-title"></h2>
               <button type="button" id="modal-close" class="admin-modal-close">&times;</button>
             </div>
-            <div class="admin-modal-meta">
-              <span id="modal-author"></span>
-              <span class="admin-auth-sep">&middot;</span>
-              <span id="modal-category"></span>
-              <span class="admin-auth-sep">&middot;</span>
-              <span id="modal-date"></span>
-              <span class="admin-auth-sep">&middot;</span>
+            <div class="admin-submission-item" style="border-bottom:none;padding:0 0 0.5rem;">
+              <div class="admin-submission-main">
+                <div class="admin-submission-meta">
+                  <span id="modal-author"></span>
+                  <span id="modal-category"></span>
+                  <span id="modal-date"></span>
+                </div>
+              </div>
               <span id="modal-status-badge" class="admin-status"></span>
             </div>
             <p id="modal-description" class="admin-card-desc"></p>
@@ -395,6 +397,13 @@ var ADMIN_I18N = {
             </div>
             <div class="admin-modal-actions" style="margin-top:0.5rem;">
               <button type="button" id="modal-delete" class="admin-btn admin-btn-outline admin-btn-danger" style="font-size:0.75rem;">{{ t.delete_btn }}</button>
+            </div>
+            <div id="modal-delete-form" style="display:none;" class="admin-rnr-form">
+              <p class="admin-rnr-form-title" style="color:#a65a4e;">{{ t.delete_confirm }}</p>
+              <div class="admin-modal-actions" style="margin-top:0.75rem;">
+                <button type="button" id="modal-delete-submit" class="admin-btn admin-btn-danger">{{ t.delete_btn }}</button>
+                <button type="button" id="modal-delete-cancel" class="admin-btn admin-btn-outline">{{ t.rnr_cancel }}</button>
+              </div>
             </div>
             <div id="modal-rnr-form" style="display:none;" class="admin-rnr-form">
               <p class="admin-rnr-form-title">{{ t.rnr_comments_label }}</p>
@@ -1202,7 +1211,7 @@ var ADMIN_I18N = {
               'h+="<p class=\\"admin-rnr-feedback-label\\">"+esc(L.revision_feedback_label)+"<\/p>";' +
               'h+="<p class=\\"admin-rnr-feedback-body\\">"+esc(e.reviewerComments)+"<\/p>";' +
               'if(e.reviewedAt)h+="<p class=\\"admin-revision-timestamp\\">"+fmtDate(e.reviewedAt)+"<\/p>";' +
-              'if(e.contentSnapshot)h+="<button class=\\"admin-btn admin-btn-small rs-view-ver\\" data-round=\\""+i+"\\">"+esc(L.preview_btn)+" (v"+e.round+")<\/button>";' +
+              'if(e.contentSnapshot)h+="<button class=\\"admin-editor-tab admin-editor-tab-newtab rs-view-ver\\" data-round=\\""+i+"\\">"+esc(L.preview_btn)+" (v"+e.round+")<\/button>";' +
               'h+="<\/div>";' +
             '}' +
             'if(e.authorMessage){' +
@@ -1392,7 +1401,7 @@ var ADMIN_I18N = {
           html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
           html += '<div class="admin-submission-meta">';
           html += '<span>' + escapeHtml(d.category) + '</span>';
-          html += '<span>' + date + '</span>';
+          html += '<span>' + escapeHtml(ADMIN_I18N.submitted_label) + ' ' + date + '</span>';
           html += '</div>';
           html += renderSubmissionThread(d);
           if (isRnR) {
@@ -1400,8 +1409,8 @@ var ADMIN_I18N = {
           }
           html += '</div>';
           html += '<div class="admin-submission-side">';
-          html += '<button class="admin-btn admin-btn-small" data-preview="' + doc.id + '">' + escapeHtml(ADMIN_I18N.preview_btn) + '</button>';
           html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(status)) + '</span>';
+          html += '<button class="admin-editor-tab admin-editor-tab-newtab" data-preview="' + doc.id + '">' + escapeHtml(ADMIN_I18N.preview_btn) + '</button>';
           html += '</div>';
           html += '</div>';
         });
@@ -1495,7 +1504,7 @@ var ADMIN_I18N = {
         html += '<div class="admin-submission-meta">';
         html += '<span class="admin-author-name" data-uid="' + (d.uid || '') + '">' + escapeHtml(d.authorName || ADMIN_I18N.author_unknown) + '</span>';
         html += '<span>' + escapeHtml(d.category) + '</span>';
-        html += '<span>' + date + '</span>';
+        html += '<span>' + escapeHtml(ADMIN_I18N.submitted_label) + ' ' + date + '</span>';
         html += '</div>';
         html += '</div>';
         html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(d.status || 'pending')) + '</span>';
@@ -1600,7 +1609,7 @@ var ADMIN_I18N = {
         html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.reviewerComments) + '</p>';
         if (entry.reviewedAt) html += '<p class="admin-revision-timestamp">' + fmtDate(entry.reviewedAt) + '</p>';
         if (entry.contentSnapshot) {
-          html += '<button class="admin-btn admin-btn-small modal-view-ver" data-ver-idx="' + idx + '">' + escapeHtml(ADMIN_I18N.preview_btn) + ' (v' + entry.round + ')</button>';
+          html += '<button class="admin-editor-tab admin-editor-tab-newtab modal-view-ver" data-ver-idx="' + idx + '">' + escapeHtml(ADMIN_I18N.preview_btn) + ' (v' + entry.round + ')</button>';
         }
         html += '</div>';
       }
@@ -1653,7 +1662,7 @@ var ADMIN_I18N = {
         });
       }
       document.getElementById('modal-category').textContent = d.category;
-      document.getElementById('modal-date').textContent = date;
+      document.getElementById('modal-date').textContent = ADMIN_I18N.submitted_label + ' ' + date;
       document.getElementById('modal-description').textContent = d.description;
       document.getElementById('modal-content').textContent = d.content;
 
@@ -1669,6 +1678,7 @@ var ADMIN_I18N = {
 
       var actions = document.getElementById('modal-actions');
       actions.style.display = (d.status === 'pending' || d.status === 'revise_resubmit') ? 'flex' : 'none';
+      document.getElementById('modal-delete').parentElement.style.display = d.status === 'approved' ? 'flex' : 'none';
 
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
@@ -1683,6 +1693,7 @@ var ADMIN_I18N = {
     document.getElementById('modal-reject-comments').value = '';
     document.getElementById('modal-approve-form').style.display = 'none';
     document.getElementById('modal-approve-comments').value = '';
+    document.getElementById('modal-delete-form').style.display = 'none';
     document.getElementById('modal-revision-thread').style.display = 'none';
     document.getElementById('modal-revision-thread').innerHTML = '';
     updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
@@ -1708,6 +1719,8 @@ var ADMIN_I18N = {
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
     document.getElementById('modal-reject-form').style.display = 'none';
     document.getElementById('modal-rnr-form').style.display = 'none';
+    document.getElementById('modal-delete-form').style.display = 'none';
+    if (form.style.display === 'block') form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
   document.getElementById('modal-approve-cancel').addEventListener('click', function () {
@@ -1976,6 +1989,8 @@ var ADMIN_I18N = {
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
     document.getElementById('modal-approve-form').style.display = 'none';
     document.getElementById('modal-rnr-form').style.display = 'none';
+    document.getElementById('modal-delete-form').style.display = 'none';
+    if (form.style.display === 'block') form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
   document.getElementById('modal-reject-cancel').addEventListener('click', function () {
@@ -2015,14 +2030,69 @@ var ADMIN_I18N = {
     });
   });
 
-  // Delete submission
+  // Delete submission — toggle confirmation
   document.getElementById('modal-delete').addEventListener('click', function () {
+    var form = document.getElementById('modal-delete-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    document.getElementById('modal-approve-form').style.display = 'none';
+    document.getElementById('modal-reject-form').style.display = 'none';
+    document.getElementById('modal-rnr-form').style.display = 'none';
+    if (form.style.display === 'block') form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  document.getElementById('modal-delete-cancel').addEventListener('click', function () {
+    document.getElementById('modal-delete-form').style.display = 'none';
+  });
+
+  document.getElementById('modal-delete-submit').addEventListener('click', function () {
     if (!currentModalDocId) return;
-    if (!confirm(ADMIN_I18N.delete_confirm)) return;
     var btn = this;
     btn.textContent = ADMIN_I18N.deleting;
     btn.disabled = true;
-    db.collection('submissions').doc(currentModalDocId).delete().then(function () {
+    var d = currentModalData;
+    var docId = currentModalDocId;
+
+    // Delete from Firestore
+    db.collection('submissions').doc(docId).delete().then(function () {
+      // If approved, also delete the guide file from GitHub
+      if (d && d.status === 'approved' && d.guide_id) {
+        var lang = d.language || 'en';
+        var langMap = {
+          'en':    { folder: 'default', suffix: '' },
+          'zh-CN': { folder: 'chinese', suffix: '-CN' },
+          'zh-TW': { folder: 'chinese', suffix: '-TW' }
+        };
+        var langInfo = langMap[lang] || langMap['en'];
+        var fileName = d.guide_id + langInfo.suffix + '.md';
+        var filePath = 'website/_guides/' + langInfo.folder + '/' + fileName;
+        var REPO = 'United-World-College/UWC-Survival-Guide';
+        var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+        if (isLocal) {
+          fetch('http://127.0.0.1:4001/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: filePath })
+          }).catch(function () {});
+        } else {
+          db.collection('config').doc('github').get().then(function (configDoc) {
+            var token = configDoc.exists ? configDoc.data().token : null;
+            if (!token) return;
+            var headers = { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' };
+            var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + filePath;
+            return fetch(apiUrl, { headers: headers }).then(function (res) {
+              if (!res.ok) return;
+              return res.json().then(function (file) {
+                return fetch(apiUrl, {
+                  method: 'DELETE',
+                  headers: headers,
+                  body: JSON.stringify({ message: 'Delete guide: ' + d.title, sha: file.sha })
+                });
+              });
+            });
+          }).catch(function (e) { console.error('GitHub delete error:', e); });
+        }
+      }
       closeReviewModal();
       loadReviewList(currentFilter);
       var user = auth.currentUser;
@@ -2040,6 +2110,8 @@ var ADMIN_I18N = {
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
     document.getElementById('modal-approve-form').style.display = 'none';
     document.getElementById('modal-reject-form').style.display = 'none';
+    document.getElementById('modal-delete-form').style.display = 'none';
+    if (form.style.display === 'block') form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
   document.getElementById('modal-rnr-cancel').addEventListener('click', function () {

@@ -1691,6 +1691,8 @@ a.author-contact-value:hover {
   color: var(--warm-gray);
   text-decoration: underline;
   text-underline-offset: 2px;
+  align-self: flex-start;
+  width: fit-content;
 }
 .admin-author-link:hover {
   color: var(--dark);
@@ -1985,15 +1987,6 @@ a.author-contact-value:hover {
   color: var(--dark);
 }
 
-.admin-modal-meta {
-  font-size: 0.82rem;
-  color: var(--muted);
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-}
 
 .admin-modal-body {
   margin: 1.5rem 0;
@@ -2027,6 +2020,15 @@ a.author-contact-value:hover {
 .admin-btn-danger:hover {
   background: #9b2c2c;
   color: var(--ivory);
+}
+.admin-btn.admin-btn-danger:not(.admin-btn-outline) {
+  background: #9b2c2c;
+  color: var(--ivory);
+  border-color: #9b2c2c;
+}
+.admin-btn.admin-btn-danger:not(.admin-btn-outline):hover {
+  background: #7a2020;
+  border-color: #7a2020;
 }
 
 /* ── Profile Links ── */
