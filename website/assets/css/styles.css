@@ -1706,9 +1706,9 @@ a.author-contact-value:hover {
 }
 
 .admin-status-revise_resubmit {
-  color: #7a5f2a;
-  border-color: #c9a96e;
-  background: rgba(201, 169, 110, 0.15);
+  color: #4a6e8a;
+  border-color: #8db4cc;
+  background: rgba(141, 180, 204, 0.15);
 }
 
 .admin-rnr-feedback {
@@ -1899,9 +1899,9 @@ a.author-contact-value:hover {
   background: rgba(212, 162, 154, 0.15);
 }
 .admin-tab.active[data-filter="revise_resubmit"] {
-  color: #7a5f2a;
-  border-color: #c9a96e;
-  background: rgba(201, 169, 110, 0.15);
+  color: #4a6e8a;
+  border-color: #8db4cc;
+  background: rgba(141, 180, 204, 0.15);
 }
 
 .admin-tab:hover {
