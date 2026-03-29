@@ -13,3 +13,6 @@ website/save-token.html
 
 auto-translator/.venv/
 auto-translator/__pycache__/
+
+.firebase-data/
+.firebase/

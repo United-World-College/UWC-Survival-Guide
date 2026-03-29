@@ -71,6 +71,70 @@ rbenv exec bundle install
 rbenv exec bundle exec jekyll serve --host 127.0.0.1 --port 4000
 ```
 
+## 文件结构
+
+```
+website/
+  ├── _config.yml          ← Jekyll 配置
+  ├── _guides/
+  │   ├── default/         ← 英文指南
+  │   └── chinese/         ← 中文指南（-CN / -TW 后缀）
+  ├── _layouts/            ← 页面布局
+  ├── _includes/           ← 公共组件
+  ├── assets/              ← CSS、JS、图片
+  └── index.html           ← 首页
+firebase/
+  ├── firestore.rules       ← Firestore 安全规则
+  ├── firestore.indexes.json ← 复合索引定义
+  └── storage.rules         ← Firebase Storage 安全规则
+firebase.json   ← Firebase CLI 配置（模拟器端口、规则路径）
+.firebaserc     ← Firebase 项目别名（uwc-survival-guide）
+```
+
+## Firebase
+
+本项目使用 Firebase 进行身份验证、Firestore（数据库）和 Storage（头像）。`/admin` 管理后台连接到生产环境的 Firebase 项目 `uwc-survival-guide`。
+
+### 前置条件
+
+安装 Firebase CLI（需要 Node.js）：
+
+```bash
+brew install node
+npm install -g firebase-tools
+firebase login
+```
+
+### 部署数据库规则与索引
+
+修改 `firebase/` 中的文件后，将其部署到生产环境：
+
+```bash
+firebase deploy --only firestore         # 规则 + 索引
+firebase deploy --only firestore:rules   # 仅规则
+firebase deploy --only firestore:indexes # 仅索引
+firebase deploy --only storage           # Storage 规则
+```
+
+### 本地模拟器（可选）
+
+如需在不影响生产数据的情况下测试，可启动本地独立数据库：
+
+```bash
+./script/firebase          # 每次运行使用全新空数据库
+./script/firebase --export # 持久化本地数据（保存至 .firebase-data/）
+./script/firebase --import # 恢复上次保存的数据
+```
+
+| 服务 | 地址 |
+|------|------|
+| 控制台 | http://localhost:4010 |
+| Auth | http://localhost:9099 |
+| Firestore | http://localhost:8080 |
+| Storage | http://localhost:9199 |
+
+> **注意：** 使用 `./script/serve` 本地运行时，网站始终连接生产环境 Firebase。本地模拟器是完全独立的数据库，不会与生产数据同步。
+
 ## 免责声明
 
 本指南为非官方、由学生维护的项目。信息可能会过时，请务必通过 UWC Changshu China 官方渠道核实重要信息（如签证要求、学校政策等）。

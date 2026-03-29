@@ -1063,21 +1063,15 @@ var ADMIN_I18N = {
 
     db.collection('submissions')
       .where('uid', '==', uid)
+      .orderBy('createdAt', 'desc')
       .get()
       .then(function (snapshot) {
         if (snapshot.empty) {
           container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.no_submissions) + '</p>';
           return;
         }
-        var docs = [];
-        snapshot.forEach(function (doc) { docs.push(doc); });
-        docs.sort(function (a, b) {
-          var ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
-          var tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
-          return tb - ta;
-        });
         var html = '<div class="admin-submissions">';
-        docs.forEach(function (doc) {
+        snapshot.forEach(function (doc) {
           var d = doc.data();
           var date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : ADMIN_I18N.just_now;
           var status = d.status || 'pending';

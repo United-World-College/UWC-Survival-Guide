@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Start the Firebase emulator suite for local development.
+# Runs: Auth (9099), Firestore (8080), Storage (9199), UI dashboard (4010)
+#
+# Usage:
+#   ./script/firebase          — start emulators (data lost on exit)
+#   ./script/firebase --import — start and restore saved local data
+#   ./script/firebase --export — start and save data on exit
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DATA_DIR="$ROOT_DIR/.firebase-data"
+
+cd "$ROOT_DIR"
+
+case "${1:-}" in
+  --import)
+    exec firebase emulators:start --import="$DATA_DIR"
+    ;;
+  --export)
+    mkdir -p "$DATA_DIR"
+    exec firebase emulators:start --import="$DATA_DIR" --export-on-exit="$DATA_DIR"
+    ;;
+  *)
+    exec firebase emulators:start
+    ;;
+esac

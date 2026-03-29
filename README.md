@@ -94,6 +94,12 @@ website/
   ├── _includes/    ← shared partials
   ├── assets/       ← CSS, JS, images
   └── index.html    ← landing page
+firebase/
+  ├── firestore.rules       ← Firestore security rules
+  ├── firestore.indexes.json ← Composite index definitions
+  └── storage.rules         ← Firebase Storage security rules
+firebase.json   ← Firebase CLI configuration (emulator ports, rule paths)
+.firebaserc     ← Firebase project alias (uwc-survival-guide)
 ```
 
 `auto-translator/` contains a small CLI that scans `default/` and `chinese/` and creates any missing English, Simplified Chinese, or Taiwan Traditional variants with the OpenAI API. It now defaults to `gpt-5.4`, uses a dedicated translation prompt file, and prefers the Simplified Chinese source when regenerating English or Taiwan Traditional guides.
@@ -106,6 +112,52 @@ Run it from the repository root with:
 ```
 
 The helper script executes the translator with `uv run python` inside `auto-translator/`.
+
+## Firebase
+
+This project uses Firebase for authentication, Firestore (database), and Storage (avatars). The admin portal at `/admin` connects to the production Firebase project `uwc-survival-guide`.
+
+### Prerequisites
+
+Install the Firebase CLI (requires Node.js):
+
+```bash
+brew install node
+npm install -g firebase-tools
+firebase login
+```
+
+### Deploy database rules and indexes
+
+Whenever you edit files in `firebase/`, deploy them to production:
+
+```bash
+firebase deploy --only firestore         # rules + indexes
+firebase deploy --only firestore:rules   # rules only
+firebase deploy --only firestore:indexes # indexes only
+firebase deploy --only storage           # storage rules
+```
+
+### Local emulator (optional)
+
+To test against an isolated local database instead of production:
+
+```bash
+./script/firebase          # fresh empty database each run
+./script/firebase --export # persist local data between runs (saved to .firebase-data/)
+./script/firebase --import # restore previously saved data
+```
+
+Emulator endpoints:
+
+| Service   | URL                        |
+|-----------|----------------------------|
+| UI dashboard | http://localhost:4010   |
+| Auth      | http://localhost:9099       |
+| Firestore | http://localhost:8080       |
+| Storage   | http://localhost:9199       |
+
+> **Note:** The site always connects to the production Firebase when running locally via `./script/serve`. The emulator is a fully separate database — it does not sync with or affect production data.
 
 ## Disclaimer
 
