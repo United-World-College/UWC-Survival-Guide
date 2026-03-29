@@ -2,9 +2,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users can read/write their own profile
+    // Anyone can read user profiles (for public author pages);
+    // only the user themselves can write their own profile
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read;
+      allow write: if request.auth != null && request.auth.uid == uid;
     }
 
     // Users can create submissions and read/write their own

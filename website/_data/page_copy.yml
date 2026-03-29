@@ -264,6 +264,10 @@
     rejecting: "Rejecting..."
     approving: "Approving..."
     rejection_prompt: "Rejection reason (optional):"
+    reject_comments_label: "Rejection Reason"
+    reject_comments_placeholder: "Explain why this submission is being rejected..."
+    approve_message_label: "Message to Author (optional)"
+    approve_message_placeholder: "Add a note for the author..."
     filter_revise_resubmit: "Revision Requested"
     status_revise_resubmit: "Revision Requested"
     revise_resubmit_btn: "Revise & Resubmit"
@@ -550,6 +554,10 @@
     rejecting: 拒绝中……
     approving: 批准中……
     rejection_prompt: 拒绝原因（可选）：
+    reject_comments_label: 拒绝原因
+    reject_comments_placeholder: 请说明拒绝此投稿的原因……
+    approve_message_label: 给作者的留言（可选）
+    approve_message_placeholder: 给作者添加备注……
     filter_revise_resubmit: 需要修改
     status_revise_resubmit: 需要修改
     revise_resubmit_btn: 修改后重投
@@ -836,6 +844,10 @@
     rejecting: 拒絕中……
     approving: 批准中……
     rejection_prompt: 拒絕原因（可選）：
+    reject_comments_label: 拒絕原因
+    reject_comments_placeholder: 請說明拒絕此投稿的原因……
+    approve_message_label: 給作者的留言（選填）
+    approve_message_placeholder: 給作者添加備註……
     filter_revise_resubmit: 需要修改
     status_revise_resubmit: 需要修改
     revise_resubmit_btn: 修改後重投

@@ -112,6 +112,10 @@ var ADMIN_I18N = {
   author_message_to_reviewer: {{ t.author_message_to_reviewer | jsonify }},
   preview_btn:          {{ t.preview_btn | jsonify }},
   close_tab:            {{ t.close_tab | jsonify }},
+  reject_comments_label: {{ t.reject_comments_label | jsonify }},
+  reject_comments_placeholder: {{ t.reject_comments_placeholder | jsonify }},
+  approve_message_label: {{ t.approve_message_label | jsonify }},
+  approve_message_placeholder: {{ t.approve_message_placeholder | jsonify }},
   copy_md_btn:          {{ t.copy_md_btn | jsonify }},
   categories:           {{ current_locale.categories | jsonify }},
   lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }}
@@ -388,6 +392,24 @@ var ADMIN_I18N = {
               <div class="admin-modal-actions" style="margin-top:0.75rem;">
                 <button type="button" id="modal-rnr-submit" class="admin-btn">{{ t.rnr_submit }}</button>
                 <button type="button" id="modal-rnr-cancel" class="admin-btn admin-btn-outline">{{ t.rnr_cancel }}</button>
+              </div>
+            </div>
+            <div id="modal-reject-form" style="display:none;" class="admin-rnr-form">
+              <p class="admin-rnr-form-title">{{ t.reject_comments_label }}</p>
+              <textarea id="modal-reject-comments" class="admin-input admin-textarea" rows="4" placeholder="{{ t.reject_comments_placeholder }}" maxlength="1000"></textarea>
+              <p class="admin-char-counter" id="modal-reject-comments-counter">0 / 1000</p>
+              <div class="admin-modal-actions" style="margin-top:0.75rem;">
+                <button type="button" id="modal-reject-submit" class="admin-btn admin-btn-danger">{{ t.reject_btn }}</button>
+                <button type="button" id="modal-reject-cancel" class="admin-btn admin-btn-outline">{{ t.rnr_cancel }}</button>
+              </div>
+            </div>
+            <div id="modal-approve-form" style="display:none;" class="admin-rnr-form">
+              <p class="admin-rnr-form-title">{{ t.approve_message_label }}</p>
+              <textarea id="modal-approve-comments" class="admin-input admin-textarea" rows="3" placeholder="{{ t.approve_message_placeholder }}" maxlength="500"></textarea>
+              <p class="admin-char-counter" id="modal-approve-comments-counter">0 / 500</p>
+              <div class="admin-modal-actions" style="margin-top:0.75rem;">
+                <button type="button" id="modal-approve-submit" class="admin-btn">{{ t.approve_btn }}</button>
+                <button type="button" id="modal-approve-cancel" class="admin-btn admin-btn-outline">{{ t.rnr_cancel }}</button>
               </div>
             </div>
             <div id="modal-md-output" style="display:none;">
@@ -1032,6 +1054,12 @@ var ADMIN_I18N = {
   document.getElementById('modal-rnr-comments').addEventListener('input', function () {
     updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
   });
+  document.getElementById('modal-reject-comments').addEventListener('input', function () {
+    updateCharCounter('modal-reject-comments', 'modal-reject-comments-counter', 1000);
+  });
+  document.getElementById('modal-approve-comments').addEventListener('input', function () {
+    updateCharCounter('modal-approve-comments', 'modal-approve-comments-counter', 500);
+  });
 
   // ── Resubmit — open in new tab ──
   function resubmitArticle(docId) {
@@ -1345,13 +1373,14 @@ var ADMIN_I18N = {
           html += '<span>' + date + '</span>';
           html += '<span class="admin-auth-sep">&middot;</span>';
           html += '<button class="admin-btn admin-btn-small" data-preview="' + doc.id + '">' + escapeHtml(ADMIN_I18N.preview_btn) + '</button>';
+          html += '<span class="admin-auth-sep">&middot;</span>';
+          html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(status)) + '</span>';
           html += '</div>';
           html += renderSubmissionThread(d);
           if (isRnR) {
             html += '<button class="admin-btn admin-btn-small" style="margin-top:0.75rem;" data-resubmit="' + doc.id + '">' + escapeHtml(ADMIN_I18N.resubmit_btn) + '</button>';
           }
           html += '</div>';
-          html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(status)) + '</span>';
           html += '</div>';
         });
         html += '</div>';
@@ -1549,9 +1578,15 @@ var ADMIN_I18N = {
     document.getElementById('review-modal').style.display = 'none';
     document.getElementById('modal-rnr-form').style.display = 'none';
     document.getElementById('modal-rnr-comments').value = '';
+    document.getElementById('modal-reject-form').style.display = 'none';
+    document.getElementById('modal-reject-comments').value = '';
+    document.getElementById('modal-approve-form').style.display = 'none';
+    document.getElementById('modal-approve-comments').value = '';
     document.getElementById('modal-revision-thread').style.display = 'none';
     document.getElementById('modal-revision-thread').innerHTML = '';
     updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
+    updateCharCounter('modal-reject-comments', 'modal-reject-comments-counter', 1000);
+    updateCharCounter('modal-approve-comments', 'modal-approve-comments-counter', 500);
     document.body.style.overflow = '';
     currentModalDocId = null;
   }
@@ -1559,16 +1594,32 @@ var ADMIN_I18N = {
   document.getElementById('modal-close').addEventListener('click', closeReviewModal);
   document.querySelector('.admin-modal-backdrop').addEventListener('click', closeReviewModal);
 
-  // Approve
+  // Approve — toggle form
   document.getElementById('modal-approve').addEventListener('click', function () {
+    var form = document.getElementById('modal-approve-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    document.getElementById('modal-reject-form').style.display = 'none';
+    document.getElementById('modal-rnr-form').style.display = 'none';
+  });
+
+  document.getElementById('modal-approve-cancel').addEventListener('click', function () {
+    document.getElementById('modal-approve-form').style.display = 'none';
+    document.getElementById('modal-approve-comments').value = '';
+    updateCharCounter('modal-approve-comments', 'modal-approve-comments-counter', 500);
+  });
+
+  document.getElementById('modal-approve-submit').addEventListener('click', function () {
     if (!currentModalDocId) return;
     var btn = this;
+    var approveMsg = document.getElementById('modal-approve-comments').value.trim();
     btn.textContent = ADMIN_I18N.approving;
     btn.disabled = true;
 
-    db.collection('submissions').doc(currentModalDocId).update({
-      status: 'approved'
-    }).then(function () {
+    var updateData = { status: 'approved' };
+    if (approveMsg) updateData.approveMessage = approveMsg;
+
+    db.collection('submissions').doc(currentModalDocId).update(updateData
+    ).then(function () {
       return db.collection('submissions').doc(currentModalDocId).get();
     }).then(function (doc) {
       var d = doc.data();
@@ -1619,6 +1670,7 @@ var ADMIN_I18N = {
           return res.json();
         }).then(function (result) {
           document.getElementById('modal-actions').style.display = 'none';
+          document.getElementById('modal-approve-form').style.display = 'none';
           var badge = document.getElementById('modal-status-badge');
           badge.textContent = 'Approved (Local)';
           badge.className = 'admin-status admin-status-approved';
@@ -1714,6 +1766,7 @@ var ADMIN_I18N = {
             return res.json();
           }).then(function () {
             document.getElementById('modal-actions').style.display = 'none';
+            document.getElementById('modal-approve-form').style.display = 'none';
             var badge = document.getElementById('modal-status-badge');
             badge.textContent = 'Approved & Published';
             badge.className = 'admin-status admin-status-approved';
@@ -1798,24 +1851,37 @@ var ADMIN_I18N = {
     });
   });
 
-  // Reject
+  // Reject — toggle form
   document.getElementById('modal-reject').addEventListener('click', function () {
+    var form = document.getElementById('modal-reject-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    document.getElementById('modal-approve-form').style.display = 'none';
+    document.getElementById('modal-rnr-form').style.display = 'none';
+  });
+
+  document.getElementById('modal-reject-cancel').addEventListener('click', function () {
+    document.getElementById('modal-reject-form').style.display = 'none';
+    document.getElementById('modal-reject-comments').value = '';
+    updateCharCounter('modal-reject-comments', 'modal-reject-comments-counter', 1000);
+  });
+
+  document.getElementById('modal-reject-submit').addEventListener('click', function () {
     if (!currentModalDocId) return;
-    var reason = prompt(ADMIN_I18N.rejection_prompt);
-    if (reason === null) return;
+    var reason = document.getElementById('modal-reject-comments').value.trim();
+    if (!reason) { document.getElementById('modal-reject-comments').focus(); return; }
 
     var btn = this;
     btn.textContent = ADMIN_I18N.rejecting;
     btn.disabled = true;
 
-    var updateData = { status: 'rejected' };
-    if (reason) updateData.rejectionReason = reason;
-
-    db.collection('submissions').doc(currentModalDocId).update(updateData).then(function () {
+    db.collection('submissions').doc(currentModalDocId).update({
+      status: 'rejected', rejectionReason: reason
+    }).then(function () {
       var badge = document.getElementById('modal-status-badge');
       badge.textContent = getStatusLabel('rejected');
       badge.className = 'admin-status admin-status-rejected';
       document.getElementById('modal-actions').style.display = 'none';
+      document.getElementById('modal-reject-form').style.display = 'none';
 
       btn.textContent = ADMIN_I18N.reject_btn;
       btn.disabled = false;
@@ -1834,6 +1900,8 @@ var ADMIN_I18N = {
   document.getElementById('modal-revise').addEventListener('click', function () {
     var form = document.getElementById('modal-rnr-form');
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    document.getElementById('modal-approve-form').style.display = 'none';
+    document.getElementById('modal-reject-form').style.display = 'none';
   });
 
   document.getElementById('modal-rnr-cancel').addEventListener('click', function () {

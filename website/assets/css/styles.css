@@ -1663,6 +1663,10 @@ a.author-contact-value:hover {
 }
 
 .admin-submission-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.2rem;
   font-size: 0.78rem;
   color: var(--warm-gray);
   letter-spacing: 0.06em;
