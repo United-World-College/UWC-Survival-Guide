@@ -83,7 +83,8 @@
     <div class="about-intro cfa-body">
       {% capture cfa_content %}{% include cfa/{{ current_language_code }}.md %}{% endcapture %}
       {{ cfa_content | markdownify }}
-      <a href="{{ current_locale.path_prefix | default: '' }}/admin/" class="cfa-portal-btn">{{ about_copy.cfa_portal_btn }}</a>
+      {% assign cfa_admin_path = current_locale.path_prefix | default: '' | append: '/admin/' %}
+      <a href="{{ cfa_admin_path | relative_url }}" class="cfa-portal-btn">{{ about_copy.cfa_portal_btn }}</a>
     </div>
   </section>
 
