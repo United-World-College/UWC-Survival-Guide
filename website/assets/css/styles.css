@@ -1639,7 +1639,7 @@ a.author-contact-value:hover {
 
 .admin-submission-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1.5rem;
   padding: 1.1rem 0;
@@ -1672,11 +1672,12 @@ a.author-contact-value:hover {
   margin-top: 0.2rem;
 }
 
-.admin-submission-actions {
+.admin-submission-side {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-top: 0.5rem;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .admin-author-link {

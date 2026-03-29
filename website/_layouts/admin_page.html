@@ -1349,14 +1349,14 @@ var ADMIN_I18N = {
           html += '<span>' + escapeHtml(d.category) + '</span>';
           html += '<span>' + date + '</span>';
           html += '</div>';
-          html += '<div class="admin-submission-actions">';
-          html += '<button class="admin-btn admin-btn-small" data-preview="' + doc.id + '">' + escapeHtml(ADMIN_I18N.preview_btn) + '</button>';
-          html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(status)) + '</span>';
-          html += '</div>';
           html += renderSubmissionThread(d);
           if (isRnR) {
             html += '<button class="admin-btn admin-btn-small" style="margin-top:0.75rem;" data-resubmit="' + doc.id + '">' + escapeHtml(ADMIN_I18N.resubmit_btn) + '</button>';
           }
+          html += '</div>';
+          html += '<div class="admin-submission-side">';
+          html += '<button class="admin-btn admin-btn-small" data-preview="' + doc.id + '">' + escapeHtml(ADMIN_I18N.preview_btn) + '</button>';
+          html += '<span class="admin-status ' + statusClass + '">' + escapeHtml(getStatusLabel(status)) + '</span>';
           html += '</div>';
           html += '</div>';
         });
@@ -1395,14 +1395,6 @@ var ADMIN_I18N = {
   var currentModalDocId = null;
   var currentModalData = null;
   var ADMIN_EMAILS = ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
-
-  function getAuthorPageUrl(name) {
-    if (!name) return '';
-    var slug = name.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
-    var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? '' : '/UWC-Survival-Guide';
-    return baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + slug + '/';
-  }
 
   function checkAdmin(email) {
     if (ADMIN_EMAILS.indexOf(email) !== -1) {
@@ -1456,12 +1448,7 @@ var ADMIN_I18N = {
         html += '<div class="admin-submission-main">';
         html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
         html += '<div class="admin-submission-meta">';
-        var authorUrl = getAuthorPageUrl(d.authorName);
-        if (d.authorName && authorUrl) {
-          html += '<a href="' + authorUrl + '" target="_blank" rel="noopener noreferrer" class="admin-author-link" onclick="event.stopPropagation();">' + escapeHtml(d.authorName) + '</a>';
-        } else {
-          html += '<span>' + escapeHtml(d.authorName || ADMIN_I18N.author_unknown) + '</span>';
-        }
+        html += '<span class="admin-author-name" data-uid="' + (d.uid || '') + '">' + escapeHtml(d.authorName || ADMIN_I18N.author_unknown) + '</span>';
         html += '<span>' + escapeHtml(d.category) + '</span>';
         html += '<span>' + date + '</span>';
         html += '</div>';
@@ -1471,6 +1458,31 @@ var ADMIN_I18N = {
       });
       html += '</div>';
       container.innerHTML = html;
+
+      // Resolve author links from Firestore user docs
+      var uidEls = {};
+      container.querySelectorAll('.admin-author-name[data-uid]').forEach(function (el) {
+        var uid = el.getAttribute('data-uid');
+        if (uid) { if (!uidEls[uid]) uidEls[uid] = []; uidEls[uid].push(el); }
+      });
+      Object.keys(uidEls).forEach(function (uid) {
+        db.collection('users').doc(uid).get().then(function (userDoc) {
+          if (!userDoc.exists || !userDoc.data().authorPage) return;
+          var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? '' : '/UWC-Survival-Guide';
+          var href = baseUrl + ADMIN_I18N.lang_prefix + userDoc.data().authorPage;
+          uidEls[uid].forEach(function (el) {
+            var a = document.createElement('a');
+            a.href = href;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.className = 'admin-author-link';
+            a.textContent = el.textContent;
+            a.addEventListener('click', function (e) { e.stopPropagation(); });
+            el.parentNode.replaceChild(a, el);
+          });
+        });
+      });
 
       container.querySelectorAll('.admin-review-item').forEach(function (item) {
         item.addEventListener('click', function () {
@@ -1585,11 +1597,15 @@ var ADMIN_I18N = {
 
       document.getElementById('modal-title').textContent = d.title;
       var modalAuthorEl = document.getElementById('modal-author');
-      var authorUrl = getAuthorPageUrl(d.authorName);
-      if (d.authorName && authorUrl) {
-        modalAuthorEl.innerHTML = escapeHtml(ADMIN_I18N.by_prefix) + '<a href="' + escapeHtml(authorUrl) + '" target="_blank" rel="noopener noreferrer" class="admin-author-link">' + escapeHtml(d.authorName) + '</a>';
-      } else {
-        modalAuthorEl.textContent = ADMIN_I18N.by_prefix + (d.authorName || ADMIN_I18N.author_unknown);
+      modalAuthorEl.textContent = ADMIN_I18N.by_prefix + (d.authorName || ADMIN_I18N.author_unknown);
+      if (d.uid) {
+        db.collection('users').doc(d.uid).get().then(function (userDoc) {
+          if (!userDoc.exists || !userDoc.data().authorPage) return;
+          var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? '' : '/UWC-Survival-Guide';
+          var href = baseUrl + ADMIN_I18N.lang_prefix + userDoc.data().authorPage;
+          modalAuthorEl.innerHTML = escapeHtml(ADMIN_I18N.by_prefix) + '<a href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer" class="admin-author-link">' + escapeHtml(d.authorName) + '</a>';
+        });
       }
       document.getElementById('modal-category').textContent = d.category;
       document.getElementById('modal-date').textContent = date;
@@ -1687,7 +1703,7 @@ var ADMIN_I18N = {
       md += 'description: "' + d.description.replace(/"/g, '\\"') + '"\n';
       md += 'order: 99\n';
       md += 'author: "' + d.authorName + '"\n';
-      var authorSlug = d.authorName.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+      var authorSlug = d.authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       md += 'author_id: "' + authorSlug + '"\n';
       md += 'guide_id: "' + slug + '"\n';
       md += 'language_code: "' + lang + '"\n';
