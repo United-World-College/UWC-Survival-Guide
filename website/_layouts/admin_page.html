@@ -629,47 +629,7 @@ var ADMIN_I18N = {
           });
         });
       })
-      .then(function () {
-        // Create author page files (en, zh-CN, zh-TW)
-        var escapedName = displayName.replace(/"/g, '\\"');
-        var tKey = 'author-' + authorSlug;
-        var authorFiles = [
-          { folder: 'default', filename: authorSlug + '.md', content: '---\ntitle: "' + escapedName + '"\nauthor_id: ' + authorSlug + '\npermalink: /authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
-          { folder: 'chinese', filename: authorSlug + '-cn.md', content: '---\ntitle: "' + escapedName + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-cn/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
-          { folder: 'chinese', filename: authorSlug + '-tw.md', content: '---\ntitle: "' + escapedName + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-tw/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
-        ];
-        var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        if (isLocal) {
-          return Promise.all(authorFiles.map(function (f) {
-            return fetch('http://127.0.0.1:4001/save', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ folder: '../_authors/' + f.folder, filename: f.filename, content: f.content })
-            }).catch(function () {});
-          }));
-        } else {
-          return db.collection('config').doc('github').get().then(function (configDoc) {
-            var token = configDoc.exists ? configDoc.data().token : null;
-            if (!token) return;
-            var ghHeaders = { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' };
-            var REPO = 'United-World-College/UWC-Survival-Guide';
-            return Promise.all(authorFiles.map(function (f) {
-              var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/website/_authors/' + f.folder + '/' + f.filename;
-              return fetch(apiUrl, { headers: ghHeaders }).then(function (checkRes) {
-                if (checkRes.ok) return;
-                return fetch(apiUrl, {
-                  method: 'PUT',
-                  headers: ghHeaders,
-                  body: JSON.stringify({
-                    message: 'Add author page: ' + displayName,
-                    content: btoa(unescape(encodeURIComponent(f.content)))
-                  })
-                });
-              });
-            }));
-          }).catch(function () {});
-        }
-      })
+      )
       .then(function () { setLoading('signup-btn', false); })
       .catch(function (err) {
         setLoading('signup-btn', false);
@@ -1821,7 +1781,8 @@ var ADMIN_I18N = {
     btn.textContent = ADMIN_I18N.approving;
     btn.disabled = true;
 
-    var updateData = { status: 'approved' };
+    var reviewer = auth.currentUser;
+    var updateData = { status: 'approved', reviewerUid: reviewer.uid, reviewerEmail: reviewer.email, reviewedAt: firebase.firestore.FieldValue.serverTimestamp() };
     if (approveMsg) updateData.approveMessage = approveMsg;
 
     db.collection('submissions').doc(currentModalDocId).update(updateData
@@ -2103,8 +2064,9 @@ var ADMIN_I18N = {
     btn.textContent = ADMIN_I18N.rejecting;
     btn.disabled = true;
 
+    var reviewer = auth.currentUser;
     db.collection('submissions').doc(currentModalDocId).update({
-      status: 'rejected', rejectionReason: reason
+      status: 'rejected', rejectionReason: reason, reviewerUid: reviewer.uid, reviewerEmail: reviewer.email, reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function () {
       var badge = document.getElementById('modal-status-badge');
       badge.textContent = getStatusLabel('rejected');
@@ -2241,11 +2203,14 @@ var ADMIN_I18N = {
     db.collection('submissions').doc(currentModalDocId).get().then(function (snap) {
       var data = snap.data();
       var hist = (data.revisionHistory || []).slice();
-      hist.push({ round: hist.length + 1, reviewerComments: comments, reviewedAt: now,
+      var reviewer = auth.currentUser;
+      hist.push({ round: hist.length + 1, reviewerComments: comments, reviewedAt: now, reviewerUid: reviewer.uid, reviewerEmail: reviewer.email,
                   contentSnapshot: { title: data.title, category: data.category, language: data.language, description: data.description, content: data.content } });
       return db.collection('submissions').doc(currentModalDocId).update({
         status: 'revise_resubmit',
         reviewerComments: comments,
+        reviewerUid: reviewer.uid,
+        reviewerEmail: reviewer.email,
         reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
         revisionHistory: hist
       }).then(function () { return hist; });
