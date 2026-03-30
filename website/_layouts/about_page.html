@@ -80,11 +80,9 @@
       <h2>{{ about_copy.cfa_title }}</h2>
       <p class="section-desc">{{ about_copy.cfa_desc }}</p>
     </div>
-    <div class="about-intro cfa-body">
-      {% capture cfa_content %}{% include cfa/{{ current_language_code }}.md %}{% endcapture %}
-      {{ cfa_content | markdownify }}
-      {% assign cfa_admin_path = current_locale.path_prefix | default: '' | append: '/admin/' %}
-      <a href="{{ cfa_admin_path | relative_url }}" class="cfa-portal-btn">{{ about_copy.cfa_portal_btn }}</a>
+    <div class="cfa-body">
+      {% assign cfa_path = current_locale.path_prefix | default: '' | append: '/call-for-articles/' %}
+      <a href="{{ cfa_path | relative_url }}" class="cfa-portal-btn">{{ about_copy.cfa_learn_more }}</a>
     </div>
   </section>
 
@@ -160,22 +158,22 @@
             {% endif %}
           {% endif %}
           {% if article_count < 5 and person.name != nil and person.name != "" %}
-            <article class="contributor-row">
+            <article class="contributor-row"{% if person.id != nil and person.id != "" %} data-author-page="/authors/{{ person.id }}/"{% endif %}>
               <div class="contributor-main">
                 {% if author_page %}
-                  <h3><a class="contributor-name-link" href="{{ author_page.url | relative_url }}">{{ person.name }}</a></h3>
+                  <h3 data-card-name><a class="contributor-name-link" href="{{ author_page.url | relative_url }}">{{ person.name }}</a></h3>
                 {% else %}
-                  <h3>{{ person.name }}</h3>
+                  <h3 data-card-name>{{ person.name }}</h3>
                 {% endif %}
-                {% if person.affiliation != nil and person.affiliation != "" or person.cohort != nil and person.cohort != "" %}
-                  <p class="contributor-meta">
-                    {% if person.affiliation != nil and person.affiliation != "" %}<span class="person-meta-line">{{ person.affiliation }}</span>{% endif %}
-                    {% if person.cohort != nil and person.cohort != "" %}<span class="person-meta-line">{{ person.cohort }}</span>{% endif %}
-                  </p>
-                {% endif %}
-                {% if localized_summary != nil and localized_summary != "" %}
-                  <p class="contributor-summary">{{ localized_summary }}</p>
-                {% endif %}
+                {% assign has_contrib_affil = false %}
+                {% assign has_contrib_cohort = false %}
+                {% if person.affiliation != nil and person.affiliation != "" %}{% assign has_contrib_affil = true %}{% endif %}
+                {% if person.cohort != nil and person.cohort != "" %}{% assign has_contrib_cohort = true %}{% endif %}
+                <p class="contributor-meta" data-card-meta{% unless has_contrib_affil or has_contrib_cohort %} style="display:none;"{% endunless %}>
+                  <span class="person-meta-line" data-card-affiliation{% unless has_contrib_affil %} style="display:none;"{% endunless %}>{% if has_contrib_affil %}{{ person.affiliation }}{% endif %}</span>
+                  <span class="person-meta-line" data-card-cohort{% unless has_contrib_cohort %} style="display:none;"{% endunless %}>{% if has_contrib_cohort %}{{ person.cohort }}{% endif %}</span>
+                </p>
+                <p class="contributor-summary" data-card-summary{% unless localized_summary != nil and localized_summary != "" %} style="display:none;"{% endunless %}>{% if localized_summary != nil and localized_summary != "" %}{{ localized_summary }}{% endif %}</p>
                 {% if author_page or person.profile_url != nil and person.profile_url != "" %}
                   <div class="profile-links contributor-links">
                     {% if author_page %}
@@ -209,7 +207,7 @@
       projectId: "uwc-survival-guide"
     });
     var db = firebase.firestore();
-    var cards = document.querySelectorAll('.profile-card[data-author-page]');
+    var cards = document.querySelectorAll('[data-author-page]');
 
     db.collection('users').get().then(function (snap) {
       var usersByPage = {};
@@ -241,6 +239,25 @@
           if (photoEl && !hasStaticPhoto && !user.photoURL.includes('localhost')) {
             photoEl.innerHTML = '<img src="' + user.photoURL + '" alt="Portrait">';
           }
+        }
+
+        if (user.affiliation) {
+          var affilEl = card.querySelector('[data-card-affiliation]');
+          if (affilEl) { affilEl.textContent = user.affiliation; affilEl.style.display = ''; }
+          var metaEl = card.querySelector('[data-card-meta]');
+          if (metaEl) metaEl.style.display = '';
+        }
+
+        if (user.cohort) {
+          var cohortEl = card.querySelector('[data-card-cohort]');
+          if (cohortEl) { cohortEl.textContent = user.cohort; cohortEl.style.display = ''; }
+          var metaEl2 = card.querySelector('[data-card-meta]');
+          if (metaEl2) metaEl2.style.display = '';
+        }
+
+        if (user.summary) {
+          var summaryEl = card.querySelector('[data-card-summary]');
+          if (summaryEl) { summaryEl.textContent = user.summary; summaryEl.style.display = ''; }
         }
       });
     }).catch(function () {});

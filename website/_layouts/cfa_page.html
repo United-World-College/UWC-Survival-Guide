@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="{{ page.language_code | default: site.lang | default: 'en' }}">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  {% include nav.html %}
+
+  {% assign current_language_code = page.language_code | default: site.lang | default: 'en' %}
+  {% assign current_locale = site.data.page_copy | where: "code", current_language_code | first %}
+  {% if current_locale == nil %}
+    {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
+  {% endif %}
+  {% assign cfa_copy = current_locale.cfa_page %}
+
+  <header class="hero about-hero">
+    <div class="hero-content">
+      <p class="hero-label">{{ cfa_copy.hero_label }}</p>
+      <h1>{{ cfa_copy.hero_title }}</h1>
+      <p class="hero-subtitle">{{ cfa_copy.hero_subtitle }}</p>
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <div class="section-header">
+      <p class="section-label">{{ cfa_copy.overview_label }}</p>
+      <h2>{{ cfa_copy.overview_title }}</h2>
+      <p class="section-desc">{{ cfa_copy.overview_desc }}</p>
+    </div>
+    <div class="about-intro cfa-body">
+      {% capture cfa_content %}{% include cfa/{{ current_language_code }}.md %}{% endcapture %}
+      {{ cfa_content | markdownify }}
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <div class="section-header">
+      <p class="section-label">{{ cfa_copy.guidelines_label }}</p>
+      <h2>{{ cfa_copy.guidelines_title }}</h2>
+      <p class="section-desc">{{ cfa_copy.guidelines_desc }}</p>
+    </div>
+    <div class="about-principles">
+      {% for guideline in cfa_copy.guidelines %}
+        <div class="about-principle">
+          <p class="about-principle-label">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</p>
+          <h3>{{ guideline.title }}</h3>
+          <p>{{ guideline.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="cfa-body">
+      {% assign cfa_admin_path = current_locale.path_prefix | default: '' | append: '/admin/' %}
+      <a href="{{ cfa_admin_path | relative_url }}" class="cfa-portal-btn">{{ cfa_copy.portal_btn }}</a>
+    </div>
+  </section>
+
+  {% include footer.html %}
+
+  <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
+</body>
+</html>

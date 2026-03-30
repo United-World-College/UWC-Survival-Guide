@@ -830,9 +830,14 @@ a.feature:hover {
 .cfa-body p {
   text-align: left;
 }
+.cfa-body p ~ .cfa-portal-btn {
+  margin-top: 2rem;
+}
+.about-principles + .cfa-body {
+  margin-top: 2rem;
+}
 .cfa-portal-btn {
   display: inline-block;
-  margin-top: 2rem;
   font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -2212,6 +2217,11 @@ a.author-contact-value:hover {
   background: #f5efe3;
   color: #8a6220;
   border-color: #d4aa6a;
+}
+.admin-role-badge-core {
+  background: #eef3ed;
+  color: #3d6b35;
+  border-color: #8cb885;
 }
 
 /* Admin register article form */

@@ -19,6 +19,10 @@
 <!-- EIC IDs for role display -->
 <script>
 var EIC_IDS = [{% for p in site.data.about.editors_in_chief %}{{ p.id | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}];
+var AUTHOR_ARTICLE_COUNTS = {
+  {% assign all_author_ids = site.guides | map: "author_id" | uniq %}{% assign _first = true %}
+  {% for aid in all_author_ids %}{% if aid != nil and aid != "" %}{% assign ag = site.guides | where: "author_id", aid %}{% assign ac = ag | map: "guide_id" | uniq | size %}{% unless _first %},{% endunless %}{{ aid | jsonify }}: {{ ac }}{% assign _first = false %}{% endif %}{% endfor %}
+};
 </script>
 
 <!-- Site guide data for article registration validation -->
@@ -83,6 +87,8 @@ var ADMIN_I18N = {
   filter_rejected:      {{ t.filter_rejected | jsonify }},
   filter_all:           {{ t.filter_all | jsonify }},
   role_eic:             {{ t.role_eic | jsonify }},
+  role_core_member:     {{ t.role_core_member | jsonify }},
+  role_member:          {{ t.role_member | jsonify }},
   role_contributor:     {{ t.role_contributor | jsonify }},
   rejecting:            {{ t.rejecting | jsonify }},
   approving:            {{ t.approving | jsonify }},
@@ -235,6 +241,18 @@ var ADMIN_I18N = {
               <div class="admin-field">
                 <label class="admin-label" for="profile-email">{{ t.email_label }}</label>
                 <input type="email" id="profile-email" class="admin-input" disabled />
+              </div>
+              <div class="admin-field">
+                <label class="admin-label" for="profile-affiliation">{{ t.affiliation_label }}</label>
+                <input type="text" id="profile-affiliation" class="admin-input" placeholder="{{ t.affiliation_placeholder }}" maxlength="80" />
+              </div>
+              <div class="admin-field">
+                <label class="admin-label" for="profile-cohort">{{ t.cohort_label }}</label>
+                <input type="text" id="profile-cohort" class="admin-input" placeholder="{{ t.cohort_placeholder }}" maxlength="60" required />
+              </div>
+              <div class="admin-field">
+                <label class="admin-label" for="profile-summary">{{ t.summary_label }} <span id="profile-summary-count" style="font-weight:400;color:var(--warm-gray);font-size:0.75rem;"></span></label>
+                <input type="text" id="profile-summary" class="admin-input" placeholder="{{ t.summary_placeholder }}" maxlength="120" />
               </div>
               <div class="admin-field" id="profile-role-field" style="display:none;">
                 <label class="admin-label">{{ t.role_label }}</label>
@@ -588,6 +606,10 @@ var ADMIN_I18N = {
           photoURL: '',
           email: email,
           authorPage: authorPage,
+          affiliation: '',
+          cohort: '',
+          summary: '',
+          profileLinks: [],
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
       })
@@ -666,6 +688,14 @@ var ADMIN_I18N = {
   });
 
   // ── Profile ──
+  function getAuthorRole(authorId) {
+    var isEIC = EIC_IDS.indexOf(authorId) !== -1;
+    if (isEIC) return { label: ADMIN_I18N.role_eic, className: 'admin-role-badge admin-role-badge-eic' };
+    var count = AUTHOR_ARTICLE_COUNTS[authorId] || 0;
+    if (count >= 5) return { label: ADMIN_I18N.role_core_member, className: 'admin-role-badge admin-role-badge-core' };
+    return { label: ADMIN_I18N.role_member, className: 'admin-role-badge' };
+  }
+
   function loadProfile(user) {
     document.getElementById('profile-email').value = user.email;
     db.collection('users').doc(user.uid).get().then(function (doc) {
@@ -673,20 +703,25 @@ var ADMIN_I18N = {
         var data = doc.data();
         document.getElementById('profile-name').value = data.displayName || '';
         document.getElementById('article-author').value = data.displayName || '';
+        document.getElementById('profile-affiliation').value = data.affiliation || '';
+        document.getElementById('profile-cohort').value = data.cohort || '';
+        document.getElementById('profile-summary').value = data.summary || '';
+        updateNameCount();
+        updateSummaryCount();
         if (data.photoURL) {
           showAvatarImage(data.photoURL);
         } else {
           showAvatarPlaceholder(data.displayName || user.email);
         }
         loadProfileLinks(data.profileLinks || []);
-        // Show role badge
+        // Show auto-calculated role badge
         if (data.authorPage) {
           var authorId = (data.authorPage || '').replace(/^\/authors\//, '').replace(/\/$/, '');
-          var isEIC = EIC_IDS.indexOf(authorId) !== -1;
+          var role = getAuthorRole(authorId);
           var roleField = document.getElementById('profile-role-field');
           var roleBadge = document.getElementById('profile-role-badge');
-          roleBadge.textContent = isEIC ? ADMIN_I18N.role_eic : ADMIN_I18N.role_contributor;
-          roleBadge.className = 'admin-role-badge' + (isEIC ? ' admin-role-badge-eic' : '');
+          roleBadge.textContent = role.label;
+          roleBadge.className = role.className;
           roleField.style.display = 'block';
         }
         // Show published articles link
@@ -703,6 +738,10 @@ var ADMIN_I18N = {
           displayName: '',
           photoURL: '',
           email: user.email,
+          affiliation: '',
+          cohort: '',
+          summary: '',
+          profileLinks: [],
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         showAvatarPlaceholder(user.email);
@@ -782,19 +821,27 @@ var ADMIN_I18N = {
 
   var MAX_LINKS = 3;
   var NAME_LIMIT = 40;
+  var SUMMARY_LIMIT = 120;
 
-  // Character counter for display name
-  (function () {
+  // Character counters
+  function updateNameCount() {
     var input = document.getElementById('profile-name');
     var counter = document.getElementById('profile-name-count');
-    function updateCount() {
-      var remaining = NAME_LIMIT - input.value.length;
-      counter.textContent = remaining + '/' + NAME_LIMIT;
-      counter.style.color = remaining <= 8 ? '#b94a48' : 'var(--warm-gray)';
-    }
-    input.addEventListener('input', updateCount);
-    updateCount();
-  })();
+    var remaining = NAME_LIMIT - input.value.length;
+    counter.textContent = remaining + '/' + NAME_LIMIT;
+    counter.style.color = remaining <= 8 ? '#b94a48' : 'var(--warm-gray)';
+  }
+  function updateSummaryCount() {
+    var input = document.getElementById('profile-summary');
+    var counter = document.getElementById('profile-summary-count');
+    var remaining = SUMMARY_LIMIT - input.value.length;
+    counter.textContent = remaining + '/' + SUMMARY_LIMIT;
+    counter.style.color = remaining <= 8 ? '#b94a48' : 'var(--warm-gray)';
+  }
+  document.getElementById('profile-name').addEventListener('input', updateNameCount);
+  document.getElementById('profile-summary').addEventListener('input', updateSummaryCount);
+  updateNameCount();
+  updateSummaryCount();
 
   function updateAddLinkBtn() {
     var count = document.querySelectorAll('.admin-link-row').length;
@@ -843,11 +890,22 @@ var ADMIN_I18N = {
     if (!user) return;
     clearErrors();
     var name = document.getElementById('profile-name').value.trim();
+    var affiliation = document.getElementById('profile-affiliation').value.trim();
+    var cohort = document.getElementById('profile-cohort').value.trim();
+    var summary = document.getElementById('profile-summary').value.trim();
+    if (!cohort) {
+      document.getElementById('profile-cohort').focus();
+      showError('profile-error', ADMIN_I18N.err_fill_all);
+      return;
+    }
     var links = getProfileLinks();
     setLoading('save-profile-btn', true);
     db.collection('users').doc(user.uid).set({
       displayName: name,
       email: user.email,
+      affiliation: affiliation,
+      cohort: cohort,
+      summary: summary,
       profileLinks: links
     }, { merge: true }).then(function () {
       setLoading('save-profile-btn', false);

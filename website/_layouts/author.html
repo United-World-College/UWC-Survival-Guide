@@ -98,16 +98,12 @@
       <div class="author-copy">
         <p class="section-label">{{ current_locale.author.author_label }}</p>
         <h1 id="author-name">{{ author_name }}</h1>
-        <p class="author-role">{{ role_label }}</p>
-        {% if has_author_meta %}
-          <p class="author-meta">
-            {% if has_affiliation %}<span class="person-meta-line">{{ person.affiliation }}</span>{% endif %}
-            {% if has_cohort %}<span class="person-meta-line">{{ person.cohort }}</span>{% endif %}
-          </p>
-        {% endif %}
-        {% if author_summary %}
-          <p class="author-summary">{{ author_summary }}</p>
-        {% endif %}
+        <p class="author-role" id="author-role">{{ role_label }}</p>
+        <p class="author-meta" id="author-meta"{% unless has_author_meta %} style="display:none;"{% endunless %}>
+          {% if has_affiliation %}<span class="person-meta-line" id="author-affiliation">{{ person.affiliation }}</span>{% else %}<span class="person-meta-line" id="author-affiliation" style="display:none;"></span>{% endif %}
+          {% if has_cohort %}<span class="person-meta-line" id="author-cohort">{{ person.cohort }}</span>{% else %}<span class="person-meta-line" id="author-cohort" style="display:none;"></span>{% endif %}
+        </p>
+        <p class="author-summary" id="author-summary"{% unless author_summary %} style="display:none;"{% endunless %}>{{ author_summary }}</p>
         <div class="author-stats">
           <div class="author-stat">
             <span class="author-stat-value">{{ authored_article_count }}</span>
@@ -220,7 +216,18 @@
   var AUTHOR_GUIDES = [{% for gid in authored_guide_ids %}{% assign gvs = authored_guides | where: "guide_id", gid | sort: "language_sort" %}{% assign pg = gvs | where: "language_code", current_language_code | first %}{% if pg == nil %}{% assign pg = gvs | where: "language_code", "en" | first %}{% endif %}{% if pg == nil %}{% assign pg = gvs | first %}{% endif %}{"guide_id":{{ gid | jsonify }},"title":{{ pg.title | jsonify }},"description":{{ pg.description | default: "" | jsonify }},"url":{{ pg.url | relative_url | jsonify }},"published":{{ pg.published | date: "%b %-d, %Y" | jsonify }},"published_iso":{{ pg.published | jsonify }},"category":{{ pg.category | default: "" | jsonify }},"versions":[{% for v in gvs %}{"language_name":{{ v.language_name | jsonify }},"url":{{ v.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}]}{% unless forloop.last %},{% endunless %}{% endfor %}];
   </script>
 
-  <!-- Load dynamic profile links from Firestore -->
+  <!-- Role & article count data -->
+  <script>
+  var EIC_IDS = [{% for p in site.data.about.editors_in_chief %}{{ p.id | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}];
+  var AUTHOR_ROLE_LABELS = {
+    eic: {{ current_locale.author.role_editor_in_chief | jsonify }},
+    core_member: {{ current_locale.author.role_core_member | jsonify }},
+    member: {{ current_locale.author.role_member | jsonify }}
+  };
+  var CURRENT_AUTHOR_ARTICLE_COUNT = {{ authored_article_count }};
+  </script>
+
+  <!-- Load dynamic profile data from Firestore -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script>
@@ -232,20 +239,21 @@
     });
     var db = firebase.firestore();
     var authorPage = '/authors/{{ current_author_id }}/';
+    var authorId = {{ current_author_id | jsonify }};
 
     // Find user with matching authorPage
     db.collection('users').where('authorPage', '==', authorPage).get().then(function (snap) {
       if (snap.empty) return;
       var data = snap.docs[0].data();
 
-      // Sync display name everywhere
+      // Sync display name
       if (data.displayName) {
         document.getElementById('author-name').textContent = data.displayName;
         var bibAuthorName = document.getElementById('bibliography-author-name');
         if (bibAuthorName) bibAuthorName.textContent = data.displayName;
       }
 
-      // Sync profile photo — only if static photo is missing or Firestore has a real URL
+      // Sync profile photo
       if (data.photoURL && !data.photoURL.includes('localhost')) {
         var photoContainer = document.getElementById('author-photo');
         var hasStaticPhoto = photoContainer.querySelector('img');
@@ -254,25 +262,55 @@
         }
       }
 
-      // Sync profile links — merge static + Firestore, sort alphabetically, render on one line
+      // Sync affiliation
+      if (data.affiliation) {
+        var affiliationEl = document.getElementById('author-affiliation');
+        affiliationEl.textContent = data.affiliation;
+        affiliationEl.style.display = '';
+        document.getElementById('author-meta').style.display = '';
+      }
+
+      // Sync cohort
+      if (data.cohort) {
+        var cohortEl = document.getElementById('author-cohort');
+        cohortEl.textContent = data.cohort;
+        cohortEl.style.display = '';
+        document.getElementById('author-meta').style.display = '';
+      }
+
+      // Sync summary/bio
+      if (data.summary) {
+        var summaryEl = document.getElementById('author-summary');
+        summaryEl.textContent = data.summary;
+        summaryEl.style.display = '';
+      }
+
+      // Auto-calculate and sync role
+      var isEIC = EIC_IDS.indexOf(authorId) !== -1;
+      var roleEl = document.getElementById('author-role');
+      if (isEIC) {
+        roleEl.textContent = AUTHOR_ROLE_LABELS.eic;
+      } else if (CURRENT_AUTHOR_ARTICLE_COUNT >= 5) {
+        roleEl.textContent = AUTHOR_ROLE_LABELS.core_member;
+      } else {
+        roleEl.textContent = AUTHOR_ROLE_LABELS.member;
+      }
+
+      // Sync profile links
       var links = (data.profileLinks || []).slice();
       if (links.length > 0) {
         var container = document.getElementById('author-links');
-        // Collect existing static links
         var allLinks = [];
         Array.prototype.forEach.call(container.querySelectorAll('a.profile-link'), function (el) {
           allLinks.push({ label: el.textContent.trim(), url: el.getAttribute('href') || '' });
         });
-        // Merge Firestore links (deduplicate)
         var seen = {};
         allLinks.forEach(function (l) { seen[l.url + '::' + l.label] = true; });
         links.forEach(function (link) {
           var key = (link.url || '') + '::' + (link.label || '');
           if (!seen[key]) { allLinks.push(link); seen[key] = true; }
         });
-        // Sort alphabetically by label
         allLinks.sort(function (a, b) { return (a.label || '').localeCompare(b.label || ''); });
-        // Re-render
         container.innerHTML = '';
         allLinks.forEach(function (link) {
           var a = document.createElement('a');
