@@ -1800,6 +1800,17 @@ var ADMIN_I18N = {
       return db.collection('submissions').doc(currentModalDocId).get();
     }).then(function (doc) {
       var d = doc.data();
+      // Look up submitter's existing authorPage from Firestore before generating slug
+      var authorSlugPromise = d.uid
+        ? db.collection('users').doc(d.uid).get().then(function (userDoc) {
+            if (userDoc.exists && userDoc.data().authorPage) {
+              return userDoc.data().authorPage.replace(/^\/authors\//, '').replace(/\/$/, '');
+            }
+            return d.authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          })
+        : Promise.resolve(d.authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+      return authorSlugPromise.then(function (authorSlug) {
+
       var lang = d.language || 'en';
       var langMap = {
         'en':    { name: 'English',  folder: 'default', sort: 1, suffix: '' },
@@ -1821,7 +1832,6 @@ var ADMIN_I18N = {
       md += 'description: "' + d.description.replace(/"/g, '\\"') + '"\n';
       md += 'order: 99\n';
       md += 'author: "' + d.authorName + '"\n';
-      var authorSlug = d.authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       md += 'author_id: "' + authorSlug + '"\n';
       md += 'guide_id: "' + slug + '"\n';
       md += 'language_code: "' + lang + '"\n';
@@ -1863,21 +1873,6 @@ var ADMIN_I18N = {
           badge.textContent = 'Approved (Local)';
           badge.className = 'admin-status admin-status-approved';
 
-          var escapedAuthor = d.authorName.replace(/"/g, '\\"');
-          var tKey = 'author-' + authorSlug;
-          var authorFiles = [
-            { folder: 'default', filename: authorSlug + '.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
-            { folder: 'chinese', filename: authorSlug + '-cn.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-cn/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
-            { folder: 'chinese', filename: authorSlug + '-tw.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-tw/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
-          ];
-          authorFiles.forEach(function (f) {
-            fetch('http://127.0.0.1:4001/save', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ folder: '../_authors/' + f.folder, filename: f.filename, content: f.content })
-            }).catch(function () {});
-          });
-
           if (d.uid) {
             db.collection('users').doc(d.uid).set({ authorPage: '/authors/' + authorSlug + '/' }, { merge: true });
             db.collection('users').doc(d.uid).update({
@@ -1890,25 +1885,44 @@ var ADMIN_I18N = {
             return r.json();
           }).then(function (aboutData) {
             if (!aboutData || !aboutData.content) return;
-            if (aboutData.content.indexOf('id: ' + authorSlug) !== -1) return;
-            var newEntry = '\n  - id: ' + authorSlug + '\n';
-            newEntry += '    name: "' + d.authorName + '"\n';
-            newEntry += '    affiliation:\n';
-            newEntry += '    cohort:\n';
-            newEntry += '    profile_label:\n';
-            newEntry += '    profile_url:\n';
-            newEntry += '    contacts: []\n';
-            newEntry += '    photo:\n';
-            newEntry += '    summary: "Contributor."\n';
-            var updated = aboutData.content.replace('contributors: []', 'contributors:' + newEntry);
-            if (updated === aboutData.content) {
-              updated = aboutData.content.trimEnd() + newEntry;
+            var authorExists = aboutData.content.indexOf('id: ' + authorSlug) !== -1;
+
+            // Only create author pages and contributor entry if author is new
+            if (!authorExists) {
+              var escapedAuthor = d.authorName.replace(/"/g, '\\"');
+              var tKey = 'author-' + authorSlug;
+              var authorFiles = [
+                { folder: 'default', filename: authorSlug + '.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
+                { folder: 'chinese', filename: authorSlug + '-cn.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-cn/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
+                { folder: 'chinese', filename: authorSlug + '-tw.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-tw/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
+              ];
+              authorFiles.forEach(function (f) {
+                fetch('http://127.0.0.1:4001/save', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ folder: '../_authors/' + f.folder, filename: f.filename, content: f.content })
+                }).catch(function () {});
+              });
+
+              var newEntry = '\n  - id: ' + authorSlug + '\n';
+              newEntry += '    name: "' + d.authorName + '"\n';
+              newEntry += '    affiliation:\n';
+              newEntry += '    cohort:\n';
+              newEntry += '    profile_label:\n';
+              newEntry += '    profile_url:\n';
+              newEntry += '    contacts: []\n';
+              newEntry += '    photo:\n';
+              newEntry += '    summary: "Contributor."\n';
+              var updated = aboutData.content.replace('contributors: []', 'contributors:' + newEntry);
+              if (updated === aboutData.content) {
+                updated = aboutData.content.trimEnd() + newEntry;
+              }
+              return fetch('http://127.0.0.1:4001/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folder: '../_data', filename: 'about.yml', content: updated })
+              });
             }
-            return fetch('http://127.0.0.1:4001/save', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ folder: '../_data', filename: 'about.yml', content: updated })
-            });
           }).catch(function () {});
 
           document.getElementById('modal-md-content').textContent = 'File saved locally!\n\n' + result.saved + '\n\nJekyll will auto-rebuild. Refresh to see it.\nCommit and push when ready.';
@@ -2042,6 +2056,7 @@ var ADMIN_I18N = {
           });
         });
       }
+      }); // end authorSlugPromise.then
     }).catch(function (err) {
       console.error('Approve error:', err);
       btn.textContent = ADMIN_I18N.approve_btn;
