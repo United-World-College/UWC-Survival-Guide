@@ -201,8 +201,8 @@
     affiliation_label: "Current Affiliation (optional)"
     affiliation_placeholder: "Your current university or organization"
     cohort_label: Cohort
-    cohort_placeholder: "e.g. UWC Changshu China 24'"
-    summary_label: "Bio (optional)"
+    cohort_placeholder: "e.g. UWC Changshu China '24"
+    summary_label: "Short Bio (optional)"
     summary_placeholder: "A brief description about yourself"
     role_label: Role
     profile_links_label: Profile Links
@@ -265,7 +265,7 @@
     passwords_no_match: Passwords do not match.
     reset_email_sent: Reset email sent. Please check your inbox.
     image_file_only: Please select an image file.
-    image_too_large: Image must be under 5 MB.
+    image_too_large: Image must be under 2 MB.
     uploading_photo: "Uploading photo..."
     photo_failed: Failed to upload photo. Please try again.
     link_label_ph: "e.g. GitHub, personal website"
@@ -531,7 +531,7 @@
     affiliation_label: 当前所属机构（选填）
     affiliation_placeholder: 你目前所在的大学或组织
     cohort_label: 届别
-    cohort_placeholder: "例：UWC 常熟 24'"
+    cohort_placeholder: "例：UWC Changshu China '24"
     summary_label: 个人简介（选填）
     summary_placeholder: 简短介绍一下自己
     role_label: 身份
@@ -595,7 +595,7 @@
     passwords_no_match: 两次密码不一致。
     reset_email_sent: 重置邮件已发送，请查收。
     image_file_only: 请选择图片文件。
-    image_too_large: 图片大小不能超过 5 MB。
+    image_too_large: 图片大小不能超过 2 MB。
     uploading_photo: 正在上传头像……
     photo_failed: 头像上传失败，请重试。
     link_label_ph: 例：GitHub、个人网站
@@ -861,7 +861,7 @@
     affiliation_label: 目前所屬機構（選填）
     affiliation_placeholder: 你目前所在的大學或組織
     cohort_label: 屆別
-    cohort_placeholder: "例：UWC 常熟 24'"
+    cohort_placeholder: "例：UWC Changshu China '24"
     summary_label: 個人簡介（選填）
     summary_placeholder: 簡短介紹一下自己
     role_label: 身分
@@ -925,7 +925,7 @@
     passwords_no_match: 兩次密碼不一致。
     reset_email_sent: 重設郵件已傳送，請查收。
     image_file_only: 請選擇圖片檔案。
-    image_too_large: 圖片大小不能超過 5 MB。
+    image_too_large: 圖片大小不能超過 2 MB。
     uploading_photo: 正在上傳大頭貼……
     photo_failed: 大頭貼上傳失敗，請重試。
     link_label_ph: 例：GitHub、個人網站

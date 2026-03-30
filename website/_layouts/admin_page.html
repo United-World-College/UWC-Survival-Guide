@@ -597,49 +597,76 @@ var ADMIN_I18N = {
       return;
     }
     setLoading('signup-btn', true);
-    var authorSlug = displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    var authorPage = '/authors/' + authorSlug + '/';
+    var authorSlug;
     auth.createUserWithEmailAndPassword(email, password)
       .then(function (cred) {
-        return db.collection('users').doc(cred.user.uid).set({
-          displayName: displayName,
-          photoURL: '',
-          email: email,
-          authorPage: authorPage,
-          affiliation: '',
-          cohort: '',
-          summary: '',
-          profileLinks: [],
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        authorSlug = displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        if (!authorSlug) authorSlug = cred.user.uid;
+        // Check for slug collision and append suffix if needed
+        var baseSlug = authorSlug;
+        return (function checkSlug(slug, attempt) {
+          var candidatePage = '/authors/' + slug + '/';
+          return db.collection('users').where('authorPage', '==', candidatePage).get().then(function (snap) {
+            if (snap.empty) {
+              authorSlug = slug;
+              return;
+            }
+            // Collision — append incrementing suffix
+            return checkSlug(baseSlug + '-' + (attempt + 1), attempt + 1);
+          });
+        })(authorSlug, 1).then(function () {
+          var authorPage = '/authors/' + authorSlug + '/';
+          return db.collection('users').doc(cred.user.uid).set({
+            displayName: displayName,
+            photoURL: '',
+            email: email,
+            authorPage: authorPage,
+            affiliation: '',
+            cohort: '',
+            summary: '',
+            profileLinks: [],
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
         });
       })
       .then(function () {
-        // Create author page file
-        var authorMd = '---\ntitle: "' + displayName.replace(/"/g, '\\"') + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\npermalink: /authors/' + authorSlug + '/\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n';
+        // Create author page files (en, zh-CN, zh-TW)
+        var escapedName = displayName.replace(/"/g, '\\"');
+        var tKey = 'author-' + authorSlug;
+        var authorFiles = [
+          { folder: 'default', filename: authorSlug + '.md', content: '---\ntitle: "' + escapedName + '"\nauthor_id: ' + authorSlug + '\npermalink: /authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
+          { folder: 'chinese', filename: authorSlug + '-cn.md', content: '---\ntitle: "' + escapedName + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-cn/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
+          { folder: 'chinese', filename: authorSlug + '-tw.md', content: '---\ntitle: "' + escapedName + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-tw/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
+        ];
         var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         if (isLocal) {
-          return fetch('http://127.0.0.1:4001/save', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ folder: '../_authors/default', filename: authorSlug + '.md', content: authorMd })
-          }).catch(function () {});
+          return Promise.all(authorFiles.map(function (f) {
+            return fetch('http://127.0.0.1:4001/save', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ folder: '../_authors/' + f.folder, filename: f.filename, content: f.content })
+            }).catch(function () {});
+          }));
         } else {
           return db.collection('config').doc('github').get().then(function (configDoc) {
             var token = configDoc.exists ? configDoc.data().token : null;
             if (!token) return;
-            var apiUrl = 'https://api.github.com/repos/United-World-College/UWC-Survival-Guide/contents/website/_authors/default/' + authorSlug + '.md';
-            var headers = { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' };
-            return fetch(apiUrl, { headers: headers }).then(function (checkRes) {
-              if (checkRes.ok) return; // already exists
-              return fetch(apiUrl, {
-                method: 'PUT',
-                headers: headers,
-                body: JSON.stringify({
-                  message: 'Add author page: ' + displayName,
-                  content: btoa(unescape(encodeURIComponent(authorMd)))
-                })
+            var ghHeaders = { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' };
+            var REPO = 'United-World-College/UWC-Survival-Guide';
+            return Promise.all(authorFiles.map(function (f) {
+              var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/website/_authors/' + f.folder + '/' + f.filename;
+              return fetch(apiUrl, { headers: ghHeaders }).then(function (checkRes) {
+                if (checkRes.ok) return;
+                return fetch(apiUrl, {
+                  method: 'PUT',
+                  headers: ghHeaders,
+                  body: JSON.stringify({
+                    message: 'Add author page: ' + displayName,
+                    content: btoa(unescape(encodeURIComponent(f.content)))
+                  })
+                });
               });
-            });
+            }));
           }).catch(function () {});
         }
       })
@@ -782,7 +809,7 @@ var ADMIN_I18N = {
       showError('profile-error', ADMIN_I18N.image_file_only);
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 2 * 1024 * 1024) {
       showError('profile-error', ADMIN_I18N.image_too_large);
       return;
     }
@@ -1736,7 +1763,7 @@ var ADMIN_I18N = {
 
       var actions = document.getElementById('modal-actions');
       actions.style.display = (d.status === 'pending' || d.status === 'revise_resubmit') ? 'flex' : 'none';
-      document.getElementById('modal-delete').parentElement.style.display = 'flex';
+      document.getElementById('modal-delete').parentElement.style.display = d.status === 'approved' ? 'flex' : 'none';
 
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
@@ -1865,16 +1892,20 @@ var ADMIN_I18N = {
           badge.textContent = 'Approved (Local)';
           badge.className = 'admin-status admin-status-approved';
 
-          var authorFileName = authorSlug + '.md';
-          fetch('http://127.0.0.1:4001/save', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              folder: '../_authors/default',
-              filename: authorFileName,
-              content: '---\ntitle: "' + d.authorName + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\npermalink: /authors/' + authorSlug + '/\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n'
-            })
-          }).catch(function () {});
+          var escapedAuthor = d.authorName.replace(/"/g, '\\"');
+          var tKey = 'author-' + authorSlug;
+          var authorFiles = [
+            { folder: 'default', filename: authorSlug + '.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
+            { folder: 'chinese', filename: authorSlug + '-cn.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-cn/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
+            { folder: 'chinese', filename: authorSlug + '-tw.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-tw/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
+          ];
+          authorFiles.forEach(function (f) {
+            fetch('http://127.0.0.1:4001/save', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ folder: '../_authors/' + f.folder, filename: f.filename, content: f.content })
+            }).catch(function () {});
+          });
 
           if (d.uid) {
             db.collection('users').doc(d.uid).set({ authorPage: '/authors/' + authorSlug + '/' }, { merge: true });
@@ -1961,21 +1992,27 @@ var ADMIN_I18N = {
             badge.textContent = 'Approved & Published';
             badge.className = 'admin-status admin-status-approved';
 
-            var authorPagePath = 'website/_authors/default/' + authorSlug + '.md';
-            var authorApiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + authorPagePath;
-            fetch(authorApiUrl, { headers: headers }).then(function (aRes) {
-              if (aRes.status === 404) {
-                var authorMd = '---\ntitle: "' + d.authorName + '"\nauthor_id: ' + authorSlug + '\ndescription: "Contributor to the UWC Changshu China Survival Guide."\npermalink: /authors/' + authorSlug + '/\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n';
-                return fetch(authorApiUrl, {
+            var escapedAuthor = d.authorName.replace(/"/g, '\\"');
+            var tKey = 'author-' + authorSlug;
+            var authorFilesToCreate = [
+              { folder: 'default', filename: authorSlug + '.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
+              { folder: 'chinese', filename: authorSlug + '-cn.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-cn/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
+              { folder: 'chinese', filename: authorSlug + '-tw.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-tw/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
+            ];
+            Promise.all(authorFilesToCreate.map(function (f) {
+              var aUrl = 'https://api.github.com/repos/' + REPO + '/contents/website/_authors/' + f.folder + '/' + f.filename;
+              return fetch(aUrl, { headers: headers }).then(function (aRes) {
+                if (aRes.status !== 404) return;
+                return fetch(aUrl, {
                   method: 'PUT',
                   headers: headers,
                   body: JSON.stringify({
                     message: 'Add author page: ' + d.authorName,
-                    content: btoa(unescape(encodeURIComponent(authorMd)))
+                    content: btoa(unescape(encodeURIComponent(f.content)))
                   })
                 });
-              }
-            }).then(function () {
+              });
+            })).then(function () {
               if (d.uid) {
                 db.collection('users').doc(d.uid).set({ authorPage: '/authors/' + authorSlug + '/' }, { merge: true });
                 db.collection('users').doc(d.uid).update({

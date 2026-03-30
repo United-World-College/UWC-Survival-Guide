@@ -1,4 +1,6 @@
 {% assign person = include.person %}
+{% assign card_id = include.fallback_id %}
+{% assign card_name = include.fallback_name %}
 {% assign author_page = nil %}
 {% assign has_affiliation = false %}
 {% assign has_cohort = false %}
@@ -8,29 +10,33 @@
   {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
 {% endif %}
 {% assign language_suffix = current_language_code | downcase | replace: "-", "_" %}
-{% assign localized_summary = person.summary %}
-{% assign summary_key = "summary_" | append: language_suffix %}
-{% if person[summary_key] != nil and person[summary_key] != "" %}
-  {% assign localized_summary = person[summary_key] %}
-{% endif %}
-{% if person.id != nil and person.id != "" %}
-  {% assign author_pages = site.authors | where: "author_id", person.id | sort: "language_sort" %}
-  {% assign author_page = author_pages | where: "language_code", current_language_code | first %}
-  {% if author_page == nil %}
-    {% assign author_page = author_pages | where: "language_code", "en" | first %}
-  {% endif %}
-  {% if author_page == nil %}
-    {% assign author_page = author_pages | first %}
+{% assign localized_summary = nil %}
+{% if person %}
+  {% if card_id == nil or card_id == "" %}{% assign card_id = person.id %}{% endif %}
+  {% if card_name == nil or card_name == "" %}{% assign card_name = person.name %}{% endif %}
+  {% assign localized_summary = person.summary %}
+  {% assign summary_key = "summary_" | append: language_suffix %}
+  {% if person[summary_key] != nil and person[summary_key] != "" %}
+    {% assign localized_summary = person[summary_key] %}
   {% endif %}
 {% endif %}
-{% if person.affiliation != nil and person.affiliation != "" %}
+{% if card_id != nil and card_id != "" %}
+  {% assign author_page = site.authors | where: "author_id", card_id | where: "language_code", current_language_code | first %}
+  {% if author_page == nil %}
+    {% assign author_page = site.authors | where: "author_id", card_id | first %}
+  {% endif %}
+{% endif %}
+{% if author_page and card_name == nil or card_name == "" %}
+  {% assign card_name = author_page.title %}
+{% endif %}
+{% if person and person.affiliation != nil and person.affiliation != "" %}
   {% assign has_affiliation = true %}
 {% endif %}
-{% if person.cohort != nil and person.cohort != "" %}
+{% if person and person.cohort != nil and person.cohort != "" %}
   {% assign has_cohort = true %}
 {% endif %}
 {% assign initials = '' %}
-{% assign normalized_name = person.name | replace: "_", " " | replace: "-", " " %}
+{% assign normalized_name = card_name | default: "" | replace: "_", " " | replace: "-", " " %}
 {% assign name_parts = normalized_name | split: ' ' %}
 {% for part in name_parts %}
   {% if part != "" and initials.size < 2 %}
@@ -39,13 +45,13 @@
   {% endif %}
 {% endfor %}
 
-<article class="profile-card"{% if person.id != nil and person.id != "" %} data-author-page="/authors/{{ person.id }}/"{% endif %}>
+<article class="profile-card"{% if card_id != nil and card_id != "" %} data-author-page="/authors/{{ card_id }}/"{% endif %}>
   <div class="profile-media" data-card-photo>
-    {% if person.photo != nil and person.photo != "" %}
+    {% if person and person.photo != nil and person.photo != "" %}
       {% if person.photo contains '://' %}
-        <img src="{{ person.photo }}" alt="Portrait of {{ person.name }}">
+        <img src="{{ person.photo }}" alt="Portrait of {{ card_name }}">
       {% else %}
-        <img src="{{ person.photo | relative_url }}" alt="Portrait of {{ person.name }}">
+        <img src="{{ person.photo | relative_url }}" alt="Portrait of {{ card_name }}">
       {% endif %}
     {% else %}
       <div class="profile-placeholder" aria-hidden="true">{{ initials | upcase }}</div>
@@ -53,9 +59,9 @@
   </div>
   <p class="profile-eyebrow">{{ include.label }}</p>
   {% if author_page %}
-    <h3 data-card-name><a class="profile-name-link" href="{{ author_page.url | relative_url }}">{{ person.name }}</a></h3>
+    <h3 data-card-name><a class="profile-name-link" href="{{ author_page.url | relative_url }}">{{ card_name }}</a></h3>
   {% else %}
-    <h3 data-card-name>{{ person.name }}</h3>
+    <h3 data-card-name>{{ card_name }}</h3>
   {% endif %}
   <p class="profile-meta" data-card-meta{% unless has_affiliation or has_cohort %} style="display:none;"{% endunless %}>
     <span class="person-meta-line" data-card-affiliation{% unless has_affiliation %} style="display:none;"{% endunless %}>{% if has_affiliation %}{{ person.affiliation }}{% endif %}</span>

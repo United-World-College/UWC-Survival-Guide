@@ -21,7 +21,7 @@ editors_in_chief:
   - id: william-huang
     name: William Huang 黃靖然
     affiliation: University of Illinois Urbana-Champaign
-    cohort: "UWC Changshu China 24'"
+    cohort: "UWC Changshu China '24"
     profile_label:
     profile_url:
     contacts:
@@ -34,7 +34,7 @@ editors_in_chief:
   - id: tom-li
     name: Tom Li 李東源
     affiliation: University of Florida
-    cohort: "UWC Changshu China 24'"
+    cohort: "UWC Changshu China '24"
     profile_label:
     profile_url:
     contacts: []
@@ -45,7 +45,7 @@ editors_in_chief:
   - id: e-p-silon
     name: E_P_silon
     affiliation:
-    cohort: "UWC Changshu China 24'"
+    cohort: "UWC Changshu China '24"
     profile_label:
     profile_url:
     contacts: []
