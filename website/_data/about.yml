@@ -66,5 +66,15 @@ editors_in_chief:
 # Recognition is assigned automatically:
 # - 5 or more distinct articles -> Core Contributors
 # - fewer than 5 distinct articles -> Contributors
-contributors: []
+contributors:
+  - id: dongyuan-li
+    name: "Dongyuan Li"
+    affiliation:
+    cohort:
+    profile_label:
+    profile_url:
+    contacts: []
+    photo:
+    summary: "Contributor."
+
 
