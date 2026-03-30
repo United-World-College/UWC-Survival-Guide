@@ -287,9 +287,9 @@ var ADMIN_I18N = {
               <label class="admin-label" for="article-category">{{ t.category_label }}</label>
               <select id="article-category" class="admin-input admin-select" required>
                 <option value="" disabled selected>{{ t.category_placeholder }}</option>
-                <option value="College Application">College Application</option>
-                <option value="Life Reflections">人生杂谈 / Life Reflections</option>
-                <option value="Academics">Academics</option>
+                <option value="College Application">{{ current_locale.categories["College Application"] }}</option>
+                <option value="Life Reflections">{{ current_locale.categories["Life Reflections"] }}</option>
+                <option value="Academics">{{ current_locale.categories["Academics"] }}</option>
               </select>
             </div>
 
