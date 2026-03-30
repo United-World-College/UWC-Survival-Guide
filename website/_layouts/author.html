@@ -110,6 +110,7 @@
             <span class="author-stat-label">{% if authored_article_count == 1 %}{{ current_locale.author.indexed_article_singular }}{% else %}{{ current_locale.author.indexed_article_plural }}{% endif %}</span>
           </div>
         </div>
+        <div class="author-contact-list" id="author-contact-list" style="display:none;"></div>
         {% if has_author_contacts %}
           <div class="author-contact-list">
             {% for contact in author_contacts %}
@@ -294,6 +295,18 @@
         roleEl.textContent = AUTHOR_ROLE_LABELS.core_member;
       } else {
         roleEl.textContent = AUTHOR_ROLE_LABELS.member;
+      }
+
+      // Show email if author opted in
+      if (data.showEmail && data.email) {
+        var contactList = document.getElementById('author-contact-list');
+        var p = document.createElement('p');
+        p.className = 'author-contact-item';
+        p.innerHTML = '<span class="author-contact-label">Email</span>' +
+          '<a class="author-contact-value" href="mailto:' + encodeURI(data.email) + '">' +
+          data.email.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</a>';
+        contactList.appendChild(p);
+        contactList.style.display = '';
       }
 
       // Sync profile links

@@ -199,6 +199,7 @@
     display_name_label: Display Name
     display_name_placeholder: Your name
     email_label: Email
+    show_email_label: Show email on my author page
     affiliation_label: "Current Affiliation (optional)"
     affiliation_placeholder: "Your current university or organization"
     cohort_label: Cohort
@@ -530,6 +531,7 @@
     display_name_label: 显示名称
     display_name_placeholder: 您的姓名
     email_label: 电子邮箱
+    show_email_label: 在作者页面显示邮箱
     affiliation_label: 当前所属机构（选填）
     affiliation_placeholder: 你目前所在的大学或组织
     cohort_label: 届别
@@ -861,6 +863,7 @@
     display_name_label: 顯示名稱
     display_name_placeholder: 您的姓名
     email_label: 電子郵件
+    show_email_label: 在作者頁面顯示電子郵件
     affiliation_label: 目前所屬機構（選填）
     affiliation_placeholder: 你目前所在的大學或組織
     cohort_label: 屆別

@@ -128,7 +128,8 @@ var ADMIN_I18N = {
   submitted_label:      {{ current_locale.guide.submitted_label | jsonify }},
   copy_md_btn:          {{ t.copy_md_btn | jsonify }},
   categories:           {{ current_locale.categories | jsonify }},
-  lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }}
+  lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }},
+  show_email_label:     {{ t.show_email_label | jsonify }}
 };
 </script>
 
@@ -241,6 +242,12 @@ var ADMIN_I18N = {
               <div class="admin-field">
                 <label class="admin-label" for="profile-email">{{ t.email_label }}</label>
                 <input type="email" id="profile-email" class="admin-input" disabled />
+              </div>
+              <div class="admin-field">
+                <label class="admin-checkbox-label">
+                  <input type="checkbox" id="profile-show-email" />
+                  <span>{{ t.show_email_label }}</span>
+                </label>
               </div>
               <div class="admin-field">
                 <label class="admin-label" for="profile-affiliation">{{ t.affiliation_label }}</label>
@@ -625,6 +632,7 @@ var ADMIN_I18N = {
             cohort: '',
             summary: '',
             profileLinks: [],
+            showEmail: false,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         });
@@ -692,6 +700,7 @@ var ADMIN_I18N = {
         document.getElementById('profile-affiliation').value = data.affiliation || '';
         document.getElementById('profile-cohort').value = data.cohort || '';
         document.getElementById('profile-summary').value = data.summary || '';
+        document.getElementById('profile-show-email').checked = !!data.showEmail;
         updateNameCount();
         updateSummaryCount();
         if (data.photoURL) {
@@ -885,6 +894,7 @@ var ADMIN_I18N = {
       return;
     }
     var links = getProfileLinks();
+    var showEmail = document.getElementById('profile-show-email').checked;
     setLoading('save-profile-btn', true);
     db.collection('users').doc(user.uid).set({
       displayName: name,
@@ -892,7 +902,8 @@ var ADMIN_I18N = {
       affiliation: affiliation,
       cohort: cohort,
       summary: summary,
-      profileLinks: links
+      profileLinks: links,
+      showEmail: showEmail
     }, { merge: true }).then(function () {
       setLoading('save-profile-btn', false);
       showSuccess('profile-success', ADMIN_I18N.profile_saved);
