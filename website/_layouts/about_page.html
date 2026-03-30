@@ -18,7 +18,8 @@
   {% for p in about_data.editors_in_chief %}
     {% if eic_ids == "" %}{% assign eic_ids = p.id %}{% else %}{% assign eic_ids = eic_ids | append: "," | append: p.id %}{% endif %}
   {% endfor %}
-  {% assign all_author_ids = site.guides | map: "author_id" | uniq %}
+  {% assign sorted_guides = site.guides | sort: "published" %}
+  {% assign all_author_ids = sorted_guides | map: "author_id" | uniq %}
   {% assign has_core_contributors = false %}
   {% assign has_contributors = false %}
   {% for aid in all_author_ids %}
@@ -143,7 +144,7 @@
       <p class="section-desc">{{ about_copy.contributors_desc }}</p>
     </div>
     {% if has_contributors %}
-      <div class="contributor-list">
+      <div class="team-grid">
         {% for aid in all_author_ids %}
           {% if aid != nil and aid != "" %}
             {% unless eic_ids contains aid %}
@@ -151,42 +152,7 @@
               {% assign article_count = authored_guides | map: "guide_id" | uniq | size %}
               {% if article_count >= 1 and article_count < 5 %}
                 {% assign static_person = about_data.contributors | where: "id", aid | first %}
-                {% assign author_page = site.authors | where: "author_id", aid | where: "language_code", current_language_code | first %}
-                {% if author_page == nil %}{% assign author_page = site.authors | where: "author_id", aid | first %}{% endif %}
-                {% assign contrib_name = "" %}
-                {% if static_person and static_person.name != nil and static_person.name != "" %}{% assign contrib_name = static_person.name %}{% elsif author_page %}{% assign contrib_name = author_page.title %}{% endif %}
-                {% assign localized_summary = nil %}
-                {% if static_person %}
-                  {% assign localized_summary = static_person.summary %}
-                  {% assign summary_key = "summary_" | append: language_suffix %}
-                  {% if static_person[summary_key] != nil and static_person[summary_key] != "" %}
-                    {% assign localized_summary = static_person[summary_key] %}
-                  {% endif %}
-                {% endif %}
-                {% assign has_contrib_affil = false %}
-                {% assign has_contrib_cohort = false %}
-                {% if static_person and static_person.affiliation != nil and static_person.affiliation != "" %}{% assign has_contrib_affil = true %}{% endif %}
-                {% if static_person and static_person.cohort != nil and static_person.cohort != "" %}{% assign has_contrib_cohort = true %}{% endif %}
-                <article class="contributor-row" data-author-page="/authors/{{ aid }}/">
-                  <div class="contributor-main">
-                    {% if author_page %}
-                      <h3 data-card-name><a class="contributor-name-link" href="{{ author_page.url | relative_url }}">{{ contrib_name }}</a></h3>
-                    {% else %}
-                      <h3 data-card-name>{{ contrib_name }}</h3>
-                    {% endif %}
-                    <p class="contributor-meta" data-card-meta{% unless has_contrib_affil or has_contrib_cohort %} style="display:none;"{% endunless %}>
-                      <span class="person-meta-line" data-card-affiliation{% unless has_contrib_affil %} style="display:none;"{% endunless %}>{% if has_contrib_affil %}{{ static_person.affiliation }}{% endif %}</span>
-                      <span class="person-meta-line" data-card-cohort{% unless has_contrib_cohort %} style="display:none;"{% endunless %}>{% if has_contrib_cohort %}{{ static_person.cohort }}{% endif %}</span>
-                    </p>
-                    <p class="contributor-summary" data-card-summary{% unless localized_summary != nil and localized_summary != "" %} style="display:none;"{% endunless %}>{% if localized_summary != nil and localized_summary != "" %}{{ localized_summary }}{% endif %}</p>
-                    {% if author_page %}
-                      <div class="profile-links contributor-links">
-                        <a class="profile-link contributor-link" href="{{ author_page.url | relative_url }}">{{ current_locale.common.author_page }}</a>
-                      </div>
-                    {% endif %}
-                  </div>
-                  <p class="contributor-count">{{ article_count }} {% if article_count == 1 %}{{ current_locale.common.article_singular }}{% else %}{{ current_locale.common.article_plural }}{% endif %}</p>
-                </article>
+                {% include profile-card.html person=static_person label=about_copy.contributor_label fallback_id=aid %}
               {% endif %}
             {% endunless %}
           {% endif %}

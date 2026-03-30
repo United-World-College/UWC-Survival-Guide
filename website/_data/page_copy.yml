@@ -105,6 +105,7 @@
     core_contributor_label: Core Contributor
     core_empty: Additional core contributors will be listed here as the project grows.
     contributors_label: Contributors
+    contributor_label: Contributor
     contributors_title: Contributors
     contributors_desc: This section records everyone who has materially improved published content and is not already listed as an EDITOR-IN-CHIEF.
     contributors_empty: Additional contributors will be listed here as new articles and revisions are published.
@@ -435,6 +436,7 @@
     core_contributor_label: 核心贡献者
     core_empty: 随着项目发展，新的核心贡献者会列在这里。
     contributors_label: 贡献者
+    contributor_label: 贡献者
     contributors_title: 其他贡献者
     contributors_desc: 本部分记录所有对已发布内容做出实质性改进且未被列为主编的成员。
     contributors_empty: 新的贡献者和修订记录会在后续发布中加入这里。
@@ -765,6 +767,7 @@
     core_contributor_label: 核心貢獻者
     core_empty: 隨著計畫發展，新的核心貢獻者會列在這裡。
     contributors_label: 貢獻者
+    contributor_label: 貢獻者
     contributors_title: 其他貢獻者
     contributors_desc: 本部分記錄所有對已發布內容做出實質性改進且未被列為主編的成員。
     contributors_empty: 新的貢獻者與修訂紀錄會在後續發布中加入這裡。
