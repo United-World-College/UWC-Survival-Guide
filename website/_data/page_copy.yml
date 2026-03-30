@@ -120,10 +120,10 @@
     guidelines_title: Contributor guidelines
     guidelines_desc: Please keep the following in mind when writing your article.
     guidelines:
-      - title: Write from experience
-        description: Articles should be grounded in your own first-hand experience at UWC Changshu China. Focus on practical advice that would have helped you — or that you wish someone had told you earlier.
-      - title: Keep it useful
-        description: The guide is a reference, not a blog. Aim for clear, actionable information that future students can apply. Avoid opinion pieces or content that won't age well.
+      - title: Anything that helps
+        description: The bar is simple — if it helps students at UWC Changshu China, it belongs here. Practical guides, personal stories, reflections, tips — any format is welcome as long as someone can learn from it.
+      - title: Make a material contribution
+        description: Each article should contribute something substantially new. Incremental additions to existing articles are not accepted — if you want to improve an existing piece, contact the Editors-in-Chief. That said, well-reasoned rebuttals or alternative perspectives on published articles are very welcome.
       - title: One topic per article
         description: Each article should cover a single, well-defined topic. If you find yourself writing about multiple subjects, consider splitting them into separate articles.
       - title: Any supported language
@@ -452,10 +452,10 @@
     guidelines_title: 投稿准则
     guidelines_desc: 撰写文章时请注意以下几点。
     guidelines:
-      - title: 以经验为本
-        description: 文章应基于你在 UWC 常熟的亲身经历。专注于实用的建议——那些曾经帮助过你的，或者你希望有人早点告诉你的内容。
-      - title: 注重实用
-        description: 本指南是参考工具，不是博客。请提供清晰、可操作的信息，让未来的学生可以直接应用。避免纯观点性或时效性差的内容。
+      - title: 只要有帮助就行
+        description: 标准很简单——只要对 UWC 常熟的同学有帮助，就适合发在这里。实用指南、个人故事、心得感悟、小贴士——任何形式都欢迎，只要别人能从中学到东西。
+      - title: 要有实质性贡献
+        description: 每篇文章应当贡献全新的内容，不接受对已有文章的增量补充——如果你想改进现有文章，请联系主编。但是，对已发布文章提出有理有据的反驳或不同观点非常欢迎。
       - title: 一篇一题
         description: 每篇文章应聚焦一个明确的主题。如果你发现自己在写多个话题，请考虑拆分为多篇文章。
       - title: 支持多种语言
@@ -784,10 +784,10 @@
     guidelines_title: 投稿準則
     guidelines_desc: 撰寫文章時請注意以下幾點。
     guidelines:
-      - title: 以經驗為本
-        description: 文章應基於你在 UWC 常熟的親身經歷。專注於實用的建議——那些曾經幫助過你的，或者你希望有人早點告訴你的內容。
-      - title: 注重實用
-        description: 本指南是參考工具，不是部落格。請提供清晰、可操作的資訊，讓未來的學生可以直接應用。避免純觀點性或時效性差的內容。
+      - title: 只要有幫助就行
+        description: 標準很簡單——只要對 UWC 常熟的同學有幫助，就適合發在這裡。實用指南、個人故事、心得感悟、小貼士——任何形式都歡迎，只要別人能從中學到東西。
+      - title: 要有實質性貢獻
+        description: 每篇文章應當貢獻全新的內容，不接受對已有文章的增量補充——如果你想改進現有文章，請聯繫主編。但是，對已發布文章提出有理有據的反駁或不同觀點非常歡迎。
       - title: 一篇一題
         description: 每篇文章應聚焦一個明確的主題。如果你發現自己在寫多個話題，請考慮拆分為多篇文章。
       - title: 支援多種語言

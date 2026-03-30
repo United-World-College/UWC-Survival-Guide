@@ -2,7 +2,7 @@
 
 **How to contribute.** Sign up on the Contributor Portal, write your article using Markdown, and submit it for editorial review. An editor will read your draft and either approve it, request revisions, or provide feedback. If you are not familiar with Markdown, you can write your article normally first, then use any LLM (such as ChatGPT or Claude) to convert it into Markdown format, and copy-paste the result into the submission form.
 
-**New categories welcome.** The current categories may not cover everything worth writing about. If you have an article idea that does not fit an existing category, you are welcome to propose a new one — just reach out to the Editors-in-Chief beforehand.
+**Don't worry about categories.** Start with your idea and write the article first — you can decide which category it belongs to afterward. If none of the existing categories fit, that is perfectly fine. Contact the Editors-in-Chief and we will create a new one for you.
 
 **Questions?** If you have any questions about the submission process, formatting, or anything else, feel free to contact the Editors-in-Chief through the About page.
 
