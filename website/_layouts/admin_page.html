@@ -1000,7 +1000,10 @@ var ADMIN_I18N = {
       } else {
         var userData = snapshot.docs[0].data();
         var displayName = userData.displayName || searchId;
-        resolvedSpan.textContent = displayName;
+        var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? '' : '/UWC-Survival-Guide';
+        var profileHref = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + searchId + '/';
+        resolvedSpan.innerHTML = '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link">' + escapeHtml(displayName) + '</a>';
         resolvedSpan.className = 'admin-coauthor-resolved-name admin-coauthor-found';
         row.setAttribute('data-author-id', searchId);
         row.setAttribute('data-author-name', displayName);
@@ -1021,12 +1024,16 @@ var ADMIN_I18N = {
       '<button type="button" class="admin-coauthor-move" data-dir="up" title="Move up">&uarr;</button>' +
       '<button type="button" class="admin-coauthor-move" data-dir="down" title="Move down">&darr;</button>' +
       '<button type="button" class="admin-link-remove">&times;</button>';
-    // If pre-resolved (loading existing data), set attributes and show name
+    // If pre-resolved (loading existing data), set attributes and show name as link
     if (authorId && name) {
       row.setAttribute('data-author-id', authorId);
       row.setAttribute('data-author-name', name);
-      row.querySelector('.admin-coauthor-resolved-name').textContent = name;
-      row.querySelector('.admin-coauthor-resolved-name').className = 'admin-coauthor-resolved-name admin-coauthor-found';
+      var preBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? '' : '/UWC-Survival-Guide';
+      var preHref = preBaseUrl + ADMIN_I18N.lang_prefix + '/authors/' + authorId + '/';
+      var resolvedEl = row.querySelector('.admin-coauthor-resolved-name');
+      resolvedEl.innerHTML = '<a href="' + escapeHtml(preHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link">' + escapeHtml(name) + '</a>';
+      resolvedEl.className = 'admin-coauthor-resolved-name admin-coauthor-found';
     }
     row.querySelector('.admin-link-remove').addEventListener('click', function () {
       row.remove();

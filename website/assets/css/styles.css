@@ -2186,6 +2186,16 @@ a.author-contact-value:hover {
   font-weight: 500;
 }
 
+.admin-coauthor-profile-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.admin-coauthor-profile-link:hover {
+  color: var(--text-primary);
+}
+
 .admin-coauthor-not-found {
   color: var(--error, #c0392b);
   font-size: 0.8rem;
