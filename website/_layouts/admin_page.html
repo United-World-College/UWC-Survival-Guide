@@ -130,7 +130,12 @@ var ADMIN_I18N = {
   copy_md_btn:          {{ t.copy_md_btn | jsonify }},
   categories:           {{ current_locale.categories | jsonify }},
   lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }},
-  show_email_label:     {{ t.show_email_label | jsonify }}
+  show_email_label:     {{ t.show_email_label | jsonify }},
+  coauthors_label:      {{ t.coauthors_label | jsonify }},
+  coauthors_hint:       {{ t.coauthors_hint | jsonify }},
+  coauthor_name_placeholder: {{ t.coauthor_name_placeholder | jsonify }},
+  coauthor_add_btn:     {{ t.coauthor_add_btn | jsonify }},
+  coauthors_max:        {{ t.coauthors_max | jsonify }}
 };
 </script>
 
@@ -318,6 +323,14 @@ var ADMIN_I18N = {
             </div>
 
             <div class="admin-field">
+              <label class="admin-label">{{ t.coauthors_label }}</label>
+              <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">{{ t.coauthors_hint }}</p>
+              <div id="coauthors-list"></div>
+              <button type="button" id="add-coauthor-btn" class="admin-btn admin-btn-outline" style="margin-top:0.5rem;font-size:0.78rem;padding:0.5rem 1.2rem;">{{ t.coauthor_add_btn }}</button>
+              <p id="coauthors-limit-note" style="display:none;font-size:0.75rem;color:var(--warm-gray);margin-top:0.4rem;">{{ t.coauthors_max }}</p>
+            </div>
+
+            <div class="admin-field">
               <label class="admin-label" for="article-description">{{ t.description_label }}</label>
               <input type="text" id="article-description" class="admin-input" placeholder="{{ t.description_placeholder }}" required />
             </div>
@@ -402,6 +415,7 @@ var ADMIN_I18N = {
               <div class="admin-submission-main">
                 <div class="admin-submission-meta">
                   <span id="modal-author"></span>
+                  <span id="modal-coauthors"></span>
                   <span id="modal-category"></span>
                   <span id="modal-date"></span>
                 </div>
@@ -925,6 +939,78 @@ var ADMIN_I18N = {
     });
   });
 
+  // ── Co-Authors ──
+  var MAX_COAUTHORS = 10;
+
+  function createCoauthorRow(name) {
+    var row = document.createElement('div');
+    row.className = 'admin-coauthor-row';
+    row.innerHTML = '<span class="admin-coauthor-order"></span>' +
+      '<input type="text" class="admin-input admin-coauthor-name" placeholder="' + escapeHtml(ADMIN_I18N.coauthor_name_placeholder) + '" value="' + escapeHtml(name || '') + '" maxlength="40" />' +
+      '<button type="button" class="admin-coauthor-move" data-dir="up" title="Move up">&uarr;</button>' +
+      '<button type="button" class="admin-coauthor-move" data-dir="down" title="Move down">&darr;</button>' +
+      '<button type="button" class="admin-link-remove">&times;</button>';
+    row.querySelector('.admin-link-remove').addEventListener('click', function () {
+      row.remove();
+      updateCoauthorNumbers();
+      updateAddCoauthorBtn();
+    });
+    row.querySelectorAll('.admin-coauthor-move').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var list = document.getElementById('coauthors-list');
+        var dir = this.getAttribute('data-dir');
+        if (dir === 'up' && row.previousElementSibling) {
+          list.insertBefore(row, row.previousElementSibling);
+        } else if (dir === 'down' && row.nextElementSibling) {
+          list.insertBefore(row.nextElementSibling, row);
+        }
+        updateCoauthorNumbers();
+      });
+    });
+    return row;
+  }
+
+  function updateCoauthorNumbers() {
+    var rows = document.querySelectorAll('.admin-coauthor-row');
+    rows.forEach(function (row, i) {
+      row.querySelector('.admin-coauthor-order').textContent = (i + 1);
+      row.querySelector('[data-dir="up"]').disabled = i === 0;
+      row.querySelector('[data-dir="down"]').disabled = i === rows.length - 1;
+    });
+  }
+
+  function updateAddCoauthorBtn() {
+    var count = document.querySelectorAll('.admin-coauthor-row').length;
+    var btn = document.getElementById('add-coauthor-btn');
+    var note = document.getElementById('coauthors-limit-note');
+    if (count >= MAX_COAUTHORS) {
+      btn.style.display = 'none';
+      note.style.display = 'block';
+    } else {
+      btn.style.display = '';
+      note.style.display = 'none';
+    }
+  }
+
+  document.getElementById('add-coauthor-btn').addEventListener('click', function () {
+    if (document.querySelectorAll('.admin-coauthor-row').length >= MAX_COAUTHORS) return;
+    document.getElementById('coauthors-list').appendChild(createCoauthorRow(''));
+    updateCoauthorNumbers();
+    updateAddCoauthorBtn();
+    var rows = document.querySelectorAll('.admin-coauthor-row');
+    rows[rows.length - 1].querySelector('.admin-coauthor-name').focus();
+  });
+
+  function getCoauthors() {
+    var rows = document.querySelectorAll('.admin-coauthor-row');
+    var coauthors = [];
+    rows.forEach(function (row, i) {
+      var name = row.querySelector('.admin-coauthor-name').value.trim();
+      if (name) coauthors.push({ name: name, order: i + 1 });
+    });
+    return coauthors;
+  }
+
   // ── Submit Article ──
   document.getElementById('article-form').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -936,6 +1022,7 @@ var ADMIN_I18N = {
     var category = document.getElementById('article-category').value;
     var language = document.getElementById('article-language').value;
     var authorName = document.getElementById('article-author').value.trim();
+    var coAuthors = getCoauthors();
     var description = document.getElementById('article-description').value.trim();
     var content = document.getElementById('article-content').value;
 
@@ -946,7 +1033,7 @@ var ADMIN_I18N = {
 
     setLoading('submit-article-btn', true);
 
-    db.collection('submissions').add({
+    var submissionData = {
       uid: user.uid,
       authorName: authorName,
       title: title,
@@ -956,11 +1043,16 @@ var ADMIN_I18N = {
       content: content,
       status: 'pending',
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function () {
+    };
+    if (coAuthors.length > 0) submissionData.coAuthors = coAuthors;
+
+    db.collection('submissions').add(submissionData).then(function () {
       setLoading('submit-article-btn', false);
       showSuccess('article-success', ADMIN_I18N.article_submitted);
       document.getElementById('article-form').reset();
       document.getElementById('article-author').value = authorName;
+      document.getElementById('coauthors-list').innerHTML = '';
+      updateAddCoauthorBtn();
       loadSubmissions(user.uid);
       setTimeout(function () {
         document.getElementById('article-success').style.display = 'none';
@@ -975,10 +1067,15 @@ var ADMIN_I18N = {
   document.getElementById('tab-open-newtab').addEventListener('click', openPreviewTab);
 
   function getArticleFields() {
+    var coAuthors = getCoauthors();
+    var authorStr = document.getElementById('article-author').value.trim() || '';
+    if (coAuthors.length > 0) {
+      authorStr += ', ' + coAuthors.map(function (c) { return c.name; }).join(', ');
+    }
     return {
       title: document.getElementById('article-title').value.trim() || 'Untitled Article',
       category: document.getElementById('article-category').value || '',
-      author: document.getElementById('article-author').value.trim() || '',
+      author: authorStr,
       description: document.getElementById('article-description').value.trim() || '',
       content: document.getElementById('article-content').value || ''
     };
@@ -1197,7 +1294,8 @@ var ADMIN_I18N = {
       preview_banner:          ADMIN_I18N.preview_banner,
       preview_by:              ADMIN_I18N.preview_by,
       close_tab:               ADMIN_I18N.close_tab,
-      round_label:             'Round'
+      round_label:             'Round',
+      coauthors_label:         ADMIN_I18N.coauthors_label
     };
     win.document.write('<!DOCTYPE html><html lang="en"><head>' +
       '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
@@ -1287,6 +1385,11 @@ var ADMIN_I18N = {
           '});' +
           'h+="<\/div>";' +
         '}' +
+        /* co-authors (read-only) */
+        'if(d.coAuthors&&d.coAuthors.length){' +
+          'h+="<div class=\\"admin-field\\" style=\\"margin-bottom:1.5rem;\\"><label class=\\"admin-label\\">"+esc(L.coauthors_label)+"<\/label>";' +
+          'h+="<p style=\\"font-size:0.9rem;color:var(--text-primary,#2c2a26);\\">"+esc(d.coAuthors.map(function(c){return c.name;}).join(", "))+"<\/p><\/div>";' +
+        '}' +
         /* form */
         'h+="<form id=\\"rs-form\\" class=\\"admin-form\\">";' +
         'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Title<\/label><input id=\\"rs-title\\" class=\\"admin-input\\" required><\/div>";' +
@@ -1323,10 +1426,12 @@ var ADMIN_I18N = {
         'document.getElementById("rs-desc").value=d.description||"";' +
         'document.getElementById("rs-content").value=d.content||"";' +
         /* preview button */
+        'var rsAuthorStr=d.authorName||"";' +
+        'if(d.coAuthors&&d.coAuthors.length)rsAuthorStr+=", "+d.coAuthors.map(function(c){return c.name;}).join(", ");' +
         'document.getElementById("rs-preview").addEventListener("click",function(){' +
           'openPreview(document.getElementById("rs-title").value.trim()||"Untitled",' +
             'document.getElementById("rs-cat").value,' +
-            'd.authorName||"",' +
+            'rsAuthorStr,' +
             'document.getElementById("rs-desc").value.trim(),' +
             'document.getElementById("rs-content").value);' +
         '});' +
@@ -1385,7 +1490,11 @@ var ADMIN_I18N = {
     db.collection('submissions').doc(docId).get().then(function (doc) {
       if (!doc.exists) return;
       var d = doc.data();
-      openContentPreview(d.title, d.category, d.authorName || '', d.description, d.content);
+      var authorStr = d.authorName || '';
+      if (d.coAuthors && d.coAuthors.length > 0) {
+        authorStr += ', ' + d.coAuthors.map(function (c) { return c.name; }).join(', ');
+      }
+      openContentPreview(d.title, d.category, authorStr, d.description, d.content);
     });
   }
 
@@ -1452,6 +1561,9 @@ var ADMIN_I18N = {
           html += '<div class="admin-submission-main">';
           html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
           html += '<div class="admin-submission-meta">';
+          if (d.coAuthors && d.coAuthors.length > 0) {
+            html += '<span>' + escapeHtml(d.coAuthors.map(function (c) { return c.name; }).join(', ')) + '</span>';
+          }
           html += '<span>' + escapeHtml(d.category) + '</span>';
           html += '<span>' + escapeHtml(ADMIN_I18N.submitted_label) + ' ' + date + '</span>';
           html += '</div>';
@@ -1558,7 +1670,11 @@ var ADMIN_I18N = {
         html += '<div class="admin-submission-main">';
         html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
         html += '<div class="admin-submission-meta">';
-        html += '<span class="admin-author-name" data-uid="' + (d.uid || '') + '">' + escapeHtml(d.authorName || ADMIN_I18N.author_unknown) + '</span>';
+        var authorDisplay = d.authorName || ADMIN_I18N.author_unknown;
+        if (d.coAuthors && d.coAuthors.length > 0) {
+          authorDisplay += ', ' + d.coAuthors.map(function (c) { return c.name; }).join(', ');
+        }
+        html += '<span class="admin-author-name" data-uid="' + (d.uid || '') + '">' + escapeHtml(authorDisplay) + '</span>';
         html += '<span>' + escapeHtml(d.category) + '</span>';
         html += '<span>' + escapeHtml(ADMIN_I18N.submitted_label) + ' ' + date + '</span>';
         html += '</div>';
@@ -1718,6 +1834,14 @@ var ADMIN_I18N = {
           modalAuthorEl.innerHTML = escapeHtml(ADMIN_I18N.by_prefix) + '<a href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer" class="admin-author-link">' + escapeHtml(d.authorName) + '</a>';
         });
       }
+      var coAuthorsEl = document.getElementById('modal-coauthors');
+      if (d.coAuthors && d.coAuthors.length > 0) {
+        coAuthorsEl.textContent = d.coAuthors.map(function (c) { return c.name; }).join(', ');
+        coAuthorsEl.style.display = '';
+      } else {
+        coAuthorsEl.textContent = '';
+        coAuthorsEl.style.display = 'none';
+      }
       document.getElementById('modal-category').textContent = d.category;
       document.getElementById('modal-date').textContent = ADMIN_I18N.submitted_label + ' ' + date;
       document.getElementById('modal-description').textContent = d.description;
@@ -1770,7 +1894,11 @@ var ADMIN_I18N = {
   document.getElementById('modal-preview-btn').addEventListener('click', function () {
     if (!currentModalData) return;
     var d = currentModalData;
-    openContentPreview(d.title, d.category, d.authorName || '', d.description, d.content);
+    var authorStr = d.authorName || '';
+    if (d.coAuthors && d.coAuthors.length > 0) {
+      authorStr += ', ' + d.coAuthors.map(function (c) { return c.name; }).join(', ');
+    }
+    openContentPreview(d.title, d.category, authorStr, d.description, d.content);
   });
 
   document.getElementById('modal-close').addEventListener('click', closeReviewModal);

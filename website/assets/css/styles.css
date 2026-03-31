@@ -2117,6 +2117,58 @@ a.author-contact-value:hover {
   }
 }
 
+/* ── Co-Authors ── */
+.admin-coauthor-row {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.admin-coauthor-order {
+  min-width: 1.5rem;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--warm-gray);
+}
+
+.admin-coauthor-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-coauthor-move {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: var(--warm-gray);
+  cursor: pointer;
+  padding: 0.2rem 0.45rem;
+  line-height: 1;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.admin-coauthor-move:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+}
+
+.admin-coauthor-move:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .admin-coauthor-row {
+    flex-wrap: nowrap;
+  }
+  .admin-coauthor-name {
+    flex: 1 1 auto;
+  }
+}
+
 /* ── Article Preview Panel ── */
 .admin-editor-header {
   display: flex;

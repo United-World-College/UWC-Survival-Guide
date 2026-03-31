@@ -222,6 +222,11 @@
     language_placeholder: Select the language of your article
     author_name_label: Author Name
     author_name_placeholder: Your name
+    coauthors_label: Co-Authors
+    coauthors_hint: "Add co-authors in the order they should appear. Author names and order cannot be changed after submission."
+    coauthor_name_placeholder: "Co-author name"
+    coauthor_add_btn: "+ Add Co-Author"
+    coauthors_max: "Maximum 10 co-authors allowed."
     description_label: Description
     description_placeholder: A brief summary of the article
     content_label: "Content (Markdown)"
@@ -554,6 +559,11 @@
     language_placeholder: 选择文章语言
     author_name_label: 作者姓名
     author_name_placeholder: 您的姓名
+    coauthors_label: 共同作者
+    coauthors_hint: 按显示顺序添加共同作者。提交后作者姓名和顺序将无法更改。
+    coauthor_name_placeholder: 共同作者姓名
+    coauthor_add_btn: + 添加共同作者
+    coauthors_max: 最多允许 10 位共同作者。
     description_label: 简介
     description_placeholder: 文章简短摘要
     content_label: 正文（Markdown）
@@ -886,6 +896,11 @@
     language_placeholder: 選擇文章語言
     author_name_label: 作者姓名
     author_name_placeholder: 您的姓名
+    coauthors_label: 共同作者
+    coauthors_hint: 按顯示順序添加共同作者。提交後作者姓名和順序將無法更改。
+    coauthor_name_placeholder: 共同作者姓名
+    coauthor_add_btn: + 添加共同作者
+    coauthors_max: 最多允許 10 位共同作者。
     description_label: 簡介
     description_placeholder: 文章簡短摘要
     content_label: 正文（Markdown）

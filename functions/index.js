@@ -76,6 +76,12 @@ function generateMarkdown(d, authorSlug, editorName) {
   md += "order: 99\n";
   md += `author: "${d.authorName}"\n`;
   md += `author_id: "${authorSlug}"\n`;
+  if (d.coAuthors && d.coAuthors.length > 0) {
+    md += "coauthors:\n";
+    d.coAuthors.forEach((ca) => {
+      md += `  - "${ca.name.replace(/"/g, '\\"')}"\n`;
+    });
+  }
   md += `guide_id: "${slug}"\n`;
   md += `language_code: "${lang}"\n`;
   md += `language_name: "${langInfo.name}"\n`;
