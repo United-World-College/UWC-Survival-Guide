@@ -16,3 +16,5 @@ auto-translator/__pycache__/
 
 .firebase-data/
 .firebase/
+
+functions/node_modules/
