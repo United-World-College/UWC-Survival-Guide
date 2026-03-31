@@ -18,3 +18,4 @@ auto-translator/__pycache__/
 .firebase/
 
 functions/node_modules/
+tests/node_modules/

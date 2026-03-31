@@ -15,7 +15,35 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Cloud Functions test dependencies
+        run: npm install
+        working-directory: functions
+
+      - name: Run Cloud Functions tests
+        run: npx jest --verbose
+        working-directory: functions
+
+      - name: Install site test dependencies
+        run: npm install
+        working-directory: tests
+
+      - name: Run site validation tests
+        run: npx jest --verbose
+        working-directory: tests
+
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

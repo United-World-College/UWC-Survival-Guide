@@ -1,0 +1,15 @@
+{
+  "name": "uwc-survival-guide-tests",
+  "private": true,
+  "description": "Site-wide validation and integration tests",
+  "scripts": {
+    "test": "jest --verbose",
+    "test:site": "jest --testPathPattern=site",
+    "test:rules": "jest --testPathPattern=rules"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "js-yaml": "^4.1.0",
+    "glob": "^11.0.0"
+  }
+}

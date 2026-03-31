@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+echo "══════════════════════════════════════"
+echo "  Cloud Functions Tests"
+echo "══════════════════════════════════════"
+cd "$ROOT_DIR/functions"
+npx jest --verbose
+
+echo ""
+echo "══════════════════════════════════════"
+echo "  Site Validation Tests"
+echo "══════════════════════════════════════"
+cd "$ROOT_DIR/tests"
+npx jest --verbose
+
+echo ""
+echo "══════════════════════════════════════"
+echo "  All tests passed!"
+echo "══════════════════════════════════════"
