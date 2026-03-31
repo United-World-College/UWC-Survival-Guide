@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "source": "functions"
+  },
   "firestore": {
     "rules": "firebase/firestore.rules",
     "indexes": "firebase/firestore.indexes.json"
@@ -7,6 +10,9 @@
     "rules": "firebase/storage.rules"
   },
   "emulators": {
+    "functions": {
+      "port": 5001
+    },
     "auth": {
       "port": 9099
     },

@@ -9,14 +9,20 @@ service cloud.firestore {
       allow write: if request.auth != null && request.auth.uid == uid;
     }
 
-    // Users can create submissions and read/write their own; admins can also delete
+    // Submissions: all writes go through Cloud Functions (Admin SDK bypasses
+    // rules), so no client-side update or delete is needed.
+    // Admins can read all submissions (for the review panel);
+    // owners can read their own.
     match /submissions/{docId} {
       allow create: if request.auth != null;
-      allow read, update: if request.auth != null &&
+
+      allow read: if request.auth != null &&
         (resource.data.uid == request.auth.uid ||
          request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com']);
-      allow delete: if request.auth != null &&
-        request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
+
+      // No client-side update or delete.
+      // approve / reject / revise / resubmit / delete are all handled by
+      // Cloud Functions which use the Admin SDK and bypass these rules.
     }
 
     // Only admins can read the GitHub token config

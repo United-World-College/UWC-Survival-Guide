@@ -138,6 +138,7 @@ var ADMIN_I18N = {
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-functions-compat.js"></script>
 
 <div class="admin-wrapper">
 
@@ -492,6 +493,7 @@ var ADMIN_I18N = {
   var auth = firebase.auth();
   var db = firebase.firestore();
   var storage = firebase.storage();
+  var functions = firebase.functions();
 
   // ── View Management ──
   var views = ['view-signin', 'view-signup', 'view-forgot', 'view-dashboard'];
@@ -1215,6 +1217,7 @@ var ADMIN_I18N = {
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"><\/script>' +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"><\/script>' +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"><\/script>' +
+      '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-functions-compat.js"><\/script>' +
       '<script>' +
       '(function(){' +
       'var DOC_ID=' + JSON.stringify(docId) + ';' +
@@ -1349,18 +1352,8 @@ var ADMIN_I18N = {
             'err.textContent=L.err_fill_all;err.style.display="block";return;}' +
           'var btn=document.getElementById("rs-submit");' +
           'btn.textContent=L.resubmitting;btn.disabled=true;' +
-          'db.collection("submissions").doc(DOC_ID).get().then(function(snap){' +
-            'var hist=(snap.data().revisionHistory||[]).slice();' +
-            'if(hist.length&&!hist[hist.length-1].resubmittedAt){' +
-              'hist[hist.length-1].authorMessage=msg||null;' +
-              'hist[hist.length-1].resubmittedAt=new Date().toISOString();' +
-            '}' +
-            'var upd={title:title,category:cat,language:lang,description:desc,content:content,' +
-              'status:"pending",updatedAt:firebase.firestore.FieldValue.serverTimestamp(),' +
-              'revisionHistory:hist};' +
-            'if(msg)upd.authorMessage=msg;' +
-            'return db.collection("submissions").doc(DOC_ID).update(upd);' +
-          '}).then(function(){' +
+          'var resubmit=firebase.functions().httpsCallable("resubmitArticle");' +
+          'resubmit({docId:DOC_ID,title:title,category:cat,language:lang,description:desc,content:content,authorMessage:msg||""}).then(function(){' +
             'document.getElementById("rs-form").style.display="none";' +
             'document.getElementById("rs-error").style.display="none";' +
             'var sc=document.createElement("div");sc.className="admin-success";sc.style.cssText="margin-top:1.5rem;padding:1.2rem;text-align:center;";' +
@@ -1795,106 +1788,48 @@ var ADMIN_I18N = {
     var updateData = { status: 'approved', reviewerUid: reviewer.uid, reviewerEmail: reviewer.email, reviewedAt: firebase.firestore.FieldValue.serverTimestamp() };
     if (approveMsg) updateData.approveMessage = approveMsg;
 
-    db.collection('submissions').doc(currentModalDocId).update(updateData
-    ).then(function () {
-      return db.collection('submissions').doc(currentModalDocId).get();
-    }).then(function (doc) {
-      var d = doc.data();
-      // Look up submitter's existing authorPage from Firestore before generating slug
-      var authorSlugPromise = d.uid
-        ? db.collection('users').doc(d.uid).get().then(function (userDoc) {
-            if (userDoc.exists && userDoc.data().authorPage) {
-              return userDoc.data().authorPage.replace(/^\/authors\//, '').replace(/\/$/, '');
-            }
-            return d.authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-          })
-        : Promise.resolve(d.authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
-      return authorSlugPromise.then(function (authorSlug) {
+    var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    btn.textContent = ADMIN_I18N.approving;
 
-      var lang = d.language || 'en';
-      var langMap = {
-        'en':    { name: 'English',  folder: 'default', sort: 1, suffix: '' },
-        'zh-CN': { name: '简体中文', folder: 'chinese', sort: 2, suffix: '-CN' },
-        'zh-TW': { name: '台灣繁體', folder: 'chinese', sort: 3, suffix: '-TW' }
-      };
-      var langInfo = langMap[lang] || langMap['en'];
+    var approve = functions.httpsCallable('approveSubmission');
+    approve({ docId: currentModalDocId, approveMessage: approveMsg }).then(function (result) {
+      var r = result.data;
 
-      var slug = d.title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
-      db.collection('submissions').doc(currentModalDocId).update({ guide_id: slug }).catch(function () {});
+      document.getElementById('modal-actions').style.display = 'none';
+      document.getElementById('modal-approve-form').style.display = 'none';
+      var badge = document.getElementById('modal-status-badge');
 
-      var today = new Date().toISOString().slice(0, 10);
-      var submittedDate = d.createdAt ? d.createdAt.toDate().toISOString().slice(0, 10) : '';
-      var editorName = document.getElementById('profile-name').value.trim() || '';
-
-      var md = '---\n';
-      md += 'title: "' + d.title.replace(/"/g, '\\"') + '"\n';
-      md += 'category: "' + d.category + '"\n';
-      md += 'description: "' + d.description.replace(/"/g, '\\"') + '"\n';
-      md += 'order: 99\n';
-      md += 'author: "' + d.authorName + '"\n';
-      md += 'author_id: "' + authorSlug + '"\n';
-      md += 'guide_id: "' + slug + '"\n';
-      md += 'language_code: "' + lang + '"\n';
-      md += 'language_name: "' + langInfo.name + '"\n';
-      md += 'language_folder: "' + langInfo.folder + '"\n';
-      md += 'language_sort: ' + langInfo.sort + '\n';
-      if (submittedDate) md += 'submitted: ' + submittedDate + '\n';
-      md += 'published: ' + today + '\n';
-      md += 'updated: ' + today + '\n';
-      if (editorName) {
-        var editorSlug = editorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        md += 'editor: "' + editorName.replace(/"/g, '\\"') + '"\n';
-        md += 'editor_id: "' + editorSlug + '"\n';
-      }
-      md += '---\n\n';
-      md += d.content;
-
-      var fileName = slug + langInfo.suffix + '.md';
-      var filePath = 'website/_guides/' + langInfo.folder + '/' + fileName;
-      var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-      if (isLocal) {
+      if (r.published) {
+        badge.textContent = 'Approved & Published';
+        badge.className = 'admin-status admin-status-approved';
+        document.getElementById('modal-md-content').textContent = 'Published to GitHub successfully!\n\nFile: ' + r.filePath + '\nThe site will rebuild automatically.';
+        document.getElementById('modal-md-output').style.display = 'block';
+        document.getElementById('modal-copy-md').style.display = 'none';
+      } else if (isLocal && r.markdown) {
         btn.textContent = 'Saving locally...';
         fetch('http://127.0.0.1:4001/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            folder: langInfo.folder,
-            filename: fileName,
-            content: md
-          })
+          body: JSON.stringify({ folder: r.folder, filename: r.fileName, content: r.markdown })
         }).then(function (res) {
-          if (!res.ok) throw new Error('Local save failed: ' + res.status);
-          return res.json();
-        }).then(function (result) {
-          document.getElementById('modal-actions').style.display = 'none';
-          document.getElementById('modal-approve-form').style.display = 'none';
-          var badge = document.getElementById('modal-status-badge');
+          if (!res.ok) throw new Error('Local save failed');
           badge.textContent = 'Approved (Local)';
           badge.className = 'admin-status admin-status-approved';
 
-          if (d.uid) {
-            db.collection('users').doc(d.uid).set({ authorPage: '/authors/' + authorSlug + '/' }, { merge: true });
-            db.collection('users').doc(d.uid).update({
-              publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: slug, title: d.title, category: d.category })
-            }).catch(function () {});
-          }
-
-          fetch('http://127.0.0.1:4001/read-about').then(function (r) {
-            if (!r.ok) return null;
-            return r.json();
+          // Create author pages locally if needed
+          return fetch('http://127.0.0.1:4001/read-about').then(function (resp) {
+            if (!resp.ok) return null;
+            return resp.json();
           }).then(function (aboutData) {
             if (!aboutData || !aboutData.content) return;
-            var authorExists = aboutData.content.indexOf('id: ' + authorSlug) !== -1;
+            if (aboutData.content.indexOf('id: ' + r.authorSlug) !== -1) return;
 
-            // Only create author pages and contributor entry if author is new
-            if (!authorExists) {
-              var escapedAuthor = d.authorName.replace(/"/g, '\\"');
-              var tKey = 'author-' + authorSlug;
-              var authorFiles = [
-                { folder: 'default', filename: authorSlug + '.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
-                { folder: 'chinese', filename: authorSlug + '-cn.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-cn/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
-                { folder: 'chinese', filename: authorSlug + '-tw.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-tw/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
+            var escapedAuthor = r.authorName.replace(/"/g, '\\"');
+            var tKey = 'author-' + r.authorSlug;
+            var authorFiles = [
+                { folder: 'default', filename: r.authorSlug + '.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + r.authorSlug + '\npermalink: /authors/' + r.authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
+                { folder: 'chinese', filename: r.authorSlug + '-cn.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + r.authorSlug + '\npermalink: /zh-cn/authors/' + r.authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
+                { folder: 'chinese', filename: r.authorSlug + '-tw.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + r.authorSlug + '\npermalink: /zh-tw/authors/' + r.authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
               ];
               authorFiles.forEach(function (f) {
                 fetch('http://127.0.0.1:4001/save', {
@@ -1904,19 +1839,13 @@ var ADMIN_I18N = {
                 }).catch(function () {});
               });
 
-              var newEntry = '\n  - id: ' + authorSlug + '\n';
-              newEntry += '    name: "' + d.authorName + '"\n';
-              newEntry += '    affiliation:\n';
-              newEntry += '    cohort:\n';
-              newEntry += '    profile_label:\n';
-              newEntry += '    profile_url:\n';
-              newEntry += '    contacts: []\n';
-              newEntry += '    photo:\n';
+              var newEntry = '\n  - id: ' + r.authorSlug + '\n';
+              newEntry += '    name: "' + r.authorName + '"\n';
+              newEntry += '    affiliation:\n    cohort:\n    profile_label:\n    profile_url:\n';
+              newEntry += '    contacts: []\n    photo:\n';
               newEntry += '    summary: "Contributor."\n';
               var updated = aboutData.content.replace('contributors: []', 'contributors:' + newEntry);
-              if (updated === aboutData.content) {
-                updated = aboutData.content.trimEnd() + newEntry;
-              }
+              if (updated === aboutData.content) updated = aboutData.content.trimEnd() + newEntry;
               return fetch('http://127.0.0.1:4001/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1925,142 +1854,35 @@ var ADMIN_I18N = {
             }
           }).catch(function () {});
 
-          document.getElementById('modal-md-content').textContent = 'File saved locally!\n\n' + result.saved + '\n\nJekyll will auto-rebuild. Refresh to see it.\nCommit and push when ready.';
+          document.getElementById('modal-md-content').textContent = 'Approved and saved locally.\nJekyll will auto-rebuild. Commit and push when ready.';
           document.getElementById('modal-md-output').style.display = 'block';
           document.getElementById('modal-copy-md').style.display = 'none';
-
-          btn.textContent = ADMIN_I18N.approve_btn;
-          btn.disabled = false;
-          loadReviewList(currentFilter);
-          var user = auth.currentUser;
-          if (user) loadSubmissions(user.uid);
         }).catch(function (err) {
           console.error('Local save error:', err);
-          btn.textContent = ADMIN_I18N.approve_btn;
-          btn.disabled = false;
-          alert(ADMIN_I18N.local_save_error);
+          badge.textContent = 'Approved (Firestore only)';
+          badge.className = 'admin-status admin-status-approved';
         });
       } else {
-        btn.textContent = 'Publishing to GitHub...';
-        var REPO = 'United-World-College/UWC-Survival-Guide';
-
-        db.collection('config').doc('github').get().then(function (configDoc) {
-          var GITHUB_TOKEN = configDoc.exists ? configDoc.data().token : null;
-          if (!GITHUB_TOKEN) {
-            alert(ADMIN_I18N.no_token);
-            btn.textContent = ADMIN_I18N.approve_btn;
-            btn.disabled = false;
-            return;
-          }
-          var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + filePath;
-          var headers = { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' };
-          return fetch(apiUrl, { headers: headers }).then(function (checkRes) {
-            var putBody = {
-              message: 'Add guide: ' + d.title + ' by ' + d.authorName,
-              content: btoa(unescape(encodeURIComponent(md)))
-            };
-            if (checkRes.ok) {
-              return checkRes.json().then(function (existing) {
-                putBody.sha = existing.sha;
-                putBody.message = 'Update guide: ' + d.title + ' by ' + d.authorName;
-                return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(putBody) });
-              });
-            }
-            return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify(putBody) });
-          }).then(function (res) {
-            if (!res.ok) throw new Error('GitHub API error: ' + res.status);
-            return res.json();
-          }).then(function () {
-            document.getElementById('modal-actions').style.display = 'none';
-            document.getElementById('modal-approve-form').style.display = 'none';
-            var badge = document.getElementById('modal-status-badge');
-            badge.textContent = 'Approved & Published';
-            badge.className = 'admin-status admin-status-approved';
-
-            var escapedAuthor = d.authorName.replace(/"/g, '\\"');
-            var tKey = 'author-' + authorSlug;
-            var authorFilesToCreate = [
-              { folder: 'default', filename: authorSlug + '.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
-              { folder: 'chinese', filename: authorSlug + '-cn.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-cn/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
-              { folder: 'chinese', filename: authorSlug + '-tw.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + authorSlug + '\npermalink: /zh-tw/authors/' + authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
-            ];
-            Promise.all(authorFilesToCreate.map(function (f) {
-              var aUrl = 'https://api.github.com/repos/' + REPO + '/contents/website/_authors/' + f.folder + '/' + f.filename;
-              return fetch(aUrl, { headers: headers }).then(function (aRes) {
-                if (aRes.status !== 404) return;
-                return fetch(aUrl, {
-                  method: 'PUT',
-                  headers: headers,
-                  body: JSON.stringify({
-                    message: 'Add author page: ' + d.authorName,
-                    content: btoa(unescape(encodeURIComponent(f.content)))
-                  })
-                });
-              });
-            })).then(function () {
-              if (d.uid) {
-                db.collection('users').doc(d.uid).set({ authorPage: '/authors/' + authorSlug + '/' }, { merge: true });
-                db.collection('users').doc(d.uid).update({
-                  publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: slug, title: d.title, category: d.category })
-                }).catch(function () {});
-              }
-
-              var aboutPath = 'website/_data/about.yml';
-              var aboutApiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + aboutPath;
-              fetch(aboutApiUrl, { headers: headers }).then(function (aboutRes) {
-                if (!aboutRes.ok) return;
-                return aboutRes.json();
-              }).then(function (aboutFile) {
-                if (!aboutFile) return;
-                var aboutContent = decodeURIComponent(escape(atob(aboutFile.content)));
-                if (aboutContent.indexOf('id: ' + authorSlug) !== -1) return;
-                var newEntry = '\n  - id: ' + authorSlug + '\n';
-                newEntry += '    name: "' + d.authorName + '"\n';
-                newEntry += '    affiliation:\n';
-                newEntry += '    cohort:\n';
-                newEntry += '    profile_label:\n';
-                newEntry += '    profile_url:\n';
-                newEntry += '    contacts: []\n';
-                newEntry += '    photo:\n';
-                newEntry += '    summary: "Contributor."\n';
-                var updatedContent = aboutContent.replace('contributors: []', 'contributors:' + newEntry);
-                if (updatedContent === aboutContent) {
-                  updatedContent = aboutContent.trimEnd() + newEntry;
-                }
-                return fetch(aboutApiUrl, {
-                  method: 'PUT',
-                  headers: headers,
-                  body: JSON.stringify({
-                    message: 'Add contributor: ' + d.authorName,
-                    content: btoa(unescape(encodeURIComponent(updatedContent))),
-                    sha: aboutFile.sha
-                  })
-                });
-              }).catch(function (e) { console.error('About.yml update error:', e); });
-            }).catch(function (e) { console.error('Author page creation error:', e); });
-
-            document.getElementById('modal-md-content').textContent = 'Published to GitHub successfully!\n\nFile: ' + filePath + '\nThe site will rebuild automatically.';
-            document.getElementById('modal-md-output').style.display = 'block';
-            document.getElementById('modal-copy-md').style.display = 'none';
-
-            btn.textContent = ADMIN_I18N.approve_btn;
-            btn.disabled = false;
-            loadReviewList(currentFilter);
-            var user = auth.currentUser;
-            if (user) loadSubmissions(user.uid);
-          }).catch(function (err) {
-            console.error('GitHub publish error:', err);
-            btn.textContent = ADMIN_I18N.approve_btn;
-            btn.disabled = false;
-            alert(ADMIN_I18N.github_error + err.message);
-          });
-        });
+        // Not published and not local — show markdown for manual copy
+        badge.textContent = 'Approved';
+        badge.className = 'admin-status admin-status-approved';
+        if (r.markdown) {
+          document.getElementById('modal-md-content').textContent = r.markdown;
+          document.getElementById('modal-md-output').style.display = 'block';
+          document.getElementById('modal-copy-md').style.display = 'inline-block';
+        }
       }
-      }); // end authorSlugPromise.then
+
+      btn.textContent = ADMIN_I18N.approve_btn;
+      btn.disabled = false;
+      loadReviewList(currentFilter);
+      var user = auth.currentUser;
+      if (user) loadSubmissions(user.uid);
     }).catch(function (err) {
       console.error('Approve error:', err);
       btn.textContent = ADMIN_I18N.approve_btn;
       btn.disabled = false;
+      alert(ADMIN_I18N.github_error + (err.message || ''));
     });
   });
 
@@ -2089,10 +1911,8 @@ var ADMIN_I18N = {
     btn.textContent = ADMIN_I18N.rejecting;
     btn.disabled = true;
 
-    var reviewer = auth.currentUser;
-    db.collection('submissions').doc(currentModalDocId).update({
-      status: 'rejected', rejectionReason: reason, reviewerUid: reviewer.uid, reviewerEmail: reviewer.email, reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function () {
+    var reject = functions.httpsCallable('rejectSubmission');
+    reject({ docId: currentModalDocId, reason: reason }).then(function () {
       var badge = document.getElementById('modal-status-badge');
       badge.textContent = getStatusLabel('rejected');
       badge.className = 'admin-status admin-status-rejected';
@@ -2134,58 +1954,21 @@ var ADMIN_I18N = {
     var d = currentModalData;
     var docId = currentModalDocId;
 
-    // Delete from Firestore
-    db.collection('submissions').doc(docId).delete().then(function () {
-      // If approved, clean up: remove from user's publishedArticles + delete guide file
-      if (d && d.status === 'approved' && d.guide_id) {
-        // Remove from user's publishedArticles array
-        if (d.uid) {
-          db.collection('users').doc(d.uid).get().then(function (userDoc) {
-            if (!userDoc.exists) return;
-            var articles = userDoc.data().publishedArticles || [];
-            var filtered = articles.filter(function (a) { return a.guide_id !== d.guide_id; });
-            if (filtered.length !== articles.length) {
-              return db.collection('users').doc(d.uid).update({ publishedArticles: filtered });
-            }
-          }).catch(function (e) { console.error('User cleanup error:', e); });
-        }
-
-        // Delete the guide file from GitHub / local
-        var lang = d.language || 'en';
-        var langMap = {
-          'en':    { folder: 'default', suffix: '' },
-          'zh-CN': { folder: 'chinese', suffix: '-CN' },
-          'zh-TW': { folder: 'chinese', suffix: '-TW' }
-        };
-        var langInfo = langMap[lang] || langMap['en'];
-        var fileName = d.guide_id + langInfo.suffix + '.md';
-        var filePath = 'website/_guides/' + langInfo.folder + '/' + fileName;
-        var REPO = 'United-World-College/UWC-Survival-Guide';
+    var deleteFn = functions.httpsCallable('deleteSubmission');
+    deleteFn({ docId: docId }).then(function (result) {
+      var r = result.data;
+      // If approved guide was deleted and we're on localhost, also remove local file
+      if (r.wasApproved && r.guideId) {
         var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
         if (isLocal) {
+          var langMap = { 'en': { folder: 'default', suffix: '' }, 'zh-CN': { folder: 'chinese', suffix: '-CN' }, 'zh-TW': { folder: 'chinese', suffix: '-TW' } };
+          var langInfo = langMap[r.language] || langMap['en'];
+          var filePath = 'website/_guides/' + langInfo.folder + '/' + r.guideId + langInfo.suffix + '.md';
           fetch('http://127.0.0.1:4001/delete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ path: filePath })
           }).catch(function () {});
-        } else {
-          db.collection('config').doc('github').get().then(function (configDoc) {
-            var token = configDoc.exists ? configDoc.data().token : null;
-            if (!token) return;
-            var headers = { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' };
-            var apiUrl = 'https://api.github.com/repos/' + REPO + '/contents/' + filePath;
-            return fetch(apiUrl, { headers: headers }).then(function (res) {
-              if (!res.ok) return;
-              return res.json().then(function (file) {
-                return fetch(apiUrl, {
-                  method: 'DELETE',
-                  headers: headers,
-                  body: JSON.stringify({ message: 'Delete guide: ' + d.title, sha: file.sha })
-                });
-              });
-            });
-          }).catch(function (e) { console.error('GitHub delete error:', e); });
         }
       }
       closeReviewModal();
@@ -2225,27 +2008,14 @@ var ADMIN_I18N = {
     btn.disabled = true;
     var now = new Date().toISOString();
 
-    db.collection('submissions').doc(currentModalDocId).get().then(function (snap) {
-      var data = snap.data();
-      var hist = (data.revisionHistory || []).slice();
-      var reviewer = auth.currentUser;
-      hist.push({ round: hist.length + 1, reviewerComments: comments, reviewedAt: now, reviewerUid: reviewer.uid, reviewerEmail: reviewer.email,
-                  contentSnapshot: { title: data.title, category: data.category, language: data.language, description: data.description, content: data.content } });
-      return db.collection('submissions').doc(currentModalDocId).update({
-        status: 'revise_resubmit',
-        reviewerComments: comments,
-        reviewerUid: reviewer.uid,
-        reviewerEmail: reviewer.email,
-        reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        revisionHistory: hist
-      }).then(function () { return hist; });
-    }).then(function (hist) {
+    var reviseFn = functions.httpsCallable('requestRevision');
+    reviseFn({ docId: currentModalDocId, comments: comments }).then(function (result) {
       var badge = document.getElementById('modal-status-badge');
       badge.textContent = getStatusLabel('revise_resubmit');
       badge.className = 'admin-status admin-status-revise_resubmit';
       document.getElementById('modal-actions').style.display = 'none';
       document.getElementById('modal-rnr-form').style.display = 'none';
-      renderRevisionThread({ revisionHistory: hist });
+      renderRevisionThread({ revisionHistory: result.data.revisionHistory });
 
       btn.textContent = ADMIN_I18N.rnr_submit;
       btn.disabled = false;
