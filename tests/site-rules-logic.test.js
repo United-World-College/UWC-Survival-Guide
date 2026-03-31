@@ -91,6 +91,11 @@ describe("Submissions collection security rules", () => {
     expect(submissionsBlock).toContain("resource.data.uid == request.auth.uid");
   });
 
+  test("allows read for co-author UIDs", () => {
+    expect(submissionsBlock).toContain("coauthorUids");
+    expect(submissionsBlock).toContain("request.auth.uid in resource.data.coauthorUids");
+  });
+
   test("allows read for verified admin emails", () => {
     expect(submissionsBlock).toContain("request.auth.token.email_verified == true");
     expect(submissionsBlock).toContain("li.dongyuan@ufl.edu");

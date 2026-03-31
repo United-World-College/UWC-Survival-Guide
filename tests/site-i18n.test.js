@@ -131,7 +131,15 @@ describe("i18n admin strings", () => {
       "coauthors_hint",
       "coauthor_name_placeholder",
       "coauthor_add_btn",
+      "coauthor_add_toggle",
       "coauthors_max",
+      "coauthor_id_placeholder",
+      "coauthor_lookup_btn",
+      "coauthor_searching",
+      "coauthor_not_found",
+      "coauthor_lookup_error",
+      "coauthor_already_added",
+      "coauthor_no_profile",
     ];
     for (const code of ["en", "zh-CN", "zh-TW"]) {
       const admin = getLocale(code).admin;

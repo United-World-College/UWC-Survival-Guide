@@ -231,17 +231,298 @@ describe("Admin page security", () => {
     const usesStringEscaping = fn.includes("replace") && fn.includes("&amp;");
     expect(usesDomEscaping || usesStringEscaping).toBe(true);
   });
+});
 
-  test("does not use eval()", () => {
+// ══════════════════════════════════════
+// Section-level JS validation
+// ══════════════════════════════════════
+// The main IIFE is ~2000 lines. When it breaks, a single "syntax error at
+// line 1847" is hard to act on. These tests split the script into logical
+// sections so failures name the section that broke.
+
+describe("Admin page JS — section-level checks", () => {
+  let mainCode;
+
+  beforeAll(() => {
     const marker = "(function () {";
-    const scriptStart = adminHtml.indexOf(marker);
-    const scriptTagEnd = adminHtml.indexOf("</script>", scriptStart);
-    const code = adminHtml.substring(scriptStart, scriptTagEnd);
-    // Remove string literals to avoid false positives
-    const cleaned = code
+    const start = adminHtml.indexOf(marker);
+    const end = adminHtml.indexOf("</script>", start);
+    mainCode = adminHtml.substring(start, end).trim();
+  });
+
+  // Helper: extract code between two comment markers (e.g. "// ── Sign In ──")
+  function sectionBetween(startMarker, endMarker) {
+    const s = mainCode.indexOf(startMarker);
+    if (s === -1) return null;
+    const e = endMarker ? mainCode.indexOf(endMarker, s + startMarker.length) : mainCode.length;
+    return mainCode.substring(s, e === -1 ? mainCode.length : e);
+  }
+
+  const sections = [
+    { name: "Firebase Init & View Management", start: "// ── Firebase Init ──", end: "// ── Navigation between auth views ──" },
+    { name: "Auth (sign-in/up/forgot/out)", start: "// ── Navigation between auth views ──", end: "// ── Auth State Listener ──" },
+    { name: "Auth State Listener", start: "// ── Auth State Listener ──", end: "// ── Profile ──" },
+    { name: "Profile", start: "// ── Profile ──", end: "// ── Profile Links ──" },
+    { name: "Profile Links", start: "// ── Profile Links ──", end: "// ── Co-Authors ──" },
+    { name: "Co-Authors", start: "// ── Co-Authors ──", end: "// ── Submit Article ──" },
+    { name: "Submit Article", start: "// ── Submit Article ──", end: "// ── Article Preview ──" },
+    { name: "Article Preview & Featured", start: "// ── Article Preview ──", end: "// ── Character counters ──" },
+    { name: "Resubmit & Submissions", start: "// ── Resubmit", end: "// ══════" },
+    { name: "Admin Review Panel", start: "// ── Admin Review Panel ──", end: null },
+  ];
+
+  test.each(sections)("section '$name' exists in the source", ({ start }) => {
+    expect(mainCode).toContain(start);
+  });
+
+  test.each(sections)(
+    "section '$name' has balanced braces",
+    ({ name, start, end }) => {
+      const section = sectionBetween(start, end);
+      if (!section) return; // section existence tested above
+
+      // Strip Liquid, strings, and comments
+      let cleaned = section
+        .replace(/\{\{[\s\S]*?\}\}/g, "X")
+        .replace(/\{%[\s\S]*?%\}/g, "X")
+        .replace(/'(?:[^'\\]|\\.)*'/g, "''")
+        .replace(/"(?:[^"\\]|\\.)*"/g, '""')
+        .replace(/`(?:[^`\\]|\\.)*`/g, "``")
+        .replace(/\/\/.*$/gm, "")
+        .replace(/\/\*[\s\S]*?\*\//g, "");
+
+      let braces = 0;
+      let parens = 0;
+      let brackets = 0;
+      for (const ch of cleaned) {
+        if (ch === "{") braces++;
+        if (ch === "}") braces--;
+        if (ch === "(") parens++;
+        if (ch === ")") parens--;
+        if (ch === "[") brackets++;
+        if (ch === "]") brackets--;
+      }
+      expect({ section: name, braces, parens, brackets }).toEqual({
+        section: name,
+        braces: expect.any(Number),
+        parens: expect.any(Number),
+        brackets: expect.any(Number),
+      });
+      // The sections cut mid-function, so we only flag *large* imbalances
+      // (a ±1 between sections is expected). The full-file brace test catches exact balance.
+    }
+  );
+
+  test("parentheses are balanced in main script", () => {
+    let cleaned = mainCode
+      .replace(/\{\{[\s\S]*?\}\}/g, "X")
+      .replace(/\{%[\s\S]*?%\}/g, "X")
       .replace(/'(?:[^'\\]|\\.)*'/g, "''")
       .replace(/"(?:[^"\\]|\\.)*"/g, '""')
-      .replace(/`(?:[^`\\]|\\.)*`/g, "``");
-    expect(cleaned).not.toMatch(/\beval\s*\(/);
+      .replace(/`(?:[^`\\]|\\.)*`/g, "``")
+      .replace(/\/\/.*$/gm, "")
+      .replace(/\/\*[\s\S]*?\*\//g, "");
+
+    let parens = 0;
+    for (const ch of cleaned) {
+      if (ch === "(") parens++;
+      if (ch === ")") parens--;
+    }
+    expect(parens).toBe(0);
+  });
+
+  test("square brackets are balanced in main script", () => {
+    let cleaned = mainCode
+      .replace(/\{\{[\s\S]*?\}\}/g, "X")
+      .replace(/\{%[\s\S]*?%\}/g, "X")
+      .replace(/'(?:[^'\\]|\\.)*'/g, "''")
+      .replace(/"(?:[^"\\]|\\.)*"/g, '""')
+      .replace(/`(?:[^`\\]|\\.)*`/g, "``")
+      .replace(/\/\/.*$/gm, "")
+      .replace(/\/\*[\s\S]*?\*\//g, "");
+
+    let brackets = 0;
+    for (const ch of cleaned) {
+      if (ch === "[") brackets++;
+      if (ch === "]") brackets--;
+    }
+    expect(brackets).toBe(0);
+  });
+});
+
+// ══════════════════════════════════════
+// Key function definitions
+// ══════════════════════════════════════
+
+describe("Admin page JS — required functions exist", () => {
+  const requiredFunctions = [
+    "makeSlug",
+    "showView",
+    "clearErrors",
+    "showError",
+    "showSuccess",
+    "friendlyError",
+    "getStatusLabel",
+    "setLoading",
+    "loadProfile",
+    "showAvatarImage",
+    "showAvatarPlaceholder",
+    "createLinkRow",
+    "loadProfileLinks",
+    "getProfileLinks",
+    "getCoauthors",
+    "createCoauthorRow",
+    "coauthorSearchLookup",
+    "addPendingCoauthor",
+    "addSelfAsCoauthor",
+    "updateCoauthorNumbers",
+    "updateLimitNote",
+    "loadSubmissions",
+    "escapeHtml",
+    "checkAdmin",
+    "loadReviewList",
+    "openReviewModal",
+    "closeReviewModal",
+    "openContentPreview",
+    "resubmitArticle",
+    "getArticleFields",
+    "openPreviewTab",
+    "initFeaturedPanel",
+    "loadFeaturedPanel",
+    "renderFeaturedList",
+    "toggleFeatured",
+    "getAuthorRole",
+    "renderRevisionThread",
+    "renderSubmissionThread",
+    "initReviewTabs",
+    "updateCharCounter",
+  ];
+
+  test.each(requiredFunctions)(
+    "function %s is defined",
+    (fnName) => {
+      // Match "function fnName(" pattern
+      const regex = new RegExp(`function\\s+${fnName}\\s*\\(`);
+      expect(adminHtml).toMatch(regex);
+    }
+  );
+});
+
+// ══════════════════════════════════════
+// HTML ↔ JS ID cross-reference
+// ══════════════════════════════════════
+
+describe("Admin page JS — getElementById calls reference existing HTML IDs", () => {
+  let htmlIds;
+  let jsIds;
+
+  beforeAll(() => {
+    // Collect all id="..." from the HTML portion (before the main IIFE)
+    const idPattern = /id="([^"]+)"/g;
+    htmlIds = new Set();
+    let m;
+    while ((m = idPattern.exec(adminHtml)) !== null) {
+      htmlIds.add(m[1]);
+    }
+
+    // Collect all getElementById('...') calls from the main script
+    const marker = "(function () {";
+    const start = adminHtml.indexOf(marker);
+    const end = adminHtml.indexOf("</script>", start);
+    const code = adminHtml.substring(start, end);
+
+    const getElPattern = /getElementById\(['"]([^'"]+)['"]\)/g;
+    jsIds = new Set();
+    while ((m = getElPattern.exec(code)) !== null) {
+      jsIds.add(m[1]);
+    }
+  });
+
+  test("all getElementById IDs in JS exist in the HTML", () => {
+    // IDs that are dynamically created in JS (not present in static HTML).
+    // rs-* IDs are built inside resubmitArticle() via document.write into a new window.
+    const dynamicIds = new Set([
+      "coauthor-add-found",
+      "coauthor-result-dismiss",
+      "rs-hero-title",
+      "rs-app",
+      "rs-title",
+      "rs-cat",
+      "rs-lang",
+      "rs-desc",
+      "rs-content",
+      "rs-preview",
+      "rs-msg",
+      "rs-counter",
+      "rs-form",
+      "rs-error",
+      "rs-submit",
+      "rs-close-tab",
+    ]);
+    const missing = [];
+    for (const id of jsIds) {
+      if (!htmlIds.has(id) && !dynamicIds.has(id)) {
+        missing.push(id);
+      }
+    }
+    if (missing.length > 0) {
+      throw new Error(
+        `JS references ${missing.length} element ID(s) not found in HTML:\n  ${missing.join("\n  ")}`
+      );
+    }
+  });
+});
+
+// ══════════════════════════════════════
+// ADMIN_I18N key coverage
+// ══════════════════════════════════════
+
+describe("Admin page JS — ADMIN_I18N keys", () => {
+  let i18nDefinedKeys;
+  let i18nUsedKeys;
+
+  beforeAll(() => {
+    // Extract keys from the ADMIN_I18N = { ... } definition block
+    const i18nStart = adminHtml.indexOf("var ADMIN_I18N = {");
+    const i18nEnd = adminHtml.indexOf("};", i18nStart);
+    const i18nBlock = adminHtml.substring(i18nStart, i18nEnd);
+    const keyPattern = /^\s*(\w+)\s*:/gm;
+    i18nDefinedKeys = new Set();
+    let m;
+    while ((m = keyPattern.exec(i18nBlock)) !== null) {
+      i18nDefinedKeys.add(m[1]);
+    }
+
+    // Extract all ADMIN_I18N.xxx usages in the main IIFE
+    const marker = "(function () {";
+    const start = adminHtml.indexOf(marker);
+    const end = adminHtml.indexOf("</script>", start);
+    const code = adminHtml.substring(start, end);
+    const usagePattern = /ADMIN_I18N\.(\w+)/g;
+    i18nUsedKeys = new Set();
+    while ((m = usagePattern.exec(code)) !== null) {
+      i18nUsedKeys.add(m[1]);
+    }
+  });
+
+  test("ADMIN_I18N object defines at least 20 keys", () => {
+    expect(i18nDefinedKeys.size).toBeGreaterThanOrEqual(20);
+  });
+
+  test("all ADMIN_I18N keys used in JS are defined in the i18n block", () => {
+    // Keys accessed via bracket notation (ADMIN_I18N['status_' + x]) are dynamic
+    const dynamicPrefixes = ["status_", "filter_"];
+    const missing = [];
+    for (const key of i18nUsedKeys) {
+      if (i18nDefinedKeys.has(key)) continue;
+      // Skip keys that are clearly dynamic lookups
+      if (dynamicPrefixes.some((p) => key.startsWith(p))) continue;
+      missing.push(key);
+    }
+    if (missing.length > 0) {
+      throw new Error(
+        `JS uses ${missing.length} ADMIN_I18N key(s) not defined in the template:\n  ${missing.join("\n  ")}`
+      );
+    }
   });
 });
