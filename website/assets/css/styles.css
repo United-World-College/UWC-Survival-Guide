@@ -2161,6 +2161,7 @@ a.author-contact-value:hover {
 /* ── Co-Authors: Search Result ── */
 .admin-coauthor-search-result {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.6rem;
   padding: 0.65rem 0.9rem;
@@ -2176,14 +2177,31 @@ a.author-contact-value:hover {
 }
 
 .admin-coauthor-search-result.admin-coauthor-result-success {
-  background: rgba(45, 122, 58, 0.06);
-  border: 1px solid rgba(45, 122, 58, 0.18);
+  background: var(--bg-alt, #f5f3ef);
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
 }
 
 .admin-coauthor-search-result.admin-coauthor-result-error {
   background: rgba(192, 57, 43, 0.05);
   border: 1px solid rgba(192, 57, 43, 0.14);
   color: var(--error, #c0392b);
+}
+
+.admin-coauthor-dismiss {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--warm-gray);
+  cursor: pointer;
+  padding: 0 0.3rem;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.admin-coauthor-dismiss:hover {
+  opacity: 1;
 }
 
 .admin-coauthor-result-info {
@@ -2196,24 +2214,36 @@ a.author-contact-value:hover {
 
 .admin-coauthor-result-name {
   font-weight: 500;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   color: var(--text-primary);
 }
 
 a.admin-coauthor-result-name {
   text-decoration: underline;
   text-underline-offset: 2px;
-  color: var(--success, #2d7a3a);
 }
 
 a.admin-coauthor-result-name:hover {
-  opacity: 0.75;
+  color: var(--success, #2d7a3a);
+}
+
+.admin-coauthor-result-name-no-profile {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-underline-offset: 2px;
+}
+
+.admin-coauthor-result-name-no-profile:hover {
+  color: var(--warm-gray);
 }
 
 .admin-coauthor-no-profile {
+  width: 100%;
   font-size: 0.78rem;
   color: var(--warm-gray);
   font-style: italic;
+  margin-top: 0.3rem;
 }
 
 .admin-coauthor-result-note {
@@ -2228,9 +2258,23 @@ a.admin-coauthor-result-name:hover {
 }
 
 .admin-coauthor-add-btn {
-  padding: 0.35rem 1.2rem;
+  padding: 0.25rem 0.7rem;
   font-size: 0.78rem;
   flex-shrink: 0;
+  background: none;
+  color: var(--success, #2d7a3a);
+  border: 1px solid rgba(45, 122, 58, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.admin-coauthor-add-btn:hover {
+  background: rgba(45, 122, 58, 0.08);
+  border-color: rgba(45, 122, 58, 0.5);
 }
 
 /* ── Co-Authors: Added List ── */
@@ -2240,6 +2284,7 @@ a.admin-coauthor-result-name:hover {
 
 .admin-coauthor-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 0.35rem;
   align-items: center;
@@ -2272,6 +2317,19 @@ a.admin-coauthor-result-name:hover {
 
 .admin-coauthor-name-display:hover {
   color: var(--success, #2d7a3a);
+}
+
+.admin-coauthor-name-no-profile {
+  cursor: pointer;
+  text-decoration-style: dashed;
+}
+
+.admin-coauthor-no-profile-tip {
+  width: 100%;
+  font-size: 0.78rem;
+  color: var(--warm-gray);
+  font-style: italic;
+  margin-top: 0.25rem;
 }
 
 .admin-coauthor-id-display {

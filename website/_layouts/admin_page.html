@@ -340,18 +340,24 @@ var ADMIN_I18N = {
             </div>
 
             <div class="admin-field">
-              <label class="admin-label">{{ t.coauthors_label }}</label>
-              <div id="coauthors-list"></div>
-              <button type="button" id="coauthor-toggle-btn" class="admin-btn admin-btn-outline admin-coauthor-toggle">{{ t.coauthor_add_toggle }}</button>
-              <div id="coauthor-search-panel" style="display:none;">
-                <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">{{ t.coauthors_hint }}</p>
-                <div class="admin-coauthor-search">
-                  <input type="text" id="coauthor-search-input" class="admin-input" placeholder="{{ t.coauthor_id_placeholder }}" maxlength="60" />
-                  <button type="button" id="coauthor-search-btn" class="admin-btn admin-btn-outline">{{ t.coauthor_lookup_btn }}</button>
+              <button type="button" id="coauthor-section-toggle" class="admin-btn admin-btn-outline admin-coauthor-toggle">{{ t.coauthor_add_toggle }}</button>
+              <div id="coauthor-section" style="display:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <label class="admin-label" style="margin-bottom:0;">{{ t.coauthors_label }}</label>
+                  <button type="button" id="coauthor-section-close" class="admin-coauthor-dismiss" title="Close">&times;</button>
                 </div>
-                <div id="coauthor-search-result" class="admin-coauthor-search-result" style="display:none;"></div>
+                <div id="coauthors-list"></div>
+                <button type="button" id="coauthor-toggle-btn" class="admin-btn admin-btn-outline admin-coauthor-toggle">{{ t.coauthor_add_toggle }}</button>
+                <div id="coauthor-search-panel" style="display:none;">
+                  <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">{{ t.coauthors_hint }}</p>
+                  <div class="admin-coauthor-search">
+                    <input type="text" id="coauthor-search-input" class="admin-input" placeholder="{{ t.coauthor_id_placeholder }}" maxlength="60" />
+                    <button type="button" id="coauthor-search-btn" class="admin-btn admin-btn-outline">{{ t.coauthor_lookup_btn }}</button>
+                  </div>
+                  <div id="coauthor-search-result" class="admin-coauthor-search-result" style="display:none;"></div>
+                </div>
+                <p id="coauthors-limit-note" style="display:none;font-size:0.75rem;color:var(--warm-gray);margin-top:0.4rem;">{{ t.coauthors_max }}</p>
               </div>
-              <p id="coauthors-limit-note" style="display:none;font-size:0.75rem;color:var(--warm-gray);margin-top:0.4rem;">{{ t.coauthors_max }}</p>
             </div>
 
             <div class="admin-field">
@@ -758,7 +764,7 @@ var ADMIN_I18N = {
           document.getElementById('profile-author-id').textContent = authorId;
           document.getElementById('profile-author-id-field').style.display = 'block';
           // Store for auto-adding as first coauthor
-          currentUserAuthor = { author_id: authorId, name: data.displayName || authorId };
+          currentUserAuthor = { author_id: authorId, name: data.displayName || authorId, uid: user.uid };
           addSelfAsCoauthor();
         }
         // Show auto-calculated role badge
@@ -1013,16 +1019,25 @@ var ADMIN_I18N = {
     pendingCoauthor = null;
     if (!searchId) { resultEl.style.display = 'none'; return; }
 
-    resultEl.style.display = 'block';
+    resultEl.style.display = '';
     resultEl.className = 'admin-coauthor-search-result admin-coauthor-searching';
     resultEl.innerHTML = '<span class="admin-coauthor-result-text">' + escapeHtml(ADMIN_I18N.coauthor_searching) + '</span>';
 
     db.collection('users').where('author_id', '==', searchId).get().then(function (snapshot) {
       if (snapshot.empty) {
+        document.querySelector('.admin-coauthor-search').style.display = 'none';
         resultEl.className = 'admin-coauthor-search-result admin-coauthor-result-error';
-        resultEl.innerHTML = '<span class="admin-coauthor-result-text">' + escapeHtml(ADMIN_I18N.coauthor_not_found) + '</span>';
+        resultEl.innerHTML = '<span class="admin-coauthor-result-text">' + escapeHtml(ADMIN_I18N.coauthor_not_found) + '</span>' +
+          '<button type="button" class="admin-coauthor-dismiss">&times;</button>';
+        resultEl.querySelector('.admin-coauthor-dismiss').addEventListener('click', function () {
+          resultEl.style.display = 'none';
+          document.querySelector('.admin-coauthor-search').style.display = '';
+          document.getElementById('coauthor-search-input').value = '';
+          document.getElementById('coauthor-search-input').focus();
+        });
         return;
       }
+      var coauthorUid = snapshot.docs[0].id;
       var userData = snapshot.docs[0].data();
       var displayName = userData.displayName || searchId;
       var hasProfile = hasAuthorProfile(searchId);
@@ -1040,11 +1055,11 @@ var ADMIN_I18N = {
 
       resultEl.className = 'admin-coauthor-search-result admin-coauthor-result-success';
 
-      // Build left side: name + profile status
+      // Build left side: name (always shown as link-style, tooltip if no profile)
       var nameHtml = hasProfile
         ? '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-result-name">' + escapeHtml(displayName) + '</a>'
-        : '<span class="admin-coauthor-result-name">' + escapeHtml(displayName) + '</span>';
-      var profileTag = hasProfile ? '' : '<span class="admin-coauthor-no-profile">' + escapeHtml(ADMIN_I18N.coauthor_no_profile) + '</span>';
+        : '<span class="admin-coauthor-result-name admin-coauthor-result-name-no-profile" tabindex="0">' + escapeHtml(displayName) + '</span>';
+      var profileTag = '';
 
       // Build right side: action
       var actionHtml = '';
@@ -1055,32 +1070,91 @@ var ADMIN_I18N = {
         actionHtml = '<span class="admin-coauthor-result-note">' + escapeHtml(ADMIN_I18N.coauthors_max) + '</span>';
         pendingCoauthor = null;
       } else {
-        pendingCoauthor = { author_id: searchId, name: displayName };
+        pendingCoauthor = { author_id: searchId, name: displayName, uid: coauthorUid };
         actionHtml = '<button type="button" class="admin-btn admin-coauthor-add-btn" id="coauthor-add-found">' + escapeHtml(ADMIN_I18N.coauthor_add_btn) + '</button>';
       }
 
-      resultEl.innerHTML = '<div class="admin-coauthor-result-info">' + nameHtml + profileTag + '</div>' + actionHtml;
+      // Hide search bar when showing result
+      document.querySelector('.admin-coauthor-search').style.display = 'none';
+      var dismissHtml = '<button type="button" class="admin-coauthor-dismiss" id="coauthor-result-dismiss">&times;</button>';
+      resultEl.innerHTML = '<div class="admin-coauthor-result-info">' + nameHtml + profileTag + '</div>' + actionHtml + dismissHtml;
+      document.getElementById('coauthor-result-dismiss').addEventListener('click', function () {
+        resultEl.style.display = 'none';
+        document.querySelector('.admin-coauthor-search').style.display = '';
+        document.getElementById('coauthor-search-input').value = '';
+        document.getElementById('coauthor-search-input').focus();
+      });
       var addBtn = document.getElementById('coauthor-add-found');
       if (addBtn) addBtn.addEventListener('click', addPendingCoauthor);
+      var noProfileName = resultEl.querySelector('.admin-coauthor-result-name-no-profile');
+      if (noProfileName) {
+        noProfileName.addEventListener('click', function () {
+          var existing = resultEl.querySelector('.admin-coauthor-no-profile');
+          if (existing) { existing.remove(); return; }
+          var tip = document.createElement('div');
+          tip.className = 'admin-coauthor-no-profile';
+          tip.textContent = ADMIN_I18N.coauthor_no_profile;
+          resultEl.appendChild(tip);
+        });
+      }
     }).catch(function () {
+      document.querySelector('.admin-coauthor-search').style.display = 'none';
       resultEl.className = 'admin-coauthor-search-result admin-coauthor-result-error';
-      resultEl.innerHTML = '<span class="admin-coauthor-result-text">' + escapeHtml(ADMIN_I18N.coauthor_lookup_error) + '</span>';
+      resultEl.innerHTML = '<span class="admin-coauthor-result-text">' + escapeHtml(ADMIN_I18N.coauthor_lookup_error) + '</span>' +
+        '<button type="button" class="admin-coauthor-dismiss">&times;</button>';
+      resultEl.querySelector('.admin-coauthor-dismiss').addEventListener('click', function () {
+        resultEl.style.display = 'none';
+        document.querySelector('.admin-coauthor-search').style.display = '';
+        document.getElementById('coauthor-search-input').value = '';
+        document.getElementById('coauthor-search-input').focus();
+      });
     });
   }
 
   function addPendingCoauthor() {
     if (!pendingCoauthor) return;
     if (document.querySelectorAll('.admin-coauthor-row').length >= MAX_COAUTHORS) return;
-    document.getElementById('coauthors-list').appendChild(createCoauthorRow(pendingCoauthor.author_id, pendingCoauthor.name));
+    document.getElementById('coauthors-list').appendChild(createCoauthorRow(pendingCoauthor.author_id, pendingCoauthor.name, false, pendingCoauthor.uid));
     updateCoauthorNumbers();
     updateLimitNote();
     // Reset search and collapse panel
     pendingCoauthor = null;
     document.getElementById('coauthor-search-input').value = '';
     document.getElementById('coauthor-search-result').style.display = 'none';
+    document.querySelector('.admin-coauthor-search').style.display = '';
     document.getElementById('coauthor-search-panel').style.display = 'none';
     document.getElementById('coauthor-toggle-btn').style.display = '';
   }
+
+  // Section-level toggle: show the entire co-authors section
+  document.getElementById('coauthor-section-toggle').addEventListener('click', function () {
+    document.getElementById('coauthor-section').style.display = '';
+    this.style.display = 'none';
+  });
+
+  // Close the co-authors section and reset everything
+  document.getElementById('coauthor-section-close').addEventListener('click', function () {
+    pendingCoauthor = null;
+    // Remove all added coauthors except self
+    var rows = document.querySelectorAll('.admin-coauthor-row');
+    var selfId = currentUserAuthor ? currentUserAuthor.author_id : null;
+    rows.forEach(function (row) {
+      if (row.getAttribute('data-author-id') !== selfId) row.remove();
+    });
+    // Re-add self if missing
+    addSelfAsCoauthor();
+    updateCoauthorNumbers();
+    updateLimitNote();
+    // Reset search UI
+    document.getElementById('coauthor-search-input').value = '';
+    document.getElementById('coauthor-search-result').style.display = 'none';
+    document.querySelector('.admin-coauthor-search').style.display = '';
+    document.getElementById('coauthor-search-panel').style.display = 'none';
+    document.getElementById('coauthor-toggle-btn').style.display = '';
+    // Collapse section
+    document.getElementById('coauthor-section').style.display = 'none';
+    document.getElementById('coauthor-section-toggle').style.display = '';
+  });
 
   document.getElementById('coauthor-toggle-btn').addEventListener('click', function () {
     var panel = document.getElementById('coauthor-search-panel');
@@ -1105,30 +1179,49 @@ var ADMIN_I18N = {
     for (var i = 0; i < existing.length; i++) {
       if (existing[i].getAttribute('data-author-id') === currentUserAuthor.author_id) return;
     }
-    list.appendChild(createCoauthorRow(currentUserAuthor.author_id, currentUserAuthor.name));
+    list.appendChild(createCoauthorRow(currentUserAuthor.author_id, currentUserAuthor.name, true, currentUserAuthor.uid));
     updateCoauthorNumbers();
     updateLimitNote();
   }
 
-  function createCoauthorRow(authorId, name) {
+  function createCoauthorRow(authorId, name, isSelf, uid) {
     var row = document.createElement('div');
     row.className = 'admin-coauthor-row';
     row.setAttribute('data-author-id', authorId);
     row.setAttribute('data-author-name', name);
+    if (uid) row.setAttribute('data-uid', uid);
     var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? '' : '/UWC-Survival-Guide';
     var profileHref = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + authorId + '/';
+    var hasProfile = hasAuthorProfile(authorId);
+    var nameEl = hasProfile
+      ? '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link admin-coauthor-name-display">' + escapeHtml(name) + '</a>'
+      : '<span class="admin-coauthor-name-display admin-coauthor-name-no-profile">' + escapeHtml(name) + '</span>';
     row.innerHTML = '<span class="admin-coauthor-order"></span>' +
-      '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link admin-coauthor-name-display">' + escapeHtml(name) + '</a>' +
+      nameEl +
       '<span class="admin-coauthor-id-display">' + escapeHtml(authorId) + '</span>' +
       '<button type="button" class="admin-coauthor-move" data-dir="up" title="Move up">&uarr;</button>' +
       '<button type="button" class="admin-coauthor-move" data-dir="down" title="Move down">&darr;</button>' +
-      '<button type="button" class="admin-link-remove">&times;</button>';
-    row.querySelector('.admin-link-remove').addEventListener('click', function () {
-      row.remove();
-      updateCoauthorNumbers();
-      updateLimitNote();
-    });
+      (isSelf ? '<span class="admin-link-remove" style="visibility:hidden">&times;</span>' : '<button type="button" class="admin-link-remove">&times;</button>');
+    if (!hasProfile) {
+      var nameSpan = row.querySelector('.admin-coauthor-name-no-profile');
+      nameSpan.addEventListener('click', function () {
+        var existing = row.querySelector('.admin-coauthor-no-profile-tip');
+        if (existing) { existing.remove(); return; }
+        var tip = document.createElement('div');
+        tip.className = 'admin-coauthor-no-profile-tip';
+        tip.textContent = ADMIN_I18N.coauthor_no_profile;
+        row.appendChild(tip);
+      });
+    }
+    var removeBtn = row.querySelector('.admin-link-remove');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', function () {
+        row.remove();
+        updateCoauthorNumbers();
+        updateLimitNote();
+      });
+    }
     row.querySelectorAll('.admin-coauthor-move').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var list = document.getElementById('coauthors-list');
@@ -1168,7 +1261,10 @@ var ADMIN_I18N = {
       var authorId = row.getAttribute('data-author-id');
       var name = row.getAttribute('data-author-name');
       if (authorId && name) {
-        coauthors.push({ author_id: authorId, name: name, order: i + 1 });
+        var obj = { author_id: authorId, name: name, order: i + 1 };
+        var uid = row.getAttribute('data-uid');
+        if (uid) obj.uid = uid;
+        coauthors.push(obj);
       }
     });
     return coauthors;
@@ -1207,7 +1303,11 @@ var ADMIN_I18N = {
       status: 'pending',
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    if (coAuthors.length > 0) submissionData.coAuthors = coAuthors;
+    if (coAuthors.length > 0) {
+      submissionData.coAuthors = coAuthors;
+      var uids = coAuthors.map(function (c) { return c.uid; }).filter(Boolean);
+      if (uids.length > 0) submissionData.coauthorUids = uids;
+    }
 
     db.collection('submissions').add(submissionData).then(function () {
       setLoading('submit-article-btn', false);
@@ -1217,6 +1317,8 @@ var ADMIN_I18N = {
       document.getElementById('coauthors-list').innerHTML = '';
       document.getElementById('coauthor-search-panel').style.display = 'none';
       document.getElementById('coauthor-toggle-btn').style.display = '';
+      document.getElementById('coauthor-section').style.display = 'none';
+      document.getElementById('coauthor-section-toggle').style.display = '';
       addSelfAsCoauthor();
       updateLimitNote();
       loadSubmissions(user.uid);
@@ -1707,17 +1809,35 @@ var ADMIN_I18N = {
     var container = document.getElementById('submissions-list');
     container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.loading_submissions) + '</p>';
 
-    db.collection('submissions')
-      .where('uid', '==', uid)
-      .orderBy('createdAt', 'desc')
-      .get()
-      .then(function (snapshot) {
-        if (snapshot.empty) {
+    // Query both own submissions and coauthored submissions
+    var ownQuery = db.collection('submissions').where('uid', '==', uid).orderBy('createdAt', 'desc').get();
+    var coauthorQuery = db.collection('submissions').where('coauthorUids', 'array-contains', uid).orderBy('createdAt', 'desc').get();
+
+    Promise.all([ownQuery, coauthorQuery]).then(function (results) {
+      // Merge and deduplicate
+      var seen = {};
+      var allDocs = [];
+      results.forEach(function (snapshot) {
+        snapshot.forEach(function (doc) {
+          if (!seen[doc.id]) {
+            seen[doc.id] = true;
+            allDocs.push(doc);
+          }
+        });
+      });
+      // Sort by createdAt descending
+      allDocs.sort(function (a, b) {
+        var ta = a.data().createdAt ? a.data().createdAt.toMillis() : 0;
+        var tb = b.data().createdAt ? b.data().createdAt.toMillis() : 0;
+        return tb - ta;
+      });
+
+      if (allDocs.length === 0) {
           container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.no_submissions) + '</p>';
           return;
         }
         var html = '<div class="admin-submissions">';
-        snapshot.forEach(function (doc) {
+        allDocs.forEach(function (doc) {
           var d = doc.data();
           var date = d.createdAt ? (function(dt){ return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); })(d.createdAt.toDate()) : ADMIN_I18N.just_now;
           var status = d.status || 'pending';

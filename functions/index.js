@@ -78,7 +78,8 @@ function generateMarkdown(d, authorSlug, editorName) {
   md += `author_id: "${authorSlug}"\n`;
   if (d.coAuthors && d.coAuthors.length > 0) {
     md += "coauthors:\n";
-    d.coAuthors.forEach((ca) => {
+    const sortedCoAuthors = d.coAuthors.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+    sortedCoAuthors.forEach((ca) => {
       md += `  - name: "${ca.name.replace(/"/g, '\\"')}"\n`;
       if (ca.author_id) {
         md += `    author_id: "${ca.author_id}"\n`;
@@ -221,7 +222,9 @@ exports.resubmitArticle = onCall(async (request) => {
   if (!snap.exists) throw new HttpsError("not-found", "Submission not found.");
   const data = snap.data();
 
-  if (data.uid !== request.auth.uid) {
+  const isOwner = data.uid === request.auth.uid;
+  const isCoauthor = data.coauthorUids && data.coauthorUids.includes(request.auth.uid);
+  if (!isOwner && !isCoauthor) {
     throw new HttpsError("permission-denied", "You can only resubmit your own articles.");
   }
   if (data.status !== "revise_resubmit") {
@@ -298,6 +301,67 @@ exports.approveSubmission = onCall(async (request) => {
 
   // Update author's user record (admin SDK bypasses rules)
   await updateAuthorRecord(d.uid, authorSlug, slug, d.title, d.category);
+
+  // Update coauthors' records and create their author pages
+  if (d.coAuthors && d.coAuthors.length > 0 && token) {
+    await Promise.all(d.coAuthors.map(async (ca) => {
+      if (!ca.uid || ca.uid === d.uid) return; // skip primary author
+      const caSlug = ca.author_id || makeSlug(ca.name);
+      await updateAuthorRecord(ca.uid, caSlug, slug, d.title, d.category);
+      // Create author pages on GitHub if they don't exist
+      const esc = ca.name.replace(/"/g, '\\"');
+      const tKey = "author-" + caSlug;
+      const caAuthorFiles = [
+        {
+          path: `website/_authors/default/${caSlug}.md`,
+          content: `---\ntitle: "${esc}"\nauthor_id: ${caSlug}\npermalink: /authors/${caSlug}/\ntranslation_key: ${tKey}\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n`,
+        },
+        {
+          path: `website/_authors/chinese/${caSlug}-cn.md`,
+          content: `---\ntitle: "${esc}"\nauthor_id: ${caSlug}\npermalink: /zh-cn/authors/${caSlug}/\ntranslation_key: ${tKey}\nlanguage_code: zh-CN\nlanguage_name: "\u7b80\u4f53\u4e2d\u6587"\nlanguage_sort: 2\n---\n`,
+        },
+        {
+          path: `website/_authors/chinese/${caSlug}-tw.md`,
+          content: `---\ntitle: "${esc}"\nauthor_id: ${caSlug}\npermalink: /zh-tw/authors/${caSlug}/\ntranslation_key: ${tKey}\nlanguage_code: zh-TW\nlanguage_name: "\u7e41\u9ad4\u4e2d\u6587"\nlanguage_sort: 3\n---\n`,
+        },
+      ];
+      await Promise.all(caAuthorFiles.map(async (f) => {
+        const check = await githubApi("GET", f.path, token);
+        if (check) return;
+        await githubApi("PUT", f.path, token, {
+          message: `Add author page: ${ca.name}`,
+          content: toBase64(f.content),
+        });
+      }));
+      // Add to about.yml if new
+      const aboutPath = "website/_data/about.yml";
+      const aboutFile = await githubApi("GET", aboutPath, token);
+      if (aboutFile) {
+        const aboutContent = Buffer.from(aboutFile.content, "base64").toString("utf-8");
+        if (!aboutContent.includes("id: " + caSlug)) {
+          let entry = "\n  - id: " + caSlug + "\n";
+          entry += '    name: "' + ca.name + '"\n';
+          entry += "    affiliation:\n    cohort:\n    profile_label:\n    profile_url:\n";
+          entry += "    contacts: []\n    photo:\n";
+          entry += '    summary: "Contributor."\n';
+          let updated = aboutContent.replace("contributors: []", "contributors:" + entry);
+          if (updated === aboutContent) updated = aboutContent.trimEnd() + entry;
+          await githubApi("PUT", aboutPath, token, {
+            message: `Add contributor: ${ca.name}`,
+            content: toBase64(updated),
+            sha: aboutFile.sha,
+          });
+        }
+      }
+    }));
+  } else if (d.coAuthors && d.coAuthors.length > 0) {
+    // No GitHub token, but still update Firestore records for coauthors
+    await Promise.all(d.coAuthors.map(async (ca) => {
+      if (!ca.uid || ca.uid === d.uid) return;
+      const caSlug = ca.author_id || makeSlug(ca.name);
+      await updateAuthorRecord(ca.uid, caSlug, slug, d.title, d.category);
+    }));
+  }
 
   return {
     success: true,
@@ -398,16 +462,21 @@ exports.deleteSubmission = onCall(async (request) => {
   // If approved, clean up the author record and GitHub file
   if (d.status === "approved" && d.guide_id) {
     // Remove from author's publishedArticles (admin SDK bypasses rules)
-    if (d.uid) {
-      const userDoc = await db.collection("users").doc(d.uid).get();
+    const uidsToClean = [d.uid];
+    if (d.coAuthors) {
+      d.coAuthors.forEach((ca) => { if (ca.uid && ca.uid !== d.uid) uidsToClean.push(ca.uid); });
+    }
+    await Promise.all(uidsToClean.map(async (cleanUid) => {
+      if (!cleanUid) return;
+      const userDoc = await db.collection("users").doc(cleanUid).get();
       if (userDoc.exists) {
         const articles = userDoc.data().publishedArticles || [];
         const filtered = articles.filter((a) => a.guide_id !== d.guide_id);
         if (filtered.length !== articles.length) {
-          await db.collection("users").doc(d.uid).update({ publishedArticles: filtered });
+          await db.collection("users").doc(cleanUid).update({ publishedArticles: filtered });
         }
       }
-    }
+    }));
 
     // Delete from GitHub
     const token = await getGitHubToken();
