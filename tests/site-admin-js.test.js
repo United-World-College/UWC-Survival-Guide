@@ -140,7 +140,9 @@ describe("Admin page HTML structure", () => {
 
   test("has co-authors section", () => {
     expect(adminHtml).toContain('id="coauthors-list"');
-    expect(adminHtml).toContain('id="add-coauthor-btn"');
+    expect(adminHtml).toContain('id="coauthor-search-input"');
+    expect(adminHtml).toContain('id="coauthor-search-btn"');
+    expect(adminHtml).toContain('id="coauthor-search-result"');
     expect(adminHtml).toContain('id="coauthors-limit-note"');
   });
 

@@ -233,6 +233,7 @@
     coauthor_not_found: "No user found with this ID"
     coauthor_lookup_error: "Lookup failed, try again"
     coauthor_unresolved: "Please look up all co-authors before submitting"
+    coauthor_already_added: "Already added"
     coauthor_add_btn: "+ Add Co-Author"
     coauthors_max: "Maximum 10 co-authors allowed."
     description_label: Description
@@ -578,6 +579,7 @@
     coauthor_not_found: 未找到此 ID 的用户
     coauthor_lookup_error: 查找失败，请重试
     coauthor_unresolved: 提交前请查找所有共同作者
+    coauthor_already_added: 已添加
     coauthor_add_btn: + 添加共同作者
     coauthors_max: 最多允许 10 位共同作者。
     description_label: 简介
@@ -923,6 +925,7 @@
     coauthor_not_found: 未找到此 ID 的用戶
     coauthor_lookup_error: 查找失敗，請重試
     coauthor_unresolved: 提交前請查找所有共同作者
+    coauthor_already_added: 已添加
     coauthor_add_btn: + 添加共同作者
     coauthors_max: 最多允許 10 位共同作者。
     description_label: 簡介

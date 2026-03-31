@@ -140,6 +140,7 @@ var ADMIN_I18N = {
   coauthor_not_found:   {{ t.coauthor_not_found | jsonify }},
   coauthor_lookup_error: {{ t.coauthor_lookup_error | jsonify }},
   coauthor_unresolved:  {{ t.coauthor_unresolved | jsonify }},
+  coauthor_already_added: {{ t.coauthor_already_added | jsonify }},
   coauthor_add_btn:     {{ t.coauthor_add_btn | jsonify }},
   coauthors_max:        {{ t.coauthors_max | jsonify }},
   author_id_label:      {{ t.author_id_label | jsonify }}
@@ -339,8 +340,12 @@ var ADMIN_I18N = {
             <div class="admin-field">
               <label class="admin-label">{{ t.coauthors_label }}</label>
               <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">{{ t.coauthors_hint }}</p>
+              <div class="admin-coauthor-search">
+                <input type="text" id="coauthor-search-input" class="admin-input" placeholder="{{ t.coauthor_id_placeholder }}" maxlength="60" />
+                <button type="button" id="coauthor-search-btn" class="admin-btn admin-btn-outline">{{ t.coauthor_lookup_btn }}</button>
+              </div>
+              <div id="coauthor-search-result" class="admin-coauthor-search-result" style="display:none;"></div>
               <div id="coauthors-list"></div>
-              <button type="button" id="add-coauthor-btn" class="admin-btn admin-btn-outline" style="margin-top:0.5rem;font-size:0.78rem;padding:0.5rem 1.2rem;">{{ t.coauthor_add_btn }}</button>
               <p id="coauthors-limit-note" style="display:none;font-size:0.75rem;color:var(--warm-gray);margin-top:0.4rem;">{{ t.coauthors_max }}</p>
             </div>
 
@@ -981,70 +986,93 @@ var ADMIN_I18N = {
 
   // ── Co-Authors ──
   var MAX_COAUTHORS = 10;
+  var pendingCoauthor = null; // { author_id, name }
 
-  function lookupCoauthor(row) {
-    var input = row.querySelector('.admin-coauthor-id');
-    var resolvedSpan = row.querySelector('.admin-coauthor-resolved-name');
+  function coauthorSearchLookup() {
+    var input = document.getElementById('coauthor-search-input');
+    var resultEl = document.getElementById('coauthor-search-result');
     var searchId = input.value.trim();
-    if (!searchId) return;
+    pendingCoauthor = null;
+    if (!searchId) { resultEl.style.display = 'none'; return; }
 
-    resolvedSpan.textContent = ADMIN_I18N.coauthor_searching;
-    resolvedSpan.className = 'admin-coauthor-resolved-name';
+    resultEl.style.display = 'block';
+    resultEl.className = 'admin-coauthor-search-result';
+    resultEl.textContent = ADMIN_I18N.coauthor_searching;
 
     db.collection('users').where('author_id', '==', searchId).get().then(function (snapshot) {
       if (snapshot.empty) {
-        resolvedSpan.textContent = ADMIN_I18N.coauthor_not_found;
-        resolvedSpan.className = 'admin-coauthor-resolved-name admin-coauthor-not-found';
-        row.removeAttribute('data-author-id');
-        row.removeAttribute('data-author-name');
+        resultEl.className = 'admin-coauthor-search-result admin-coauthor-not-found';
+        resultEl.textContent = ADMIN_I18N.coauthor_not_found;
       } else {
         var userData = snapshot.docs[0].data();
         var displayName = userData.displayName || searchId;
+        pendingCoauthor = { author_id: searchId, name: displayName };
         var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
           ? '' : '/UWC-Survival-Guide';
         var profileHref = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + searchId + '/';
-        resolvedSpan.innerHTML = '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link">' + escapeHtml(displayName) + '</a>';
-        resolvedSpan.className = 'admin-coauthor-resolved-name admin-coauthor-found';
-        row.setAttribute('data-author-id', searchId);
-        row.setAttribute('data-author-name', displayName);
+        // Check if already added
+        var existing = document.querySelectorAll('.admin-coauthor-row');
+        var alreadyAdded = false;
+        for (var i = 0; i < existing.length; i++) {
+          if (existing[i].getAttribute('data-author-id') === searchId) { alreadyAdded = true; break; }
+        }
+        resultEl.className = 'admin-coauthor-search-result admin-coauthor-found';
+        if (alreadyAdded) {
+          resultEl.innerHTML = '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link">' + escapeHtml(displayName) + '</a>' +
+            '<span class="admin-coauthor-already-added">' + escapeHtml(ADMIN_I18N.coauthor_already_added || 'Already added') + '</span>';
+          pendingCoauthor = null;
+        } else if (document.querySelectorAll('.admin-coauthor-row').length >= MAX_COAUTHORS) {
+          resultEl.innerHTML = '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link">' + escapeHtml(displayName) + '</a>' +
+            '<span class="admin-coauthor-already-added">' + escapeHtml(ADMIN_I18N.coauthors_max) + '</span>';
+          pendingCoauthor = null;
+        } else {
+          resultEl.innerHTML = '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link">' + escapeHtml(displayName) + '</a>' +
+            '<button type="button" class="admin-btn admin-coauthor-add-btn" id="coauthor-add-found">' + escapeHtml(ADMIN_I18N.coauthor_add_btn) + '</button>';
+          document.getElementById('coauthor-add-found').addEventListener('click', addPendingCoauthor);
+        }
       }
     }).catch(function () {
-      resolvedSpan.textContent = ADMIN_I18N.coauthor_lookup_error;
-      resolvedSpan.className = 'admin-coauthor-resolved-name admin-coauthor-not-found';
+      resultEl.className = 'admin-coauthor-search-result admin-coauthor-not-found';
+      resultEl.textContent = ADMIN_I18N.coauthor_lookup_error;
     });
   }
+
+  function addPendingCoauthor() {
+    if (!pendingCoauthor) return;
+    if (document.querySelectorAll('.admin-coauthor-row').length >= MAX_COAUTHORS) return;
+    document.getElementById('coauthors-list').appendChild(createCoauthorRow(pendingCoauthor.author_id, pendingCoauthor.name));
+    updateCoauthorNumbers();
+    updateLimitNote();
+    // Reset search
+    pendingCoauthor = null;
+    document.getElementById('coauthor-search-input').value = '';
+    document.getElementById('coauthor-search-result').style.display = 'none';
+    document.getElementById('coauthor-search-input').focus();
+  }
+
+  document.getElementById('coauthor-search-btn').addEventListener('click', coauthorSearchLookup);
+  document.getElementById('coauthor-search-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); coauthorSearchLookup(); }
+  });
 
   function createCoauthorRow(authorId, name) {
     var row = document.createElement('div');
     row.className = 'admin-coauthor-row';
+    row.setAttribute('data-author-id', authorId);
+    row.setAttribute('data-author-name', name);
+    var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? '' : '/UWC-Survival-Guide';
+    var profileHref = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + authorId + '/';
     row.innerHTML = '<span class="admin-coauthor-order"></span>' +
-      '<input type="text" class="admin-input admin-coauthor-id" placeholder="' + escapeHtml(ADMIN_I18N.coauthor_id_placeholder) + '" value="' + escapeHtml(authorId || '') + '" maxlength="60" />' +
-      '<button type="button" class="admin-coauthor-lookup admin-btn admin-btn-outline">' + escapeHtml(ADMIN_I18N.coauthor_lookup_btn) + '</button>' +
-      '<span class="admin-coauthor-resolved-name"></span>' +
+      '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link admin-coauthor-name-display">' + escapeHtml(name) + '</a>' +
+      '<span class="admin-coauthor-id-display">' + escapeHtml(authorId) + '</span>' +
       '<button type="button" class="admin-coauthor-move" data-dir="up" title="Move up">&uarr;</button>' +
       '<button type="button" class="admin-coauthor-move" data-dir="down" title="Move down">&darr;</button>' +
       '<button type="button" class="admin-link-remove">&times;</button>';
-    // If pre-resolved (loading existing data), set attributes and show name as link
-    if (authorId && name) {
-      row.setAttribute('data-author-id', authorId);
-      row.setAttribute('data-author-name', name);
-      var preBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? '' : '/UWC-Survival-Guide';
-      var preHref = preBaseUrl + ADMIN_I18N.lang_prefix + '/authors/' + authorId + '/';
-      var resolvedEl = row.querySelector('.admin-coauthor-resolved-name');
-      resolvedEl.innerHTML = '<a href="' + escapeHtml(preHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link">' + escapeHtml(name) + '</a>';
-      resolvedEl.className = 'admin-coauthor-resolved-name admin-coauthor-found';
-    }
     row.querySelector('.admin-link-remove').addEventListener('click', function () {
       row.remove();
       updateCoauthorNumbers();
-      updateAddCoauthorBtn();
-    });
-    row.querySelector('.admin-coauthor-lookup').addEventListener('click', function () {
-      lookupCoauthor(row);
-    });
-    row.querySelector('.admin-coauthor-id').addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') { e.preventDefault(); lookupCoauthor(row); }
+      updateLimitNote();
     });
     row.querySelectorAll('.admin-coauthor-move').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -1070,27 +1098,11 @@ var ADMIN_I18N = {
     });
   }
 
-  function updateAddCoauthorBtn() {
+  function updateLimitNote() {
     var count = document.querySelectorAll('.admin-coauthor-row').length;
-    var btn = document.getElementById('add-coauthor-btn');
     var note = document.getElementById('coauthors-limit-note');
-    if (count >= MAX_COAUTHORS) {
-      btn.style.display = 'none';
-      note.style.display = 'block';
-    } else {
-      btn.style.display = '';
-      note.style.display = 'none';
-    }
+    note.style.display = count >= MAX_COAUTHORS ? 'block' : 'none';
   }
-
-  document.getElementById('add-coauthor-btn').addEventListener('click', function () {
-    if (document.querySelectorAll('.admin-coauthor-row').length >= MAX_COAUTHORS) return;
-    document.getElementById('coauthors-list').appendChild(createCoauthorRow('', ''));
-    updateCoauthorNumbers();
-    updateAddCoauthorBtn();
-    var rows = document.querySelectorAll('.admin-coauthor-row');
-    rows[rows.length - 1].querySelector('.admin-coauthor-id').focus();
-  });
 
   function getCoauthors() {
     var rows = document.querySelectorAll('.admin-coauthor-row');
@@ -1103,16 +1115,6 @@ var ADMIN_I18N = {
       }
     });
     return coauthors;
-  }
-
-  function hasUnresolvedCoauthors() {
-    var rows = document.querySelectorAll('.admin-coauthor-row');
-    for (var i = 0; i < rows.length; i++) {
-      var input = rows[i].querySelector('.admin-coauthor-id').value.trim();
-      var resolved = rows[i].getAttribute('data-author-id');
-      if (input && !resolved) return true;
-    }
-    return false;
   }
 
   // ── Submit Article ──
@@ -1132,11 +1134,6 @@ var ADMIN_I18N = {
 
     if (!title || !category || !language || !authorName || !description || !content) {
       showError('article-error', ADMIN_I18N.err_fill_all);
-      return;
-    }
-
-    if (hasUnresolvedCoauthors()) {
-      showError('article-error', ADMIN_I18N.coauthor_unresolved);
       return;
     }
 
