@@ -1100,7 +1100,7 @@ var ADMIN_I18N = {
   function addSelfAsCoauthor() {
     if (!currentUserAuthor) return;
     var list = document.getElementById('coauthors-list');
-    // Don't add again if already present
+    // Skip if already present
     var existing = list.querySelectorAll('.admin-coauthor-row');
     for (var i = 0; i < existing.length; i++) {
       if (existing[i].getAttribute('data-author-id') === currentUserAuthor.author_id) return;
