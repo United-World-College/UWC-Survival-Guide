@@ -62,24 +62,67 @@ function makeSlug(text) {
   return text.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-function generateMarkdown(d, authorSlug, editorName) {
+function getAuthorKey(author) {
+  if (!author) return "";
+  if (author.uid) return `uid:${author.uid}`;
+  if (author.author_id) return `author:${author.author_id}`;
+  const name = (author.name || "").trim().toLowerCase();
+  return name ? `name:${name}` : "";
+}
+
+function getOrderedSubmissionAuthors(d) {
+  const seen = new Set();
+  return (Array.isArray(d.coAuthors) ? d.coAuthors : [])
+      .slice()
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
+      .map((author, index) => ({
+        uid: author.uid || null,
+        author_id: author.author_id || null,
+        name: (author.name || "").trim(),
+        order: author.order || index + 1,
+      }))
+      .filter((author) => {
+        if (!author.name) return false;
+        const key = getAuthorKey(author);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+}
+
+async function resolveSubmissionAuthors(d) {
+  const authors = getOrderedSubmissionAuthors(d);
+  if (!authors.length) {
+    throw new HttpsError("failed-precondition", "Submission is missing ordered authors.");
+  }
+  return Promise.all(authors.map(async (author) => ({
+    ...author,
+    author_id: author.author_id || await resolveAuthorSlug(author.uid, author.name),
+  })));
+}
+
+function generateMarkdown(d, authors, editorName) {
+  if (!authors || !authors.length) {
+    throw new Error("Ordered authors are required to generate markdown.");
+  }
   const lang = d.language || "en";
   const langInfo = LANG_MAP[lang] || LANG_MAP["en"];
   const slug = makeSlug(d.title);
   const today = new Date().toISOString().slice(0, 10);
   const submittedDate = d.createdAt ? d.createdAt.toDate().toISOString().slice(0, 10) : "";
+  const primaryAuthor = authors[0];
+  const coAuthors = authors.slice(1);
 
   let md = "---\n";
   md += `title: "${d.title.replace(/"/g, '\\"')}"\n`;
   md += `category: "${d.category}"\n`;
   md += `description: "${d.description.replace(/"/g, '\\"')}"\n`;
   md += "order: 99\n";
-  md += `author: "${d.authorName}"\n`;
-  md += `author_id: "${authorSlug}"\n`;
-  if (d.coAuthors && d.coAuthors.length > 0) {
+  md += `author: "${primaryAuthor.name.replace(/"/g, '\\"')}"\n`;
+  md += `author_id: "${primaryAuthor.author_id}"\n`;
+  if (coAuthors.length > 0) {
     md += "coauthors:\n";
-    const sortedCoAuthors = d.coAuthors.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
-    sortedCoAuthors.forEach((ca) => {
+    coAuthors.forEach((ca) => {
       md += `  - name: "${ca.name.replace(/"/g, '\\"')}"\n`;
       if (ca.author_id) {
         md += `    author_id: "${ca.author_id}"\n`;
@@ -121,21 +164,9 @@ async function resolveAuthorSlug(uid, authorName) {
   return makeSlug(authorName);
 }
 
-async function publishToGitHub(token, d, markdown, filePath, authorSlug) {
-  // Push guide file
-  const existing = await githubApi("GET", filePath, token);
-  const putBody = {
-    message: `Add guide: ${d.title} by ${d.authorName}`,
-    content: toBase64(markdown),
-  };
-  if (existing) {
-    putBody.sha = existing.sha;
-    putBody.message = `Update guide: ${d.title} by ${d.authorName}`;
-  }
-  await githubApi("PUT", filePath, token, putBody);
-
-  // Create author pages if they don't exist
-  const esc = d.authorName.replace(/"/g, '\\"');
+async function ensureAuthorPresenceOnGitHub(token, author) {
+  const authorSlug = author.author_id || makeSlug(author.name);
+  const esc = author.name.replace(/"/g, '\\"');
   const tKey = "author-" + authorSlug;
   const authorFiles = [
     {
@@ -151,35 +182,55 @@ async function publishToGitHub(token, d, markdown, filePath, authorSlug) {
       content: `---\ntitle: "${esc}"\nauthor_id: ${authorSlug}\npermalink: /zh-tw/authors/${authorSlug}/\ntranslation_key: ${tKey}\nlanguage_code: zh-TW\nlanguage_name: "\u7e41\u9ad4\u4e2d\u6587"\nlanguage_sort: 3\n---\n`,
     },
   ];
+
   await Promise.all(authorFiles.map(async (f) => {
     const check = await githubApi("GET", f.path, token);
     if (check) return;
     await githubApi("PUT", f.path, token, {
-      message: `Add author page: ${d.authorName}`,
+      message: `Add author page: ${author.name}`,
       content: toBase64(f.content),
     });
   }));
 
-  // Update about.yml if author is new
   const aboutPath = "website/_data/about.yml";
   const aboutFile = await githubApi("GET", aboutPath, token);
-  if (aboutFile) {
-    const aboutContent = Buffer.from(aboutFile.content, "base64").toString("utf-8");
-    if (!aboutContent.includes("id: " + authorSlug)) {
-      let entry = "\n  - id: " + authorSlug + "\n";
-      entry += '    name: "' + d.authorName + '"\n';
-      entry += "    affiliation:\n    cohort:\n    profile_label:\n    profile_url:\n";
-      entry += "    contacts: []\n    photo:\n";
-      entry += '    summary: "Contributor."\n';
-      let updated = aboutContent.replace("contributors: []", "contributors:" + entry);
-      if (updated === aboutContent) updated = aboutContent.trimEnd() + entry;
-      await githubApi("PUT", aboutPath, token, {
-        message: `Add contributor: ${d.authorName}`,
-        content: toBase64(updated),
-        sha: aboutFile.sha,
-      });
-    }
+  if (!aboutFile) return;
+
+  const aboutContent = Buffer.from(aboutFile.content, "base64").toString("utf-8");
+  if (aboutContent.includes("id: " + authorSlug)) return;
+
+  let entry = "\n  - id: " + authorSlug + "\n";
+  entry += '    name: "' + author.name + '"\n';
+  entry += "    affiliation:\n    cohort:\n    profile_label:\n    profile_url:\n";
+  entry += "    contacts: []\n    photo:\n";
+  entry += '    summary: "Contributor."\n';
+  let updated = aboutContent.replace("contributors: []", "contributors:" + entry);
+  if (updated === aboutContent) updated = aboutContent.trimEnd() + entry;
+  await githubApi("PUT", aboutPath, token, {
+    message: `Add contributor: ${author.name}`,
+    content: toBase64(updated),
+    sha: aboutFile.sha,
+  });
+}
+
+async function publishToGitHub(token, d, markdown, filePath, primaryAuthor) {
+  const authorSlug = primaryAuthor.author_id || makeSlug(primaryAuthor.name);
+  // Push guide file
+  const existing = await githubApi("GET", filePath, token);
+  const putBody = {
+    message: `Add guide: ${d.title} by ${primaryAuthor.name}`,
+    content: toBase64(markdown),
+  };
+  if (existing) {
+    putBody.sha = existing.sha;
+    putBody.message = `Update guide: ${d.title} by ${primaryAuthor.name}`;
   }
+  await githubApi("PUT", filePath, token, putBody);
+
+  await ensureAuthorPresenceOnGitHub(token, {
+    ...primaryAuthor,
+    author_id: authorSlug,
+  });
 }
 
 async function updateAuthorRecord(uid, authorSlug, slug, title, category) {
@@ -267,13 +318,15 @@ exports.approveSubmission = onCall(async (request) => {
     throw new HttpsError("failed-precondition", "Cannot approve in current state.");
   }
 
-  const authorSlug = await resolveAuthorSlug(d.uid, d.authorName);
+  const authors = await resolveSubmissionAuthors(d);
+  const primaryAuthor = authors[0];
+  const authorSlug = primaryAuthor.author_id;
 
   // Get editor name from the admin's own profile
   const adminDoc = await db.collection("users").doc(request.auth.uid).get();
   const editorName = adminDoc.exists ? adminDoc.data().displayName || "" : "";
 
-  const { markdown, slug, fileName, folder, filePath } = generateMarkdown(d, authorSlug, editorName);
+  const { markdown, slug, fileName, folder, filePath } = generateMarkdown(d, authors, editorName);
 
   // Update Firestore status
   const updateData = {
@@ -292,75 +345,20 @@ exports.approveSubmission = onCall(async (request) => {
   const token = await getGitHubToken();
   if (token) {
     try {
-      await publishToGitHub(token, d, markdown, filePath, authorSlug);
+      await publishToGitHub(token, d, markdown, filePath, primaryAuthor);
       published = true;
     } catch (err) {
       githubError = err.message;
     }
   }
 
-  // Update author's user record (admin SDK bypasses rules)
-  await updateAuthorRecord(d.uid, authorSlug, slug, d.title, d.category);
+  await Promise.all(authors.map(async (author) => {
+    if (!author.uid) return;
+    await updateAuthorRecord(author.uid, author.author_id, slug, d.title, d.category);
+  }));
 
-  // Update coauthors' records and create their author pages
-  if (d.coAuthors && d.coAuthors.length > 0 && token) {
-    await Promise.all(d.coAuthors.map(async (ca) => {
-      if (!ca.uid || ca.uid === d.uid) return; // skip primary author
-      const caSlug = ca.author_id || makeSlug(ca.name);
-      await updateAuthorRecord(ca.uid, caSlug, slug, d.title, d.category);
-      // Create author pages on GitHub if they don't exist
-      const esc = ca.name.replace(/"/g, '\\"');
-      const tKey = "author-" + caSlug;
-      const caAuthorFiles = [
-        {
-          path: `website/_authors/default/${caSlug}.md`,
-          content: `---\ntitle: "${esc}"\nauthor_id: ${caSlug}\npermalink: /authors/${caSlug}/\ntranslation_key: ${tKey}\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n`,
-        },
-        {
-          path: `website/_authors/chinese/${caSlug}-cn.md`,
-          content: `---\ntitle: "${esc}"\nauthor_id: ${caSlug}\npermalink: /zh-cn/authors/${caSlug}/\ntranslation_key: ${tKey}\nlanguage_code: zh-CN\nlanguage_name: "\u7b80\u4f53\u4e2d\u6587"\nlanguage_sort: 2\n---\n`,
-        },
-        {
-          path: `website/_authors/chinese/${caSlug}-tw.md`,
-          content: `---\ntitle: "${esc}"\nauthor_id: ${caSlug}\npermalink: /zh-tw/authors/${caSlug}/\ntranslation_key: ${tKey}\nlanguage_code: zh-TW\nlanguage_name: "\u7e41\u9ad4\u4e2d\u6587"\nlanguage_sort: 3\n---\n`,
-        },
-      ];
-      await Promise.all(caAuthorFiles.map(async (f) => {
-        const check = await githubApi("GET", f.path, token);
-        if (check) return;
-        await githubApi("PUT", f.path, token, {
-          message: `Add author page: ${ca.name}`,
-          content: toBase64(f.content),
-        });
-      }));
-      // Add to about.yml if new
-      const aboutPath = "website/_data/about.yml";
-      const aboutFile = await githubApi("GET", aboutPath, token);
-      if (aboutFile) {
-        const aboutContent = Buffer.from(aboutFile.content, "base64").toString("utf-8");
-        if (!aboutContent.includes("id: " + caSlug)) {
-          let entry = "\n  - id: " + caSlug + "\n";
-          entry += '    name: "' + ca.name + '"\n';
-          entry += "    affiliation:\n    cohort:\n    profile_label:\n    profile_url:\n";
-          entry += "    contacts: []\n    photo:\n";
-          entry += '    summary: "Contributor."\n';
-          let updated = aboutContent.replace("contributors: []", "contributors:" + entry);
-          if (updated === aboutContent) updated = aboutContent.trimEnd() + entry;
-          await githubApi("PUT", aboutPath, token, {
-            message: `Add contributor: ${ca.name}`,
-            content: toBase64(updated),
-            sha: aboutFile.sha,
-          });
-        }
-      }
-    }));
-  } else if (d.coAuthors && d.coAuthors.length > 0) {
-    // No GitHub token, but still update Firestore records for coauthors
-    await Promise.all(d.coAuthors.map(async (ca) => {
-      if (!ca.uid || ca.uid === d.uid) return;
-      const caSlug = ca.author_id || makeSlug(ca.name);
-      await updateAuthorRecord(ca.uid, caSlug, slug, d.title, d.category);
-    }));
+  if (token && authors.length > 1) {
+    await Promise.all(authors.slice(1).map((author) => ensureAuthorPresenceOnGitHub(token, author)));
   }
 
   return {
@@ -372,7 +370,8 @@ exports.approveSubmission = onCall(async (request) => {
     fileName,
     folder,
     authorSlug,
-    authorName: d.authorName,
+    authorName: primaryAuthor.name,
+    authors,
     slug,
   };
 });
@@ -462,9 +461,15 @@ exports.deleteSubmission = onCall(async (request) => {
   // If approved, clean up the author record and GitHub file
   if (d.status === "approved" && d.guide_id) {
     // Remove from author's publishedArticles (admin SDK bypasses rules)
-    const uidsToClean = [d.uid];
-    if (d.coAuthors) {
-      d.coAuthors.forEach((ca) => { if (ca.uid && ca.uid !== d.uid) uidsToClean.push(ca.uid); });
+    const seenUids = new Set();
+    const uidsToClean = [];
+    getOrderedSubmissionAuthors(d).forEach((author) => {
+      if (!author.uid || seenUids.has(author.uid)) return;
+      seenUids.add(author.uid);
+      uidsToClean.push(author.uid);
+    });
+    if (d.uid && !seenUids.has(d.uid)) {
+      uidsToClean.push(d.uid);
     }
     await Promise.all(uidsToClean.map(async (cleanUid) => {
       if (!cleanUid) return;

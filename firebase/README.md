@@ -30,7 +30,9 @@ Article submissions with full revision history.
 - **Create:** Any authenticated user
 - **Read/Update:** Author (`uid` match) or admin
 
-Key fields: `uid`, `title`, `category`, `language`, `description`, `content`, `status`, `authorName`, `createdAt`, `revisionHistory[]`, `reviewerComments`, `authorMessage`, `rejectionReason`, `approveMessage`
+Key fields: `uid`, `title`, `category`, `language`, `description`, `content`, `status`, `authorName`, `coAuthors[]`, `coauthorUids[]`, `createdAt`, `revisionHistory[]`, `reviewerComments`, `authorMessage`, `rejectionReason`, `approveMessage`
+
+`coAuthors[]` is the canonical ordered author list for portal submissions. The first entry becomes the published front-matter `author`, and the remaining entries become front-matter `coauthors`.
 
 Status lifecycle: `pending` &rarr; `approved` | `rejected` | `revise_resubmit` &rarr; `pending` (resubmitted) &rarr; ...
 

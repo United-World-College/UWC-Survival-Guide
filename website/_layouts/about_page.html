@@ -19,14 +19,52 @@
     {% if eic_ids == "" %}{% assign eic_ids = p.id %}{% else %}{% assign eic_ids = eic_ids | append: "," | append: p.id %}{% endif %}
   {% endfor %}
   {% assign sorted_guides = site.guides | sort: "published" %}
-  {% assign all_author_ids = sorted_guides | map: "author_id" | uniq %}
+  {% assign all_author_tokens = "" %}
+  {% for guide in sorted_guides %}
+    {% if guide.author_id != nil and guide.author_id != "" %}
+      {% capture author_token %}|{{ guide.author_id }}|{% endcapture %}
+      {% unless all_author_tokens contains author_token %}
+        {% assign all_author_tokens = all_author_tokens | append: author_token %}
+      {% endunless %}
+    {% endif %}
+    {% if guide.coauthors %}
+      {% for ca in guide.coauthors %}
+        {% if ca.author_id != nil and ca.author_id != "" %}
+          {% capture author_token %}|{{ ca.author_id }}|{% endcapture %}
+          {% unless all_author_tokens contains author_token %}
+            {% assign all_author_tokens = all_author_tokens | append: author_token %}
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+  {% assign all_author_ids = all_author_tokens | replace_first: "|", "" | split: "|" %}
   {% assign has_core_contributors = false %}
   {% assign has_contributors = false %}
   {% for aid in all_author_ids %}
     {% if aid != nil and aid != "" %}
       {% unless eic_ids contains aid %}
-        {% assign ag = site.guides | where: "author_id", aid %}
-        {% assign ac = ag | map: "guide_id" | uniq | size %}
+        {% assign matched_guide_tokens = "" %}
+        {% assign ac = 0 %}
+        {% for guide in site.guides %}
+          {% assign include_guide = false %}
+          {% if guide.author_id == aid %}
+            {% assign include_guide = true %}
+          {% elsif guide.coauthors %}
+            {% for ca in guide.coauthors %}
+              {% if ca.author_id == aid %}
+                {% assign include_guide = true %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          {% if include_guide and guide.guide_id %}
+            {% capture matched_guide_token %}|{{ guide.guide_id }}|{% endcapture %}
+            {% unless matched_guide_tokens contains matched_guide_token %}
+              {% assign matched_guide_tokens = matched_guide_tokens | append: matched_guide_token %}
+              {% assign ac = ac | plus: 1 %}
+            {% endunless %}
+          {% endif %}
+        {% endfor %}
         {% if ac >= 5 %}
           {% assign has_core_contributors = true %}
         {% elsif ac >= 1 %}
@@ -120,8 +158,27 @@
         {% for aid in all_author_ids %}
           {% if aid != nil and aid != "" %}
             {% unless eic_ids contains aid %}
-              {% assign ag = site.guides | where: "author_id", aid %}
-              {% assign ac = ag | map: "guide_id" | uniq | size %}
+              {% assign matched_guide_tokens = "" %}
+              {% assign ac = 0 %}
+              {% for guide in site.guides %}
+                {% assign include_guide = false %}
+                {% if guide.author_id == aid %}
+                  {% assign include_guide = true %}
+                {% elsif guide.coauthors %}
+                  {% for ca in guide.coauthors %}
+                    {% if ca.author_id == aid %}
+                      {% assign include_guide = true %}
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+                {% if include_guide and guide.guide_id %}
+                  {% capture matched_guide_token %}|{{ guide.guide_id }}|{% endcapture %}
+                  {% unless matched_guide_tokens contains matched_guide_token %}
+                    {% assign matched_guide_tokens = matched_guide_tokens | append: matched_guide_token %}
+                    {% assign ac = ac | plus: 1 %}
+                  {% endunless %}
+                {% endif %}
+              {% endfor %}
               {% if ac >= 5 %}
                 {% assign static_person = about_data.contributors | where: "id", aid | first %}
                 {% include profile-card.html person=static_person label=about_copy.core_contributor_label fallback_id=aid %}
@@ -148,8 +205,27 @@
         {% for aid in all_author_ids %}
           {% if aid != nil and aid != "" %}
             {% unless eic_ids contains aid %}
-              {% assign authored_guides = site.guides | where: "author_id", aid %}
-              {% assign article_count = authored_guides | map: "guide_id" | uniq | size %}
+              {% assign matched_guide_tokens = "" %}
+              {% assign article_count = 0 %}
+              {% for guide in site.guides %}
+                {% assign include_guide = false %}
+                {% if guide.author_id == aid %}
+                  {% assign include_guide = true %}
+                {% elsif guide.coauthors %}
+                  {% for ca in guide.coauthors %}
+                    {% if ca.author_id == aid %}
+                      {% assign include_guide = true %}
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+                {% if include_guide and guide.guide_id %}
+                  {% capture matched_guide_token %}|{{ guide.guide_id }}|{% endcapture %}
+                  {% unless matched_guide_tokens contains matched_guide_token %}
+                    {% assign matched_guide_tokens = matched_guide_tokens | append: matched_guide_token %}
+                    {% assign article_count = article_count | plus: 1 %}
+                  {% endunless %}
+                {% endif %}
+              {% endfor %}
               {% if article_count >= 1 and article_count < 5 %}
                 {% assign static_person = about_data.contributors | where: "id", aid | first %}
                 {% include profile-card.html person=static_person label=about_copy.contributor_label fallback_id=aid %}

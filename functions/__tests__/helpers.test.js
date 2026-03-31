@@ -152,7 +152,7 @@ describe("generateMarkdown", () => {
     };
     const makeSlug = helpers.makeSlug;
 
-    generateMarkdown = function (d, authorSlug, editorName) {
+    generateMarkdown = function (d, authors, editorName) {
       const lang = d.language || "en";
       const langInfo = LANG_MAP[lang] || LANG_MAP["en"];
       const slug = makeSlug(d.title);
@@ -160,17 +160,19 @@ describe("generateMarkdown", () => {
       const submittedDate = d.createdAt
         ? d.createdAt.toDate().toISOString().slice(0, 10)
         : "";
+      const primaryAuthor = authors[0];
+      const coAuthors = authors.slice(1);
 
       let md = "---\n";
       md += `title: "${d.title.replace(/"/g, '\\"')}"\n`;
       md += `category: "${d.category}"\n`;
       md += `description: "${d.description.replace(/"/g, '\\"')}"\n`;
       md += "order: 99\n";
-      md += `author: "${d.authorName}"\n`;
-      md += `author_id: "${authorSlug}"\n`;
-      if (d.coAuthors && d.coAuthors.length > 0) {
+      md += `author: "${primaryAuthor.name}"\n`;
+      md += `author_id: "${primaryAuthor.author_id}"\n`;
+      if (coAuthors.length > 0) {
         md += "coauthors:\n";
-        d.coAuthors.forEach((ca) => {
+        coAuthors.forEach((ca) => {
           md += `  - name: "${ca.name.replace(/"/g, '\\"')}"\n`;
           if (ca.author_id) {
             md += `    author_id: "${ca.author_id}"\n`;
@@ -213,15 +215,18 @@ describe("generateMarkdown", () => {
     content: "# Hello\n\nThis is my article.",
     createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
   };
+  const baseAuthors = [
+    { name: "Alice Smith", author_id: "alice-smith", order: 1, uid: "user-1" },
+  ];
 
   test("generates valid YAML front matter with closing delimiters", () => {
-    const result = generateMarkdown(baseSubmission, "alice-smith", "");
+    const result = generateMarkdown(baseSubmission, baseAuthors, "");
     expect(result.markdown).toMatch(/^---\n/);
     expect(result.markdown).toMatch(/\n---\n\n/);
   });
 
   test("includes all required front matter fields", () => {
-    const result = generateMarkdown(baseSubmission, "alice-smith", "");
+    const result = generateMarkdown(baseSubmission, baseAuthors, "");
     const md = result.markdown;
     expect(md).toContain('title: "My UWC Experience"');
     expect(md).toContain('category: "Life Reflections"');
@@ -238,12 +243,12 @@ describe("generateMarkdown", () => {
   });
 
   test("appends article content after front matter", () => {
-    const result = generateMarkdown(baseSubmission, "alice-smith", "");
+    const result = generateMarkdown(baseSubmission, baseAuthors, "");
     expect(result.markdown).toContain("# Hello\n\nThis is my article.");
   });
 
   test("generates correct file metadata for English", () => {
-    const result = generateMarkdown(baseSubmission, "alice-smith", "");
+    const result = generateMarkdown(baseSubmission, baseAuthors, "");
     expect(result.slug).toBe("my-uwc-experience");
     expect(result.fileName).toBe("my-uwc-experience.md");
     expect(result.folder).toBe("default");
@@ -254,7 +259,7 @@ describe("generateMarkdown", () => {
 
   test("generates correct file metadata for zh-CN", () => {
     const submission = { ...baseSubmission, language: "zh-CN", title: "我的经历" };
-    const result = generateMarkdown(submission, "alice", "");
+    const result = generateMarkdown(submission, [{ ...baseAuthors[0], author_id: "alice" }], "");
     expect(result.fileName).toBe("我的经历-CN.md");
     expect(result.folder).toBe("chinese");
     expect(result.filePath).toBe("website/_guides/chinese/我的经历-CN.md");
@@ -265,7 +270,7 @@ describe("generateMarkdown", () => {
 
   test("generates correct file metadata for zh-TW", () => {
     const submission = { ...baseSubmission, language: "zh-TW", title: "Test" };
-    const result = generateMarkdown(submission, "alice", "");
+    const result = generateMarkdown(submission, [{ ...baseAuthors[0], author_id: "alice" }], "");
     expect(result.fileName).toBe("test-TW.md");
     expect(result.folder).toBe("chinese");
     expect(result.markdown).toContain("language_sort: 3");
@@ -273,19 +278,19 @@ describe("generateMarkdown", () => {
 
   test("falls back to English for unknown language", () => {
     const submission = { ...baseSubmission, language: "fr" };
-    const result = generateMarkdown(submission, "alice", "");
+    const result = generateMarkdown(submission, [{ ...baseAuthors[0], author_id: "alice" }], "");
     expect(result.folder).toBe("default");
     expect(result.markdown).toContain('language_name: "English"');
   });
 
   test("includes editor fields when editor name provided", () => {
-    const result = generateMarkdown(baseSubmission, "alice-smith", "Bob Editor");
+    const result = generateMarkdown(baseSubmission, baseAuthors, "Bob Editor");
     expect(result.markdown).toContain('editor: "Bob Editor"');
     expect(result.markdown).toContain('editor_id: "bob-editor"');
   });
 
   test("omits editor fields when editor name is empty", () => {
-    const result = generateMarkdown(baseSubmission, "alice-smith", "");
+    const result = generateMarkdown(baseSubmission, baseAuthors, "");
     expect(result.markdown).not.toContain("editor:");
     expect(result.markdown).not.toContain("editor_id:");
   });
@@ -296,62 +301,52 @@ describe("generateMarkdown", () => {
       title: 'My "Great" Article',
       description: 'A "brief" summary',
     };
-    const result = generateMarkdown(submission, "alice", "");
+    const result = generateMarkdown(submission, [{ ...baseAuthors[0], author_id: "alice" }], "");
     expect(result.markdown).toContain('title: "My \\"Great\\" Article"');
     expect(result.markdown).toContain('description: "A \\"brief\\" summary"');
   });
 
-  test("includes coauthors when present", () => {
-    const submission = {
-      ...baseSubmission,
-      coAuthors: [
-        { name: "Bob Jones", author_id: "bob-jones", order: 1 },
-        { name: "Carol Lee", author_id: "carol-lee", order: 2 },
-      ],
-    };
-    const result = generateMarkdown(submission, "alice-smith", "");
+  test("uses the first ordered author as primary and includes the rest as coauthors", () => {
+    const result = generateMarkdown(baseSubmission, [
+      { name: "Bob Jones", author_id: "bob-jones", order: 1 },
+      { name: "Alice Smith", author_id: "alice-smith", order: 2 },
+      { name: "Carol Lee", author_id: "carol-lee", order: 3 },
+    ], "");
+    expect(result.markdown).toContain('author: "Bob Jones"');
+    expect(result.markdown).toContain('author_id: "bob-jones"');
     expect(result.markdown).toContain("coauthors:\n");
-    expect(result.markdown).toContain('  - name: "Bob Jones"');
-    expect(result.markdown).toContain('    author_id: "bob-jones"');
+    expect(result.markdown).toContain('  - name: "Alice Smith"');
+    expect(result.markdown).toContain('    author_id: "alice-smith"');
     expect(result.markdown).toContain('  - name: "Carol Lee"');
     expect(result.markdown).toContain('    author_id: "carol-lee"');
+    expect(result.markdown).not.toContain('  - name: "Bob Jones"');
   });
 
-  test("includes coauthors without author_id (legacy format)", () => {
-    const submission = {
-      ...baseSubmission,
-      coAuthors: [
-        { name: "Bob Jones", order: 1 },
-      ],
-    };
-    const result = generateMarkdown(submission, "alice-smith", "");
+  test("includes coauthors without author_id when one is missing", () => {
+    const result = generateMarkdown(baseSubmission, [
+      ...baseAuthors,
+      { name: "Bob Jones", order: 2 },
+    ], "");
     expect(result.markdown).toContain('  - name: "Bob Jones"');
     expect(result.markdown).not.toContain("    author_id:");
   });
 
-  test("omits coauthors when array is empty", () => {
-    const submission = { ...baseSubmission, coAuthors: [] };
-    const result = generateMarkdown(submission, "alice-smith", "");
-    expect(result.markdown).not.toContain("coauthors:");
-  });
-
-  test("omits coauthors when field is missing", () => {
-    const result = generateMarkdown(baseSubmission, "alice-smith", "");
+  test("omits coauthors when there is only one ordered author", () => {
+    const result = generateMarkdown(baseSubmission, baseAuthors, "");
     expect(result.markdown).not.toContain("coauthors:");
   });
 
   test("escapes quotes in coauthor names", () => {
-    const submission = {
-      ...baseSubmission,
-      coAuthors: [{ name: 'O"Brien', author_id: 'obrien', order: 1 }],
-    };
-    const result = generateMarkdown(submission, "alice-smith", "");
+    const result = generateMarkdown(baseSubmission, [
+      ...baseAuthors,
+      { name: 'O"Brien', author_id: 'obrien', order: 2 },
+    ], "");
     expect(result.markdown).toContain('  - name: "O\\"Brien"');
   });
 
   test("omits submitted date when createdAt is missing", () => {
     const submission = { ...baseSubmission, createdAt: null };
-    const result = generateMarkdown(submission, "alice-smith", "");
+    const result = generateMarkdown(submission, baseAuthors, "");
     expect(result.markdown).not.toContain("submitted:");
   });
 });

@@ -111,6 +111,13 @@ function admin2Auth(uid = "admin2-uid") {
   };
 }
 
+function orderedAuthors(...authors) {
+  return authors.map((author, index) => ({
+    ...author,
+    order: index + 1,
+  }));
+}
+
 // ══════════════════════════════════════
 // checkAdminStatus
 // ══════════════════════════════════════
@@ -670,6 +677,7 @@ describe("approveSubmission", () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
       authorName: "Alice",
+      coAuthors: orderedAuthors({ uid: "user-1", author_id: "alice", name: "Alice" }),
       title: "My Article",
       category: "Academics",
       language: "en",
@@ -714,6 +722,7 @@ describe("approveSubmission", () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
       authorName: "Alice",
+      coAuthors: orderedAuthors({ uid: "user-1", name: "Alice" }),
       title: "Article",
       category: "Academics",
       language: "en",
@@ -765,6 +774,7 @@ describe("approveSubmission", () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
       authorName: "Alice",
+      coAuthors: orderedAuthors({ uid: "user-1", name: "Alice" }),
       title: "Article",
       category: "Academics",
       language: "en",
@@ -792,6 +802,7 @@ describe("approveSubmission", () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
       authorName: "Alice Smith",
+      coAuthors: orderedAuthors({ uid: "user-1", name: "Alice Smith" }),
       title: "Article",
       category: "Academics",
       language: "en",
@@ -816,6 +827,7 @@ describe("approveSubmission", () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
       authorName: "Alice",
+      coAuthors: orderedAuthors({ uid: "user-1", name: "Alice" }),
       title: "My Article",
       category: "Academics",
       language: "en",
@@ -851,6 +863,7 @@ describe("approveSubmission", () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
       authorName: "Alice",
+      coAuthors: orderedAuthors({ uid: "user-1", name: "Alice" }),
       title: "My Article",
       category: "Academics",
       language: "en",
@@ -885,6 +898,7 @@ describe("approveSubmission", () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
       authorName: "Alice",
+      coAuthors: orderedAuthors({ uid: "user-1", name: "Alice" }),
       title: "My Article",
       category: "Academics",
       language: "en",
@@ -909,5 +923,48 @@ describe("approveSubmission", () => {
     expect(setCall).toBeDefined();
     expect(setCall.data.author_id).toBe("alice");
     expect(setCall.data.authorPage).toBeUndefined();
+  });
+
+  test("uses ordered authors for markdown and updates every listed author", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "Alice",
+      coAuthors: orderedAuthors(
+        { uid: "user-2", author_id: "bob", name: "Bob" },
+        { uid: "user-1", author_id: "alice", name: "Alice" },
+        { uid: "user-3", author_id: "carol", name: "Carol" }
+      ),
+      title: "Collaborative Article",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", { author_id: "alice" });
+    setMockDoc("users", "user-2", { author_id: "bob" });
+    setMockDoc("users", "user-3", { author_id: "carol" });
+    setMockDoc("config", "github", {});
+
+    const result = await funcs.approveSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    expect(result.authorSlug).toBe("bob");
+    expect(result.authorName).toBe("Bob");
+    expect(result.markdown).toContain('author: "Bob"');
+    expect(result.markdown).toContain('author_id: "bob"');
+    expect(result.markdown).toContain('  - name: "Alice"');
+    expect(result.markdown).toContain('  - name: "Carol"');
+    expect(result.markdown).not.toContain('  - name: "Bob"');
+
+    const updatedUserIds = mockSetCalls
+      .filter((call) => call.collection === "users")
+      .map((call) => call.docId)
+      .sort();
+    expect(updatedUserIds).toEqual(["user-1", "user-2", "user-3"]);
   });
 });

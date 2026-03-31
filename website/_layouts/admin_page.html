@@ -22,15 +22,59 @@
 var EIC_IDS = [{% for p in site.data.about.editors_in_chief %}{{ p.id | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}];
 var SITE_AUTHOR_IDS = [{% assign all_site_authors = site.authors | map: "author_id" | uniq %}{% for aid in all_site_authors %}{% if aid != nil and aid != "" %}{{ aid | jsonify }},{% endif %}{% endfor %}];
 var AUTHOR_ARTICLE_COUNTS = {
-  {% assign all_author_ids = site.guides | map: "author_id" | uniq %}{% assign _first = true %}
-  {% for aid in all_author_ids %}{% if aid != nil and aid != "" %}{% assign ag = site.guides | where: "author_id", aid %}{% assign ac = ag | map: "guide_id" | uniq | size %}{% unless _first %},{% endunless %}{{ aid | jsonify }}: {{ ac }}{% assign _first = false %}{% endif %}{% endfor %}
+  {% assign count_author_tokens = "" %}
+  {% for guide in site.guides %}
+    {% if guide.author_id != nil and guide.author_id != "" %}
+      {% capture count_author_token %}|{{ guide.author_id }}|{% endcapture %}
+      {% unless count_author_tokens contains count_author_token %}
+        {% assign count_author_tokens = count_author_tokens | append: count_author_token %}
+      {% endunless %}
+    {% endif %}
+    {% if guide.coauthors %}
+      {% for ca in guide.coauthors %}
+        {% if ca.author_id != nil and ca.author_id != "" %}
+          {% capture count_author_token %}|{{ ca.author_id }}|{% endcapture %}
+          {% unless count_author_tokens contains count_author_token %}
+            {% assign count_author_tokens = count_author_tokens | append: count_author_token %}
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+  {% assign counted_author_ids = count_author_tokens | replace_first: "|", "" | split: "|" %}{% assign _first = true %}
+  {% for aid in counted_author_ids %}
+    {% if aid != nil and aid != "" %}
+      {% assign matched_guide_tokens = "" %}
+      {% assign article_count = 0 %}
+      {% for guide in site.guides %}
+        {% assign include_guide = false %}
+        {% if guide.author_id == aid %}
+          {% assign include_guide = true %}
+        {% elsif guide.coauthors %}
+          {% for ca in guide.coauthors %}
+            {% if ca.author_id == aid %}
+              {% assign include_guide = true %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+        {% if include_guide and guide.guide_id %}
+          {% capture matched_guide_token %}|{{ guide.guide_id }}|{% endcapture %}
+          {% unless matched_guide_tokens contains matched_guide_token %}
+            {% assign matched_guide_tokens = matched_guide_tokens | append: matched_guide_token %}
+            {% assign article_count = article_count | plus: 1 %}
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+      {% unless _first %},{% endunless %}{{ aid | jsonify }}: {{ article_count }}{% assign _first = false %}
+    {% endif %}
+  {% endfor %}
 };
 </script>
 
 <!-- Site guide data for article registration validation -->
 <script>
 {% assign all_site_guide_ids = site.guides | map: "guide_id" | uniq %}
-var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides | where: "guide_id", gid | where: "language_code", current_language_code | first %}{% if g == nil %}{% assign g = site.guides | where: "guide_id", gid | where: "language_code", "en" | first %}{% endif %}{% if g == nil %}{% assign g = site.guides | where: "guide_id", gid | first %}{% endif %}{"guide_id":{{ g.guide_id | jsonify }},"title":{{ g.title | jsonify }},"category":{{ g.category | default: "" | jsonify }},"author_id":{{ g.author_id | default: "" | jsonify }},"url":{{ g.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}];
+var SITE_GUIDES = [{% for gid in all_site_guide_ids %}{% assign g = site.guides | where: "guide_id", gid | where: "language_code", current_language_code | first %}{% if g == nil %}{% assign g = site.guides | where: "guide_id", gid | where: "language_code", "en" | first %}{% endif %}{% if g == nil %}{% assign g = site.guides | where: "guide_id", gid | first %}{% endif %}{% assign guide_author_tokens = "" %}{% if g.author_id != nil and g.author_id != "" %}{% capture guide_author_token %}|{{ g.author_id }}|{% endcapture %}{% unless guide_author_tokens contains guide_author_token %}{% assign guide_author_tokens = guide_author_tokens | append: guide_author_token %}{% endunless %}{% endif %}{% if g.coauthors %}{% for ca in g.coauthors %}{% if ca.author_id != nil and ca.author_id != "" %}{% capture guide_author_token %}|{{ ca.author_id }}|{% endcapture %}{% unless guide_author_tokens contains guide_author_token %}{% assign guide_author_tokens = guide_author_tokens | append: guide_author_token %}{% endunless %}{% endif %}{% endfor %}{% endif %}{% assign guide_author_ids = guide_author_tokens | replace_first: "|", "" | split: "|" %}{"guide_id":{{ g.guide_id | jsonify }},"title":{{ g.title | jsonify }},"category":{{ g.category | default: "" | jsonify }},"author_id":{{ g.author_id | default: "" | jsonify }},"author_ids":[{% assign _first_author = true %}{% for author_id in guide_author_ids %}{% if author_id != nil and author_id != "" %}{% unless _first_author %},{% endunless %}{{ author_id | jsonify }}{% assign _first_author = false %}{% endif %}{% endfor %}],"url":{{ g.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}];
 </script>
 
 <!-- Localised JS strings -->
@@ -1254,6 +1298,37 @@ var ADMIN_I18N = {
     document.getElementById('coauthor-toggle-btn').style.display = atMax ? 'none' : '';
   }
 
+  function getAuthorIdentity(author) {
+    if (!author) return '';
+    if (author.uid) return 'uid:' + author.uid;
+    if (author.author_id) return 'author:' + author.author_id;
+    var name = (author.name || '').trim().toLowerCase();
+    return name ? 'name:' + name : '';
+  }
+
+  function normalizeAuthors(authors) {
+    var seen = {};
+    var normalized = [];
+    (authors || []).slice().sort(function (a, b) {
+      return (a.order || 0) - (b.order || 0);
+    }).forEach(function (author, index) {
+      if (!author) return;
+      var normalizedAuthor = {
+        author_id: author.author_id || '',
+        name: (author.name || '').trim(),
+        order: author.order || index + 1
+      };
+      if (author.uid) normalizedAuthor.uid = author.uid;
+      if (!normalizedAuthor.name) return;
+      var key = getAuthorIdentity(normalizedAuthor);
+      if (!key || seen[key]) return;
+      seen[key] = true;
+      normalizedAuthor.order = normalized.length + 1;
+      normalized.push(normalizedAuthor);
+    });
+    return normalized;
+  }
+
   function getCoauthors() {
     var rows = document.querySelectorAll('.admin-coauthor-row');
     var coauthors = [];
@@ -1267,7 +1342,30 @@ var ADMIN_I18N = {
         coauthors.push(obj);
       }
     });
-    return coauthors;
+    return normalizeAuthors(coauthors);
+  }
+
+  function getCurrentSubmissionAuthors(userUid, authorName) {
+    var authors = getCoauthors();
+    if (authors.length > 0) return authors;
+    if (!authorName) return [];
+    var fallback = {
+      author_id: currentUserAuthor && currentUserAuthor.author_id ? currentUserAuthor.author_id : '',
+      name: authorName,
+      order: 1
+    };
+    if (userUid || (currentUserAuthor && currentUserAuthor.uid)) {
+      fallback.uid = userUid || currentUserAuthor.uid;
+    }
+    return normalizeAuthors([fallback]);
+  }
+
+  function getSubmissionAuthors(d) {
+    return normalizeAuthors(d && d.coAuthors ? d.coAuthors : []);
+  }
+
+  function getAuthorNames(authors) {
+    return (authors || []).map(function (author) { return author.name; }).join(', ');
   }
 
   // ── Submit Article ──
@@ -1281,7 +1379,7 @@ var ADMIN_I18N = {
     var category = document.getElementById('article-category').value;
     var language = document.getElementById('article-language').value;
     var authorName = document.getElementById('article-author').value.trim();
-    var coAuthors = getCoauthors();
+    var coAuthors = getCurrentSubmissionAuthors(user.uid, authorName);
     var description = document.getElementById('article-description').value.trim();
     var content = document.getElementById('article-content').value;
 
@@ -1303,11 +1401,9 @@ var ADMIN_I18N = {
       status: 'pending',
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    if (coAuthors.length > 0) {
-      submissionData.coAuthors = coAuthors;
-      var uids = coAuthors.map(function (c) { return c.uid; }).filter(Boolean);
-      if (uids.length > 0) submissionData.coauthorUids = uids;
-    }
+    submissionData.coAuthors = coAuthors;
+    var uids = coAuthors.map(function (c) { return c.uid; }).filter(Boolean);
+    if (uids.length > 0) submissionData.coauthorUids = uids;
 
     db.collection('submissions').add(submissionData).then(function () {
       setLoading('submit-article-btn', false);
@@ -1335,15 +1431,12 @@ var ADMIN_I18N = {
   document.getElementById('tab-open-newtab').addEventListener('click', openPreviewTab);
 
   function getArticleFields() {
-    var coAuthors = getCoauthors();
-    var authorStr = document.getElementById('article-author').value.trim() || '';
-    if (coAuthors.length > 0) {
-      authorStr += ', ' + coAuthors.map(function (c) { return c.name; }).join(', ');
-    }
+    var authorName = document.getElementById('article-author').value.trim() || '';
+    var authors = getCurrentSubmissionAuthors(currentUserAuthor ? currentUserAuthor.uid : '', authorName);
     return {
       title: document.getElementById('article-title').value.trim() || 'Untitled Article',
       category: document.getElementById('article-category').value || '',
-      author: authorStr,
+      author: getAuthorNames(authors),
       description: document.getElementById('article-description').value.trim() || '',
       content: document.getElementById('article-content').value || ''
     };
@@ -1424,7 +1517,7 @@ var ADMIN_I18N = {
       var sel = document.getElementById('register-guide-select');
       if (typeof SITE_GUIDES !== 'undefined') {
         var available = SITE_GUIDES.filter(function (g) {
-          return g.author_id === authorId && registered.indexOf(g.guide_id) === -1;
+          return g.author_ids && g.author_ids.indexOf(authorId) !== -1 && registered.indexOf(g.guide_id) === -1;
         });
         if (!available.length) {
           sel.innerHTML = '<option value="">' + escapeHtml(ADMIN_I18N.all_registered) + '</option>';
@@ -1607,6 +1700,9 @@ var ADMIN_I18N = {
       'function fmtDate(s){if(!s)return"";try{var dt=new Date(s);return dt.toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"})+" "+dt.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit",timeZone:"UTC",timeZoneName:"short"});}catch(e){return s;}}' +
       'function counter(ta,el,max){var n=ta.value.length;el.textContent=n+" / "+max;el.className="admin-char-counter";' +
         'if(n>=max)el.classList.add("admin-char-at-limit");else if(n>=max*0.85)el.classList.add("admin-char-near-limit");}' +
+      'function authorKey(a){if(!a)return"";if(a.uid)return"uid:"+a.uid;if(a.author_id)return"author:"+a.author_id;var name=(a.name||"").trim().toLowerCase();return name?"name:"+name:"";}' +
+      'function orderedAuthors(d){var seen={};var authors=(d&&d.coAuthors?d.coAuthors:[]).slice().sort(function(a,b){return(a.order||0)-(b.order||0);});return authors.filter(function(a){if(!a||!a.name)return false;var key=authorKey(a);if(!key||seen[key])return false;seen[key]=true;return true;});}' +
+      'function authorNames(d){return orderedAuthors(d).map(function(a){return a.name;}).join(", ");}' +
       'function openPreview(title,category,author,desc,content){' +
         'var rawHtml=typeof marked!=="undefined"?marked.parse(content):esc(content);' +
         'var rendered=typeof DOMPurify!=="undefined"?DOMPurify.sanitize(rawHtml):esc(content);' +
@@ -1654,9 +1750,9 @@ var ADMIN_I18N = {
           'h+="<\/div>";' +
         '}' +
         /* co-authors (read-only) */
-        'if(d.coAuthors&&d.coAuthors.length){' +
+        'if(orderedAuthors(d).length){' +
           'h+="<div class=\\"admin-field\\" style=\\"margin-bottom:1.5rem;\\"><label class=\\"admin-label\\">"+esc(L.coauthors_label)+"<\/label>";' +
-          'h+="<p style=\\"font-size:0.9rem;color:var(--text-primary,#2c2a26);\\">"+esc(d.coAuthors.map(function(c){return c.name;}).join(", "))+"<\/p><\/div>";' +
+          'h+="<p style=\\"font-size:0.9rem;color:var(--text-primary,#2c2a26);\\">"+esc(authorNames(d))+"<\/p><\/div>";' +
         '}' +
         /* form */
         'h+="<form id=\\"rs-form\\" class=\\"admin-form\\">";' +
@@ -1694,8 +1790,7 @@ var ADMIN_I18N = {
         'document.getElementById("rs-desc").value=d.description||"";' +
         'document.getElementById("rs-content").value=d.content||"";' +
         /* preview button */
-        'var rsAuthorStr=d.authorName||"";' +
-        'if(d.coAuthors&&d.coAuthors.length)rsAuthorStr+=", "+d.coAuthors.map(function(c){return c.name;}).join(", ");' +
+        'var rsAuthorStr=authorNames(d);' +
         'document.getElementById("rs-preview").addEventListener("click",function(){' +
           'openPreview(document.getElementById("rs-title").value.trim()||"Untitled",' +
             'document.getElementById("rs-cat").value,' +
@@ -1708,7 +1803,7 @@ var ADMIN_I18N = {
           'btn.addEventListener("click",function(){' +
             'var idx=parseInt(this.getAttribute("data-round"));' +
             'var snap=history[idx].contentSnapshot;' +
-            'if(snap)openPreview(snap.title||d.title,snap.category||d.category,d.authorName||"",snap.description||d.description,snap.content||"");' +
+            'if(snap)openPreview(snap.title||d.title,snap.category||d.category,authorNames(d),snap.description||d.description,snap.content||"");' +
           '});' +
         '});' +
         /* char counter */
@@ -1758,11 +1853,7 @@ var ADMIN_I18N = {
     db.collection('submissions').doc(docId).get().then(function (doc) {
       if (!doc.exists) return;
       var d = doc.data();
-      var authorStr = d.authorName || '';
-      if (d.coAuthors && d.coAuthors.length > 0) {
-        authorStr += ', ' + d.coAuthors.map(function (c) { return c.name; }).join(', ');
-      }
-      openContentPreview(d.title, d.category, authorStr, d.description, d.content);
+      openContentPreview(d.title, d.category, getAuthorNames(getSubmissionAuthors(d)), d.description, d.content);
     });
   }
 
@@ -1839,6 +1930,7 @@ var ADMIN_I18N = {
         var html = '<div class="admin-submissions">';
         allDocs.forEach(function (doc) {
           var d = doc.data();
+          var authors = getSubmissionAuthors(d);
           var date = d.createdAt ? (function(dt){ return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); })(d.createdAt.toDate()) : ADMIN_I18N.just_now;
           var status = d.status || 'pending';
           var statusClass = 'admin-status-' + status;
@@ -1847,8 +1939,8 @@ var ADMIN_I18N = {
           html += '<div class="admin-submission-main">';
           html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
           html += '<div class="admin-submission-meta">';
-          if (d.coAuthors && d.coAuthors.length > 0) {
-            html += '<span>' + escapeHtml(d.coAuthors.map(function (c) { return c.name; }).join(', ')) + '</span>';
+          if (authors.length > 0) {
+            html += '<span>' + escapeHtml(getAuthorNames(authors)) + '</span>';
           }
           html += '<span>' + escapeHtml(d.category) + '</span>';
           html += '<span>' + escapeHtml(ADMIN_I18N.submitted_label) + ' ' + date + '</span>';
@@ -1888,6 +1980,39 @@ var ADMIN_I18N = {
     var div = document.createElement('div');
     div.appendChild(document.createTextNode(str));
     return div.innerHTML;
+  }
+
+  function resolveAuthorIdForDisplay(author) {
+    if (!author) return Promise.resolve(null);
+    if (author.author_id) return Promise.resolve(author.author_id);
+    if (!author.uid) return Promise.resolve(null);
+    return db.collection('users').doc(author.uid).get().then(function (doc) {
+      return doc.exists && doc.data().author_id ? doc.data().author_id : null;
+    }).catch(function () {
+      return null;
+    });
+  }
+
+  function renderSubmissionAuthorLinks(targetEl, authors, prefix) {
+    if (!targetEl) return;
+    if (!authors || !authors.length) {
+      targetEl.textContent = (prefix || '') + ADMIN_I18N.author_unknown;
+      return;
+    }
+    targetEl.textContent = (prefix || '') + getAuthorNames(authors);
+    Promise.all(authors.map(resolveAuthorIdForDisplay)).then(function (authorIds) {
+      var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? '' : '/UWC-Survival-Guide';
+      var parts = authors.map(function (author, index) {
+        var resolvedId = authorIds[index];
+        if (resolvedId) {
+          var href = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + resolvedId + '/';
+          return '<a href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer" class="admin-author-link">' + escapeHtml(author.name) + '</a>';
+        }
+        return escapeHtml(author.name);
+      });
+      targetEl.innerHTML = escapeHtml(prefix || '') + parts.join(', ');
+    }).catch(function () {});
   }
 
   // ══════════════════════════════════════
@@ -1955,17 +2080,16 @@ var ADMIN_I18N = {
       docs.forEach(function (item) {
         var doc = { id: item.id };
         var d = item.data;
+        var authors = getSubmissionAuthors(d);
         var date = d.createdAt ? (function(dt){ return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); })(d.createdAt.toDate()) : ADMIN_I18N.just_now;
         var statusClass = 'admin-status-' + (d.status || 'pending');
         html += '<div class="admin-submission-item admin-review-item" data-id="' + doc.id + '">';
         html += '<div class="admin-submission-main">';
         html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
         html += '<div class="admin-submission-meta">';
-        var authorDisplay = d.authorName || ADMIN_I18N.author_unknown;
-        if (d.coAuthors && d.coAuthors.length > 0) {
-          authorDisplay += ', ' + d.coAuthors.map(function (c) { return c.name; }).join(', ');
-        }
-        html += '<span class="admin-author-name" data-uid="' + (d.uid || '') + '">' + escapeHtml(authorDisplay) + '</span>';
+        var authorDisplay = getAuthorNames(authors) || ADMIN_I18N.author_unknown;
+        var linkedUid = authors.length === 1 && authors[0].uid ? authors[0].uid : '';
+        html += '<span class="admin-author-name" data-uid="' + linkedUid + '">' + escapeHtml(authorDisplay) + '</span>';
         html += '<span>' + escapeHtml(d.category) + '</span>';
         html += '<span>' + escapeHtml(ADMIN_I18N.submitted_label) + ' ' + date + '</span>';
         html += '</div>';
@@ -2095,7 +2219,7 @@ var ADMIN_I18N = {
         var idx = parseInt(this.getAttribute('data-ver-idx'));
         var snap = history[idx].contentSnapshot;
         if (snap) {
-          openContentPreview(snap.title || d.title, snap.category || d.category, d.authorName || '', snap.description || d.description, snap.content || '');
+          openContentPreview(snap.title || d.title, snap.category || d.category, getAuthorNames(getSubmissionAuthors(d)), snap.description || d.description, snap.content || '');
         }
       });
     });
@@ -2110,29 +2234,16 @@ var ADMIN_I18N = {
     db.collection('submissions').doc(docId).get().then(function (doc) {
       if (!doc.exists) return;
       var d = doc.data();
+      var authors = getSubmissionAuthors(d);
       currentModalData = d;
       var date = d.createdAt ? (function(dt){ return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); })(d.createdAt.toDate()) : ADMIN_I18N.author_unknown;
 
       document.getElementById('modal-title').textContent = d.title;
       var modalAuthorEl = document.getElementById('modal-author');
-      modalAuthorEl.textContent = ADMIN_I18N.by_prefix + (d.authorName || ADMIN_I18N.author_unknown);
-      if (d.uid) {
-        db.collection('users').doc(d.uid).get().then(function (userDoc) {
-          if (!userDoc.exists || !userDoc.data().author_id) return;
-          var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? '' : '/UWC-Survival-Guide';
-          var href = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + userDoc.data().author_id + '/';
-          modalAuthorEl.innerHTML = escapeHtml(ADMIN_I18N.by_prefix) + '<a href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer" class="admin-author-link">' + escapeHtml(d.authorName) + '</a>';
-        });
-      }
       var coAuthorsEl = document.getElementById('modal-coauthors');
-      if (d.coAuthors && d.coAuthors.length > 0) {
-        coAuthorsEl.textContent = d.coAuthors.map(function (c) { return c.name; }).join(', ');
-        coAuthorsEl.style.display = '';
-      } else {
-        coAuthorsEl.textContent = '';
-        coAuthorsEl.style.display = 'none';
-      }
+      coAuthorsEl.textContent = '';
+      coAuthorsEl.style.display = 'none';
+      renderSubmissionAuthorLinks(modalAuthorEl, authors, ADMIN_I18N.by_prefix);
       document.getElementById('modal-category').textContent = d.category;
       document.getElementById('modal-date').textContent = ADMIN_I18N.submitted_label + ' ' + date;
       document.getElementById('modal-description').textContent = d.description;
@@ -2185,11 +2296,7 @@ var ADMIN_I18N = {
   document.getElementById('modal-preview-btn').addEventListener('click', function () {
     if (!currentModalData) return;
     var d = currentModalData;
-    var authorStr = d.authorName || '';
-    if (d.coAuthors && d.coAuthors.length > 0) {
-      authorStr += ', ' + d.coAuthors.map(function (c) { return c.name; }).join(', ');
-    }
-    openContentPreview(d.title, d.category, authorStr, d.description, d.content);
+    openContentPreview(d.title, d.category, getAuthorNames(getSubmissionAuthors(d)), d.description, d.content);
   });
 
   document.getElementById('modal-close').addEventListener('click', closeReviewModal);
@@ -2256,14 +2363,21 @@ var ADMIN_I18N = {
             return resp.json();
           }).then(function (aboutData) {
             if (!aboutData || !aboutData.content) return;
-            if (aboutData.content.indexOf('id: ' + r.authorSlug) !== -1) return;
+            var authors = r.authors && r.authors.length ? r.authors : [{ author_id: r.authorSlug, name: r.authorName }];
+            var updated = aboutData.content;
+            var changed = false;
 
-            var escapedAuthor = r.authorName.replace(/"/g, '\\"');
-            var tKey = 'author-' + r.authorSlug;
-            var authorFiles = [
-                { folder: 'default', filename: r.authorSlug + '.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + r.authorSlug + '\npermalink: /authors/' + r.authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
-                { folder: 'chinese', filename: r.authorSlug + '-cn.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + r.authorSlug + '\npermalink: /zh-cn/authors/' + r.authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
-                { folder: 'chinese', filename: r.authorSlug + '-tw.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + r.authorSlug + '\npermalink: /zh-tw/authors/' + r.authorSlug + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
+            authors.forEach(function (author) {
+              if (!author || !author.author_id || !author.name) return;
+              if (updated.indexOf('id: ' + author.author_id) !== -1) return;
+
+              changed = true;
+              var escapedAuthor = author.name.replace(/"/g, '\\"');
+              var tKey = 'author-' + author.author_id;
+              var authorFiles = [
+                { folder: 'default', filename: author.author_id + '.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + author.author_id + '\npermalink: /authors/' + author.author_id + '/\ntranslation_key: ' + tKey + '\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n' },
+                { folder: 'chinese', filename: author.author_id + '-cn.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + author.author_id + '\npermalink: /zh-cn/authors/' + author.author_id + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-CN\nlanguage_name: "\u7B80\u4F53\u4E2D\u6587"\nlanguage_sort: 2\n---\n' },
+                { folder: 'chinese', filename: author.author_id + '-tw.md', content: '---\ntitle: "' + escapedAuthor + '"\nauthor_id: ' + author.author_id + '\npermalink: /zh-tw/authors/' + author.author_id + '/\ntranslation_key: ' + tKey + '\nlanguage_code: zh-TW\nlanguage_name: "\u7E41\u9AD4\u4E2D\u6587"\nlanguage_sort: 3\n---\n' }
               ];
               authorFiles.forEach(function (f) {
                 fetch('http://127.0.0.1:4001/save', {
@@ -2273,19 +2387,22 @@ var ADMIN_I18N = {
                 }).catch(function () {});
               });
 
-              var newEntry = '\n  - id: ' + r.authorSlug + '\n';
-              newEntry += '    name: "' + r.authorName + '"\n';
+              var newEntry = '\n  - id: ' + author.author_id + '\n';
+              newEntry += '    name: "' + author.name + '"\n';
               newEntry += '    affiliation:\n    cohort:\n    profile_label:\n    profile_url:\n';
               newEntry += '    contacts: []\n    photo:\n';
               newEntry += '    summary: "Contributor."\n';
-              var updated = aboutData.content.replace('contributors: []', 'contributors:' + newEntry);
-              if (updated === aboutData.content) updated = aboutData.content.trimEnd() + newEntry;
-              return fetch('http://127.0.0.1:4001/save', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ folder: '../_data', filename: 'about.yml', content: updated })
-              });
-            }).catch(function () {});
+              var withEntry = updated.replace('contributors: []', 'contributors:' + newEntry);
+              updated = withEntry === updated ? updated.trimEnd() + newEntry : withEntry;
+            });
+
+            if (!changed) return;
+            return fetch('http://127.0.0.1:4001/save', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ folder: '../_data', filename: 'about.yml', content: updated })
+            });
+          }).catch(function () {});
 
           document.getElementById('modal-md-content').textContent = 'Approved and saved locally.\nJekyll will auto-rebuild. Commit and push when ready.';
           document.getElementById('modal-md-output').style.display = 'block';

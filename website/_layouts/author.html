@@ -15,9 +15,32 @@
   {% assign language_suffix = current_language_code | downcase | replace: "-", "_" %}
   {% assign current_author_id = page.author_id | default: page.slug %}
   {% assign person = author_records | where: "id", current_author_id | first %}
-  {% assign authored_guides = site.guides | where: "author_id", current_author_id | sort: "order" %}
-  {% assign authored_guide_ids = authored_guides | map: "guide_id" | uniq %}
-  {% assign authored_article_count = authored_guide_ids | size %}
+  {% assign authored_guide_tokens = "" %}
+  {% for guide in site.guides %}
+    {% assign include_guide = false %}
+    {% if guide.author_id == current_author_id %}
+      {% assign include_guide = true %}
+    {% elsif guide.coauthors %}
+      {% for ca in guide.coauthors %}
+        {% if ca.author_id == current_author_id %}
+          {% assign include_guide = true %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    {% if include_guide and guide.guide_id %}
+      {% capture authored_guide_token %}|{{ guide.guide_id }}|{% endcapture %}
+      {% unless authored_guide_tokens contains authored_guide_token %}
+        {% assign authored_guide_tokens = authored_guide_tokens | append: authored_guide_token %}
+      {% endunless %}
+    {% endif %}
+  {% endfor %}
+  {% assign authored_guide_ids = authored_guide_tokens | replace_first: "|", "" | split: "|" %}
+  {% assign authored_article_count = 0 %}
+  {% for authored_guide_id in authored_guide_ids %}
+    {% if authored_guide_id != nil and authored_guide_id != "" %}
+      {% assign authored_article_count = authored_article_count | plus: 1 %}
+    {% endif %}
+  {% endfor %}
   {% assign role_label = page.role %}
   {% assign editor_record = site.data.about.editors_in_chief | where: "id", current_author_id | first %}
   {% if editor_record %}
@@ -184,23 +207,25 @@
     <div class="author-latest-list" id="author-latest-list">
       {% if authored_article_count > 0 %}
         {% for authored_guide_id in authored_guide_ids %}
-          {% assign guide_versions = authored_guides | where: "guide_id", authored_guide_id | sort: "language_sort" %}
-          {% assign primary_guide = guide_versions | where: "language_code", current_language_code | first %}
-          {% if primary_guide == nil %}{% assign primary_guide = guide_versions | where: "language_code", "en" | first %}{% endif %}
-          {% if primary_guide == nil %}{% assign primary_guide = guide_versions | first %}{% endif %}
-          <div class="author-latest-item">
-            <span class="author-latest-date">{{ primary_guide.published | date: "%b %-d, %Y" }}</span>
-            <div class="author-latest-body">
-              <p class="author-latest-category">{{ primary_guide.category }}</p>
-              <h3><a href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
-              {% if primary_guide.description %}<p class="author-latest-desc">{{ primary_guide.description }}</p>{% endif %}
-              {% if guide_versions.size > 1 %}
-                <div class="author-latest-versions">
-                  {% for v in guide_versions %}<a href="{{ v.url | relative_url }}" class="translation-pill">{{ v.language_name }}</a>{% endfor %}
-                </div>
-              {% endif %}
+          {% if authored_guide_id != nil and authored_guide_id != "" %}
+            {% assign guide_versions = site.guides | where: "guide_id", authored_guide_id | sort: "language_sort" %}
+            {% assign primary_guide = guide_versions | where: "language_code", current_language_code | first %}
+            {% if primary_guide == nil %}{% assign primary_guide = guide_versions | where: "language_code", "en" | first %}{% endif %}
+            {% if primary_guide == nil %}{% assign primary_guide = guide_versions | first %}{% endif %}
+            <div class="author-latest-item">
+              <span class="author-latest-date">{{ primary_guide.published | date: "%b %-d, %Y" }}</span>
+              <div class="author-latest-body">
+                <p class="author-latest-category">{{ primary_guide.category }}</p>
+                <h3><a href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
+                {% if primary_guide.description %}<p class="author-latest-desc">{{ primary_guide.description }}</p>{% endif %}
+                {% if guide_versions.size > 1 %}
+                  <div class="author-latest-versions">
+                    {% for v in guide_versions %}<a href="{{ v.url | relative_url }}" class="translation-pill">{{ v.language_name }}</a>{% endfor %}
+                  </div>
+                {% endif %}
+              </div>
             </div>
-          </div>
+          {% endif %}
         {% endfor %}
       {% else %}
         <p style="color:var(--warm-gray);font-size:0.9rem;">{{ current_locale.author.empty }}</p>
@@ -214,7 +239,7 @@
 
   <!-- Guide data for Featured section -->
   <script>
-  var AUTHOR_GUIDES = [{% for gid in authored_guide_ids %}{% assign gvs = authored_guides | where: "guide_id", gid | sort: "language_sort" %}{% assign pg = gvs | where: "language_code", current_language_code | first %}{% if pg == nil %}{% assign pg = gvs | where: "language_code", "en" | first %}{% endif %}{% if pg == nil %}{% assign pg = gvs | first %}{% endif %}{"guide_id":{{ gid | jsonify }},"title":{{ pg.title | jsonify }},"description":{{ pg.description | default: "" | jsonify }},"url":{{ pg.url | relative_url | jsonify }},"published":{{ pg.published | date: "%b %-d, %Y" | jsonify }},"published_iso":{{ pg.published | jsonify }},"category":{{ pg.category | default: "" | jsonify }},"versions":[{% for v in gvs %}{"language_name":{{ v.language_name | jsonify }},"url":{{ v.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}]}{% unless forloop.last %},{% endunless %}{% endfor %}];
+  var AUTHOR_GUIDES = [{% assign _first_author_guide = true %}{% for gid in authored_guide_ids %}{% if gid != nil and gid != "" %}{% assign gvs = site.guides | where: "guide_id", gid | sort: "language_sort" %}{% assign pg = gvs | where: "language_code", current_language_code | first %}{% if pg == nil %}{% assign pg = gvs | where: "language_code", "en" | first %}{% endif %}{% if pg == nil %}{% assign pg = gvs | first %}{% endif %}{% unless _first_author_guide %},{% endunless %}{"guide_id":{{ gid | jsonify }},"title":{{ pg.title | jsonify }},"description":{{ pg.description | default: "" | jsonify }},"url":{{ pg.url | relative_url | jsonify }},"published":{{ pg.published | date: "%b %-d, %Y" | jsonify }},"published_iso":{{ pg.published | jsonify }},"category":{{ pg.category | default: "" | jsonify }},"versions":[{% for v in gvs %}{"language_name":{{ v.language_name | jsonify }},"url":{{ v.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}]}{% assign _first_author_guide = false %}{% endif %}{% endfor %}];
   </script>
 
   <!-- Role & article count data -->
