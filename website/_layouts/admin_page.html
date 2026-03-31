@@ -1994,8 +1994,7 @@ var ADMIN_I18N = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ folder: '../_data', filename: 'about.yml', content: updated })
               });
-            }
-          }).catch(function () {});
+            }).catch(function () {});
 
           document.getElementById('modal-md-content').textContent = 'Approved and saved locally.\nJekyll will auto-rebuild. Commit and push when ready.';
           document.getElementById('modal-md-output').style.display = 'block';
