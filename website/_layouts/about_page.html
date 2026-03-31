@@ -176,15 +176,15 @@
     var cards = document.querySelectorAll('[data-author-page]');
 
     db.collection('users').get().then(function (snap) {
-      var usersByPage = {};
+      var usersById = {};
       snap.forEach(function (doc) {
         var d = doc.data();
-        if (d.authorPage) usersByPage[d.authorPage] = d;
+        if (d.author_id) usersById[d.author_id] = d;
       });
 
       cards.forEach(function (card) {
-        var page = card.getAttribute('data-author-page');
-        var user = usersByPage[page];
+        var authorId = card.getAttribute('data-author-page').replace(/^\/authors\//, '').replace(/\/$/, '');
+        var user = usersById[authorId];
         if (!user) return;
 
         if (user.displayName) {

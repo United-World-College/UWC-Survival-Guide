@@ -171,7 +171,10 @@ describe("generateMarkdown", () => {
       if (d.coAuthors && d.coAuthors.length > 0) {
         md += "coauthors:\n";
         d.coAuthors.forEach((ca) => {
-          md += `  - "${ca.name.replace(/"/g, '\\"')}"\n`;
+          md += `  - name: "${ca.name.replace(/"/g, '\\"')}"\n`;
+          if (ca.author_id) {
+            md += `    author_id: "${ca.author_id}"\n`;
+          }
         });
       }
       md += `guide_id: "${slug}"\n`;
@@ -302,14 +305,28 @@ describe("generateMarkdown", () => {
     const submission = {
       ...baseSubmission,
       coAuthors: [
-        { name: "Bob Jones", order: 1 },
-        { name: "Carol Lee", order: 2 },
+        { name: "Bob Jones", author_id: "bob-jones", order: 1 },
+        { name: "Carol Lee", author_id: "carol-lee", order: 2 },
       ],
     };
     const result = generateMarkdown(submission, "alice-smith", "");
     expect(result.markdown).toContain("coauthors:\n");
-    expect(result.markdown).toContain('  - "Bob Jones"');
-    expect(result.markdown).toContain('  - "Carol Lee"');
+    expect(result.markdown).toContain('  - name: "Bob Jones"');
+    expect(result.markdown).toContain('    author_id: "bob-jones"');
+    expect(result.markdown).toContain('  - name: "Carol Lee"');
+    expect(result.markdown).toContain('    author_id: "carol-lee"');
+  });
+
+  test("includes coauthors without author_id (legacy format)", () => {
+    const submission = {
+      ...baseSubmission,
+      coAuthors: [
+        { name: "Bob Jones", order: 1 },
+      ],
+    };
+    const result = generateMarkdown(submission, "alice-smith", "");
+    expect(result.markdown).toContain('  - name: "Bob Jones"');
+    expect(result.markdown).not.toContain("    author_id:");
   });
 
   test("omits coauthors when array is empty", () => {
@@ -326,10 +343,10 @@ describe("generateMarkdown", () => {
   test("escapes quotes in coauthor names", () => {
     const submission = {
       ...baseSubmission,
-      coAuthors: [{ name: 'O"Brien', order: 1 }],
+      coAuthors: [{ name: 'O"Brien', author_id: 'obrien', order: 1 }],
     };
     const result = generateMarkdown(submission, "alice-smith", "");
-    expect(result.markdown).toContain('  - "O\\"Brien"');
+    expect(result.markdown).toContain('  - name: "O\\"Brien"');
   });
 
   test("omits submitted date when createdAt is missing", () => {

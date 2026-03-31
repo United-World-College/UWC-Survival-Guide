@@ -129,3 +129,47 @@ describe("about.yml validation", () => {
     }
   });
 });
+
+// ══════════════════════════════════════
+// Author Permalink Validation
+// ══════════════════════════════════════
+
+describe("Author permalink format", () => {
+  test.each(authorFiles)(
+    "%s has a valid permalink format",
+    (filePath) => {
+      const fm = parseFrontMatter(filePath);
+      // Permalinks should start with / and end with /
+      expect(fm.permalink).toMatch(/^\//);
+      expect(fm.permalink).toMatch(/\/$/);
+    }
+  );
+
+  test("no duplicate author_id within the same language", () => {
+    const seen = {};
+    for (const f of authorFiles) {
+      const fm = parseFrontMatter(f);
+      if (!fm) continue;
+      const key = `${fm.language_code}::${fm.author_id}`;
+      if (!seen[key]) seen[key] = [];
+      seen[key].push(path.relative(AUTHORS_DIR, f));
+    }
+    for (const [key, files] of Object.entries(seen)) {
+      expect(files.length).toBe(1);
+    }
+  });
+
+  test("author files are in the correct folder for their language", () => {
+    for (const f of authorFiles) {
+      const fm = parseFrontMatter(f);
+      if (!fm) continue;
+      const relPath = path.relative(AUTHORS_DIR, f);
+      const folder = relPath.split(path.sep)[0];
+      if (fm.language_code === "en") {
+        expect(folder).toBe("default");
+      } else {
+        expect(folder).toBe("chinese");
+      }
+    }
+  });
+});

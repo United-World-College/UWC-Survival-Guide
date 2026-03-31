@@ -418,6 +418,47 @@ describe("requestRevision", () => {
       })
     ).rejects.toThrow("Reviewer comments are required.");
   });
+
+  test("throws when docId is missing", async () => {
+    await expect(
+      funcs.requestRevision({
+        auth: adminAuth(),
+        data: { comments: "Fix it" },
+      })
+    ).rejects.toThrow("docId is required.");
+  });
+
+  test("throws not-found for missing submission", async () => {
+    await expect(
+      funcs.requestRevision({
+        auth: adminAuth(),
+        data: { docId: "nonexistent", comments: "Fix" },
+      })
+    ).rejects.toThrow("Submission not found.");
+  });
+
+  test("stores reviewer uid and email in history entry", async () => {
+    setMockDoc("submissions", "sub-1", {
+      title: "Test",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      revisionHistory: [],
+    });
+
+    const result = await funcs.requestRevision({
+      auth: adminAuth(),
+      data: { docId: "sub-1", comments: "Fix this" },
+    });
+
+    expect(result.revisionHistory[0].reviewerUid).toBe("admin-uid");
+    expect(result.revisionHistory[0].reviewerEmail).toBe(
+      "jingranhuang590@gmail.com"
+    );
+    expect(result.revisionHistory[0].reviewedAt).toBeDefined();
+  });
 });
 
 // ══════════════════════════════════════
@@ -508,6 +549,111 @@ describe("deleteSubmission", () => {
       })
     ).rejects.toThrow("Submission not found.");
   });
+
+  test("deletes approved submission GitHub file when token exists", async () => {
+    setMockDoc("submissions", "sub-1", {
+      status: "approved",
+      guide_id: "test-guide",
+      title: "Test",
+      language: "en",
+      uid: "user-1",
+    });
+    setMockDoc("users", "user-1", { publishedArticles: [] });
+    setMockDoc("config", "github", { token: "gh-token-123" });
+
+    // GET returns existing file with sha, DELETE succeeds
+    global.fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ sha: "abc123" }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+      });
+
+    const result = await funcs.deleteSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    expect(result.success).toBe(true);
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+    // Second call should be DELETE
+    const deleteCall = global.fetch.mock.calls[1];
+    expect(deleteCall[1].method).toBe("DELETE");
+  });
+
+  test("still succeeds if GitHub delete fails", async () => {
+    setMockDoc("submissions", "sub-1", {
+      status: "approved",
+      guide_id: "test-guide",
+      title: "Test",
+      language: "en",
+      uid: "user-1",
+    });
+    setMockDoc("users", "user-1", { publishedArticles: [] });
+    setMockDoc("config", "github", { token: "gh-token-123" });
+
+    // GitHub API throws error
+    global.fetch.mockRejectedValue(new Error("Network error"));
+
+    const result = await funcs.deleteSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    // Should still succeed — GitHub errors don't block deletion
+    expect(result.success).toBe(true);
+  });
+
+  test("handles approved submission without uid gracefully", async () => {
+    setMockDoc("submissions", "sub-1", {
+      status: "approved",
+      guide_id: "test-guide",
+      title: "Test",
+      language: "en",
+    });
+    setMockDoc("config", "github", {});
+
+    const result = await funcs.deleteSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.wasApproved).toBe(true);
+  });
+
+  test("uses correct language suffix for zh-CN guide path", async () => {
+    setMockDoc("submissions", "sub-1", {
+      status: "approved",
+      guide_id: "test-guide",
+      title: "Test",
+      language: "zh-CN",
+      uid: "user-1",
+    });
+    setMockDoc("users", "user-1", { publishedArticles: [] });
+    setMockDoc("config", "github", { token: "gh-token-123" });
+
+    global.fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ sha: "abc123" }),
+      })
+      .mockResolvedValueOnce({ ok: true, status: 204 });
+
+    await funcs.deleteSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    // GET request should target the zh-CN file path
+    const getCall = global.fetch.mock.calls[0];
+    expect(getCall[0]).toContain("chinese/test-guide-CN.md");
+  });
 });
 
 // ══════════════════════════════════════
@@ -533,7 +679,7 @@ describe("approveSubmission", () => {
       createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
     });
     setMockDoc("users", "admin-uid", { displayName: "Editor Bob" });
-    setMockDoc("users", "user-1", { authorPage: "/authors/alice/" });
+    setMockDoc("users", "user-1", { author_id: "alice" });
     // No GitHub token
     setMockDoc("config", "github", { token: null });
 
@@ -604,5 +750,164 @@ describe("approveSubmission", () => {
         data: {},
       })
     ).rejects.toThrow("docId is required.");
+  });
+
+  test("throws not-found for missing submission", async () => {
+    await expect(
+      funcs.approveSubmission({
+        auth: adminAuth(),
+        data: { docId: "nonexistent" },
+      })
+    ).rejects.toThrow("Submission not found.");
+  });
+
+  test("stores approveMessage when provided", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "Alice",
+      title: "Article",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", {});
+    setMockDoc("config", "github", {});
+
+    await funcs.approveSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1", approveMessage: "Great work!" },
+    });
+
+    const updateCall = mockUpdateCalls.find(
+      (c) => c.collection === "submissions" && c.docId === "sub-1"
+    );
+    expect(updateCall.data.approveMessage).toBe("Great work!");
+  });
+
+  test("resolves authorSlug from user author_id when available", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "Alice Smith",
+      title: "Article",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", { author_id: "custom-slug" });
+    setMockDoc("config", "github", {});
+
+    const result = await funcs.approveSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    expect(result.authorSlug).toBe("custom-slug");
+  });
+
+  test("publishes to GitHub when token is available", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "Alice",
+      title: "My Article",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "Editor" });
+    setMockDoc("users", "user-1", {});
+    setMockDoc("config", "github", { token: "gh-token-123" });
+
+    // Mock GitHub API: GET calls return 404 (not found), PUT calls succeed
+    global.fetch.mockImplementation(async (url, opts) => {
+      if (opts && opts.method === "GET") {
+        return { ok: true, status: 404 };
+      }
+      // PUT calls for guide and author files
+      return { ok: true, status: 200, json: async () => ({}) };
+    });
+
+    const result = await funcs.approveSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    expect(result.published).toBe(true);
+    expect(result.githubError).toBeNull();
+    expect(global.fetch).toHaveBeenCalled();
+  });
+
+  test("returns githubError when GitHub publish fails", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "Alice",
+      title: "My Article",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", {});
+    setMockDoc("config", "github", { token: "gh-token-123" });
+
+    // First fetch (GET existing file) returns 404, second (PUT) fails
+    global.fetch
+      .mockResolvedValueOnce({ ok: true, status: 404 })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        text: async () => "Internal Server Error",
+      });
+
+    const result = await funcs.approveSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    expect(result.published).toBe(false);
+    expect(result.githubError).toBeTruthy();
+  });
+
+  test("updates author record with publishedArticles", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "Alice",
+      title: "My Article",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", {});
+    setMockDoc("config", "github", {});
+
+    await funcs.approveSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    // Should set author_id on user
+    const setCall = mockSetCalls.find(
+      (c) => c.collection === "users" && c.docId === "user-1"
+    );
+    expect(setCall).toBeDefined();
+    expect(setCall.data.author_id).toBe("alice");
+    expect(setCall.data.authorPage).toBeUndefined();
   });
 });

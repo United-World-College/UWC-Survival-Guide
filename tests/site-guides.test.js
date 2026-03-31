@@ -187,6 +187,48 @@ describe("Guide file naming conventions", () => {
 });
 
 // ══════════════════════════════════════
+// Content Validation
+// ══════════════════════════════════════
+
+describe("Guide content validation", () => {
+  // Guides with an author field are article guides (not category landing pages)
+  const articleGuides = guideFiles.filter((f) => {
+    const fm = parseFrontMatter(f);
+    return fm && fm.author;
+  });
+
+  test("article guides have non-empty body content", () => {
+    for (const filePath of articleGuides) {
+      const content = fs.readFileSync(filePath, "utf-8");
+      const body = content.replace(/^---\n[\s\S]*?\n---/, "").trim();
+      expect(body.length).toBeGreaterThan(0);
+    }
+  });
+
+  test("article guides have both author and author_id fields", () => {
+    for (const filePath of articleGuides) {
+      const fm = parseFrontMatter(filePath);
+      expect(fm.author).toBeTruthy();
+      expect(fm.author_id).toBeTruthy();
+    }
+  });
+
+  test("no duplicate guide_id within the same language", () => {
+    const seen = {};
+    for (const f of guideFiles) {
+      const fm = parseFrontMatter(f);
+      if (!fm) continue;
+      const key = `${fm.language_code}::${fm.guide_id}`;
+      if (!seen[key]) seen[key] = [];
+      seen[key].push(path.relative(GUIDES_DIR, f));
+    }
+    for (const [key, files] of Object.entries(seen)) {
+      expect(files.length).toBe(1);
+    }
+  });
+});
+
+// ══════════════════════════════════════
 // Translation Completeness
 // ══════════════════════════════════════
 

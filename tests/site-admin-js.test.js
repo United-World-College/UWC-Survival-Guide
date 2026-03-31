@@ -204,4 +204,42 @@ describe("Admin page security", () => {
       .replace(/\{%[\s\S]*?%\}/g, "");
     expect(htmlOnly).not.toMatch(/\son(click|submit|change|load|error)\s*=/i);
   });
+
+  test("does not use eval()", () => {
+    const marker = "(function () {";
+    const scriptStart = adminHtml.indexOf(marker);
+    const scriptTagEnd = adminHtml.indexOf("</script>", scriptStart);
+    const code = adminHtml.substring(scriptStart, scriptTagEnd);
+    // Remove string literals to avoid false positives
+    const cleaned = code
+      .replace(/'(?:[^'\\]|\\.)*'/g, "''")
+      .replace(/"(?:[^"\\]|\\.)*"/g, '""')
+      .replace(/`(?:[^`\\]|\\.)*`/g, "``");
+    expect(cleaned).not.toMatch(/\beval\s*\(/);
+  });
+
+  test("escapeHtml function is defined and uses safe escaping", () => {
+    const marker = "function escapeHtml(str)";
+    const fnStart = adminHtml.indexOf(marker);
+    expect(fnStart).toBeGreaterThan(-1);
+    const fnEnd = adminHtml.indexOf("}", fnStart);
+    const fn = adminHtml.substring(fnStart, fnEnd + 1);
+    // Should use DOM-based escaping (createTextNode) or string replacement
+    const usesDomEscaping = fn.includes("createTextNode") || fn.includes("textContent");
+    const usesStringEscaping = fn.includes("replace") && fn.includes("&amp;");
+    expect(usesDomEscaping || usesStringEscaping).toBe(true);
+  });
+
+  test("does not use eval()", () => {
+    const marker = "(function () {";
+    const scriptStart = adminHtml.indexOf(marker);
+    const scriptTagEnd = adminHtml.indexOf("</script>", scriptStart);
+    const code = adminHtml.substring(scriptStart, scriptTagEnd);
+    // Remove string literals to avoid false positives
+    const cleaned = code
+      .replace(/'(?:[^'\\]|\\.)*'/g, "''")
+      .replace(/"(?:[^"\\]|\\.)*"/g, '""')
+      .replace(/`(?:[^`\\]|\\.)*`/g, "``");
+    expect(cleaned).not.toMatch(/\beval\s*\(/);
+  });
 });

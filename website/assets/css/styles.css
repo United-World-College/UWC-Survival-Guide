@@ -1351,6 +1351,13 @@ a.author-contact-value:hover {
   margin-bottom: 2.5rem;
 }
 
+.admin-signup-id-warning {
+  font-size: 0.8rem;
+  color: var(--warm-gray);
+  line-height: 1.5;
+  margin: -0.4rem 0 0;
+}
+
 .admin-login-form {
   display: flex;
   flex-direction: column;
@@ -2117,6 +2124,21 @@ a.author-contact-value:hover {
   }
 }
 
+/* ── Author ID Display ── */
+.admin-author-id-display {
+  background: var(--bg-alt, #f5f3ef);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.88rem;
+}
+
+.admin-author-id-display code {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
 /* ── Co-Authors ── */
 .admin-coauthor-row {
   display: flex;
@@ -2136,6 +2158,37 @@ a.author-contact-value:hover {
 .admin-coauthor-name {
   flex: 1;
   min-width: 0;
+}
+
+.admin-coauthor-id {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-coauthor-lookup {
+  flex-shrink: 0;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.78rem;
+}
+
+.admin-coauthor-resolved-name {
+  font-size: 0.85rem;
+  color: var(--warm-gray);
+  min-width: 3rem;
+  max-width: 10rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-coauthor-found {
+  color: var(--success, #2d7a3a);
+  font-weight: 500;
+}
+
+.admin-coauthor-not-found {
+  color: var(--error, #c0392b);
+  font-size: 0.8rem;
 }
 
 .admin-coauthor-move {
@@ -2162,10 +2215,17 @@ a.author-contact-value:hover {
 
 @media (max-width: 768px) {
   .admin-coauthor-row {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
   }
-  .admin-coauthor-name {
+  .admin-coauthor-name,
+  .admin-coauthor-id {
     flex: 1 1 auto;
+    min-width: 8rem;
+  }
+  .admin-coauthor-resolved-name {
+    max-width: none;
+    flex-basis: 100%;
+    margin-left: 1.5rem;
   }
 }
 

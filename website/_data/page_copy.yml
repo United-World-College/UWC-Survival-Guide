@@ -182,6 +182,7 @@
     password_min_placeholder: "Password (min 6 characters)"
     confirm_placeholder: Confirm password
     signup_btn: Create Account
+    signup_author_id_warning: "You can change your display name later, but a permanent Author ID will be generated from it at this point and cannot be changed."
     back_to_signin: Back to sign in
     forgot_title: Reset Password
     forgot_subtitle: "Enter your email and we'll send a reset link."
@@ -222,9 +223,16 @@
     language_placeholder: Select the language of your article
     author_name_label: Author Name
     author_name_placeholder: Your name
+    author_id_label: Author ID
     coauthors_label: Co-Authors
-    coauthors_hint: "Add co-authors in the order they should appear. Author names and order cannot be changed after submission."
+    coauthors_hint: "Add co-authors by their Author ID. Look up each ID to confirm the name."
     coauthor_name_placeholder: "Co-author name"
+    coauthor_id_placeholder: "Enter author ID (e.g. william-huang)"
+    coauthor_lookup_btn: "Look up"
+    coauthor_searching: "Searching..."
+    coauthor_not_found: "No user found with this ID"
+    coauthor_lookup_error: "Lookup failed, try again"
+    coauthor_unresolved: "Please look up all co-authors before submitting"
     coauthor_add_btn: "+ Add Co-Author"
     coauthors_max: "Maximum 10 co-authors allowed."
     description_label: Description
@@ -519,6 +527,7 @@
     password_min_placeholder: 密码（至少 6 位）
     confirm_placeholder: 确认密码
     signup_btn: 创建账号
+    signup_author_id_warning: 您之后可以更改显示名称，但系统将根据此名称生成一个永久的作者 ID，生成后无法更改。
     back_to_signin: 返回登录
     forgot_title: 重置密码
     forgot_subtitle: 输入邮箱，我们将向您发送重置链接。
@@ -559,9 +568,16 @@
     language_placeholder: 选择文章语言
     author_name_label: 作者姓名
     author_name_placeholder: 您的姓名
+    author_id_label: 作者 ID
     coauthors_label: 共同作者
-    coauthors_hint: 按显示顺序添加共同作者。提交后作者姓名和顺序将无法更改。
+    coauthors_hint: 通过作者 ID 添加共同作者。查找每个 ID 以确认姓名。
     coauthor_name_placeholder: 共同作者姓名
+    coauthor_id_placeholder: "输入作者 ID（如 william-huang）"
+    coauthor_lookup_btn: 查找
+    coauthor_searching: 搜索中...
+    coauthor_not_found: 未找到此 ID 的用户
+    coauthor_lookup_error: 查找失败，请重试
+    coauthor_unresolved: 提交前请查找所有共同作者
     coauthor_add_btn: + 添加共同作者
     coauthors_max: 最多允许 10 位共同作者。
     description_label: 简介
@@ -856,6 +872,7 @@
     password_min_placeholder: 密碼（至少 6 位）
     confirm_placeholder: 確認密碼
     signup_btn: 建立帳號
+    signup_author_id_warning: 您之後可以更改顯示名稱，但系統將根據此名稱生成一個永久的作者 ID，生成後無法更改。
     back_to_signin: 返回登入
     forgot_title: 重設密碼
     forgot_subtitle: 輸入郵件，我們將向您傳送重設連結。
@@ -896,9 +913,16 @@
     language_placeholder: 選擇文章語言
     author_name_label: 作者姓名
     author_name_placeholder: 您的姓名
+    author_id_label: 作者 ID
     coauthors_label: 共同作者
-    coauthors_hint: 按顯示順序添加共同作者。提交後作者姓名和順序將無法更改。
+    coauthors_hint: 透過作者 ID 添加共同作者。查找每個 ID 以確認姓名。
     coauthor_name_placeholder: 共同作者姓名
+    coauthor_id_placeholder: "輸入作者 ID（如 william-huang）"
+    coauthor_lookup_btn: 查找
+    coauthor_searching: 搜尋中...
+    coauthor_not_found: 未找到此 ID 的用戶
+    coauthor_lookup_error: 查找失敗，請重試
+    coauthor_unresolved: 提交前請查找所有共同作者
     coauthor_add_btn: + 添加共同作者
     coauthors_max: 最多允許 10 位共同作者。
     description_label: 簡介

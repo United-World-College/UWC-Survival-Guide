@@ -134,8 +134,15 @@ var ADMIN_I18N = {
   coauthors_label:      {{ t.coauthors_label | jsonify }},
   coauthors_hint:       {{ t.coauthors_hint | jsonify }},
   coauthor_name_placeholder: {{ t.coauthor_name_placeholder | jsonify }},
+  coauthor_id_placeholder: {{ t.coauthor_id_placeholder | jsonify }},
+  coauthor_lookup_btn:  {{ t.coauthor_lookup_btn | jsonify }},
+  coauthor_searching:   {{ t.coauthor_searching | jsonify }},
+  coauthor_not_found:   {{ t.coauthor_not_found | jsonify }},
+  coauthor_lookup_error: {{ t.coauthor_lookup_error | jsonify }},
+  coauthor_unresolved:  {{ t.coauthor_unresolved | jsonify }},
   coauthor_add_btn:     {{ t.coauthor_add_btn | jsonify }},
-  coauthors_max:        {{ t.coauthors_max | jsonify }}
+  coauthors_max:        {{ t.coauthors_max | jsonify }},
+  author_id_label:      {{ t.author_id_label | jsonify }}
 };
 </script>
 
@@ -178,6 +185,7 @@ var ADMIN_I18N = {
       <p class="admin-login-subtitle">{{ t.signup_subtitle }}</p>
       <form id="signup-form" class="admin-login-form">
         <input type="text" id="signup-name" class="admin-input" placeholder="{{ t.display_name_placeholder }}" autocomplete="name" required />
+        <p class="admin-signup-id-warning">{{ t.signup_author_id_warning }}</p>
         <input type="email" id="signup-email" class="admin-input" placeholder="{{ t.email_placeholder }}" autocomplete="email" required />
         <input type="password" id="signup-password" class="admin-input" placeholder="{{ t.password_min_placeholder }}" autocomplete="new-password" required minlength="6" />
         <input type="password" id="signup-confirm" class="admin-input" placeholder="{{ t.confirm_placeholder }}" autocomplete="new-password" required minlength="6" />
@@ -267,6 +275,12 @@ var ADMIN_I18N = {
               <div class="admin-field">
                 <label class="admin-label" for="profile-summary">{{ t.summary_label }} <span id="profile-summary-count" style="font-weight:400;color:var(--warm-gray);font-size:0.75rem;"></span></label>
                 <input type="text" id="profile-summary" class="admin-input" placeholder="{{ t.summary_placeholder }}" maxlength="120" />
+              </div>
+              <div class="admin-field" id="profile-author-id-field" style="display:none;">
+                <label class="admin-label">{{ t.author_id_label }}</label>
+                <div class="admin-author-id-display">
+                  <code id="profile-author-id"></code>
+                </div>
               </div>
               <div class="admin-field" id="profile-role-field" style="display:none;">
                 <label class="admin-label">{{ t.role_label }}</label>
@@ -510,6 +524,10 @@ var ADMIN_I18N = {
   var storage = firebase.storage();
   var functions = firebase.functions();
 
+  function makeSlug(text) {
+    return text.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
   // ── View Management ──
   var views = ['view-signin', 'view-signup', 'view-forgot', 'view-dashboard'];
 
@@ -624,13 +642,12 @@ var ADMIN_I18N = {
     var authorSlug;
     auth.createUserWithEmailAndPassword(email, password)
       .then(function (cred) {
-        authorSlug = displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        authorSlug = makeSlug(displayName);
         if (!authorSlug) authorSlug = cred.user.uid;
         // Check for slug collision and append suffix if needed
         var baseSlug = authorSlug;
         return (function checkSlug(slug, attempt) {
-          var candidatePage = '/authors/' + slug + '/';
-          return db.collection('users').where('authorPage', '==', candidatePage).get().then(function (snap) {
+          return db.collection('users').where('author_id', '==', slug).get().then(function (snap) {
             if (snap.empty) {
               authorSlug = slug;
               return;
@@ -639,12 +656,11 @@ var ADMIN_I18N = {
             return checkSlug(baseSlug + '-' + (attempt + 1), attempt + 1);
           });
         })(authorSlug, 1).then(function () {
-          var authorPage = '/authors/' + authorSlug + '/';
           return db.collection('users').doc(cred.user.uid).set({
             displayName: displayName,
             photoURL: '',
             email: email,
-            authorPage: authorPage,
+            author_id: authorSlug,
             affiliation: '',
             cohort: '',
             summary: '',
@@ -726,9 +742,14 @@ var ADMIN_I18N = {
           showAvatarPlaceholder(data.displayName || user.email);
         }
         loadProfileLinks(data.profileLinks || []);
+        // Show author_id
+        var authorId = data.author_id || '';
+        if (authorId) {
+          document.getElementById('profile-author-id').textContent = authorId;
+          document.getElementById('profile-author-id-field').style.display = 'block';
+        }
         // Show auto-calculated role badge
-        if (data.authorPage) {
-          var authorId = (data.authorPage || '').replace(/^\/authors\//, '').replace(/\/$/, '');
+        if (authorId) {
           var role = getAuthorRole(authorId);
           var roleField = document.getElementById('profile-role-field');
           var roleBadge = document.getElementById('profile-role-badge');
@@ -737,13 +758,14 @@ var ADMIN_I18N = {
           roleField.style.display = 'block';
         }
         // Show published articles link
-        if (data.authorPage) {
+        if (authorId) {
           var card = document.getElementById('published-articles-card');
           card.style.display = 'block';
           var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? '' : '/UWC-Survival-Guide';
+          var authorPage = '/authors/' + authorId + '/';
           document.getElementById('published-articles-link').innerHTML =
-            '<a href="' + baseUrl + ADMIN_I18N.lang_prefix + data.authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">' + ADMIN_I18N.view_published + '</a>';
+            '<a href="' + baseUrl + ADMIN_I18N.lang_prefix + authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">' + ADMIN_I18N.view_published + '</a>';
         }
       } else {
         db.collection('users').doc(user.uid).set({
@@ -913,15 +935,33 @@ var ADMIN_I18N = {
     var links = getProfileLinks();
     var showEmail = document.getElementById('profile-show-email').checked;
     setLoading('save-profile-btn', true);
-    db.collection('users').doc(user.uid).set({
-      displayName: name,
-      email: user.email,
-      affiliation: affiliation,
-      cohort: cohort,
-      summary: summary,
-      profileLinks: links,
-      showEmail: showEmail
-    }, { merge: true }).then(function () {
+    // Check if author_id already exists before saving
+    db.collection('users').doc(user.uid).get().then(function (doc) {
+      var existingData = doc.exists ? doc.data() : {};
+      var profileData = {
+        displayName: name,
+        email: user.email,
+        affiliation: affiliation,
+        cohort: cohort,
+        summary: summary,
+        profileLinks: links,
+        showEmail: showEmail
+      };
+      // Generate author_id on first save when name is present
+      if (!existingData.author_id && name) {
+        var newAuthorId = makeSlug(name);
+        if (newAuthorId) {
+          profileData.author_id = newAuthorId;
+        }
+      }
+      return db.collection('users').doc(user.uid).set(profileData, { merge: true }).then(function () {
+        // Show author_id if newly generated
+        if (profileData.author_id) {
+          document.getElementById('profile-author-id').textContent = profileData.author_id;
+          document.getElementById('profile-author-id-field').style.display = 'block';
+        }
+      });
+    }).then(function () {
       setLoading('save-profile-btn', false);
       showSuccess('profile-success', ADMIN_I18N.profile_saved);
       document.getElementById('article-author').value = name;
@@ -942,18 +982,62 @@ var ADMIN_I18N = {
   // ── Co-Authors ──
   var MAX_COAUTHORS = 10;
 
-  function createCoauthorRow(name) {
+  function lookupCoauthor(row) {
+    var input = row.querySelector('.admin-coauthor-id');
+    var resolvedSpan = row.querySelector('.admin-coauthor-resolved-name');
+    var searchId = input.value.trim();
+    if (!searchId) return;
+
+    resolvedSpan.textContent = ADMIN_I18N.coauthor_searching;
+    resolvedSpan.className = 'admin-coauthor-resolved-name';
+
+    db.collection('users').where('author_id', '==', searchId).get().then(function (snapshot) {
+      if (snapshot.empty) {
+        resolvedSpan.textContent = ADMIN_I18N.coauthor_not_found;
+        resolvedSpan.className = 'admin-coauthor-resolved-name admin-coauthor-not-found';
+        row.removeAttribute('data-author-id');
+        row.removeAttribute('data-author-name');
+      } else {
+        var userData = snapshot.docs[0].data();
+        var displayName = userData.displayName || searchId;
+        resolvedSpan.textContent = displayName;
+        resolvedSpan.className = 'admin-coauthor-resolved-name admin-coauthor-found';
+        row.setAttribute('data-author-id', searchId);
+        row.setAttribute('data-author-name', displayName);
+      }
+    }).catch(function () {
+      resolvedSpan.textContent = ADMIN_I18N.coauthor_lookup_error;
+      resolvedSpan.className = 'admin-coauthor-resolved-name admin-coauthor-not-found';
+    });
+  }
+
+  function createCoauthorRow(authorId, name) {
     var row = document.createElement('div');
     row.className = 'admin-coauthor-row';
     row.innerHTML = '<span class="admin-coauthor-order"></span>' +
-      '<input type="text" class="admin-input admin-coauthor-name" placeholder="' + escapeHtml(ADMIN_I18N.coauthor_name_placeholder) + '" value="' + escapeHtml(name || '') + '" maxlength="40" />' +
+      '<input type="text" class="admin-input admin-coauthor-id" placeholder="' + escapeHtml(ADMIN_I18N.coauthor_id_placeholder) + '" value="' + escapeHtml(authorId || '') + '" maxlength="60" />' +
+      '<button type="button" class="admin-coauthor-lookup admin-btn admin-btn-outline">' + escapeHtml(ADMIN_I18N.coauthor_lookup_btn) + '</button>' +
+      '<span class="admin-coauthor-resolved-name"></span>' +
       '<button type="button" class="admin-coauthor-move" data-dir="up" title="Move up">&uarr;</button>' +
       '<button type="button" class="admin-coauthor-move" data-dir="down" title="Move down">&darr;</button>' +
       '<button type="button" class="admin-link-remove">&times;</button>';
+    // If pre-resolved (loading existing data), set attributes and show name
+    if (authorId && name) {
+      row.setAttribute('data-author-id', authorId);
+      row.setAttribute('data-author-name', name);
+      row.querySelector('.admin-coauthor-resolved-name').textContent = name;
+      row.querySelector('.admin-coauthor-resolved-name').className = 'admin-coauthor-resolved-name admin-coauthor-found';
+    }
     row.querySelector('.admin-link-remove').addEventListener('click', function () {
       row.remove();
       updateCoauthorNumbers();
       updateAddCoauthorBtn();
+    });
+    row.querySelector('.admin-coauthor-lookup').addEventListener('click', function () {
+      lookupCoauthor(row);
+    });
+    row.querySelector('.admin-coauthor-id').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); lookupCoauthor(row); }
     });
     row.querySelectorAll('.admin-coauthor-move').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -994,21 +1078,34 @@ var ADMIN_I18N = {
 
   document.getElementById('add-coauthor-btn').addEventListener('click', function () {
     if (document.querySelectorAll('.admin-coauthor-row').length >= MAX_COAUTHORS) return;
-    document.getElementById('coauthors-list').appendChild(createCoauthorRow(''));
+    document.getElementById('coauthors-list').appendChild(createCoauthorRow('', ''));
     updateCoauthorNumbers();
     updateAddCoauthorBtn();
     var rows = document.querySelectorAll('.admin-coauthor-row');
-    rows[rows.length - 1].querySelector('.admin-coauthor-name').focus();
+    rows[rows.length - 1].querySelector('.admin-coauthor-id').focus();
   });
 
   function getCoauthors() {
     var rows = document.querySelectorAll('.admin-coauthor-row');
     var coauthors = [];
     rows.forEach(function (row, i) {
-      var name = row.querySelector('.admin-coauthor-name').value.trim();
-      if (name) coauthors.push({ name: name, order: i + 1 });
+      var authorId = row.getAttribute('data-author-id');
+      var name = row.getAttribute('data-author-name');
+      if (authorId && name) {
+        coauthors.push({ author_id: authorId, name: name, order: i + 1 });
+      }
     });
     return coauthors;
+  }
+
+  function hasUnresolvedCoauthors() {
+    var rows = document.querySelectorAll('.admin-coauthor-row');
+    for (var i = 0; i < rows.length; i++) {
+      var input = rows[i].querySelector('.admin-coauthor-id').value.trim();
+      var resolved = rows[i].getAttribute('data-author-id');
+      if (input && !resolved) return true;
+    }
+    return false;
   }
 
   // ── Submit Article ──
@@ -1028,6 +1125,11 @@ var ADMIN_I18N = {
 
     if (!title || !category || !language || !authorName || !description || !content) {
       showError('article-error', ADMIN_I18N.err_fill_all);
+      return;
+    }
+
+    if (hasUnresolvedCoauthors()) {
+      showError('article-error', ADMIN_I18N.coauthor_unresolved);
       return;
     }
 
@@ -1146,12 +1248,12 @@ var ADMIN_I18N = {
     db.collection('users').doc(uid).get().then(function (doc) {
       if (!doc.exists) return;
       var data = doc.data();
-      if (!data.authorPage) return;
+      if (!data.author_id) return;
       currentFeaturedIds = data.featuredGuideIds || [];
       currentPublishedArticles = data.publishedArticles || [];
       document.getElementById('featured-articles-card').style.display = 'block';
 
-      var authorId = (data.authorPage || '').replace(/^\/authors\//, '').replace(/\/$/, '');
+      var authorId = data.author_id;
       var registered = (data.publishedArticles || []).map(function (a) { return a.guide_id; });
       var sel = document.getElementById('register-guide-select');
       if (typeof SITE_GUIDES !== 'undefined') {
@@ -1698,10 +1800,10 @@ var ADMIN_I18N = {
       });
       Object.keys(uidEls).forEach(function (uid) {
         db.collection('users').doc(uid).get().then(function (userDoc) {
-          if (!userDoc.exists || !userDoc.data().authorPage) return;
+          if (!userDoc.exists || !userDoc.data().author_id) return;
           var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? '' : '/UWC-Survival-Guide';
-          var href = baseUrl + ADMIN_I18N.lang_prefix + userDoc.data().authorPage;
+          var href = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + userDoc.data().author_id + '/';
           uidEls[uid].forEach(function (el) {
             var a = document.createElement('a');
             a.href = href;
@@ -1832,10 +1934,10 @@ var ADMIN_I18N = {
       modalAuthorEl.textContent = ADMIN_I18N.by_prefix + (d.authorName || ADMIN_I18N.author_unknown);
       if (d.uid) {
         db.collection('users').doc(d.uid).get().then(function (userDoc) {
-          if (!userDoc.exists || !userDoc.data().authorPage) return;
+          if (!userDoc.exists || !userDoc.data().author_id) return;
           var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? '' : '/UWC-Survival-Guide';
-          var href = baseUrl + ADMIN_I18N.lang_prefix + userDoc.data().authorPage;
+          var href = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + userDoc.data().author_id + '/';
           modalAuthorEl.innerHTML = escapeHtml(ADMIN_I18N.by_prefix) + '<a href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer" class="admin-author-link">' + escapeHtml(d.authorName) + '</a>';
         });
       }

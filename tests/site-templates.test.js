@@ -193,6 +193,66 @@ describe("Required include files exist", () => {
 });
 
 // ══════════════════════════════════════
+// head.html content validation
+// ══════════════════════════════════════
+
+describe("head.html include", () => {
+  let head;
+
+  beforeAll(() => {
+    head = fs.readFileSync(path.join(INCLUDES_DIR, "head.html"), "utf-8");
+  });
+
+  test("has charset meta tag", () => {
+    expect(head).toContain('charset="UTF-8"');
+  });
+
+  test("has viewport meta tag for responsive design", () => {
+    expect(head).toContain("viewport");
+    expect(head).toContain("width=device-width");
+  });
+
+  test("has title tag", () => {
+    expect(head).toContain("<title>");
+  });
+
+  test("links to main stylesheet", () => {
+    expect(head).toContain("styles.css");
+  });
+});
+
+// ══════════════════════════════════════
+// nav.html content validation
+// ══════════════════════════════════════
+
+describe("nav.html include", () => {
+  let nav;
+
+  beforeAll(() => {
+    nav = fs.readFileSync(path.join(INCLUDES_DIR, "nav.html"), "utf-8");
+  });
+
+  test("has nav element", () => {
+    expect(nav).toContain('<nav class="nav">');
+  });
+
+  test("has language switching support", () => {
+    expect(nav).toContain("nav-language-switch");
+    expect(nav).toContain("translation_items");
+  });
+
+  test("has mobile menu toggle", () => {
+    expect(nav).toContain("nav-toggle");
+    expect(nav).toContain("mobile-menu");
+  });
+
+  test("has navigation links", () => {
+    expect(nav).toContain("nav-links");
+    expect(nav).toContain("current_locale.nav");
+  });
+});
+
+// ══════════════════════════════════════
 // CSS validation
 // ══════════════════════════════════════
 

@@ -79,7 +79,10 @@ function generateMarkdown(d, authorSlug, editorName) {
   if (d.coAuthors && d.coAuthors.length > 0) {
     md += "coauthors:\n";
     d.coAuthors.forEach((ca) => {
-      md += `  - "${ca.name.replace(/"/g, '\\"')}"\n`;
+      md += `  - name: "${ca.name.replace(/"/g, '\\"')}"\n`;
+      if (ca.author_id) {
+        md += `    author_id: "${ca.author_id}"\n`;
+      }
     });
   }
   md += `guide_id: "${slug}"\n`;
@@ -110,8 +113,8 @@ function generateMarkdown(d, authorSlug, editorName) {
 async function resolveAuthorSlug(uid, authorName) {
   if (uid) {
     const userDoc = await db.collection("users").doc(uid).get();
-    if (userDoc.exists && userDoc.data().authorPage) {
-      return userDoc.data().authorPage.replace(/^\/authors\//, "").replace(/\/$/, "");
+    if (userDoc.exists && userDoc.data().author_id) {
+      return userDoc.data().author_id;
     }
   }
   return makeSlug(authorName);
@@ -181,7 +184,7 @@ async function publishToGitHub(token, d, markdown, filePath, authorSlug) {
 async function updateAuthorRecord(uid, authorSlug, slug, title, category) {
   if (!uid) return;
   await db.collection("users").doc(uid).set(
-    { authorPage: "/authors/" + authorSlug + "/" },
+    { author_id: authorSlug },
     { merge: true }
   );
   await db.collection("users").doc(uid).update({

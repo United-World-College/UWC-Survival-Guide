@@ -198,3 +198,63 @@ describe("Admin email consistency", () => {
     }
   });
 });
+
+// ══════════════════════════════════════
+// Global Security Patterns
+// ══════════════════════════════════════
+
+describe("Global Firestore security patterns", () => {
+  test("does not have a root-level allow read/write for all", () => {
+    // There should be no blanket allow read, write at the database level
+    // i.e. "allow read, write;" without conditions before any match blocks
+    const serviceBlock = rules.substring(
+      rules.indexOf("service cloud.firestore")
+    );
+    const firstMatch = serviceBlock.indexOf("match /");
+    const preamble = serviceBlock.substring(0, firstMatch);
+    expect(preamble).not.toMatch(/allow\s+(read|write|read,\s*write)\s*;/);
+  });
+
+  test("all allow rules have conditions (no unconditional writes)", () => {
+    // Find all "allow write" or "allow create" lines — they should have ": if"
+    const writeRules = rules.match(/allow\s+(write|create|update|delete)\s*:.*/g) || [];
+    for (const rule of writeRules) {
+      expect(rule).toContain("if");
+    }
+  });
+
+  test("rules file has no TODO or FIXME comments", () => {
+    expect(rules).not.toMatch(/\/\/\s*(TODO|FIXME|HACK)/i);
+  });
+});
+
+// ══════════════════════════════════════
+// Storage Rules Logic
+// ══════════════════════════════════════
+
+describe("Storage rules logic", () => {
+  let storageRules;
+
+  beforeAll(() => {
+    storageRules = fs.readFileSync(
+      path.join(__dirname, "..", "firebase", "storage.rules"),
+      "utf-8"
+    );
+  });
+
+  test("does not have a root-level allow all", () => {
+    const serviceBlock = storageRules.substring(
+      storageRules.indexOf("service firebase.storage")
+    );
+    const firstMatch = serviceBlock.indexOf("match /");
+    const preamble = serviceBlock.substring(0, firstMatch);
+    expect(preamble).not.toMatch(/allow\s+(read|write|read,\s*write)\s*;/);
+  });
+
+  test("all write rules require authentication", () => {
+    const writeLines = storageRules.match(/allow\s+write\s*:.*/g) || [];
+    for (const line of writeLines) {
+      expect(line).toContain("request.auth");
+    }
+  });
+});

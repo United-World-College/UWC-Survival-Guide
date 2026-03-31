@@ -142,3 +142,74 @@ describe("i18n admin strings", () => {
     }
   });
 });
+
+describe("i18n navigation strings", () => {
+  test("nav section exists in all locales", () => {
+    for (const code of ["en", "zh-CN", "zh-TW"]) {
+      const locale = getLocale(code);
+      expect(locale.nav).toBeDefined();
+      expect(typeof locale.nav).toBe("object");
+    }
+  });
+
+  test("required nav keys exist in all locales", () => {
+    const navKeys = ["logo", "about", "campus_life", "daily_essentials", "explore_nearby", "all_guides"];
+    for (const code of ["en", "zh-CN", "zh-TW"]) {
+      const nav = getLocale(code).nav;
+      for (const key of navKeys) {
+        expect(nav[key]).toBeDefined();
+        expect(nav[key]).toBeTruthy();
+      }
+    }
+  });
+
+  test("common section exists in all locales", () => {
+    for (const code of ["en", "zh-CN", "zh-TW"]) {
+      const locale = getLocale(code);
+      expect(locale.common).toBeDefined();
+      expect(typeof locale.common).toBe("object");
+    }
+  });
+
+  test("short_label exists in all locales", () => {
+    for (const code of ["en", "zh-CN", "zh-TW"]) {
+      const locale = getLocale(code);
+      expect(locale.short_label).toBeTruthy();
+    }
+  });
+});
+
+describe("i18n string values are non-empty", () => {
+  // Keys that are legitimately empty or are identifiers/separators, not user-facing strings
+  const SKIP_KEYS = new Set(["code", "path_prefix", "title_prefix", "bibliography_title_prefix", "no_filter_sep"]);
+
+  test("all leaf values in zh-CN are non-empty strings", () => {
+    const zhCN = getLocale("zh-CN");
+    const keys = flattenKeys(zhCN);
+    for (const key of keys) {
+      const leafKey = key.split(".").pop();
+      if (SKIP_KEYS.has(leafKey) || SKIP_KEYS.has(key)) continue;
+      const parts = key.split(".");
+      let val = zhCN;
+      for (const p of parts) val = val[p];
+      if (typeof val === "string") {
+        expect(val.trim().length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  test("all leaf values in zh-TW are non-empty strings", () => {
+    const zhTW = getLocale("zh-TW");
+    const keys = flattenKeys(zhTW);
+    for (const key of keys) {
+      const leafKey = key.split(".").pop();
+      if (SKIP_KEYS.has(leafKey) || SKIP_KEYS.has(key)) continue;
+      const parts = key.split(".");
+      let val = zhTW;
+      for (const p of parts) val = val[p];
+      if (typeof val === "string") {
+        expect(val.trim().length).toBeGreaterThan(0);
+      }
+    }
+  });
+});

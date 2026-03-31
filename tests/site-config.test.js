@@ -245,3 +245,92 @@ describe("Project structure", () => {
     ).toBe(true);
   });
 });
+
+// ══════════════════════════════════════
+// Firestore Indexes
+// ══════════════════════════════════════
+
+describe("Firestore indexes file", () => {
+  let indexes;
+
+  beforeAll(() => {
+    const raw = fs.readFileSync(
+      path.join(ROOT, "firebase", "firestore.indexes.json"),
+      "utf-8"
+    );
+    indexes = JSON.parse(raw);
+  });
+
+  test("is valid JSON with indexes array", () => {
+    expect(indexes).toBeDefined();
+    expect(Array.isArray(indexes.indexes)).toBe(true);
+  });
+
+  test("has fieldOverrides array", () => {
+    expect(Array.isArray(indexes.fieldOverrides)).toBe(true);
+  });
+
+  test("each index has collectionGroup, queryScope, and fields", () => {
+    for (const idx of indexes.indexes) {
+      expect(idx.collectionGroup).toBeTruthy();
+      expect(idx.queryScope).toBeTruthy();
+      expect(Array.isArray(idx.fields)).toBe(true);
+      expect(idx.fields.length).toBeGreaterThan(0);
+    }
+  });
+
+  test("submissions index exists with uid and createdAt", () => {
+    const submissionIdx = indexes.indexes.find(
+      (i) => i.collectionGroup === "submissions"
+    );
+    expect(submissionIdx).toBeDefined();
+    const fieldPaths = submissionIdx.fields.map((f) => f.fieldPath);
+    expect(fieldPaths).toContain("uid");
+    expect(fieldPaths).toContain("createdAt");
+  });
+});
+
+// ══════════════════════════════════════
+// CI/CD Workflow
+// ══════════════════════════════════════
+
+describe("Deploy workflow", () => {
+  let workflow;
+
+  beforeAll(() => {
+    const raw = fs.readFileSync(
+      path.join(ROOT, ".github", "workflows", "deploy.yml"),
+      "utf-8"
+    );
+    workflow = yaml.load(raw);
+  });
+
+  test("is valid YAML", () => {
+    expect(workflow).toBeDefined();
+  });
+
+  test("triggers on push to main", () => {
+    expect(workflow.on.push.branches).toContain("main");
+  });
+
+  test("has test, build, and deploy jobs", () => {
+    expect(workflow.jobs.test).toBeDefined();
+    expect(workflow.jobs.build).toBeDefined();
+    expect(workflow.jobs.deploy).toBeDefined();
+  });
+
+  test("build depends on test", () => {
+    expect(workflow.jobs.build.needs).toBe("test");
+  });
+
+  test("deploy depends on build", () => {
+    expect(workflow.jobs.deploy.needs).toBe("build");
+  });
+
+  test("test job runs both functions and site tests", () => {
+    const steps = workflow.jobs.test.steps;
+    const stepNames = steps.map((s) => s.name);
+    expect(stepNames).toContain("Run Cloud Functions tests");
+    expect(stepNames).toContain("Run site validation tests");
+  });
+});

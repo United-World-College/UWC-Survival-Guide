@@ -63,7 +63,7 @@
         {% else %}
         {{ current_locale.guide.by_label }} {{ current_author_name }}
         {% endif %}
-        {% if page.coauthors %}{% for ca in page.coauthors %}, {{ ca }}{% endfor %}{% endif %}
+        {% if page.coauthors %}{% for ca in page.coauthors %}, {{ ca.name }}{% endfor %}{% endif %}
       </p>
       {% endif %}
       {% assign submitted_at = page.submitted %}
