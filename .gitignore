@@ -19,3 +19,6 @@ auto-translator/__pycache__/
 
 functions/node_modules/
 tests/node_modules/
+
+# Service account keys (sensitive)
+uwc-survival-guide-*.json

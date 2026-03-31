@@ -1614,8 +1614,13 @@ var ADMIN_I18N = {
   var currentModalData = null;
 
   function checkAdmin() {
-    var checkAdminStatus = functions.httpsCallable('checkAdminStatus');
-    checkAdminStatus().then(function (result) {
+    var user = auth.currentUser;
+    if (!user) return;
+    // Force token refresh so server-side emailVerified changes take effect
+    user.getIdToken(true).then(function () {
+      var checkAdminStatus = functions.httpsCallable('checkAdminStatus');
+      return checkAdminStatus();
+    }).then(function (result) {
       if (result.data && result.data.isAdmin) {
         isAdmin = true;
         document.getElementById('admin-review-panel').style.display = 'block';
