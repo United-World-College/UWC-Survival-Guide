@@ -225,7 +225,7 @@
     author_name_placeholder: Your name
     author_id_label: Author ID
     coauthors_label: Co-Authors
-    coauthors_hint: "Add co-authors by their Author ID. Look up each ID to confirm the name."
+    coauthors_hint: "Add co-authors by their Author ID. Each member can find their Author ID at the top of their profile above."
     coauthor_name_placeholder: "Co-author name"
     coauthor_id_placeholder: "Enter author ID (e.g. william-huang)"
     coauthor_lookup_btn: "Look up"
@@ -234,6 +234,7 @@
     coauthor_lookup_error: "Lookup failed, try again"
     coauthor_unresolved: "Please look up all co-authors before submitting"
     coauthor_already_added: "Already added"
+    coauthor_no_profile: "No author profile yet"
     coauthor_add_btn: "+ Add Co-Author"
     coauthors_max: "Maximum 10 co-authors allowed."
     description_label: Description
@@ -571,7 +572,7 @@
     author_name_placeholder: 您的姓名
     author_id_label: 作者 ID
     coauthors_label: 共同作者
-    coauthors_hint: 通过作者 ID 添加共同作者。查找每个 ID 以确认姓名。
+    coauthors_hint: 通过作者 ID 添加共同作者。每位成员可在个人资料顶部找到自己的作者 ID。
     coauthor_name_placeholder: 共同作者姓名
     coauthor_id_placeholder: "输入作者 ID（如 william-huang）"
     coauthor_lookup_btn: 查找
@@ -580,6 +581,7 @@
     coauthor_lookup_error: 查找失败，请重试
     coauthor_unresolved: 提交前请查找所有共同作者
     coauthor_already_added: 已添加
+    coauthor_no_profile: 暂无作者主页
     coauthor_add_btn: + 添加共同作者
     coauthors_max: 最多允许 10 位共同作者。
     description_label: 简介
@@ -917,7 +919,7 @@
     author_name_placeholder: 您的姓名
     author_id_label: 作者 ID
     coauthors_label: 共同作者
-    coauthors_hint: 透過作者 ID 添加共同作者。查找每個 ID 以確認姓名。
+    coauthors_hint: 透過作者 ID 添加共同作者。每位成員可在個人資料頂部找到自己的作者 ID。
     coauthor_name_placeholder: 共同作者姓名
     coauthor_id_placeholder: "輸入作者 ID（如 william-huang）"
     coauthor_lookup_btn: 查找
@@ -926,6 +928,7 @@
     coauthor_lookup_error: 查找失敗，請重試
     coauthor_unresolved: 提交前請查找所有共同作者
     coauthor_already_added: 已添加
+    coauthor_no_profile: 暫無作者主頁
     coauthor_add_btn: + 添加共同作者
     coauthors_max: 最多允許 10 位共同作者。
     description_label: 簡介

@@ -20,6 +20,7 @@
 <!-- EIC IDs for role display -->
 <script>
 var EIC_IDS = [{% for p in site.data.about.editors_in_chief %}{{ p.id | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}];
+var SITE_AUTHOR_IDS = [{% assign all_site_authors = site.authors | map: "author_id" | uniq %}{% for aid in all_site_authors %}{% if aid != nil and aid != "" %}{{ aid | jsonify }},{% endif %}{% endfor %}];
 var AUTHOR_ARTICLE_COUNTS = {
   {% assign all_author_ids = site.guides | map: "author_id" | uniq %}{% assign _first = true %}
   {% for aid in all_author_ids %}{% if aid != nil and aid != "" %}{% assign ag = site.guides | where: "author_id", aid %}{% assign ac = ag | map: "guide_id" | uniq | size %}{% unless _first %},{% endunless %}{{ aid | jsonify }}: {{ ac }}{% assign _first = false %}{% endif %}{% endfor %}
@@ -141,6 +142,7 @@ var ADMIN_I18N = {
   coauthor_lookup_error: {{ t.coauthor_lookup_error | jsonify }},
   coauthor_unresolved:  {{ t.coauthor_unresolved | jsonify }},
   coauthor_already_added: {{ t.coauthor_already_added | jsonify }},
+  coauthor_no_profile:  {{ t.coauthor_no_profile | jsonify }},
   coauthor_add_btn:     {{ t.coauthor_add_btn | jsonify }},
   coauthors_max:        {{ t.coauthors_max | jsonify }},
   author_id_label:      {{ t.author_id_label | jsonify }}
@@ -251,6 +253,12 @@ var ADMIN_I18N = {
             </div>
 
             <div class="admin-profile-fields">
+              <div class="admin-field" id="profile-author-id-field" style="display:none;">
+                <label class="admin-label">{{ t.author_id_label }}</label>
+                <div class="admin-author-id-display">
+                  <code id="profile-author-id"></code>
+                </div>
+              </div>
               <div class="admin-field">
                 <label class="admin-label" for="profile-name">{{ t.display_name_label }} <span id="profile-name-count" style="font-weight:400;color:var(--warm-gray);font-size:0.75rem;"></span></label>
                 <input type="text" id="profile-name" class="admin-input" placeholder="{{ t.display_name_placeholder }}" maxlength="40" />
@@ -276,12 +284,6 @@ var ADMIN_I18N = {
               <div class="admin-field">
                 <label class="admin-label" for="profile-summary">{{ t.summary_label }} <span id="profile-summary-count" style="font-weight:400;color:var(--warm-gray);font-size:0.75rem;"></span></label>
                 <input type="text" id="profile-summary" class="admin-input" placeholder="{{ t.summary_placeholder }}" maxlength="120" />
-              </div>
-              <div class="admin-field" id="profile-author-id-field" style="display:none;">
-                <label class="admin-label">{{ t.author_id_label }}</label>
-                <div class="admin-author-id-display">
-                  <code id="profile-author-id"></code>
-                </div>
               </div>
               <div class="admin-field" id="profile-role-field" style="display:none;">
                 <label class="admin-label">{{ t.role_label }}</label>
@@ -988,6 +990,10 @@ var ADMIN_I18N = {
   var MAX_COAUTHORS = 10;
   var pendingCoauthor = null; // { author_id, name }
 
+  function hasAuthorProfile(authorId) {
+    return typeof SITE_AUTHOR_IDS !== 'undefined' && SITE_AUTHOR_IDS.indexOf(authorId) !== -1;
+  }
+
   function coauthorSearchLookup() {
     var input = document.getElementById('coauthor-search-input');
     var resultEl = document.getElementById('coauthor-search-result');
@@ -996,44 +1002,57 @@ var ADMIN_I18N = {
     if (!searchId) { resultEl.style.display = 'none'; return; }
 
     resultEl.style.display = 'block';
-    resultEl.className = 'admin-coauthor-search-result';
-    resultEl.textContent = ADMIN_I18N.coauthor_searching;
+    resultEl.className = 'admin-coauthor-search-result admin-coauthor-searching';
+    resultEl.innerHTML = '<span class="admin-coauthor-result-text">' + escapeHtml(ADMIN_I18N.coauthor_searching) + '</span>';
 
     db.collection('users').where('author_id', '==', searchId).get().then(function (snapshot) {
       if (snapshot.empty) {
-        resultEl.className = 'admin-coauthor-search-result admin-coauthor-not-found';
-        resultEl.textContent = ADMIN_I18N.coauthor_not_found;
-      } else {
-        var userData = snapshot.docs[0].data();
-        var displayName = userData.displayName || searchId;
-        pendingCoauthor = { author_id: searchId, name: displayName };
-        var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-          ? '' : '/UWC-Survival-Guide';
-        var profileHref = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + searchId + '/';
-        // Check if already added
-        var existing = document.querySelectorAll('.admin-coauthor-row');
-        var alreadyAdded = false;
-        for (var i = 0; i < existing.length; i++) {
-          if (existing[i].getAttribute('data-author-id') === searchId) { alreadyAdded = true; break; }
-        }
-        resultEl.className = 'admin-coauthor-search-result admin-coauthor-found';
-        if (alreadyAdded) {
-          resultEl.innerHTML = '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link">' + escapeHtml(displayName) + '</a>' +
-            '<span class="admin-coauthor-already-added">' + escapeHtml(ADMIN_I18N.coauthor_already_added || 'Already added') + '</span>';
-          pendingCoauthor = null;
-        } else if (document.querySelectorAll('.admin-coauthor-row').length >= MAX_COAUTHORS) {
-          resultEl.innerHTML = '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link">' + escapeHtml(displayName) + '</a>' +
-            '<span class="admin-coauthor-already-added">' + escapeHtml(ADMIN_I18N.coauthors_max) + '</span>';
-          pendingCoauthor = null;
-        } else {
-          resultEl.innerHTML = '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-profile-link">' + escapeHtml(displayName) + '</a>' +
-            '<button type="button" class="admin-btn admin-coauthor-add-btn" id="coauthor-add-found">' + escapeHtml(ADMIN_I18N.coauthor_add_btn) + '</button>';
-          document.getElementById('coauthor-add-found').addEventListener('click', addPendingCoauthor);
-        }
+        resultEl.className = 'admin-coauthor-search-result admin-coauthor-result-error';
+        resultEl.innerHTML = '<span class="admin-coauthor-result-text">' + escapeHtml(ADMIN_I18N.coauthor_not_found) + '</span>';
+        return;
       }
+      var userData = snapshot.docs[0].data();
+      var displayName = userData.displayName || searchId;
+      var hasProfile = hasAuthorProfile(searchId);
+      var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? '' : '/UWC-Survival-Guide';
+      var profileHref = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + searchId + '/';
+
+      // Check if already added
+      var existing = document.querySelectorAll('.admin-coauthor-row');
+      var alreadyAdded = false;
+      for (var i = 0; i < existing.length; i++) {
+        if (existing[i].getAttribute('data-author-id') === searchId) { alreadyAdded = true; break; }
+      }
+      var atLimit = existing.length >= MAX_COAUTHORS;
+
+      resultEl.className = 'admin-coauthor-search-result admin-coauthor-result-success';
+
+      // Build left side: name + profile status
+      var nameHtml = hasProfile
+        ? '<a href="' + escapeHtml(profileHref) + '" target="_blank" rel="noopener noreferrer" class="admin-coauthor-result-name">' + escapeHtml(displayName) + '</a>'
+        : '<span class="admin-coauthor-result-name">' + escapeHtml(displayName) + '</span>';
+      var profileTag = hasProfile ? '' : '<span class="admin-coauthor-no-profile">' + escapeHtml(ADMIN_I18N.coauthor_no_profile) + '</span>';
+
+      // Build right side: action
+      var actionHtml = '';
+      if (alreadyAdded) {
+        actionHtml = '<span class="admin-coauthor-result-note">' + escapeHtml(ADMIN_I18N.coauthor_already_added) + '</span>';
+        pendingCoauthor = null;
+      } else if (atLimit) {
+        actionHtml = '<span class="admin-coauthor-result-note">' + escapeHtml(ADMIN_I18N.coauthors_max) + '</span>';
+        pendingCoauthor = null;
+      } else {
+        pendingCoauthor = { author_id: searchId, name: displayName };
+        actionHtml = '<button type="button" class="admin-btn admin-coauthor-add-btn" id="coauthor-add-found">' + escapeHtml(ADMIN_I18N.coauthor_add_btn) + '</button>';
+      }
+
+      resultEl.innerHTML = '<div class="admin-coauthor-result-info">' + nameHtml + profileTag + '</div>' + actionHtml;
+      var addBtn = document.getElementById('coauthor-add-found');
+      if (addBtn) addBtn.addEventListener('click', addPendingCoauthor);
     }).catch(function () {
-      resultEl.className = 'admin-coauthor-search-result admin-coauthor-not-found';
-      resultEl.textContent = ADMIN_I18N.coauthor_lookup_error;
+      resultEl.className = 'admin-coauthor-search-result admin-coauthor-result-error';
+      resultEl.innerHTML = '<span class="admin-coauthor-result-text">' + escapeHtml(ADMIN_I18N.coauthor_lookup_error) + '</span>';
     });
   }
 
