@@ -2125,18 +2125,22 @@ a.author-contact-value:hover {
 }
 
 /* ── Author ID Display ── */
-.admin-author-id-display {
-  background: var(--bg-alt, #f5f3ef);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.5rem 0.8rem;
-  font-size: 0.88rem;
+.admin-author-id-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  background: var(--light-stone);
+  color: var(--warm-gray);
+  border: 1px solid var(--border-color);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
 }
 
-.admin-author-id-display code {
-  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  font-size: 0.85rem;
-  color: var(--text-primary);
+.admin-coauthor-toggle {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
 }
 
 /* ── Co-Authors: Search Bar ── */

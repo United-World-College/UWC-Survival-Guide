@@ -234,8 +234,9 @@
     coauthor_lookup_error: "Lookup failed, try again"
     coauthor_unresolved: "Please look up all co-authors before submitting"
     coauthor_already_added: "Already added"
-    coauthor_no_profile: "No author profile yet"
+    coauthor_no_profile: "No author profile yet — will be created when first article is approved"
     coauthor_add_btn: "+ Add Co-Author"
+    coauthor_add_toggle: "+ Add Co-Author"
     coauthors_max: "Maximum 10 co-authors allowed."
     description_label: Description
     description_placeholder: A brief summary of the article
@@ -251,6 +252,7 @@
     add_article_btn: Add Article
     published_title: My Published Articles
     published_desc: Articles published on the site under your name.
+    published_no_profile: "Your author profile page has not been created yet. It will be created automatically when your first article is approved."
     view_published: View all my published articles
     submissions_title: My Submissions
     submissions_desc: Track the status of your submitted articles.
@@ -581,8 +583,9 @@
     coauthor_lookup_error: 查找失败，请重试
     coauthor_unresolved: 提交前请查找所有共同作者
     coauthor_already_added: 已添加
-    coauthor_no_profile: 暂无作者主页
+    coauthor_no_profile: 暂无作者主页——第一篇文章通过审核后将自动创建
     coauthor_add_btn: + 添加共同作者
+    coauthor_add_toggle: + 添加共同作者
     coauthors_max: 最多允许 10 位共同作者。
     description_label: 简介
     description_placeholder: 文章简短摘要
@@ -598,6 +601,7 @@
     add_article_btn: 添加文章
     published_title: 我的已发布文章
     published_desc: 以您的名义在网站上发布的文章。
+    published_no_profile: 您的作者主页尚未创建。当您的第一篇文章通过审核后，系统将自动创建。
     view_published: 查看我所有已发布的文章
     submissions_title: 我的投稿
     submissions_desc: 追踪您已投稿文章的状态。
@@ -928,8 +932,9 @@
     coauthor_lookup_error: 查找失敗，請重試
     coauthor_unresolved: 提交前請查找所有共同作者
     coauthor_already_added: 已添加
-    coauthor_no_profile: 暫無作者主頁
+    coauthor_no_profile: 暫無作者主頁——第一篇文章通過審核後將自動建立
     coauthor_add_btn: + 添加共同作者
+    coauthor_add_toggle: + 添加共同作者
     coauthors_max: 最多允許 10 位共同作者。
     description_label: 簡介
     description_placeholder: 文章簡短摘要
@@ -945,6 +950,7 @@
     add_article_btn: 新增文章
     published_title: 我的已發布文章
     published_desc: 以您的名義在網站上發布的文章。
+    published_no_profile: 您的作者主頁尚未建立。當您的第一篇文章通過審核後，系統將自動建立。
     view_published: 查看我所有已發布的文章
     submissions_title: 我的投稿
     submissions_desc: 追蹤您已投稿文章的狀態。

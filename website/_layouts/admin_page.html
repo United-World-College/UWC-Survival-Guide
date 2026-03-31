@@ -97,6 +97,7 @@ var ADMIN_I18N = {
   rejection_prompt:     {{ t.rejection_prompt | jsonify }},
   copied:               {{ t.copied | jsonify }},
   view_published:       {{ t.view_published | jsonify }},
+  published_no_profile: {{ t.published_no_profile | jsonify }},
   no_token:             {{ t.no_token | jsonify }},
   local_save_error:     {{ t.local_save_error | jsonify }},
   github_error:         {{ t.github_error | jsonify }},
@@ -144,6 +145,7 @@ var ADMIN_I18N = {
   coauthor_already_added: {{ t.coauthor_already_added | jsonify }},
   coauthor_no_profile:  {{ t.coauthor_no_profile | jsonify }},
   coauthor_add_btn:     {{ t.coauthor_add_btn | jsonify }},
+  coauthor_add_toggle:  {{ t.coauthor_add_toggle | jsonify }},
   coauthors_max:        {{ t.coauthors_max | jsonify }},
   author_id_label:      {{ t.author_id_label | jsonify }}
 };
@@ -255,9 +257,7 @@ var ADMIN_I18N = {
             <div class="admin-profile-fields">
               <div class="admin-field" id="profile-author-id-field" style="display:none;">
                 <label class="admin-label">{{ t.author_id_label }}</label>
-                <div class="admin-author-id-display">
-                  <code id="profile-author-id"></code>
-                </div>
+                <span id="profile-author-id" class="admin-author-id-badge"></span>
               </div>
               <div class="admin-field">
                 <label class="admin-label" for="profile-name">{{ t.display_name_label }} <span id="profile-name-count" style="font-weight:400;color:var(--warm-gray);font-size:0.75rem;"></span></label>
@@ -341,13 +341,16 @@ var ADMIN_I18N = {
 
             <div class="admin-field">
               <label class="admin-label">{{ t.coauthors_label }}</label>
-              <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">{{ t.coauthors_hint }}</p>
-              <div class="admin-coauthor-search">
-                <input type="text" id="coauthor-search-input" class="admin-input" placeholder="{{ t.coauthor_id_placeholder }}" maxlength="60" />
-                <button type="button" id="coauthor-search-btn" class="admin-btn admin-btn-outline">{{ t.coauthor_lookup_btn }}</button>
-              </div>
-              <div id="coauthor-search-result" class="admin-coauthor-search-result" style="display:none;"></div>
               <div id="coauthors-list"></div>
+              <button type="button" id="coauthor-toggle-btn" class="admin-btn admin-btn-outline admin-coauthor-toggle">{{ t.coauthor_add_toggle }}</button>
+              <div id="coauthor-search-panel" style="display:none;">
+                <p style="font-size:0.82rem;color:var(--warm-gray);margin-bottom:0.8rem;">{{ t.coauthors_hint }}</p>
+                <div class="admin-coauthor-search">
+                  <input type="text" id="coauthor-search-input" class="admin-input" placeholder="{{ t.coauthor_id_placeholder }}" maxlength="60" />
+                  <button type="button" id="coauthor-search-btn" class="admin-btn admin-btn-outline">{{ t.coauthor_lookup_btn }}</button>
+                </div>
+                <div id="coauthor-search-result" class="admin-coauthor-search-result" style="display:none;"></div>
+              </div>
               <p id="coauthors-limit-note" style="display:none;font-size:0.75rem;color:var(--warm-gray);margin-top:0.4rem;">{{ t.coauthors_max }}</p>
             </div>
 
@@ -754,6 +757,9 @@ var ADMIN_I18N = {
         if (authorId) {
           document.getElementById('profile-author-id').textContent = authorId;
           document.getElementById('profile-author-id-field').style.display = 'block';
+          // Store for auto-adding as first coauthor
+          currentUserAuthor = { author_id: authorId, name: data.displayName || authorId };
+          addSelfAsCoauthor();
         }
         // Show auto-calculated role badge
         if (authorId) {
@@ -764,15 +770,20 @@ var ADMIN_I18N = {
           roleBadge.className = role.className;
           roleField.style.display = 'block';
         }
-        // Show published articles link
+        // Show published articles link or no-profile message
         if (authorId) {
           var card = document.getElementById('published-articles-card');
           card.style.display = 'block';
-          var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? '' : '/UWC-Survival-Guide';
-          var authorPage = '/authors/' + authorId + '/';
-          document.getElementById('published-articles-link').innerHTML =
-            '<a href="' + baseUrl + ADMIN_I18N.lang_prefix + authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">' + ADMIN_I18N.view_published + '</a>';
+          var linkEl = document.getElementById('published-articles-link');
+          if (typeof SITE_AUTHOR_IDS !== 'undefined' && SITE_AUTHOR_IDS.indexOf(authorId) !== -1) {
+            var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+              ? '' : '/UWC-Survival-Guide';
+            var authorPage = '/authors/' + authorId + '/';
+            linkEl.innerHTML =
+              '<a href="' + baseUrl + ADMIN_I18N.lang_prefix + authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">' + ADMIN_I18N.view_published + '</a>';
+          } else {
+            linkEl.innerHTML = '<p style="font-size:0.88rem;color:var(--warm-gray);font-style:italic;margin-top:0.5rem;">' + escapeHtml(ADMIN_I18N.published_no_profile) + '</p>';
+          }
         }
       } else {
         db.collection('users').doc(user.uid).set({
@@ -989,6 +1000,7 @@ var ADMIN_I18N = {
   // ── Co-Authors ──
   var MAX_COAUTHORS = 10;
   var pendingCoauthor = null; // { author_id, name }
+  var currentUserAuthor = null; // { author_id, name }
 
   function hasAuthorProfile(authorId) {
     return typeof SITE_AUTHOR_IDS !== 'undefined' && SITE_AUTHOR_IDS.indexOf(authorId) !== -1;
@@ -1062,17 +1074,41 @@ var ADMIN_I18N = {
     document.getElementById('coauthors-list').appendChild(createCoauthorRow(pendingCoauthor.author_id, pendingCoauthor.name));
     updateCoauthorNumbers();
     updateLimitNote();
-    // Reset search
+    // Reset search and collapse panel
     pendingCoauthor = null;
     document.getElementById('coauthor-search-input').value = '';
     document.getElementById('coauthor-search-result').style.display = 'none';
-    document.getElementById('coauthor-search-input').focus();
+    document.getElementById('coauthor-search-panel').style.display = 'none';
+    document.getElementById('coauthor-toggle-btn').style.display = '';
   }
+
+  document.getElementById('coauthor-toggle-btn').addEventListener('click', function () {
+    var panel = document.getElementById('coauthor-search-panel');
+    var btn = document.getElementById('coauthor-toggle-btn');
+    if (panel.style.display === 'none') {
+      panel.style.display = '';
+      btn.style.display = 'none';
+      document.getElementById('coauthor-search-input').focus();
+    }
+  });
 
   document.getElementById('coauthor-search-btn').addEventListener('click', coauthorSearchLookup);
   document.getElementById('coauthor-search-input').addEventListener('keydown', function (e) {
     if (e.key === 'Enter') { e.preventDefault(); coauthorSearchLookup(); }
   });
+
+  function addSelfAsCoauthor() {
+    if (!currentUserAuthor) return;
+    var list = document.getElementById('coauthors-list');
+    // Don't add again if already present
+    var existing = list.querySelectorAll('.admin-coauthor-row');
+    for (var i = 0; i < existing.length; i++) {
+      if (existing[i].getAttribute('data-author-id') === currentUserAuthor.author_id) return;
+    }
+    list.appendChild(createCoauthorRow(currentUserAuthor.author_id, currentUserAuthor.name));
+    updateCoauthorNumbers();
+    updateLimitNote();
+  }
 
   function createCoauthorRow(authorId, name) {
     var row = document.createElement('div');
@@ -1120,7 +1156,9 @@ var ADMIN_I18N = {
   function updateLimitNote() {
     var count = document.querySelectorAll('.admin-coauthor-row').length;
     var note = document.getElementById('coauthors-limit-note');
-    note.style.display = count >= MAX_COAUTHORS ? 'block' : 'none';
+    var atMax = count >= MAX_COAUTHORS;
+    note.style.display = atMax ? 'block' : 'none';
+    document.getElementById('coauthor-toggle-btn').style.display = atMax ? 'none' : '';
   }
 
   function getCoauthors() {
@@ -1177,7 +1215,10 @@ var ADMIN_I18N = {
       document.getElementById('article-form').reset();
       document.getElementById('article-author').value = authorName;
       document.getElementById('coauthors-list').innerHTML = '';
-      updateAddCoauthorBtn();
+      document.getElementById('coauthor-search-panel').style.display = 'none';
+      document.getElementById('coauthor-toggle-btn').style.display = '';
+      addSelfAsCoauthor();
+      updateLimitNote();
       loadSubmissions(user.uid);
       setTimeout(function () {
         document.getElementById('article-success').style.display = 'none';
