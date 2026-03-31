@@ -2,7 +2,7 @@
   "name": "uwc-survival-guide-functions",
   "description": "Cloud Functions for UWC Survival Guide",
   "engines": {
-    "node": "18"
+    "node": "22"
   },
   "main": "index.js",
   "dependencies": {
