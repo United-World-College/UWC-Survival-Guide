@@ -175,6 +175,12 @@ describe("admin_page.html template", () => {
     expect(template).toContain("resubmitArticle");
   });
 
+  test("renders approval and rejection notes in submission timelines", () => {
+    expect(template).toContain("renderSubmissionDecisionFeedback");
+    expect(template).toContain("approveMessage");
+    expect(template).toContain("rejectionReason");
+  });
+
   test("localises strings via ADMIN_I18N", () => {
     expect(template).toContain("var ADMIN_I18N");
   });

@@ -119,6 +119,30 @@ describe("Submissions collection security rules", () => {
 });
 
 // ══════════════════════════════════════
+// Submission Audit Collection Rules
+// ══════════════════════════════════════
+
+describe("Submission audit collection security rules", () => {
+  let auditBlock;
+  beforeAll(() => {
+    auditBlock = getMatchBlock("submissionAudit/{docId}");
+  });
+
+  test("restricts read to verified admin emails", () => {
+    expect(auditBlock).toContain("request.auth.token.email_verified == true");
+    expect(auditBlock).toContain("li.dongyuan@ufl.edu");
+    expect(auditBlock).toContain("jingranhuang590@gmail.com");
+  });
+
+  test("does not allow any client-side writes", () => {
+    expect(auditBlock).not.toContain("allow write");
+    expect(auditBlock).not.toContain("allow create");
+    expect(auditBlock).not.toContain("allow update");
+    expect(auditBlock).not.toContain("allow delete");
+  });
+});
+
+// ══════════════════════════════════════
 // Config Collection Rules
 // ══════════════════════════════════════
 

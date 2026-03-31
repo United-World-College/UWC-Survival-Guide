@@ -1792,6 +1792,24 @@ a.author-contact-value:hover {
   margin-top: 0.75rem;
 }
 
+.admin-rnr-feedback-approved {
+  border-color: #a3c4a7;
+  background: rgba(163, 196, 167, 0.12);
+}
+
+.admin-rnr-feedback-approved .admin-rnr-feedback-label {
+  color: #5a7a5e;
+}
+
+.admin-rnr-feedback-rejected {
+  border-color: #d4a29a;
+  background: rgba(212, 162, 154, 0.12);
+}
+
+.admin-rnr-feedback-rejected .admin-rnr-feedback-label {
+  color: #a65a4e;
+}
+
 .admin-rnr-feedback-label {
   font-size: 0.72rem;
   font-weight: 600;
@@ -1848,6 +1866,10 @@ a.author-contact-value:hover {
   border-left: 2px solid var(--border);
   padding-left: 1rem;
   margin-bottom: 1.25rem;
+}
+
+.admin-revision-entry-decision {
+  border-left-color: #d8cf9f;
 }
 
 .admin-revision-round-label {

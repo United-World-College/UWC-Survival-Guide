@@ -1857,41 +1857,75 @@ var ADMIN_I18N = {
     });
   }
 
+  function formatTimelineDate(value) {
+    if (!value) return '';
+    try {
+      var dt = value && typeof value.toDate === 'function' ? value.toDate() : new Date(value);
+      if (!dt || isNaN(dt.getTime())) return String(value);
+      return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' +
+        dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' });
+    } catch (e) {
+      return String(value);
+    }
+  }
+
+  function getSubmissionRevisionHistory(d) {
+    var history = Array.isArray(d.revisionHistory) ? d.revisionHistory : [];
+    if (history.length) return history;
+    if (d.reviewerComments) {
+      return [{
+        round: 1,
+        reviewerComments: d.reviewerComments,
+        reviewedAt: d.reviewedAt || null,
+        authorMessage: d.authorMessage || null,
+        resubmittedAt: null
+      }];
+    }
+    return [];
+  }
+
+  function renderSubmissionDecisionFeedback(d) {
+    if (!d || (d.status !== 'approved' && d.status !== 'rejected')) return '';
+    var isApproved = d.status === 'approved';
+    var message = isApproved ? d.approveMessage : d.rejectionReason;
+    if (!message) return '';
+    var status = isApproved ? 'approved' : 'rejected';
+    var html = '<div class="admin-rnr-feedback admin-rnr-feedback-' + status + '">';
+    html += '<p class="admin-rnr-feedback-label">' + escapeHtml(getStatusLabel(status)) + '</p>';
+    html += '<p class="admin-rnr-feedback-body">' + escapeHtml(message) + '</p>';
+    if (d.reviewedAt) html += '<p class="admin-revision-timestamp">' + formatTimelineDate(d.reviewedAt) + '</p>';
+    html += '</div>';
+    return html;
+  }
+
   function renderSubmissionThread(d) {
-    var history = d.revisionHistory;
-    if (!history || !history.length) {
-      if (d.reviewerComments) {
-        history = [{ round: 1, reviewerComments: d.reviewerComments, reviewedAt: null,
-                     authorMessage: d.authorMessage || null, resubmittedAt: null }];
-      } else {
-        return '';
-      }
-    }
-    function fmtDate(s) {
-      if (!s) return '';
-      try { var dt = new Date(s); return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); }
-      catch (e) { return s; }
-    }
+    var history = getSubmissionRevisionHistory(d);
+    var decisionHtml = renderSubmissionDecisionFeedback(d);
+    if (!history.length && !decisionHtml) return '';
     var html = '<div class="admin-revision-thread">';
-    history.forEach(function (entry) {
+    history.forEach(function (entry, idx) {
+      var roundLabel = entry.round || (idx + 1);
       html += '<div class="admin-revision-entry">';
-      html += '<p class="admin-revision-round-label">Round ' + entry.round + '</p>';
+      html += '<p class="admin-revision-round-label">Round ' + roundLabel + '</p>';
       if (entry.reviewerComments) {
         html += '<div class="admin-rnr-feedback">';
         html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.revision_feedback_label) + '</p>';
         html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.reviewerComments) + '</p>';
-        if (entry.reviewedAt) html += '<p class="admin-revision-timestamp">' + fmtDate(entry.reviewedAt) + '</p>';
+        if (entry.reviewedAt) html += '<p class="admin-revision-timestamp">' + formatTimelineDate(entry.reviewedAt) + '</p>';
         html += '</div>';
       }
       if (entry.authorMessage) {
         html += '<div class="admin-rnr-feedback">';
         html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.author_message_to_reviewer) + '</p>';
         html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.authorMessage) + '</p>';
-        if (entry.resubmittedAt) html += '<p class="admin-revision-timestamp">' + fmtDate(entry.resubmittedAt) + '</p>';
+        if (entry.resubmittedAt) html += '<p class="admin-revision-timestamp">' + formatTimelineDate(entry.resubmittedAt) + '</p>';
         html += '</div>';
       }
       html += '</div>';
     });
+    if (decisionHtml) {
+      html += '<div class="admin-revision-entry admin-revision-entry-decision">' + decisionHtml + '</div>';
+    }
     html += '</div>';
     return html;
   }
@@ -2012,6 +2046,9 @@ var ADMIN_I18N = {
         return escapeHtml(author.name);
       });
       targetEl.innerHTML = escapeHtml(prefix || '') + parts.join(', ');
+      targetEl.querySelectorAll('a.admin-author-link').forEach(function (link) {
+        link.addEventListener('click', function (e) { e.stopPropagation(); });
+      });
     }).catch(function () {});
   }
 
@@ -2088,8 +2125,7 @@ var ADMIN_I18N = {
         html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
         html += '<div class="admin-submission-meta">';
         var authorDisplay = getAuthorNames(authors) || ADMIN_I18N.author_unknown;
-        var linkedUid = authors.length === 1 && authors[0].uid ? authors[0].uid : '';
-        html += '<span class="admin-author-name" data-uid="' + linkedUid + '">' + escapeHtml(authorDisplay) + '</span>';
+        html += '<span class="admin-author-name">' + escapeHtml(authorDisplay) + '</span>';
         html += '<span>' + escapeHtml(d.category) + '</span>';
         html += '<span>' + escapeHtml(ADMIN_I18N.submitted_label) + ' ' + date + '</span>';
         html += '</div>';
@@ -2100,32 +2136,16 @@ var ADMIN_I18N = {
       html += '</div>';
       container.innerHTML = html;
 
-      // Resolve author links from Firestore user docs
-      var uidEls = {};
-      container.querySelectorAll('.admin-author-name[data-uid]').forEach(function (el) {
-        var uid = el.getAttribute('data-uid');
-        if (uid) { if (!uidEls[uid]) uidEls[uid] = []; uidEls[uid].push(el); }
-      });
-      Object.keys(uidEls).forEach(function (uid) {
-        db.collection('users').doc(uid).get().then(function (userDoc) {
-          if (!userDoc.exists || !userDoc.data().author_id) return;
-          var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? '' : '/UWC-Survival-Guide';
-          var href = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + userDoc.data().author_id + '/';
-          uidEls[uid].forEach(function (el) {
-            var a = document.createElement('a');
-            a.href = href;
-            a.target = '_blank';
-            a.rel = 'noopener noreferrer';
-            a.className = 'admin-author-link';
-            a.textContent = el.textContent;
-            a.addEventListener('click', function (e) { e.stopPropagation(); });
-            el.parentNode.replaceChild(a, el);
-          });
-        });
-      });
-
       container.querySelectorAll('.admin-review-item').forEach(function (item) {
+        var docId = item.getAttribute('data-id');
+        var match = null;
+        docs.forEach(function (entry) {
+          if (!match && entry.id === docId) match = entry;
+        });
+        if (match) {
+          var authorEl = item.querySelector('.admin-author-name');
+          renderSubmissionAuthorLinks(authorEl, getSubmissionAuthors(match.data), '');
+        }
         item.addEventListener('click', function () {
           openReviewModal(this.getAttribute('data-id'));
         });
@@ -2169,35 +2189,25 @@ var ADMIN_I18N = {
 
   function renderRevisionThread(d) {
     var threadEl = document.getElementById('modal-revision-thread');
-    // Build history — fall back to legacy flat fields for old submissions
-    var history = d.revisionHistory;
-    if (!history || !history.length) {
-      if (d.reviewerComments) {
-        history = [{ round: 1, reviewerComments: d.reviewerComments, reviewedAt: null,
-                     authorMessage: d.authorMessage || null, resubmittedAt: null }];
-      } else {
-        threadEl.style.display = 'none';
-        return;
-      }
-    }
-
-    function fmtDate(s) {
-      if (!s) return '';
-      try { var dt = new Date(s); return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); }
-      catch (e) { return s; }
+    var history = getSubmissionRevisionHistory(d);
+    var decisionHtml = renderSubmissionDecisionFeedback(d);
+    if (!history.length && !decisionHtml) {
+      threadEl.style.display = 'none';
+      return;
     }
 
     var html = '';
     history.forEach(function (entry, idx) {
+      var roundLabel = entry.round || (idx + 1);
       html += '<div class="admin-revision-entry">';
-      html += '<p class="admin-revision-round-label">Round ' + entry.round + '</p>';
+      html += '<p class="admin-revision-round-label">Round ' + roundLabel + '</p>';
       if (entry.reviewerComments) {
         html += '<div class="admin-rnr-feedback">';
         html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.revision_feedback_label) + '</p>';
         html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.reviewerComments) + '</p>';
-        if (entry.reviewedAt) html += '<p class="admin-revision-timestamp">' + fmtDate(entry.reviewedAt) + '</p>';
+        if (entry.reviewedAt) html += '<p class="admin-revision-timestamp">' + formatTimelineDate(entry.reviewedAt) + '</p>';
         if (entry.contentSnapshot) {
-          html += '<button class="admin-editor-tab admin-editor-tab-newtab modal-view-ver" data-ver-idx="' + idx + '">' + escapeHtml(ADMIN_I18N.preview_btn) + ' (v' + entry.round + ')</button>';
+          html += '<button class="admin-editor-tab admin-editor-tab-newtab modal-view-ver" data-ver-idx="' + idx + '">' + escapeHtml(ADMIN_I18N.preview_btn) + ' (v' + roundLabel + ')</button>';
         }
         html += '</div>';
       }
@@ -2205,11 +2215,14 @@ var ADMIN_I18N = {
         html += '<div class="admin-rnr-feedback">';
         html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.author_message_to_reviewer) + '</p>';
         html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.authorMessage) + '</p>';
-        if (entry.resubmittedAt) html += '<p class="admin-revision-timestamp">' + fmtDate(entry.resubmittedAt) + '</p>';
+        if (entry.resubmittedAt) html += '<p class="admin-revision-timestamp">' + formatTimelineDate(entry.resubmittedAt) + '</p>';
         html += '</div>';
       }
       html += '</div>';
     });
+    if (decisionHtml) {
+      html += '<div class="admin-revision-entry admin-revision-entry-decision">' + decisionHtml + '</div>';
+    }
     threadEl.innerHTML = html;
     threadEl.style.display = 'block';
 
@@ -2325,10 +2338,6 @@ var ADMIN_I18N = {
     btn.textContent = ADMIN_I18N.approving;
     btn.disabled = true;
 
-    var reviewer = auth.currentUser;
-    var updateData = { status: 'approved', reviewerUid: reviewer.uid, reviewerEmail: reviewer.email, reviewedAt: firebase.firestore.FieldValue.serverTimestamp() };
-    if (approveMsg) updateData.approveMessage = approveMsg;
-
     var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     btn.textContent = ADMIN_I18N.approving;
 
@@ -2422,6 +2431,15 @@ var ADMIN_I18N = {
           document.getElementById('modal-copy-md').style.display = 'inline-block';
         }
       }
+      if (currentModalData) {
+        currentModalData = Object.assign({}, currentModalData, {
+          status: 'approved',
+          approveMessage: approveMsg || null,
+          rejectionReason: null,
+          reviewedAt: new Date().toISOString()
+        });
+        renderRevisionThread(currentModalData);
+      }
 
       btn.textContent = ADMIN_I18N.approve_btn;
       btn.disabled = false;
@@ -2468,6 +2486,15 @@ var ADMIN_I18N = {
       badge.className = 'admin-status admin-status-rejected';
       document.getElementById('modal-actions').style.display = 'none';
       document.getElementById('modal-reject-form').style.display = 'none';
+      if (currentModalData) {
+        currentModalData = Object.assign({}, currentModalData, {
+          status: 'rejected',
+          rejectionReason: reason,
+          approveMessage: null,
+          reviewedAt: new Date().toISOString()
+        });
+        renderRevisionThread(currentModalData);
+      }
 
       btn.textContent = ADMIN_I18N.reject_btn;
       btn.disabled = false;
@@ -2565,7 +2592,15 @@ var ADMIN_I18N = {
       badge.className = 'admin-status admin-status-revise_resubmit';
       document.getElementById('modal-actions').style.display = 'none';
       document.getElementById('modal-rnr-form').style.display = 'none';
-      renderRevisionThread({ revisionHistory: result.data.revisionHistory });
+      currentModalData = Object.assign({}, currentModalData || {}, {
+        status: 'revise_resubmit',
+        reviewerComments: comments,
+        revisionHistory: result.data.revisionHistory,
+        approveMessage: null,
+        rejectionReason: null,
+        reviewedAt: new Date().toISOString()
+      });
+      renderRevisionThread(currentModalData);
 
       btn.textContent = ADMIN_I18N.rnr_submit;
       btn.disabled = false;

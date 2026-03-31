@@ -28,6 +28,14 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Private workflow audit trail for editor/coauthor actions.
+    // Only verified admins may read it; all writes go through Cloud Functions.
+    match /submissionAudit/{docId} {
+      allow read: if request.auth != null &&
+        request.auth.token.email_verified == true &&
+        request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
+    }
+
     // Only admins with verified emails can read the GitHub token config
     match /config/{docId} {
       allow read: if request.auth != null &&

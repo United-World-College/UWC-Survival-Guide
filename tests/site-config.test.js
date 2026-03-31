@@ -141,6 +141,10 @@ describe("Firestore rules file", () => {
     expect(rules).toContain("match /submissions/{docId}");
   });
 
+  test("has rules for submission audit collection", () => {
+    expect(rules).toContain("match /submissionAudit/{docId}");
+  });
+
   test("has rules for config collection", () => {
     expect(rules).toContain("match /config/{docId}");
   });

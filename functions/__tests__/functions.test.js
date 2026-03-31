@@ -12,6 +12,7 @@ const mockDocs = {};
 let mockUpdateCalls = [];
 let mockSetCalls = [];
 let mockDeleteCalls = [];
+const mockDeleteField = Symbol("DELETE_FIELD");
 
 function resetMockDb() {
   for (const key of Object.keys(mockDocs)) delete mockDocs[key];
@@ -23,6 +24,22 @@ function resetMockDb() {
 function setMockDoc(collection, docId, data) {
   const key = `${collection}/${docId}`;
   mockDocs[key] = data;
+}
+
+function getMockDocData(collection, docId) {
+  return mockDocs[`${collection}/${docId}`];
+}
+
+function applyMockWrite(existing, data, opts = {}) {
+  const next = opts.merge ? { ...(existing || {}) } : {};
+  Object.entries(data || {}).forEach(([key, value]) => {
+    if (value === mockDeleteField) {
+      delete next[key];
+      return;
+    }
+    next[key] = value;
+  });
+  return next;
 }
 
 const mockDoc = jest.fn((docId) => {
@@ -37,12 +54,12 @@ const mockDoc = jest.fn((docId) => {
     })),
     set: jest.fn(async (data, opts) => {
       mockSetCalls.push({ collection: collectionName, docId, data, opts });
-      mockDocs[key] = { ...(mockDocs[key] || {}), ...data };
+      mockDocs[key] = applyMockWrite(mockDocs[key], data, opts || {});
     }),
     update: jest.fn(async (data) => {
       mockUpdateCalls.push({ collection: collectionName, docId, data });
       if (key in mockDocs) {
-        mockDocs[key] = { ...mockDocs[key], ...data };
+        mockDocs[key] = applyMockWrite(mockDocs[key], data, { merge: true });
       }
     }),
     delete: jest.fn(async () => {
@@ -63,6 +80,7 @@ jest.mock("firebase-admin/firestore", () => ({
   FieldValue: {
     serverTimestamp: () => "SERVER_TIMESTAMP",
     arrayUnion: (...args) => ({ _arrayUnion: args }),
+    delete: () => mockDeleteField,
   },
 }));
 
@@ -252,8 +270,15 @@ describe("resubmitArticle", () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
       status: "revise_resubmit",
+      reviewerUid: "reviewer-1",
+      reviewerEmail: "reviewer@test.com",
       revisionHistory: [
-        { round: 1, reviewerComments: "Fix this" },
+        {
+          round: 1,
+          reviewerComments: "Fix this",
+          reviewerUid: "reviewer-1",
+          reviewerEmail: "reviewer@test.com",
+        },
       ],
     });
 
@@ -270,6 +295,17 @@ describe("resubmitArticle", () => {
     expect(updateCall.data.title).toBe("Updated Title");
     expect(updateCall.data.revisionHistory[0].authorMessage).toBe("Fixed typos");
     expect(updateCall.data.revisionHistory[0].resubmittedAt).toBeDefined();
+    const stored = getMockDocData("submissions", "sub-1");
+    expect(stored.reviewerUid).toBeUndefined();
+    expect(stored.reviewerEmail).toBeUndefined();
+    expect(stored.revisionHistory[0].reviewerUid).toBeUndefined();
+    expect(stored.revisionHistory[0].reviewerEmail).toBeUndefined();
+    const auditCall = mockSetCalls.find(
+      (c) => c.collection === "submissionAudit" && c.docId === "sub-1"
+    );
+    expect(auditCall).toBeDefined();
+    expect(auditCall.data.events[0].type).toBe("resubmitted");
+    expect(auditCall.data.events[0].actorUid).toBe("user-1");
   });
 });
 
@@ -281,7 +317,11 @@ describe("rejectSubmission", () => {
   beforeEach(() => resetMockDb());
 
   test("rejects submission with reason", async () => {
-    setMockDoc("submissions", "sub-1", { status: "pending" });
+    setMockDoc("submissions", "sub-1", {
+      status: "pending",
+      reviewerUid: "old-reviewer",
+      reviewerEmail: "old-reviewer@test.com",
+    });
 
     const result = await funcs.rejectSubmission({
       auth: adminAuth(),
@@ -294,6 +334,15 @@ describe("rejectSubmission", () => {
     );
     expect(updateCall.data.status).toBe("rejected");
     expect(updateCall.data.rejectionReason).toBe("Not relevant");
+    const stored = getMockDocData("submissions", "sub-1");
+    expect(stored.reviewerUid).toBeUndefined();
+    expect(stored.reviewerEmail).toBeUndefined();
+    const auditCall = mockSetCalls.find(
+      (c) => c.collection === "submissionAudit" && c.docId === "sub-1"
+    );
+    expect(auditCall).toBeDefined();
+    expect(auditCall.data.events[0].type).toBe("rejected");
+    expect(auditCall.data.events[0].actorUid).toBe("admin-uid");
   });
 
   test("throws for non-admin", async () => {
@@ -444,7 +493,7 @@ describe("requestRevision", () => {
     ).rejects.toThrow("Submission not found.");
   });
 
-  test("stores reviewer uid and email in history entry", async () => {
+  test("stores reviewer actor in private audit log and keeps public history anonymous", async () => {
     setMockDoc("submissions", "sub-1", {
       title: "Test",
       category: "Academics",
@@ -460,11 +509,23 @@ describe("requestRevision", () => {
       data: { docId: "sub-1", comments: "Fix this" },
     });
 
-    expect(result.revisionHistory[0].reviewerUid).toBe("admin-uid");
-    expect(result.revisionHistory[0].reviewerEmail).toBe(
+    expect(result.revisionHistory[0].reviewedAt).toBeDefined();
+    expect(result.revisionHistory[0].reviewerUid).toBeUndefined();
+    expect(result.revisionHistory[0].reviewerEmail).toBeUndefined();
+    const stored = getMockDocData("submissions", "sub-1");
+    expect(stored.reviewerUid).toBeUndefined();
+    expect(stored.reviewerEmail).toBeUndefined();
+    expect(stored.revisionHistory[0].reviewerUid).toBeUndefined();
+    expect(stored.revisionHistory[0].reviewerEmail).toBeUndefined();
+    const auditCall = mockSetCalls.find(
+      (c) => c.collection === "submissionAudit" && c.docId === "sub-1"
+    );
+    expect(auditCall).toBeDefined();
+    expect(auditCall.data.events[0].type).toBe("revision_requested");
+    expect(auditCall.data.events[0].actorUid).toBe("admin-uid");
+    expect(auditCall.data.events[0].actorEmail).toBe(
       "jingranhuang590@gmail.com"
     );
-    expect(result.revisionHistory[0].reviewedAt).toBeDefined();
   });
 });
 
@@ -492,6 +553,12 @@ describe("deleteSubmission", () => {
     expect(result.success).toBe(true);
     expect(result.wasApproved).toBe(false);
     expect(result.guideId).toBeNull();
+    const auditCall = mockSetCalls.find(
+      (c) => c.collection === "submissionAudit" && c.docId === "sub-1"
+    );
+    expect(auditCall).toBeDefined();
+    expect(auditCall.data.events[0].type).toBe("deleted");
+    expect(auditCall.data.events[0].actorUid).toBe("admin-uid");
   });
 
   test("deletes an approved submission and cleans up author record", async () => {
@@ -781,6 +848,16 @@ describe("approveSubmission", () => {
       description: "Desc",
       content: "Content",
       status: "pending",
+      reviewerUid: "old-reviewer",
+      reviewerEmail: "old-reviewer@test.com",
+      revisionHistory: [
+        {
+          round: 1,
+          reviewerComments: "Looks promising",
+          reviewerUid: "old-reviewer",
+          reviewerEmail: "old-reviewer@test.com",
+        },
+      ],
       createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
     });
     setMockDoc("users", "admin-uid", { displayName: "" });
@@ -796,6 +873,18 @@ describe("approveSubmission", () => {
       (c) => c.collection === "submissions" && c.docId === "sub-1"
     );
     expect(updateCall.data.approveMessage).toBe("Great work!");
+    const stored = getMockDocData("submissions", "sub-1");
+    expect(stored.reviewerUid).toBeUndefined();
+    expect(stored.reviewerEmail).toBeUndefined();
+    expect(stored.revisionHistory[0].reviewerUid).toBeUndefined();
+    expect(stored.revisionHistory[0].reviewerEmail).toBeUndefined();
+    const auditCall = mockSetCalls.find(
+      (c) => c.collection === "submissionAudit" && c.docId === "sub-1"
+    );
+    expect(auditCall).toBeDefined();
+    expect(auditCall.data.events[0].type).toBe("approved");
+    expect(auditCall.data.events[0].actorUid).toBe("admin-uid");
+    expect(auditCall.data.events[0].approveMessage).toBe("Great work!");
   });
 
   test("resolves authorSlug from user author_id when available", async () => {

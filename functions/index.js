@@ -90,6 +90,50 @@ function getOrderedSubmissionAuthors(d) {
       });
 }
 
+function sanitizeRevisionHistory(history) {
+  if (!Array.isArray(history)) return [];
+  return history.map((entry, index) => {
+    if (!entry || typeof entry !== "object") return null;
+    const cleaned = { ...entry };
+    delete cleaned.reviewerUid;
+    delete cleaned.reviewerEmail;
+    delete cleaned.authorUid;
+    delete cleaned.authorEmail;
+    delete cleaned.actorUid;
+    delete cleaned.actorEmail;
+    if (!cleaned.round) cleaned.round = index + 1;
+    return cleaned;
+  }).filter(Boolean);
+}
+
+function withoutPublicActorFields(updateData) {
+  return {
+    ...updateData,
+    reviewerUid: FieldValue.delete(),
+    reviewerEmail: FieldValue.delete(),
+  };
+}
+
+async function appendSubmissionAuditEvent(docId, type, auth, details = {}) {
+  const auditRef = db.collection("submissionAudit").doc(docId);
+  const snap = await auditRef.get();
+  const existingEvents = snap.exists && Array.isArray(snap.data().events) ?
+    snap.data().events.slice() :
+    [];
+  existingEvents.push({
+    type,
+    actorUid: auth.uid,
+    actorEmail: auth.token.email || null,
+    actedAt: new Date().toISOString(),
+    ...details,
+  });
+  await auditRef.set({
+    submissionId: docId,
+    updatedAt: FieldValue.serverTimestamp(),
+    events: existingEvents,
+  }, { merge: true });
+}
+
 async function resolveSubmissionAuthors(d) {
   const authors = getOrderedSubmissionAuthors(d);
   if (!authors.length) {
@@ -282,20 +326,30 @@ exports.resubmitArticle = onCall(async (request) => {
     throw new HttpsError("failed-precondition", "This submission is not awaiting revision.");
   }
 
-  const history = (data.revisionHistory || []).slice();
+  const history = sanitizeRevisionHistory(data.revisionHistory);
   if (history.length > 0 && !history[history.length - 1].resubmittedAt) {
     history[history.length - 1].authorMessage = authorMessage || null;
     history[history.length - 1].resubmittedAt = new Date().toISOString();
   }
 
-  const update = {
+  const update = withoutPublicActorFields({
     title, category, language, description, content,
     status: "pending",
     updatedAt: FieldValue.serverTimestamp(),
     revisionHistory: history,
-  };
-  if (authorMessage) update.authorMessage = authorMessage;
+    approveMessage: FieldValue.delete(),
+    rejectionReason: FieldValue.delete(),
+  });
+  if (authorMessage) {
+    update.authorMessage = authorMessage;
+  } else {
+    update.authorMessage = FieldValue.delete();
+  }
   await ref.update(update);
+  await appendSubmissionAuditEvent(docId, "resubmitted", request.auth, {
+    authorMessage: authorMessage || null,
+    round: history.length ? history[history.length - 1].round : null,
+  });
 
   return { success: true };
 });
@@ -329,15 +383,19 @@ exports.approveSubmission = onCall(async (request) => {
   const { markdown, slug, fileName, folder, filePath } = generateMarkdown(d, authors, editorName);
 
   // Update Firestore status
-  const updateData = {
+  const updateData = withoutPublicActorFields({
     status: "approved",
     guide_id: slug,
-    reviewerUid: request.auth.uid,
-    reviewerEmail: request.auth.token.email,
     reviewedAt: FieldValue.serverTimestamp(),
-  };
+    revisionHistory: sanitizeRevisionHistory(d.revisionHistory),
+    rejectionReason: FieldValue.delete(),
+  });
   if (approveMessage) updateData.approveMessage = approveMessage;
   await ref.update(updateData);
+  await appendSubmissionAuditEvent(docId, "approved", request.auth, {
+    approveMessage: approveMessage || null,
+    guideId: slug,
+  });
 
   // Attempt GitHub publish
   let published = false;
@@ -389,13 +447,17 @@ exports.rejectSubmission = onCall(async (request) => {
   const ref = db.collection("submissions").doc(docId);
   const snap = await ref.get();
   if (!snap.exists) throw new HttpsError("not-found", "Submission not found.");
+  const d = snap.data();
 
-  await ref.update({
+  await ref.update(withoutPublicActorFields({
     status: "rejected",
     rejectionReason: reason,
-    reviewerUid: request.auth.uid,
-    reviewerEmail: request.auth.token.email,
     reviewedAt: FieldValue.serverTimestamp(),
+    revisionHistory: sanitizeRevisionHistory(d.revisionHistory),
+    approveMessage: FieldValue.delete(),
+  }));
+  await appendSubmissionAuditEvent(docId, "rejected", request.auth, {
+    rejectionReason: reason,
   });
 
   return { success: true };
@@ -416,13 +478,11 @@ exports.requestRevision = onCall(async (request) => {
   if (!snap.exists) throw new HttpsError("not-found", "Submission not found.");
   const d = snap.data();
 
-  const history = (d.revisionHistory || []).slice();
+  const history = sanitizeRevisionHistory(d.revisionHistory);
   history.push({
     round: history.length + 1,
     reviewerComments: comments,
     reviewedAt: new Date().toISOString(),
-    reviewerUid: request.auth.uid,
-    reviewerEmail: request.auth.token.email,
     contentSnapshot: {
       title: d.title,
       category: d.category,
@@ -432,13 +492,17 @@ exports.requestRevision = onCall(async (request) => {
     },
   });
 
-  await ref.update({
+  await ref.update(withoutPublicActorFields({
     status: "revise_resubmit",
     reviewerComments: comments,
-    reviewerUid: request.auth.uid,
-    reviewerEmail: request.auth.token.email,
     reviewedAt: FieldValue.serverTimestamp(),
     revisionHistory: history,
+    approveMessage: FieldValue.delete(),
+    rejectionReason: FieldValue.delete(),
+  }));
+  await appendSubmissionAuditEvent(docId, "revision_requested", request.auth, {
+    reviewerComments: comments,
+    round: history[history.length - 1].round,
   });
 
   return { success: true, revisionHistory: history };
@@ -504,6 +568,12 @@ exports.deleteSubmission = onCall(async (request) => {
     }
   }
 
+  await appendSubmissionAuditEvent(docId, "deleted", request.auth, {
+    status: d.status || null,
+    guideId: d.guide_id || null,
+    language: d.language || null,
+    title: d.title || null,
+  });
   await ref.delete();
 
   return {
