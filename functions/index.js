@@ -21,6 +21,9 @@ function assertAuth(auth) {
 
 function assertAdmin(auth) {
   assertAuth(auth);
+  if (auth.token.email_verified !== true) {
+    throw new HttpsError("permission-denied", "Verified email required.");
+  }
   if (!ADMIN_EMAILS.includes(auth.token.email)) {
     throw new HttpsError("permission-denied", "Admin access required.");
   }
@@ -181,6 +184,17 @@ async function updateAuthorRecord(uid, authorSlug, slug, title, category) {
     }),
   }).catch(() => {});
 }
+
+// ══════════════════════════════════════
+// 0. checkAdminStatus — returns whether the caller is an admin
+// ══════════════════════════════════════
+
+exports.checkAdminStatus = onCall(async (request) => {
+  assertAuth(request.auth);
+  const email = request.auth.token.email;
+  const verified = request.auth.token.email_verified === true;
+  return { isAdmin: verified && ADMIN_EMAILS.includes(email) };
+});
 
 // ══════════════════════════════════════
 // 1. resubmitArticle — author resubmits revised content

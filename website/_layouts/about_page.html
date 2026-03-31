@@ -203,7 +203,11 @@
           var photoEl = card.querySelector('[data-card-photo]');
           var hasStaticPhoto = photoEl && photoEl.querySelector('img');
           if (photoEl && !hasStaticPhoto && !user.photoURL.includes('localhost')) {
-            photoEl.innerHTML = '<img src="' + user.photoURL + '" alt="Portrait">';
+            var img = document.createElement('img');
+            img.src = user.photoURL;
+            img.alt = 'Portrait';
+            photoEl.textContent = '';
+            photoEl.appendChild(img);
           }
         }
 

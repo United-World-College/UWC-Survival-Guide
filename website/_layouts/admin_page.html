@@ -13,8 +13,9 @@
   {% endif %}
   {% assign t = current_locale.admin %}
 
-<!-- Markdown renderer -->
+<!-- Markdown renderer + sanitizer -->
 <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 
 <!-- EIC IDs for role display -->
 <script>
@@ -675,7 +676,7 @@ var ADMIN_I18N = {
       loadProfile(user);
       loadSubmissions(user.uid);
       initFeaturedPanel(user.uid);
-      checkAdmin(user.email);
+      checkAdmin();
     } else {
       showView('view-signin');
       isAdmin = false;
@@ -986,7 +987,8 @@ var ADMIN_I18N = {
   function openPreviewTab() {
     var f = getArticleFields();
     var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
-    var renderedContent = typeof marked !== 'undefined' ? marked.parse(f.content) : escapeHtml(f.content);
+    var rawHtml = typeof marked !== 'undefined' ? marked.parse(f.content) : escapeHtml(f.content);
+    var renderedContent = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : escapeHtml(f.content);
     var win = window.open('', '_blank');
     if (!win) return;
     win.document.write('<!DOCTYPE html><html lang="en"><head>' +
@@ -1214,6 +1216,7 @@ var ADMIN_I18N = {
       '<div class="admin-card" id="rs-app"><p class="admin-empty-state">Loading...<\/p><\/div>' +
       '<\/div><\/div><\/div>' +
       '<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"><\/script>' +
+      '<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"><\/script>' +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"><\/script>' +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"><\/script>' +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"><\/script>' +
@@ -1239,7 +1242,8 @@ var ADMIN_I18N = {
       'function counter(ta,el,max){var n=ta.value.length;el.textContent=n+" / "+max;el.className="admin-char-counter";' +
         'if(n>=max)el.classList.add("admin-char-at-limit");else if(n>=max*0.85)el.classList.add("admin-char-near-limit");}' +
       'function openPreview(title,category,author,desc,content){' +
-        'var rendered=typeof marked!=="undefined"?marked.parse(content):esc(content);' +
+        'var rawHtml=typeof marked!=="undefined"?marked.parse(content):esc(content);' +
+        'var rendered=typeof DOMPurify!=="undefined"?DOMPurify.sanitize(rawHtml):esc(content);' +
         'var pw=window.open("","_blank");if(!pw)return;' +
         'pw.document.write("<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content=\\"width=device-width,initial-scale=1\\">' +
           '<title>PREVIEW \\u2014 "+esc(title)+"<\\/title>' +
@@ -1496,15 +1500,19 @@ var ADMIN_I18N = {
   var currentFilter = 'pending';
   var currentModalDocId = null;
   var currentModalData = null;
-  var ADMIN_EMAILS = ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
 
-  function checkAdmin(email) {
-    if (ADMIN_EMAILS.indexOf(email) !== -1) {
-      isAdmin = true;
-      document.getElementById('admin-review-panel').style.display = 'block';
-      loadReviewList('pending');
-      initReviewTabs();
-    }
+  function checkAdmin() {
+    var checkAdminStatus = functions.httpsCallable('checkAdminStatus');
+    checkAdminStatus().then(function (result) {
+      if (result.data && result.data.isAdmin) {
+        isAdmin = true;
+        document.getElementById('admin-review-panel').style.display = 'block';
+        loadReviewList('pending');
+        initReviewTabs();
+      }
+    }).catch(function () {
+      isAdmin = false;
+    });
   }
 
   function initReviewTabs() {
@@ -1598,7 +1606,8 @@ var ADMIN_I18N = {
   }
 
   function openContentPreview(title, category, author, description, content) {
-    var renderedContent = typeof marked !== 'undefined' ? marked.parse(content || '') : escapeHtml(content || '');
+    var rawHtml = typeof marked !== 'undefined' ? marked.parse(content || '') : escapeHtml(content || '');
+    var renderedContent = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : escapeHtml(content || '');
     var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
     var win = window.open('', '_blank');
     if (!win) return;
@@ -1725,8 +1734,14 @@ var ADMIN_I18N = {
       updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
 
       var actions = document.getElementById('modal-actions');
-      actions.style.display = (d.status === 'pending' || d.status === 'revise_resubmit') ? 'flex' : 'none';
-      document.getElementById('modal-delete').parentElement.style.display = d.status === 'approved' ? 'flex' : 'none';
+      var isReviewable = d.status === 'pending' || d.status === 'revise_resubmit';
+      var isApproved = d.status === 'approved';
+      // Show approve/reject for pending/revise_resubmit; show R&R for approved too
+      actions.style.display = (isReviewable || isApproved) ? 'flex' : 'none';
+      document.getElementById('modal-approve').style.display = isReviewable ? '' : 'none';
+      document.getElementById('modal-reject').style.display = isReviewable ? '' : 'none';
+      document.getElementById('modal-revise').style.display = (isReviewable || isApproved) ? '' : 'none';
+      document.getElementById('modal-delete').parentElement.style.display = isApproved ? 'flex' : 'none';
 
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';

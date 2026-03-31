@@ -18,16 +18,19 @@ service cloud.firestore {
 
       allow read: if request.auth != null &&
         (resource.data.uid == request.auth.uid ||
-         request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com']);
+         (request.auth.token.email_verified == true &&
+          request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com']));
 
-      // No client-side update or delete.
-      // approve / reject / revise / resubmit / delete are all handled by
-      // Cloud Functions which use the Admin SDK and bypass these rules.
+      // Explicitly deny client-side update and delete.
+      // All mutations are handled by Cloud Functions using the Admin SDK.
+      allow update: if false;
+      allow delete: if false;
     }
 
-    // Only admins can read the GitHub token config
+    // Only admins with verified emails can read the GitHub token config
     match /config/{docId} {
       allow read: if request.auth != null &&
+        request.auth.token.email_verified == true &&
         request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
     }
   }
