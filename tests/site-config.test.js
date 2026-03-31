@@ -313,24 +313,26 @@ describe("Deploy workflow", () => {
     expect(workflow.on.push.branches).toContain("main");
   });
 
-  test("has test, build, and deploy jobs", () => {
-    expect(workflow.jobs.test).toBeDefined();
+  test("has build and deploy jobs", () => {
     expect(workflow.jobs.build).toBeDefined();
     expect(workflow.jobs.deploy).toBeDefined();
-  });
-
-  test("build depends on test", () => {
-    expect(workflow.jobs.build.needs).toBe("test");
   });
 
   test("deploy depends on build", () => {
     expect(workflow.jobs.deploy.needs).toBe("build");
   });
 
-  test("test job runs both functions and site tests", () => {
-    const steps = workflow.jobs.test.steps;
+  test("build job runs both functions and site tests", () => {
+    const steps = workflow.jobs.build.steps;
     const stepNames = steps.map((s) => s.name);
     expect(stepNames).toContain("Run Cloud Functions tests");
     expect(stepNames).toContain("Run site validation tests");
+  });
+
+  test("build job caches Node modules", () => {
+    const steps = workflow.jobs.build.steps;
+    const stepNames = steps.map((s) => s.name);
+    expect(stepNames).toContain("Cache Node modules (functions)");
+    expect(stepNames).toContain("Cache Node modules (tests)");
   });
 });

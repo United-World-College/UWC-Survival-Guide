@@ -15,39 +15,48 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # ── Tests (run before building) ──
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
-      - name: Install Cloud Functions test dependencies
-        run: npm install
-        working-directory: functions
+      - name: Cache Node modules (functions)
+        uses: actions/cache@v4
+        with:
+          path: functions/node_modules
+          key: node-functions-${{ hashFiles('functions/package-lock.json', 'functions/package.json') }}
+          restore-keys: node-functions-
+
+      - name: Cache Node modules (tests)
+        uses: actions/cache@v4
+        with:
+          path: tests/node_modules
+          key: node-tests-${{ hashFiles('tests/package-lock.json', 'tests/package.json') }}
+          restore-keys: node-tests-
+
+      - name: Install test dependencies
+        run: |
+          cd functions && npm install &
+          cd tests && npm install &
+          wait
 
       - name: Run Cloud Functions tests
         run: npx jest --verbose
         working-directory: functions
 
-      - name: Install site test dependencies
-        run: npm install
-        working-directory: tests
-
       - name: Run site validation tests
         run: npx jest --verbose
         working-directory: tests
 
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # ── Build ──
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
