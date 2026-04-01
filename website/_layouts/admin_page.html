@@ -511,8 +511,9 @@ var ADMIN_I18N = {
               <button type="button" id="modal-revise" class="admin-btn admin-btn-outline">{{ t.revise_resubmit_btn }}</button>
               <button type="button" id="modal-reject" class="admin-btn admin-btn-outline admin-btn-danger">{{ t.reject_btn }}</button>
             </div>
-            <div class="admin-modal-actions" style="margin-top:0.5rem;">
-              <button type="button" id="modal-delete" class="admin-btn admin-btn-outline admin-btn-danger" style="font-size:0.75rem;">{{ t.delete_btn }}</button>
+            <div id="modal-approved-actions" class="admin-modal-actions admin-approved-actions" style="display:none;">
+              <button type="button" id="modal-revise-approved" class="admin-btn admin-btn-outline admin-btn-small">{{ t.revise_resubmit_btn }}</button>
+              <button type="button" id="modal-delete" class="admin-btn admin-btn-outline admin-btn-danger admin-btn-small">{{ t.delete_btn }}</button>
             </div>
             <div id="modal-delete-form" style="display:none;" class="admin-rnr-form">
               <p class="admin-rnr-form-title" style="color:#a65a4e;">{{ t.delete_confirm }}</p>
@@ -2343,14 +2344,12 @@ var ADMIN_I18N = {
       updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
 
       var actions = document.getElementById('modal-actions');
+      var approvedActions = document.getElementById('modal-approved-actions');
       var isReviewable = d.status === 'pending' || d.status === 'revise_resubmit';
       var isApproved = d.status === 'approved';
-      // Show approve/reject for pending/revise_resubmit; show R&R for approved too
-      actions.style.display = (isReviewable || isApproved) ? 'flex' : 'none';
-      document.getElementById('modal-approve').style.display = isReviewable ? '' : 'none';
-      document.getElementById('modal-reject').style.display = isReviewable ? '' : 'none';
-      document.getElementById('modal-revise').style.display = (isReviewable || isApproved) ? '' : 'none';
-      document.getElementById('modal-delete').parentElement.style.display = isApproved ? 'flex' : 'none';
+      // Pending/revise_resubmit: show full action bar; approved: show compact secondary bar
+      actions.style.display = isReviewable ? 'flex' : 'none';
+      approvedActions.style.display = isApproved ? 'flex' : 'none';
 
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
@@ -2366,6 +2365,7 @@ var ADMIN_I18N = {
     document.getElementById('modal-approve-form').style.display = 'none';
     document.getElementById('modal-approve-comments').value = '';
     document.getElementById('modal-delete-form').style.display = 'none';
+    document.getElementById('modal-approved-actions').style.display = 'none';
     document.getElementById('modal-revision-thread').style.display = 'none';
     document.getElementById('modal-revision-thread').innerHTML = '';
     updateCharCounter('modal-rnr-comments', 'modal-rnr-comments-counter', 1000);
@@ -2630,14 +2630,16 @@ var ADMIN_I18N = {
   });
 
   // Revise & Resubmit — toggle feedback form
-  document.getElementById('modal-revise').addEventListener('click', function () {
+  function toggleReviseForm() {
     var form = document.getElementById('modal-rnr-form');
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
     document.getElementById('modal-approve-form').style.display = 'none';
     document.getElementById('modal-reject-form').style.display = 'none';
     document.getElementById('modal-delete-form').style.display = 'none';
     if (form.style.display === 'block') form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  });
+  }
+  document.getElementById('modal-revise').addEventListener('click', toggleReviseForm);
+  document.getElementById('modal-revise-approved').addEventListener('click', toggleReviseForm);
 
   document.getElementById('modal-rnr-cancel').addEventListener('click', function () {
     document.getElementById('modal-rnr-form').style.display = 'none';

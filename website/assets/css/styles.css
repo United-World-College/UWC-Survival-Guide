@@ -2123,6 +2123,14 @@ span.coauthor-name {
   margin-top: 1.5rem;
 }
 
+.admin-approved-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
 .admin-btn-danger {
   color: #9b2c2c;
   border-color: #9b2c2c;
