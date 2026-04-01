@@ -588,6 +588,11 @@ var ADMIN_I18N = {
     return text.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
   }
 
+  function makeAuthorSlug(text) {
+    var ascii = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    return ascii || makeSlug(text);
+  }
+
   // ── View Management ──
   var views = ['view-signin', 'view-signup', 'view-forgot', 'view-dashboard'];
 
@@ -702,7 +707,7 @@ var ADMIN_I18N = {
     var authorSlug;
     auth.createUserWithEmailAndPassword(email, password)
       .then(function (cred) {
-        authorSlug = makeSlug(displayName);
+        authorSlug = makeAuthorSlug(displayName);
         if (!authorSlug) authorSlug = cred.user.uid;
         // Check for slug collision and append suffix if needed
         var baseSlug = authorSlug;
@@ -1017,7 +1022,7 @@ var ADMIN_I18N = {
       };
       // Generate author_id on first save when name is present
       if (!existingData.author_id && name) {
-        var newAuthorId = makeSlug(name);
+        var newAuthorId = makeAuthorSlug(name);
         if (newAuthorId) {
           profileData.author_id = newAuthorId;
         }

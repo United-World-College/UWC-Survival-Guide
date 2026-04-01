@@ -355,6 +355,7 @@ describe("Admin page JS — section-level checks", () => {
 describe("Admin page JS — required functions exist", () => {
   const requiredFunctions = [
     "makeSlug",
+    "makeAuthorSlug",
     "showView",
     "clearErrors",
     "showError",
@@ -404,6 +405,18 @@ describe("Admin page JS — required functions exist", () => {
       expect(adminHtml).toMatch(regex);
     }
   );
+});
+
+describe("Admin page JS — author_id generation uses makeAuthorSlug", () => {
+  test("signup uses makeAuthorSlug for author_id", () => {
+    // The signup flow should use makeAuthorSlug, not makeSlug, for generating author_id
+    expect(adminHtml).toMatch(/authorSlug\s*=\s*makeAuthorSlug\(/);
+  });
+
+  test("profile save uses makeAuthorSlug for author_id", () => {
+    // Profile save should use makeAuthorSlug when generating author_id from name
+    expect(adminHtml).toMatch(/newAuthorId\s*=\s*makeAuthorSlug\(/);
+  });
 });
 
 // ══════════════════════════════════════
