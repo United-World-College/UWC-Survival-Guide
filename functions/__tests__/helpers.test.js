@@ -1,26 +1,18 @@
 /**
  * Unit tests for Cloud Functions helper utilities.
  *
- * These test the pure helper functions (makeSlug, toBase64, generateMarkdown)
- * by requiring index.js with fully mocked Firebase dependencies.
+ * These test the pure helper functions exported from lib/helpers.js.
  */
 
-// ── Mock Firebase before requiring index.js ──
-
-const mockGet = jest.fn();
-const mockSet = jest.fn();
-const mockUpdate = jest.fn();
-const mockDelete = jest.fn();
-const mockDoc = jest.fn(() => ({ get: mockGet, set: mockSet, update: mockUpdate, delete: mockDelete }));
-const mockWhere = jest.fn(() => ({ get: mockGet }));
-const mockCollection = jest.fn(() => ({ doc: mockDoc, where: mockWhere, add: jest.fn() }));
+// ── Mock Firebase before requiring any module ──
 
 jest.mock("firebase-admin/app", () => ({ initializeApp: jest.fn() }));
 jest.mock("firebase-admin/firestore", () => ({
-  getFirestore: () => ({ collection: mockCollection }),
+  getFirestore: () => ({ collection: jest.fn() }),
   FieldValue: {
     serverTimestamp: () => "SERVER_TIMESTAMP",
     arrayUnion: (...args) => ({ _arrayUnion: args }),
+    delete: () => "DELETE_FIELD",
   },
 }));
 jest.mock("firebase-functions/v2/https", () => ({
@@ -33,60 +25,23 @@ jest.mock("firebase-functions/v2/https", () => ({
   },
 }));
 
-// ── Now require the module under test ──
+// ── Require the modules under test ──
 
-// We need access to un-exported helpers, so we'll read and eval them
-const fs = require("fs");
-const path = require("path");
-const source = fs.readFileSync(path.join(__dirname, "..", "index.js"), "utf8");
-
-// Extract helper functions using a sandboxed evaluation
-function extractHelpers() {
-  const sandbox = {};
-  // Extract makeSlug
-  const makeSlugMatch = source.match(/function makeSlug\(text\)\s*\{[^}]+\}/);
-  if (makeSlugMatch) {
-    eval("sandbox.makeSlug = " + makeSlugMatch[0]);
-  }
-  // Extract makeAuthorSlug (depends on makeSlug)
-  const makeAuthorSlugMatch = source.match(/function makeAuthorSlug\(text\)\s*\{[\s\S]*?\n\}/);
-  if (makeAuthorSlugMatch) {
-    const fnBody = makeAuthorSlugMatch[0].replace(/makeSlug\(/g, "sandbox.makeSlug(");
-    eval("sandbox.makeAuthorSlug = " + fnBody);
-  }
-  // Extract toBase64
-  const toBase64Match = source.match(/function toBase64\(str\)\s*\{[^}]+\}/);
-  if (toBase64Match) {
-    eval("sandbox.toBase64 = " + toBase64Match[0]);
-  }
-  // Extract getAuthorKey
-  const getAuthorKeyMatch = source.match(/function getAuthorKey\(author\)\s*\{[\s\S]*?\n\}/);
-  if (getAuthorKeyMatch) {
-    eval("sandbox.getAuthorKey = " + getAuthorKeyMatch[0]);
-  }
-  // Extract getOrderedSubmissionAuthors (depends on getAuthorKey)
-  const getOrderedMatch = source.match(/function getOrderedSubmissionAuthors\(d\)\s*\{[\s\S]*?\n\}/);
-  if (getOrderedMatch) {
-    const fnBody = getOrderedMatch[0].replace(/getAuthorKey\(/g, "sandbox.getAuthorKey(");
-    eval("sandbox.getOrderedSubmissionAuthors = " + fnBody);
-  }
-  // Extract sanitizeRevisionHistory
-  const sanitizeMatch = source.match(/function sanitizeRevisionHistory\(history\)\s*\{[\s\S]*?\n\}/);
-  if (sanitizeMatch) {
-    eval("sandbox.sanitizeRevisionHistory = " + sanitizeMatch[0]);
-  }
-  return sandbox;
-}
-
-const helpers = extractHelpers();
+const {
+  makeSlug,
+  makeAuthorSlug,
+  toBase64,
+  getAuthorKey,
+  getOrderedSubmissionAuthors,
+  sanitizeRevisionHistory,
+  generateMarkdown,
+} = require("../lib/helpers");
 
 // ══════════════════════════════════════
 // makeSlug
 // ══════════════════════════════════════
 
 describe("makeSlug", () => {
-  const { makeSlug } = helpers;
-
   test("converts simple English text to kebab-case", () => {
     expect(makeSlug("My UWC Experience")).toBe("my-uwc-experience");
   });
@@ -129,8 +84,6 @@ describe("makeSlug", () => {
 // ══════════════════════════════════════
 
 describe("makeAuthorSlug", () => {
-  const { makeAuthorSlug } = helpers;
-
   test("converts English name to kebab-case", () => {
     expect(makeAuthorSlug("Alice Smith")).toBe("alice-smith");
   });
@@ -165,8 +118,6 @@ describe("makeAuthorSlug", () => {
 // ══════════════════════════════════════
 
 describe("toBase64", () => {
-  const { toBase64 } = helpers;
-
   test("encodes ASCII string", () => {
     expect(toBase64("hello")).toBe(Buffer.from("hello").toString("base64"));
   });
@@ -193,77 +144,10 @@ describe("toBase64", () => {
 });
 
 // ══════════════════════════════════════
-// generateMarkdown (via the exported module)
+// generateMarkdown
 // ══════════════════════════════════════
 
 describe("generateMarkdown", () => {
-  // We need to call generateMarkdown which isn't exported.
-  // Extract it with a more complete eval.
-  let generateMarkdown;
-
-  beforeAll(() => {
-    // Build a callable version from source
-    const LANG_MAP = {
-      en: { name: "English", folder: "default", sort: 1, suffix: "" },
-      "zh-CN": { name: "简体中文", folder: "chinese", sort: 2, suffix: "-CN" },
-      "zh-TW": { name: "台灣繁體", folder: "chinese", sort: 3, suffix: "-TW" },
-    };
-    const makeSlug = helpers.makeSlug;
-
-    generateMarkdown = function (d, authors, editorName) {
-      const lang = d.language || "en";
-      const langInfo = LANG_MAP[lang] || LANG_MAP["en"];
-      const slug = makeSlug(d.title);
-      const today = new Date().toISOString().slice(0, 10);
-      const submittedDate = d.createdAt
-        ? d.createdAt.toDate().toISOString().slice(0, 10)
-        : "";
-      const primaryAuthor = authors[0];
-      const coAuthors = authors.slice(1);
-
-      let md = "---\n";
-      md += `title: "${d.title.replace(/"/g, '\\"')}"\n`;
-      md += `category: "${d.category}"\n`;
-      md += `description: "${d.description.replace(/"/g, '\\"')}"\n`;
-      md += "order: 99\n";
-      md += `author: "${primaryAuthor.name}"\n`;
-      md += `author_id: "${primaryAuthor.author_id}"\n`;
-      if (coAuthors.length > 0) {
-        md += "coauthors:\n";
-        coAuthors.forEach((ca) => {
-          md += `  - name: "${ca.name.replace(/"/g, '\\"')}"\n`;
-          if (ca.author_id) {
-            md += `    author_id: "${ca.author_id}"\n`;
-          }
-        });
-      }
-      md += `guide_id: "${slug}"\n`;
-      md += `language_code: "${lang}"\n`;
-      md += `language_name: "${langInfo.name}"\n`;
-      md += `language_folder: "${langInfo.folder}"\n`;
-      md += `language_sort: ${langInfo.sort}\n`;
-      if (submittedDate) md += `submitted: ${submittedDate}\n`;
-      md += `published: ${today}\n`;
-      md += `updated: ${today}\n`;
-      if (editorName) {
-        const editorSlug = helpers.makeAuthorSlug(editorName);
-        md += `editor: "${editorName.replace(/"/g, '\\"')}"\n`;
-        md += `editor_id: "${editorSlug}"\n`;
-      }
-      md += "---\n\n";
-      md += d.content;
-
-      return {
-        markdown: md,
-        slug,
-        fileName: slug + langInfo.suffix + ".md",
-        folder: langInfo.folder,
-        filePath:
-          "website/_guides/" + langInfo.folder + "/" + slug + langInfo.suffix + ".md",
-      };
-    };
-  });
-
   const baseSubmission = {
     title: "My UWC Experience",
     category: "Life Reflections",
@@ -414,8 +298,6 @@ describe("generateMarkdown", () => {
 // ══════════════════════════════════════
 
 describe("getAuthorKey", () => {
-  const { getAuthorKey } = helpers;
-
   test("returns uid-based key when uid is present", () => {
     expect(getAuthorKey({ uid: "u1", name: "Alice" })).toBe("uid:u1");
   });
@@ -449,8 +331,6 @@ describe("getAuthorKey", () => {
 // ══════════════════════════════════════
 
 describe("getOrderedSubmissionAuthors", () => {
-  const { getOrderedSubmissionAuthors } = helpers;
-
   test("sorts by order field", () => {
     const result = getOrderedSubmissionAuthors({
       coAuthors: [
@@ -511,8 +391,6 @@ describe("getOrderedSubmissionAuthors", () => {
 // ══════════════════════════════════════
 
 describe("sanitizeRevisionHistory", () => {
-  const { sanitizeRevisionHistory } = helpers;
-
   test("strips private actor fields from entries", () => {
     const result = sanitizeRevisionHistory([
       {

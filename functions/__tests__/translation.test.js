@@ -1,12 +1,11 @@
 /**
- * Unit tests for auto-translation helpers added to index.js.
+ * Unit tests for auto-translation helpers in lib/translation.js.
  *
  * Tests buildTranslationPrompt, buildTranslatedMarkdown, and the
- * TRANSLATE_TOOL schema by extracting them from the source via eval,
- * following the same pattern as helpers.test.js.
+ * TRANSLATE_TOOL schema by importing them directly from the module.
  */
 
-// ── Mock Firebase before requiring index.js ──
+// ── Mock Firebase before requiring any module ──
 
 jest.mock("firebase-admin/app", () => ({ initializeApp: jest.fn() }));
 jest.mock("firebase-admin/firestore", () => ({
@@ -24,65 +23,15 @@ jest.mock("firebase-functions/v2/https", () => ({
   },
 }));
 
-const fs = require("fs");
-const path = require("path");
-const source = fs.readFileSync(path.join(__dirname, "..", "index.js"), "utf8");
+// ── Require the modules under test ──
 
-// ── Extract helpers from source ──
-
-function extractVar(name) {
-  // Match const NAME = { ... }; or const NAME = "...";
-  const objMatch = source.match(new RegExp(`const ${name} = (\\{[\\s\\S]*?\\n\\});`));
-  if (objMatch) return eval(`(${objMatch[1]})`);
-  const strMatch = source.match(new RegExp(`const ${name} =\\s*\\n?\\s*(".*?"|'.*?');`, "s"));
-  if (strMatch) return eval(strMatch[1]);
-  return undefined;
-}
-
-function extractFunction(name) {
-  const match = source.match(new RegExp(`function ${name}\\([^)]*\\)\\s*\\{[\\s\\S]*?\\n\\}`));
-  if (!match) return undefined;
-  let fn;
-  eval(`fn = ${match[0]}`);
-  return fn;
-}
-
-const LANG_MAP = {
-  en: { name: "English", folder: "default", sort: 1, suffix: "" },
-  "zh-CN": { name: "简体中文", folder: "chinese", sort: 2, suffix: "-CN" },
-  "zh-TW": { name: "台灣繁體", folder: "chinese", sort: 3, suffix: "-TW" },
-};
-
-// Extract the translation-specific items
-const TRANSLATE_TOOL = extractVar("TRANSLATE_TOOL");
-const STYLE_NOTES = extractVar("STYLE_NOTES");
-const PROMPT_NAMES = extractVar("PROMPT_NAMES");
-
-// buildTranslationPrompt depends on PROMPT_NAMES and STYLE_NOTES — extract with those in scope
-let buildTranslationPrompt;
-{
-  const match = source.match(/function buildTranslationPrompt\(sourceLang, targetLang, payload\)\s*\{[\s\S]*?\n\}/);
-  if (match) {
-    eval(`buildTranslationPrompt = ${match[0]}`);
-  }
-}
-
-// buildTranslatedMarkdown depends on LANG_MAP, makeSlug, makeAuthorSlug
-const makeSlugMatch = source.match(/function makeSlug\(text\)\s*\{[^}]+\}/);
-let makeSlug;
-if (makeSlugMatch) eval(`makeSlug = ${makeSlugMatch[0]}`);
-
-const makeAuthorSlugMatch = source.match(/function makeAuthorSlug\(text\)\s*\{[\s\S]*?\n\}/);
-let makeAuthorSlug;
-if (makeAuthorSlugMatch) eval(`makeAuthorSlug = ${makeAuthorSlugMatch[0]}`);
-
-let buildTranslatedMarkdown;
-{
-  const match = source.match(/function buildTranslatedMarkdown\([^)]*\)\s*\{[\s\S]*?\n\}/);
-  if (match) {
-    eval(`buildTranslatedMarkdown = ${match[0]}`);
-  }
-}
+const {
+  TRANSLATE_TOOL,
+  STYLE_NOTES,
+  PROMPT_NAMES,
+  buildTranslationPrompt,
+  buildTranslatedMarkdown,
+} = require("../lib/translation");
 
 // ══════════════════════════════════════
 // TRANSLATE_TOOL schema

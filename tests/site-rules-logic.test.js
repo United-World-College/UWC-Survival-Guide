@@ -191,10 +191,14 @@ describe("Admin access centralization", () => {
   });
 
   test("Cloud Functions read admin emails from Firestore instead of hardcoding", () => {
-    const functionsSource = fs.readFileSync(
-      path.join(__dirname, "..", "functions", "index.js"),
-      "utf-8"
+    const functionsDir = path.join(__dirname, "..", "functions");
+    const indexSource = fs.readFileSync(
+      path.join(functionsDir, "index.js"), "utf-8"
     );
+    const authSource = fs.existsSync(path.join(functionsDir, "lib", "auth.js"))
+      ? fs.readFileSync(path.join(functionsDir, "lib", "auth.js"), "utf-8")
+      : "";
+    const functionsSource = indexSource + "\n" + authSource;
 
     // Should NOT have a hardcoded ADMIN_EMAILS array
     expect(functionsSource).not.toMatch(/ADMIN_EMAILS\s*=\s*\[/);
