@@ -425,7 +425,7 @@
 
     function guideUrl(guideId, lang) {
       var info = LANG_MAP[lang] || LANG_MAP['en'];
-      return '/guides/' + info.folder + '/' + guideId + info.suffix + '/';
+      return '{{ site.baseurl }}/guides/' + info.folder + '/' + guideId + info.suffix + '/';
     }
 
     function formatDate(val) {
