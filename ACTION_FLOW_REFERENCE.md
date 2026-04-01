@@ -852,33 +852,43 @@ User fills form in admin UI
 
   // Status
   status: "pending" | "revise_resubmit" | "approved" | "rejected",
-  createdAt: Timestamp,
-  updatedAt: Timestamp,
-  reviewedAt: Timestamp,
+  createdAt: Timestamp,           // Set once on submitArticle
+  updatedAt?: Timestamp,          // Set on resubmitArticle only (not on initial creation)
+  reviewedAt?: Timestamp,         // Set on approve, reject, or requestRevision
 
   // Co-authorship
   coAuthors: [{ uid?, author_id?, name, order? }],
-  coauthorUids: [string],
+  coauthorUids?: [string],        // Only present when coAuthors have UIDs; used for array-contains queries
 
   // Revision history
-  revisionHistory: [{
+  revisionHistory?: [{
     round: number,
-    reviewerComments?: string,
-    authorMessage?: string,
-    approveMessage?: string,
-    resubmittedAt?: string,       // ISO timestamp
-    reviewedAt: string,           // ISO timestamp
-    contentSnapshot: { title, category, language, description, content }
+    reviewerComments: string,     // Set by requestRevision
+    reviewedAt: string,           // ISO timestamp, set by requestRevision
+    contentSnapshot: {            // Snapshot of content at time of review
+      title, category, language, description, content
+    },
+    authorMessage?: string,       // Set by resubmitArticle
+    resubmittedAt?: string        // ISO timestamp, set by resubmitArticle
   }],
 
-  // Review messages
-  approveMessage?: string,
-  reviewerComments?: string,
-  rejectionReason?: string,
+  // Review messages (transient — deleted on state transitions)
+  approveMessage?: string,        // Set on approve; deleted on resubmit/reject/requestRevision
+  reviewerComments?: string,      // Set on requestRevision; deleted on approve/reject
+  rejectionReason?: string,       // Set on reject; deleted on resubmit/requestRevision
+  authorMessage?: string,         // Set on resubmit; deleted on approve/reject/requestRevision
 
   // Translation (post-approval)
-  translationResults?: [{ lang, filePath, success, title, category, description, error? }],
-  translations?: {
+  translationResults?: [{         // Results of each auto-translation attempt
+    lang: string,
+    filePath: string,
+    success: boolean,
+    title: string,
+    category: string,
+    description: string,
+    error?: string
+  }],
+  translations?: {                // Aggregated metadata for multi-language display
     en?: { title, category, description },
     "zh-CN"?: { title, category, description },
     "zh-TW"?: { title, category, description }
@@ -891,22 +901,23 @@ User fills form in admin UI
 ```javascript
 {
   updatedAt: Timestamp,
+  submissionId?: string,          // Set by migration script; may not exist on organic records
   events: [{
     type: "submitted" | "resubmitted" | "approved" | "rejected"
          | "revision_requested" | "deleted",
     actorUid: string,
-    actorAuthorId?: string,
+    actorAuthorId?: string,       // Resolved from users/{uid}.author_id if available
     actedAt: string,              // ISO timestamp
     // Event-specific fields:
-    guideId?: string,
-    authorMessage?: string,
-    reviewerComments?: string,
-    approveMessage?: string,
-    rejectionReason?: string,
-    round?: number,
-    status?: string,
-    language?: string,
-    title?: string
+    guideId?: string,             // On submitted, approved, deleted
+    authorMessage?: string,       // On resubmitted
+    reviewerComments?: string,    // On revision_requested
+    approveMessage?: string,      // On approved
+    rejectionReason?: string,     // On rejected
+    round?: number,               // On revision_requested
+    status?: string,              // On deleted (original status)
+    language?: string,            // On deleted (original language)
+    title?: string                // On deleted (original title)
   }]
 }
 ```
@@ -915,9 +926,23 @@ User fills form in admin UI
 
 ```javascript
 {
-  displayName?: string,
-  author_id: string,              // Immutable after first set
-  featuredGuideIds?: [string]
+  // Set on registration, updated via profile edit
+  displayName: string,
+  email: string,
+  photoURL: string,               // Avatar download URL (from Firebase Storage), or ""
+  author_id: string,              // Immutable after first set, format: /^[a-z0-9]+(-[a-z0-9]+)*$/
+  affiliation: string,            // School or organization
+  cohort: string,                 // Graduating year/class
+  summary: string,                // Short bio (max 120 chars in UI)
+  profileLinks: [{                // Up to 3 custom links
+    label: string,
+    url: string
+  }],
+  showEmail: boolean,             // Whether to display email publicly
+  createdAt: Timestamp,           // Set once on account creation
+
+  // Set by admin.js featured toggle; cleaned up by deleteSubmission
+  featuredGuideIds?: [string]     // Guide slugs starred by this user
 }
 ```
 
