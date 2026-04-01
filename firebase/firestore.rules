@@ -2,6 +2,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in get(/databases/$(database)/documents/config/admins).data.emails;
+    }
+
     // Anyone can read user profiles (for public author pages);
     // only the user themselves can write their own profile.
     match /users/{uid} {
@@ -40,8 +46,7 @@ service cloud.firestore {
         || (request.auth != null &&
             (resource.data.uid == request.auth.uid ||
              ('coauthorUids' in resource.data && request.auth.uid in resource.data.coauthorUids) ||
-             (request.auth.token.email_verified == true &&
-              request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'])));
+             isAdmin()));
 
       allow update: if false;
       allow delete: if false;
@@ -50,16 +55,12 @@ service cloud.firestore {
     // Private workflow audit trail for editor/coauthor actions.
     // Only verified admins may read it; all writes go through Cloud Functions.
     match /submissionAudit/{docId} {
-      allow read: if request.auth != null &&
-        request.auth.token.email_verified == true &&
-        request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
+      allow read: if isAdmin();
     }
 
     // Only admins with verified emails can read the GitHub token config
     match /config/{docId} {
-      allow read: if request.auth != null &&
-        request.auth.token.email_verified == true &&
-        request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'];
+      allow read: if isAdmin();
     }
   }
 }

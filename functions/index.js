@@ -5,7 +5,23 @@ const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 initializeApp();
 const db = getFirestore();
 
-const ADMIN_EMAILS = ["li.dongyuan@ufl.edu", "jingranhuang590@gmail.com"];
+let _adminEmailsCache = null;
+let _adminEmailsCacheTime = 0;
+const ADMIN_CACHE_TTL = 5 * 60 * 1000; // 5 min cache
+
+async function getAdminEmails() {
+  const now = Date.now();
+  if (_adminEmailsCache && now - _adminEmailsCacheTime < ADMIN_CACHE_TTL) {
+    return _adminEmailsCache;
+  }
+  const snap = await db.collection("config").doc("admins").get();
+  if (!snap.exists || !Array.isArray(snap.data().emails)) {
+    throw new HttpsError("internal", "Admin configuration not found.");
+  }
+  _adminEmailsCache = snap.data().emails;
+  _adminEmailsCacheTime = now;
+  return _adminEmailsCache;
+}
 const REPO = "United-World-College/UWC-Survival-Guide";
 const LANG_MAP = {
   "en":    { name: "English",  folder: "default", sort: 1, suffix: "" },
@@ -19,12 +35,13 @@ function assertAuth(auth) {
   if (!auth) throw new HttpsError("unauthenticated", "Sign in required.");
 }
 
-function assertAdmin(auth) {
+async function assertAdmin(auth) {
   assertAuth(auth);
   if (auth.token.email_verified !== true) {
     throw new HttpsError("permission-denied", "Verified email required.");
   }
-  if (!ADMIN_EMAILS.includes(auth.token.email)) {
+  const adminEmails = await getAdminEmails();
+  if (!adminEmails.includes(auth.token.email)) {
     throw new HttpsError("permission-denied", "Admin access required.");
   }
 }
@@ -354,7 +371,8 @@ exports.checkAdminStatus = onCall(async (request) => {
   assertAuth(request.auth);
   const email = request.auth.token.email;
   const verified = request.auth.token.email_verified === true;
-  return { isAdmin: verified && ADMIN_EMAILS.includes(email) };
+  const adminEmails = await getAdminEmails();
+  return { isAdmin: verified && adminEmails.includes(email) };
 });
 
 // ══════════════════════════════════════
@@ -657,7 +675,7 @@ async function translateAndPublishMissingVariants(token, apiKey, d, slug, author
 // ══════════════════════════════════════
 
 exports.approveSubmission = onCall(async (request) => {
-  assertAdmin(request.auth);
+  await assertAdmin(request.auth);
   const { docId, approveMessage } = request.data;
   if (!docId) throw new HttpsError("invalid-argument", "docId is required.");
 
@@ -738,6 +756,10 @@ exports.approveSubmission = onCall(async (request) => {
     }
   }
 
+  if (translationResults && translationResults.length > 0) {
+    await ref.update({ translationResults });
+  }
+
   return {
     success: true,
     published,
@@ -759,7 +781,7 @@ exports.approveSubmission = onCall(async (request) => {
 // ══════════════════════════════════════
 
 exports.rejectSubmission = onCall(async (request) => {
-  assertAdmin(request.auth);
+  await assertAdmin(request.auth);
   const { docId, reason } = request.data;
   if (!docId) throw new HttpsError("invalid-argument", "docId is required.");
   if (!reason) throw new HttpsError("invalid-argument", "Rejection reason is required.");
@@ -788,7 +810,7 @@ exports.rejectSubmission = onCall(async (request) => {
 // ══════════════════════════════════════
 
 exports.requestRevision = onCall(async (request) => {
-  assertAdmin(request.auth);
+  await assertAdmin(request.auth);
   const { docId, comments } = request.data;
   if (!docId) throw new HttpsError("invalid-argument", "docId is required.");
   if (!comments) throw new HttpsError("invalid-argument", "Reviewer comments are required.");
@@ -833,7 +855,7 @@ exports.requestRevision = onCall(async (request) => {
 // ══════════════════════════════════════
 
 exports.deleteSubmission = onCall(async (request) => {
-  assertAdmin(request.auth);
+  await assertAdmin(request.auth);
   const { docId } = request.data;
   if (!docId) throw new HttpsError("invalid-argument", "docId is required.");
 

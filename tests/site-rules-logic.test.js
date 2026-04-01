@@ -111,10 +111,8 @@ describe("Submissions collection security rules", () => {
     expect(submissionsBlock).toContain("request.auth.uid in resource.data.coauthorUids");
   });
 
-  test("allows read for verified admin emails", () => {
-    expect(submissionsBlock).toContain("request.auth.token.email_verified == true");
-    expect(submissionsBlock).toContain("li.dongyuan@ufl.edu");
-    expect(submissionsBlock).toContain("jingranhuang590@gmail.com");
+  test("allows read for verified admins via isAdmin()", () => {
+    expect(submissionsBlock).toContain("isAdmin()");
   });
 
   test("explicitly denies client-side update", () => {
@@ -143,10 +141,8 @@ describe("Submission audit collection security rules", () => {
     auditBlock = getMatchBlock("submissionAudit/{docId}");
   });
 
-  test("restricts read to verified admin emails", () => {
-    expect(auditBlock).toContain("request.auth.token.email_verified == true");
-    expect(auditBlock).toContain("li.dongyuan@ufl.edu");
-    expect(auditBlock).toContain("jingranhuang590@gmail.com");
+  test("restricts read to admins via isAdmin()", () => {
+    expect(auditBlock).toContain("isAdmin()");
   });
 
   test("does not allow any client-side writes", () => {
@@ -167,10 +163,8 @@ describe("Config collection security rules", () => {
     configBlock = getMatchBlock("config/{docId}");
   });
 
-  test("restricts read to verified admin emails", () => {
-    expect(configBlock).toContain("request.auth.token.email_verified == true");
-    expect(configBlock).toContain("li.dongyuan@ufl.edu");
-    expect(configBlock).toContain("jingranhuang590@gmail.com");
+  test("restricts read to admins via isAdmin()", () => {
+    expect(configBlock).toContain("isAdmin()");
   });
 
   test("does not allow any writes", () => {
@@ -181,8 +175,8 @@ describe("Config collection security rules", () => {
   });
 
   test("does not expose config to non-admin users", () => {
-    // The read rule is scoped to admin emails only
-    expect(configBlock).toMatch(/allow read.*email in \[/s);
+    // The read rule uses isAdmin() which checks config/admins
+    expect(configBlock).toContain("isAdmin()");
   });
 });
 
@@ -190,56 +184,33 @@ describe("Config collection security rules", () => {
 // Admin Email Consistency
 // ══════════════════════════════════════
 
-describe("Admin email consistency", () => {
-  test("same admin emails appear in both submissions and config rules", () => {
-    const submissionsBlock = getMatchBlock("submissions/{docId}");
-    const configBlock = getMatchBlock("config/{docId}");
-
-    // Extract email lists from both blocks
-    const emailPattern = /['"]([^'"]+@[^'"]+)['"]/g;
-    const submissionEmails = new Set();
-    const configEmails = new Set();
-
-    let m;
-    while ((m = emailPattern.exec(submissionsBlock)) !== null) {
-      submissionEmails.add(m[1]);
-    }
-    emailPattern.lastIndex = 0;
-    while ((m = emailPattern.exec(configBlock)) !== null) {
-      configEmails.add(m[1]);
-    }
-
-    expect(submissionEmails.size).toBeGreaterThan(0);
-    expect(configEmails.size).toBeGreaterThan(0);
-
-    // They should contain the same emails
-    for (const email of submissionEmails) {
-      expect(configEmails).toContain(email);
-    }
-    for (const email of configEmails) {
-      expect(submissionEmails).toContain(email);
-    }
+describe("Admin access centralization", () => {
+  test("rules define an isAdmin() function that reads from config/admins", () => {
+    expect(rules).toContain("function isAdmin()");
+    expect(rules).toContain("config/admins");
   });
 
-  test("admin emails in rules match those in Cloud Functions", () => {
+  test("Cloud Functions read admin emails from Firestore instead of hardcoding", () => {
     const functionsSource = fs.readFileSync(
       path.join(__dirname, "..", "functions", "index.js"),
       "utf-8"
     );
 
-    // Extract ADMIN_EMAILS from functions
-    const adminMatch = functionsSource.match(
-      /ADMIN_EMAILS\s*=\s*\[([^\]]+)\]/
-    );
-    expect(adminMatch).not.toBeNull();
-    const functionEmails = adminMatch[1]
-      .match(/["']([^"']+)["']/g)
-      .map((s) => s.replace(/["']/g, ""));
+    // Should NOT have a hardcoded ADMIN_EMAILS array
+    expect(functionsSource).not.toMatch(/ADMIN_EMAILS\s*=\s*\[/);
+    // Should read from config/admins
+    expect(functionsSource).toContain('"admins"');
+    expect(functionsSource).toContain("getAdminEmails");
+  });
 
-    // Check they appear in rules
-    for (const email of functionEmails) {
-      expect(rules).toContain(email);
-    }
+  test("all admin-gated rule blocks use isAdmin()", () => {
+    const submissionsBlock = getMatchBlock("submissions/{docId}");
+    const auditBlock = getMatchBlock("submissionAudit/{docId}");
+    const configBlock = getMatchBlock("config/{docId}");
+
+    expect(submissionsBlock).toContain("isAdmin()");
+    expect(auditBlock).toContain("isAdmin()");
+    expect(configBlock).toContain("isAdmin()");
   });
 });
 

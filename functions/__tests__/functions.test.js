@@ -19,6 +19,10 @@ function resetMockDb() {
   mockUpdateCalls = [];
   mockSetCalls = [];
   mockDeleteCalls = [];
+  // Seed admin config so getAdminEmails() works in all tests
+  mockDocs["config/admins"] = {
+    emails: ["jingranhuang590@gmail.com", "li.dongyuan@ufl.edu"],
+  };
 }
 
 function setMockDoc(collection, docId, data) {
