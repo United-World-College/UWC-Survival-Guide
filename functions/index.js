@@ -199,7 +199,16 @@ exports.approveSubmission = onCall(async (request) => {
   }
 
   if (translationResults && translationResults.length > 0) {
-    await ref.update({ translationResults });
+    // Store translated metadata for multi-language display (author pages, etc.)
+    const translations = {};
+    translationResults.forEach((r) => {
+      if (r.success && r.lang) {
+        translations[r.lang] = { title: r.title, category: r.category, description: r.description };
+      }
+    });
+    // Also include the source language
+    translations[d.language || "en"] = { title: d.title, category: d.category, description: d.description };
+    await ref.update({ translationResults, translations });
   }
 
   return {

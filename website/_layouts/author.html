@@ -420,6 +420,7 @@
     });
     var db = firebase.firestore();
     var authorId = {{ current_author_id | jsonify }};
+    var currentLang = {{ current_language_code | jsonify }};
 
     function esc(s) { var d = document.createElement('div'); d.appendChild(document.createTextNode(s || '')); return d.innerHTML; }
 
@@ -449,13 +450,18 @@
 
     function renderArticleCard(sub) {
       var date = formatDate(sub.reviewedAt || sub.createdAt);
-      var url = guideUrl(sub.guide_id, sub.language);
+      // Use translated metadata for the current page language if available
+      var t = (sub.translations && sub.translations[currentLang]) || {};
+      var displayTitle = t.title || sub.title;
+      var displayCategory = t.category || sub.category;
+      var displayDesc = t.description || sub.description;
+      var url = guideUrl(sub.guide_id, currentLang);
       return '<div class="author-latest-item">' +
         '<span class="author-latest-date">' + esc(date) + '</span>' +
         '<div class="author-latest-body">' +
-        '<p class="author-latest-category">' + esc(sub.category) + '</p>' +
-        '<h3><a href="' + url + '">' + esc(sub.title) + '</a></h3>' +
-        (sub.description ? '<p class="author-latest-desc">' + esc(sub.description) + '</p>' : '') +
+        '<p class="author-latest-category">' + esc(displayCategory) + '</p>' +
+        '<h3><a href="' + url + '">' + esc(displayTitle) + '</a></h3>' +
+        (displayDesc ? '<p class="author-latest-desc">' + esc(displayDesc) + '</p>' : '') +
         renderLanguageLinks(sub.guide_id, sub.language) +
         '</div></div>';
     }

@@ -194,7 +194,12 @@ async function translateAndPublishMissingVariants(token, apiKey, d, slug, author
       }
       await githubApi("PUT", filePath, token, putBody);
 
-      results.push({ lang: targetLang, filePath, success: true });
+      results.push({
+        lang: targetLang, filePath, success: true,
+        title: translation.title,
+        category: translation.category,
+        description: translation.description,
+      });
     } catch (err) {
       results.push({ lang: targetLang, error: err.message, success: false });
     }

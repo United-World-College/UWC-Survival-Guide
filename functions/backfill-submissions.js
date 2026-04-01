@@ -162,6 +162,74 @@ async function main() {
   }
 
   console.log(`\nDone. Created: ${created}, Skipped: ${skipped}`);
+
+  // ── Phase 2: Backfill translations map from existing guide files ──
+  console.log("\n=== Phase 2: Backfill translations map ===\n");
+
+  const LANG_MAP = {
+    "en":    { folder: "default", suffix: "" },
+    "zh-CN": { folder: "chinese", suffix: "-CN" },
+    "zh-TW": { folder: "chinese", suffix: "-TW" },
+  };
+  const GUIDES_BASE = path.resolve(__dirname, "../website/_guides");
+
+  const allSubmissions = await db.collection("submissions")
+    .where("status", "==", "approved").get();
+
+  let translationsUpdated = 0;
+  let translationsSkipped = 0;
+
+  for (const doc of allSubmissions.docs) {
+    const data = doc.data();
+    const guideId = data.guide_id;
+    if (!guideId) continue;
+
+    // Read all language variant files for this guide_id
+    const translations = {};
+    for (const [lang, info] of Object.entries(LANG_MAP)) {
+      const filePath = path.join(GUIDES_BASE, info.folder, guideId + info.suffix + ".md");
+      if (!fs.existsSync(filePath)) continue;
+      try {
+        const { frontmatter } = parseGuide(filePath);
+        translations[lang] = {
+          title: frontmatter.title || "",
+          category: frontmatter.category || "",
+          description: frontmatter.description || "",
+        };
+      } catch (err) {
+        console.log(`  WARN  Could not parse ${filePath}: ${err.message}`);
+      }
+    }
+
+    if (Object.keys(translations).length === 0) {
+      translationsSkipped++;
+      continue;
+    }
+
+    // Check if translations already match
+    const existing = data.translations || {};
+    const needsUpdate = JSON.stringify(translations) !== JSON.stringify(existing);
+
+    if (!needsUpdate) {
+      console.log(`SKIP  ${guideId} translations — already up to date`);
+      translationsSkipped++;
+      continue;
+    }
+
+    if (dryRun) {
+      console.log(`WOULD SET translations for ${guideId}:`);
+      Object.entries(translations).forEach(([lang, t]) => {
+        console.log(`  ${lang}: "${t.title}" / "${t.description.slice(0, 50)}…"`);
+      });
+      console.log();
+    } else {
+      await doc.ref.update({ translations });
+      console.log(`SET translations for ${guideId} → ${Object.keys(translations).join(", ")}`);
+    }
+    translationsUpdated++;
+  }
+
+  console.log(`\nTranslations: Updated: ${translationsUpdated}, Skipped: ${translationsSkipped}`);
 }
 
 main().then(() => process.exit(0)).catch((err) => {
