@@ -91,6 +91,30 @@ firebase.json   ← Firebase CLI 設定（模擬器埠號、規則路徑）
 .firebaserc     ← Firebase 專案別名（uwc-survival-guide）
 ```
 
+## 測試
+
+本專案包含兩套測試——Cloud Functions 單元測試和網站驗證測試——均使用 Jest。
+
+```bash
+./script/test              # 執行所有測試（Functions + 網站驗證）
+```
+
+也可以分別執行：
+
+```bash
+cd functions && npx jest --verbose   # Cloud Functions 輔助函式和可呼叫函式
+cd tests && npx jest --verbose       # 網站內容、設定、範本、國際化、安全規則
+```
+
+首次執行前安裝相依套件：
+
+```bash
+cd functions && npm install
+cd tests && npm install
+```
+
+每次推送到 `main` 分支時，CI 也會自動執行測試（參見 `.github/workflows/deploy.yml`）。
+
 ## Firebase
 
 本專案使用 Firebase 進行身份驗證、Firestore（資料庫）和 Storage（頭貼）。`/admin` 管理後台連線至正式 Firebase 專案 `uwc-survival-guide`。

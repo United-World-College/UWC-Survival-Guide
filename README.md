@@ -113,6 +113,30 @@ Run it from the repository root with:
 
 The helper script executes the translator with `uv run python` inside `auto-translator/`.
 
+## Tests
+
+This project has two test suites — Cloud Functions unit tests and site validation tests — both using Jest.
+
+```bash
+./script/test              # run all tests (functions + site validation)
+```
+
+You can also run each suite individually:
+
+```bash
+cd functions && npx jest --verbose   # Cloud Functions helpers and callable functions
+cd tests && npx jest --verbose       # site content, config, templates, i18n, security rules
+```
+
+Install dependencies before the first run:
+
+```bash
+cd functions && npm install
+cd tests && npm install
+```
+
+Tests also run automatically in CI on every push to `main` (see `.github/workflows/deploy.yml`).
+
 ## Firebase
 
 This project uses Firebase for authentication, Firestore (database), and Storage (avatars). The admin portal at `/admin` connects to the production Firebase project `uwc-survival-guide`.
