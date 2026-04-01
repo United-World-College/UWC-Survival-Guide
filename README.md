@@ -102,7 +102,7 @@ firebase.json   ← Firebase CLI configuration (emulator ports, rule paths)
 .firebaserc     ← Firebase project alias (uwc-survival-guide)
 ```
 
-`auto-translator/` contains a small CLI that scans `default/` and `chinese/` and creates any missing English, Simplified Chinese, or Taiwan Traditional variants with the OpenAI API. It now defaults to `gpt-5.4`, uses a dedicated translation prompt file, and prefers the Simplified Chinese source when regenerating English or Taiwan Traditional guides.
+`auto-translator/` contains a small CLI that scans `default/` and `chinese/` and creates any missing English, Simplified Chinese, or Taiwan Traditional variants with the Anthropic API. It defaults to `claude-sonnet-4-6`, uses a dedicated translation prompt file, and prefers the Simplified Chinese source when regenerating English or Taiwan Traditional guides.
 
 Run it from the repository root with:
 
@@ -112,6 +112,8 @@ Run it from the repository root with:
 ```
 
 The helper script executes the translator with `uv run python` inside `auto-translator/`.
+
+When an editor approves an article in the admin panel, the system also automatically calls Claude to translate it into the other two languages and pushes the translations to GitHub. To enable this, store your Anthropic API key in Firestore at `config/anthropic` with field `apiKey`.
 
 ## Tests
 
@@ -124,8 +126,8 @@ This project has two test suites — Cloud Functions unit tests and site validat
 You can also run each suite individually:
 
 ```bash
-cd functions && npx jest --verbose   # Cloud Functions helpers and callable functions
-cd tests && npx jest --verbose       # site content, config, templates, i18n, security rules
+cd functions && npx jest --verbose   # Cloud Functions unit tests
+cd tests && npx jest --verbose       # site validation tests
 ```
 
 Install dependencies before the first run:
@@ -136,6 +138,26 @@ cd tests && npm install
 ```
 
 Tests also run automatically in CI on every push to `main` (see `.github/workflows/deploy.yml`).
+
+### Cloud Functions tests (`functions/__tests__/`)
+
+| File | What it covers |
+|------|---------------|
+| `helpers.test.js` | Pure helper functions: `makeSlug`, `makeAuthorSlug`, `toBase64`, `generateMarkdown`, `getAuthorKey`, `getOrderedSubmissionAuthors`, `sanitizeRevisionHistory` |
+| `functions.test.js` | Callable Cloud Functions with mocked Firestore, Auth, and GitHub API: `approveSubmission`, `rejectSubmission`, `requestRevision`, `resubmitArticle`, `deleteSubmission`, `checkAdminStatus` |
+| `translation.test.js` | Auto-translation helpers: `TRANSLATE_TOOL` schema validation, `STYLE_NOTES`/`PROMPT_NAMES` coverage, `buildTranslationPrompt` for all language pairs, `buildTranslatedMarkdown` output for all three languages |
+
+### Site validation tests (`tests/`)
+
+| File | What it covers |
+|------|---------------|
+| `site-guides.test.js` | Guide markdown front matter fields, language codes, file naming conventions, duplicate detection, and translation completeness across all three languages |
+| `site-authors.test.js` | Author page front matter, three-language variant requirement, `translation_key` consistency, and `about.yml` data validation |
+| `site-config.test.js` | Jekyll config, Firebase config, and project structure validation |
+| `site-templates.test.js` | Jekyll template files for required elements and patterns |
+| `site-i18n.test.js` | i18n completeness: every key in the English locale must also exist in zh-CN and zh-TW |
+| `site-admin-js.test.js` | Admin page inline JavaScript syntax validation, display name rules, slug normalization, and submission query resilience |
+| `site-rules-logic.test.js` | Firestore security rules logic validation by parsing the rules file |
 
 ## Firebase
 

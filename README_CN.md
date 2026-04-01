@@ -91,6 +91,19 @@ firebase.json   ← Firebase CLI 配置（模拟器端口、规则路径）
 .firebaserc     ← Firebase 项目别名（uwc-survival-guide）
 ```
 
+`auto-translator/` 是一个小型 CLI 工具，扫描 `default/` 和 `chinese/` 目录，使用 Anthropic API 自动创建缺失的英文、简体中文或台湾繁体翻译。默认使用 `claude-sonnet-4-6` 模型，配合专用翻译提示文件，并优先以简体中文原文作为翻译源。
+
+从仓库根目录运行：
+
+```bash
+./script/translate --dry-run
+./script/translate
+```
+
+该脚本通过 `uv run python` 在 `auto-translator/` 目录下执行翻译器。
+
+当编辑在管理后台审批通过一篇文章时，系统也会自动调用 Claude 将该文章翻译为其余两种语言并推送到 GitHub。要启用此功能，需要在 Firestore 的 `config/anthropic` 文档中设置 `apiKey` 字段为你的 Anthropic API 密钥。
+
 ## 测试
 
 本项目包含两套测试——Cloud Functions 单元测试和站点验证测试——均使用 Jest。
@@ -102,8 +115,8 @@ firebase.json   ← Firebase CLI 配置（模拟器端口、规则路径）
 也可以分别运行：
 
 ```bash
-cd functions && npx jest --verbose   # Cloud Functions 辅助函数和可调用函数
-cd tests && npx jest --verbose       # 站点内容、配置、模板、国际化、安全规则
+cd functions && npx jest --verbose   # Cloud Functions 单元测试
+cd tests && npx jest --verbose       # 站点验证测试
 ```
 
 首次运行前安装依赖：
@@ -114,6 +127,26 @@ cd tests && npm install
 ```
 
 每次推送到 `main` 分支时，CI 也会自动运行测试（参见 `.github/workflows/deploy.yml`）。
+
+### Cloud Functions 测试 (`functions/__tests__/`)
+
+| 文件 | 测试内容 |
+|------|---------|
+| `helpers.test.js` | 纯辅助函数：`makeSlug`、`makeAuthorSlug`、`toBase64`、`generateMarkdown`、`getAuthorKey`、`getOrderedSubmissionAuthors`、`sanitizeRevisionHistory` |
+| `functions.test.js` | 可调用 Cloud Functions（模拟 Firestore、Auth 和 GitHub API）：`approveSubmission`、`rejectSubmission`、`requestRevision`、`resubmitArticle`、`deleteSubmission`、`checkAdminStatus` |
+| `translation.test.js` | 自动翻译辅助函数：`TRANSLATE_TOOL` schema 验证、`STYLE_NOTES`/`PROMPT_NAMES` 语言覆盖、`buildTranslationPrompt` 所有语言对测试、`buildTranslatedMarkdown` 三种语言输出 |
+
+### 站点验证测试 (`tests/`)
+
+| 文件 | 测试内容 |
+|------|---------|
+| `site-guides.test.js` | 指南 Markdown front matter 字段、语言代码、文件命名规范、重复检测、三语翻译完整性 |
+| `site-authors.test.js` | 作者页 front matter、三语变体要求、`translation_key` 一致性、`about.yml` 数据验证 |
+| `site-config.test.js` | Jekyll 配置、Firebase 配置、项目结构验证 |
+| `site-templates.test.js` | Jekyll 模板文件的必要元素和模式检查 |
+| `site-i18n.test.js` | 国际化完整性：英文 locale 中的每个 key 必须同时存在于 zh-CN 和 zh-TW |
+| `site-admin-js.test.js` | 管理页面内联 JavaScript 语法验证、显示名称规则、slug 规范化、投稿查询弹性 |
+| `site-rules-logic.test.js` | Firestore 安全规则逻辑验证（通过解析规则文件） |
 
 ## Firebase
 

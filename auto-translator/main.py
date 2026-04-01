@@ -10,15 +10,14 @@ from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from anthropic import Anthropic
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_GUIDE_ROOT = REPO_ROOT / "website" / "_guides"
 ENV_FILE = REPO_ROOT / ".env"
 PROMPT_TEMPLATE_FILE = Path(__file__).with_name("prompt_instructions.txt")
-DEFAULT_MODEL = "gpt-5.4"
-DEFAULT_REASONING_EFFORT = "medium"
-DEFAULT_MAX_OUTPUT_TOKENS = 20000
+DEFAULT_MODEL = "claude-sonnet-4-6"
+DEFAULT_MAX_OUTPUT_TOKENS = 16000
 
 LANGUAGE_CONFIG: dict[str, dict[str, Any]] = {
     "en": {
@@ -93,21 +92,26 @@ SUPPORTED_FOLDERS_PATTERN = "|".join(
 GUIDE_URL_PATTERN = re.compile(
     rf"(?P<prefix>{LIQUID_OPEN}\s*['\"])/guides/(?:(?:{SUPPORTED_FOLDERS_PATTERN})/)?(?P<slug>[a-z0-9-]+(?:-(?:CN|TW))?)/(?P<suffix>['\"]\s*\|\s*relative_url\s*{LIQUID_CLOSE})"
 )
-TRANSLATION_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "title": {"type": "string"},
-        "category": {"type": "string"},
-        "description": {"type": "string"},
-        "body": {"type": "string"},
+TRANSLATION_TOOL = {
+    "name": "guide_translation",
+    "description": "Return the translated guide fields.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "title": {"type": "string"},
+            "category": {"type": "string"},
+            "description": {"type": "string"},
+            "body": {"type": "string"},
+        },
+        "required": ["title", "category", "description", "body"],
+        "additionalProperties": False,
     },
-    "required": ["title", "category", "description", "body"],
-    "additionalProperties": False,
 }
 SYSTEM_PROMPT = (
     "You are the lead translation editor for the UWC Changshu China Survival Guide. "
     "Produce publication-ready translations that preserve the original author's voice, "
-    "tone, pacing, and meaning. Return only schema-valid output."
+    "tone, pacing, and meaning. You MUST call the guide_translation tool with the "
+    "translated fields. Do not return plain text."
 )
 
 
@@ -402,62 +406,34 @@ def build_translation_prompt(job: TranslationJob, prompt_template: str) -> str:
     )
 
 
-def supports_reasoning(model: str) -> bool:
-    return model.startswith("gpt-5")
-
-
-def build_translation_request(
+def post_anthropic(
     job: TranslationJob,
+    client: Anthropic,
     model: str,
     prompt_template: str,
-    reasoning_effort: str | None,
-) -> dict[str, Any]:
-    request: dict[str, Any] = {
-        "model": model,
-        "store": False,
-        "input": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": build_translation_prompt(job, prompt_template),
-            },
-        ],
-        "text": {
-            "format": {
-                "type": "json_schema",
-                "name": "guide_translation",
-                "strict": True,
-                "schema": TRANSLATION_SCHEMA,
-            }
-        },
-        "max_output_tokens": DEFAULT_MAX_OUTPUT_TOKENS,
-    }
-
-    if reasoning_effort and supports_reasoning(model):
-        request["reasoning"] = {"effort": reasoning_effort}
-
-    return request
-
-
-def post_openai(
-    job: TranslationJob,
-    client: OpenAI,
-    model: str,
-    prompt_template: str,
-    reasoning_effort: str | None,
 ) -> Any:
     try:
-        return client.responses.create(
-            **build_translation_request(job, model, prompt_template, reasoning_effort)
+        return client.messages.create(
+            model=model,
+            max_tokens=DEFAULT_MAX_OUTPUT_TOKENS,
+            system=SYSTEM_PROMPT,
+            tools=[TRANSLATION_TOOL],
+            tool_choice={"type": "tool", "name": "guide_translation"},
+            messages=[
+                {
+                    "role": "user",
+                    "content": build_translation_prompt(job, prompt_template),
+                },
+            ],
         )
     except Exception as exc:
-        raise RuntimeError(f"OpenAI API request failed: {exc}") from exc
+        raise RuntimeError(f"Anthropic API request failed: {exc}") from exc
 
 
-def extract_output_text(response: Any) -> str:
-    output_text = getattr(response, "output_text", None)
-    if isinstance(output_text, str) and output_text.strip():
-        return output_text.strip()
+def extract_tool_input(response: Any) -> dict[str, Any]:
+    for block in response.content:
+        if block.type == "tool_use" and block.name == "guide_translation":
+            return block.input
 
     debug_payload = ""
     if hasattr(response, "model_dump_json"):
@@ -468,17 +444,12 @@ def extract_output_text(response: Any) -> str:
         debug_payload = str(response)[:1200]
 
     raise RuntimeError(
-        "The OpenAI response did not contain output_text. "
+        "The Anthropic response did not contain a guide_translation tool call. "
         f"Response excerpt: {debug_payload}"
     )
 
 
-def parse_translation_response(raw_text: str) -> dict[str, str]:
-    try:
-        data = json.loads(raw_text)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Model output was not valid JSON: {raw_text}") from exc
-
+def parse_translation_response(data: dict[str, Any]) -> dict[str, str]:
     required_keys = ("title", "category", "description", "body")
     for key in required_keys:
         if key not in data or not isinstance(data[key], str):
@@ -545,15 +516,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        help=f"OpenAI model to use. Defaults to OPENAI_MODEL or {DEFAULT_MODEL}.",
-    )
-    parser.add_argument(
-        "--reasoning-effort",
-        choices=("none", "low", "medium", "high", "xhigh"),
-        help=(
-            "Reasoning effort for GPT-5 family models. "
-            f"Defaults to OPENAI_REASONING_EFFORT or {DEFAULT_REASONING_EFFORT}."
-        ),
+        help=f"Anthropic model to use. Defaults to ANTHROPIC_MODEL or {DEFAULT_MODEL}.",
     )
     parser.add_argument(
         "--dry-run",
@@ -578,11 +541,7 @@ def main() -> int:
         print(f"Guide root does not exist: {guide_root}", file=sys.stderr)
         return 1
 
-    model = args.model or os.environ.get("OPENAI_MODEL", DEFAULT_MODEL)
-    reasoning_effort = args.reasoning_effort or os.environ.get(
-        "OPENAI_REASONING_EFFORT",
-        DEFAULT_REASONING_EFFORT,
-    )
+    model = args.model or os.environ.get("ANTHROPIC_MODEL", DEFAULT_MODEL)
 
     try:
         guides = discover_guides(guide_root)
@@ -604,12 +563,12 @@ def main() -> int:
             )
         return 0
 
-    api_key = os.environ.get("OPENAI_API_KEY")
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        print("OPENAI_API_KEY is not set. Add it to .env or your shell environment.", file=sys.stderr)
+        print("ANTHROPIC_API_KEY is not set. Add it to .env or your shell environment.", file=sys.stderr)
         return 1
 
-    client = OpenAI(api_key=api_key)
+    client = Anthropic(api_key=api_key)
 
     for job in jobs:
         print(
@@ -617,9 +576,9 @@ def main() -> int:
             f"from {job.source.language_code} to {job.target_language_code}..."
         )
         try:
-            response = post_openai(job, client, model, prompt_template, reasoning_effort)
-            raw_text = extract_output_text(response)
-            translation = parse_translation_response(raw_text)
+            response = post_anthropic(job, client, model, prompt_template)
+            tool_input = extract_tool_input(response)
+            translation = parse_translation_response(tool_input)
             written_path = write_translation(job, translation)
         except RuntimeError as exc:
             print(f"Failed to translate {job.source.guide_id}: {exc}", file=sys.stderr)

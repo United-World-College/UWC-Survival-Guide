@@ -1,6 +1,6 @@
 # Auto Translator
 
-This CLI scans `website/_guides/default/` and `website/_guides/chinese/`, matches files by `guide_id`, and creates any missing language variants with the OpenAI Responses API.
+This CLI scans `website/_guides/default/` and `website/_guides/chinese/`, matches files by `guide_id`, and creates any missing language variants with the Anthropic Messages API.
 
 ## What It Preserves
 
@@ -13,9 +13,8 @@ This CLI scans `website/_guides/default/` and `website/_guides/chinese/`, matche
 ## Requirements
 
 - `uv`
-- `OPENAI_API_KEY` in the repository root `.env`
-- Optional: `OPENAI_MODEL` if you do not want the default `gpt-5.4`
-- Optional: `OPENAI_REASONING_EFFORT` if you want to override the default `medium`
+- `ANTHROPIC_API_KEY` in the repository root `.env`
+- Optional: `ANTHROPIC_MODEL` if you do not want the default `claude-sonnet-4-6`
 
 ## Usage
 
