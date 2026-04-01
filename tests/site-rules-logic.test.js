@@ -58,15 +58,22 @@ describe("Users collection security rules", () => {
     expect(usersBlock).toContain("allow read");
   });
 
-  test("restricts write to the authenticated user's own document", () => {
-    expect(usersBlock).toContain("allow write");
-    expect(usersBlock).toContain("request.auth != null");
-    expect(usersBlock).toContain("request.auth.uid == uid");
+  test("requires author_id on create", () => {
+    expect(usersBlock).toContain("allow create");
+    expect(usersBlock).toContain("'author_id' in request.resource.data");
+    expect(usersBlock).toContain("request.resource.data.author_id is string");
+    expect(usersBlock).toContain("request.resource.data.author_id.size() > 0");
   });
 
-  test("does not allow unauthenticated writes", () => {
-    // The write rule requires auth != null
-    expect(usersBlock).toMatch(/allow write.*request\.auth\s*!=\s*null/s);
+  test("prevents author_id from being changed on update", () => {
+    expect(usersBlock).toContain("allow update");
+    expect(usersBlock).toContain(
+      "request.resource.data.author_id == resource.data.author_id"
+    );
+  });
+
+  test("restricts create and update to the authenticated user's own document", () => {
+    expect(usersBlock).toContain("request.auth.uid == uid");
   });
 });
 

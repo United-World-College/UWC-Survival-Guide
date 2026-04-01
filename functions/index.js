@@ -284,12 +284,28 @@ async function publishToGitHub(token, d, markdown, filePath, primaryAuthor) {
   });
 }
 
+async function ensureUniqueAuthorSlug(baseSlug) {
+  let slug = baseSlug;
+  let attempt = 1;
+  while (true) {
+    const snap = await db.collection("users").where("author_id", "==", slug).get();
+    if (snap.empty) return slug;
+    attempt++;
+    slug = `${baseSlug}-${attempt}`;
+  }
+}
+
 async function updateAuthorRecord(uid, authorSlug, slug, title, category) {
   if (!uid) return;
-  await db.collection("users").doc(uid).set(
-    { author_id: authorSlug },
-    { merge: true }
-  );
+  // Only set author_id if user doesn't already have one — author_id is immutable
+  const userDoc = await db.collection("users").doc(uid).get();
+  if (!userDoc.exists || !userDoc.data().author_id) {
+    const uniqueSlug = await ensureUniqueAuthorSlug(authorSlug);
+    await db.collection("users").doc(uid).set(
+      { author_id: uniqueSlug },
+      { merge: true }
+    );
+  }
   await db.collection("users").doc(uid).update({
     publishedArticles: FieldValue.arrayUnion({
       guide_id: slug, title, category,

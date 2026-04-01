@@ -3,10 +3,17 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Anyone can read user profiles (for public author pages);
-    // only the user themselves can write their own profile
+    // only the user themselves can write their own profile.
     match /users/{uid} {
       allow read;
-      allow write: if request.auth != null && request.auth.uid == uid;
+      // First write (create) — author_id must be present
+      allow create: if request.auth != null && request.auth.uid == uid
+        && 'author_id' in request.resource.data
+        && request.resource.data.author_id is string
+        && request.resource.data.author_id.size() > 0;
+      // Subsequent writes — author_id cannot be changed once set
+      allow update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.author_id == resource.data.author_id;
     }
 
     // Submissions: all writes go through Cloud Functions (Admin SDK bypasses

@@ -71,7 +71,22 @@ const mockDoc = jest.fn((docId) => {
 
 const mockCollection = jest.fn((name) => {
   mockDoc._currentCollection = name;
-  return { doc: mockDoc };
+  return {
+    doc: mockDoc,
+    where: jest.fn((field, op, value) => ({
+      get: jest.fn(async () => {
+        // Search all docs in this collection for matching field value
+        const matches = [];
+        const prefix = name + "/";
+        for (const [key, data] of Object.entries(mockDocs)) {
+          if (key.startsWith(prefix) && data && data[field] === value) {
+            matches.push({ id: key.slice(prefix.length), data: () => data });
+          }
+        }
+        return { empty: matches.length === 0, docs: matches };
+      }),
+    })),
+  };
 });
 
 jest.mock("firebase-admin/app", () => ({ initializeApp: jest.fn() }));
@@ -1032,6 +1047,70 @@ describe("approveSubmission", () => {
     expect(setCall.data.authorPage).toBeUndefined();
   });
 
+  test("does not overwrite existing author_id on user record", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "Alice",
+      coAuthors: orderedAuthors({ uid: "user-1", author_id: "alice", name: "Alice" }),
+      title: "Second Article",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", { author_id: "alice-original" });
+    setMockDoc("config", "github", {});
+
+    await funcs.approveSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    // Should NOT overwrite existing author_id
+    const setCall = mockSetCalls.find(
+      (c) => c.collection === "users" && c.docId === "user-1"
+    );
+    expect(setCall).toBeUndefined();
+    // User should still have original author_id
+    const userData = getMockDocData("users", "user-1");
+    expect(userData.author_id).toBe("alice-original");
+  });
+
+  test("deduplicates author_id when slug collides with existing user", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-new",
+      authorName: "Alice",
+      coAuthors: orderedAuthors({ uid: "user-new", author_id: "alice", name: "Alice" }),
+      title: "New Article",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    // user-new has no author_id yet, but "alice" is taken by another user
+    setMockDoc("users", "user-new", {});
+    setMockDoc("users", "user-existing", { author_id: "alice" });
+    setMockDoc("config", "github", {});
+
+    await funcs.approveSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    const setCall = mockSetCalls.find(
+      (c) => c.collection === "users" && c.docId === "user-new"
+    );
+    expect(setCall).toBeDefined();
+    // Should get a suffixed slug since "alice" is taken
+    expect(setCall.data.author_id).toBe("alice-2");
+  });
+
   test("uses ordered authors for markdown and updates every listed author", async () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
@@ -1068,7 +1147,14 @@ describe("approveSubmission", () => {
     expect(result.markdown).toContain('  - name: "Carol"');
     expect(result.markdown).not.toContain('  - name: "Bob"');
 
-    const updatedUserIds = mockSetCalls
+    // Users already have author_id, so no set calls for author_id — only
+    // update calls for publishedArticles
+    const userSetCalls = mockSetCalls.filter(
+      (call) => call.collection === "users" && call.docId !== "admin-uid"
+    );
+    expect(userSetCalls).toHaveLength(0);
+
+    const updatedUserIds = mockUpdateCalls
       .filter((call) => call.collection === "users")
       .map((call) => call.docId)
       .sort();

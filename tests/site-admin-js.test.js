@@ -415,7 +415,7 @@ describe("Admin page JS — author_id generation uses makeAuthorSlug", () => {
 
   test("profile save uses makeAuthorSlug for author_id", () => {
     // Profile save should use makeAuthorSlug when generating author_id from name
-    expect(adminHtml).toMatch(/newAuthorId\s*=\s*makeAuthorSlug\(/);
+    expect(adminHtml).toMatch(/baseId\s*=\s*makeAuthorSlug\(/);
   });
 });
 

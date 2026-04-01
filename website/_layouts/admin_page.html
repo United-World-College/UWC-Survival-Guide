@@ -1022,18 +1022,27 @@ var ADMIN_I18N = {
       };
       // Generate author_id on first save when name is present
       if (!existingData.author_id && name) {
-        var newAuthorId = makeAuthorSlug(name);
-        if (newAuthorId) {
-          profileData.author_id = newAuthorId;
-        }
+        var baseId = makeAuthorSlug(name);
+        if (!baseId) baseId = user.uid;
+        // Check for slug collision and append suffix if needed
+        return (function checkSlug(slug, attempt) {
+          return db.collection('users').where('author_id', '==', slug).get().then(function (snap) {
+            if (snap.empty) {
+              profileData.author_id = slug;
+              return;
+            }
+            return checkSlug(baseId + '-' + (attempt + 1), attempt + 1);
+          });
+        })(baseId, 1).then(function () {
+          return db.collection('users').doc(user.uid).set(profileData, { merge: true });
+        }).then(function () {
+          if (profileData.author_id) {
+            document.getElementById('profile-author-id').textContent = profileData.author_id;
+            document.getElementById('profile-author-id-field').style.display = 'block';
+          }
+        });
       }
-      return db.collection('users').doc(user.uid).set(profileData, { merge: true }).then(function () {
-        // Show author_id if newly generated
-        if (profileData.author_id) {
-          document.getElementById('profile-author-id').textContent = profileData.author_id;
-          document.getElementById('profile-author-id-field').style.display = 'block';
-        }
-      });
+      return db.collection('users').doc(user.uid).set(profileData, { merge: true });
     }).then(function () {
       setLoading('save-profile-btn', false);
       showSuccess('profile-success', ADMIN_I18N.profile_saved);
