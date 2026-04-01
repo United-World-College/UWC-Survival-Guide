@@ -836,6 +836,12 @@ a.feature:hover {
 .about-principles + .cfa-body {
   margin-top: 2rem;
 }
+.cfa-updated {
+  margin-top: 2rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  text-align: left;
+}
 .cfa-portal-btn {
   display: inline-block;
   font-size: 0.78rem;

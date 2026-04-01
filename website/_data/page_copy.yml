@@ -129,6 +129,7 @@
       - title: Any supported language
         description: You may write in English, Simplified Chinese, or Traditional Chinese. Articles in any of these languages are equally welcome.
     portal_btn: Go to Contributor Portal
+    updated_label: "Updated:"
   content_rights:
     label: Content Rights
     title: Code and content are licensed separately
@@ -484,6 +485,7 @@
       - title: 支持多种语言
         description: 你可以用英文、简体中文或繁体中文撰写。任何支持语言的文章都同样欢迎。
     portal_btn: 前往贡献者门户
+    updated_label: "更新于："
   content_rights:
     label: 内容版权
     title: 代码与内容分别授权
@@ -839,6 +841,7 @@
       - title: 支援多種語言
         description: 你可以用英文、簡體中文或繁體中文撰寫。任何支援語言的文章都同樣歡迎。
     portal_btn: 前往貢獻者門戶
+    updated_label: "更新於："
   content_rights:
     label: 內容版權
     title: 程式碼與內容分別授權

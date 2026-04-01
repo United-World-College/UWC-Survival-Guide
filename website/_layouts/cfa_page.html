@@ -32,6 +32,7 @@
     <div class="about-intro cfa-body">
       {% capture cfa_content %}{% include cfa/{{ current_language_code }}.md %}{% endcapture %}
       {{ cfa_content | markdownify }}
+      <p class="cfa-updated">{{ cfa_copy.updated_label }} 2026-04-01</p>
     </div>
   </section>
 

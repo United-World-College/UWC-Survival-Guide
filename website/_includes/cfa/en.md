@@ -8,4 +8,6 @@
 
 **Co-authorship.** You can add up to 10 co-authors when submitting an article. Co-authors must have a Contributor Portal account so they can be linked by their profile. The first author listed is treated as the primary author; the order of the remaining co-authors is preserved as you set it. All listed co-authors can view the submission status and resubmit revisions on behalf of the group. Every co-author receives their own author page and contributor credit upon publication. We encourage authors to follow the [Vancouver Convention on Authorship](https://www.icmje.org/recommendations/browse/roles-and-responsibilities/defining-the-role-of-authors-and-contributors.html) when deciding who should be listed as a co-author.
 
+**Automatic translation.** When an editor approves your article, it is automatically translated into the other two languages so every reader can access it. You only need to write in whichever language you are most comfortable with. If you would like to refine the auto-translated version or provide your own translation, contact the Editors-in-Chief through the About page.
+
 **What happens next.** Approved articles are published on the site under your name, with a permanent author page linking to all your work. You will be listed as a contributor on this page.
