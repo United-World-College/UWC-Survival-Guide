@@ -962,58 +962,46 @@
 
   // ── Featured Articles ──
   var currentFeaturedIds = [];
-  var currentPublishedArticles = [];
-  var currentUserId = null;
-  var featuredPanelInitialized = false;
 
   function initFeaturedPanel(uid) {
-    currentUserId = uid;
-    if (!featuredPanelInitialized) {
-      featuredPanelInitialized = true;
-      document.getElementById('register-article-btn').addEventListener('click', function () {
-        var sel = document.getElementById('register-guide-select');
-        var opt = sel.options[sel.selectedIndex];
-        var guideId = sel.value;
-        if (!guideId || !currentUserId) return;
-        var title = opt.getAttribute('data-title') || guideId;
-        var category = opt.getAttribute('data-category') || '';
-        db.collection('users').doc(currentUserId).update({
-          publishedArticles: firebase.firestore.FieldValue.arrayUnion({ guide_id: guideId, title: title, category: category })
-        }).then(function () {
-          loadFeaturedPanel(currentUserId);
-        });
-      });
-    }
     loadFeaturedPanel(uid);
   }
 
   function loadFeaturedPanel(uid) {
-    db.collection('users').doc(uid).get().then(function (doc) {
-      if (!doc.exists) return;
-      var data = doc.data();
-      if (!data.author_id) return;
-      currentFeaturedIds = data.featuredGuideIds || [];
-      currentPublishedArticles = data.publishedArticles || [];
+    // Read user doc for featuredGuideIds (user preference)
+    var userPromise = db.collection('users').doc(uid).get();
+    // Query approved submissions where user is primary author or coauthor
+    var ownQuery = db.collection('submissions')
+      .where('status', '==', 'approved')
+      .where('uid', '==', uid)
+      .get();
+    var coauthorQuery = db.collection('submissions')
+      .where('status', '==', 'approved')
+      .where('coauthorUids', 'array-contains', uid)
+      .get();
+
+    Promise.all([userPromise, ownQuery, coauthorQuery]).then(function (results) {
+      var userDoc = results[0];
+      if (!userDoc.exists) return;
+      var userData = userDoc.data();
+      if (!userData.author_id) return;
+
+      currentFeaturedIds = userData.featuredGuideIds || [];
       document.getElementById('featured-articles-card').style.display = 'block';
 
-      var authorId = data.author_id;
-      var registered = (data.publishedArticles || []).map(function (a) { return a.guide_id; });
-      var sel = document.getElementById('register-guide-select');
-      if (typeof SITE_GUIDES !== 'undefined') {
-        var available = SITE_GUIDES.filter(function (g) {
-          return g.author_ids && g.author_ids.indexOf(authorId) !== -1 && registered.indexOf(g.guide_id) === -1;
+      // Merge and deduplicate submissions by guide_id
+      var seen = {};
+      var articles = [];
+      [results[1], results[2]].forEach(function (snapshot) {
+        snapshot.forEach(function (doc) {
+          var d = doc.data();
+          if (d.guide_id && !seen[d.guide_id]) {
+            seen[d.guide_id] = true;
+            articles.push({ guide_id: d.guide_id, title: d.title, category: d.category });
+          }
         });
-        if (!available.length) {
-          sel.innerHTML = '<option value="">' + escapeHtml(ADMIN_I18N.all_registered) + '</option>';
-        } else {
-          sel.innerHTML = '<option value="">' + escapeHtml(ADMIN_I18N.select_register) + '</option>' +
-            available.map(function (g) {
-              return '<option value="' + escapeHtml(g.guide_id) + '" data-title="' + escapeHtml(g.title) + '" data-category="' + escapeHtml(g.category) + '">' + escapeHtml(g.title) + '</option>';
-            }).join('');
-        }
-      }
-
-      renderFeaturedList(uid, currentPublishedArticles);
+      });
+      renderFeaturedList(uid, articles);
     }).catch(function () {
       document.getElementById('featured-articles-list').innerHTML =
         '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.load_articles_failed) + '</p>';
@@ -1022,19 +1010,14 @@
 
   function renderFeaturedList(uid, articles) {
     var list = document.getElementById('featured-articles-list');
-    var siteGuideIds = typeof SITE_GUIDES !== 'undefined'
-      ? SITE_GUIDES.map(function (g) { return g.guide_id; }) : null;
-    var filtered = siteGuideIds
-      ? articles.filter(function (a) { return siteGuideIds.indexOf(a.guide_id) !== -1; })
-      : articles;
-    if (!filtered.length) {
+    if (!articles.length) {
       list.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.no_articles) + '</p>';
       return;
     }
     var html = '<div class="admin-submissions">';
-    filtered.forEach(function (article) {
+    articles.forEach(function (article) {
       var guideId = article.guide_id || '';
-      var siteGuide = SITE_GUIDES.filter(function (g) { return g.guide_id === guideId; })[0] || null;
+      var siteGuide = (typeof SITE_GUIDES !== 'undefined') ? SITE_GUIDES.filter(function (g) { return g.guide_id === guideId; })[0] : null;
       var displayTitle = siteGuide ? siteGuide.title : (article.title || guideId);
       var displayCategory = siteGuide ? siteGuide.category : (article.category || '');
       var isFeatured = currentFeaturedIds.indexOf(guideId) !== -1;

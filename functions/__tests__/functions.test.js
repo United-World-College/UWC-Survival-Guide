@@ -606,7 +606,7 @@ describe("deleteSubmission", () => {
     expect(auditCall.data.events[0].actorUid).toBe("admin-uid");
   });
 
-  test("deletes an approved submission and cleans up author record", async () => {
+  test("deletes an approved submission and cleans up featuredGuideIds", async () => {
     setMockDoc("submissions", "sub-1", {
       status: "approved",
       guide_id: "test-guide",
@@ -615,10 +615,6 @@ describe("deleteSubmission", () => {
       uid: "user-1",
     });
     setMockDoc("users", "user-1", {
-      publishedArticles: [
-        { guide_id: "test-guide", title: "Test", category: "Academics" },
-        { guide_id: "other-guide", title: "Other", category: "Life Reflections" },
-      ],
       featuredGuideIds: ["test-guide", "other-guide"],
     });
     // No GitHub token
@@ -633,15 +629,13 @@ describe("deleteSubmission", () => {
     expect(result.wasApproved).toBe(true);
     expect(result.guideId).toBe("test-guide");
 
-    // Verify the author's publishedArticles and featuredGuideIds were updated
+    // Verify the author's featuredGuideIds was updated (publishedArticles no longer managed)
     const userUpdate = mockUpdateCalls.find(
       (c) => c.collection === "users" && c.docId === "user-1"
     );
     expect(userUpdate).toBeDefined();
-    expect(userUpdate.data.publishedArticles).toEqual([
-      { guide_id: "other-guide", title: "Other", category: "Life Reflections" },
-    ]);
     expect(userUpdate.data.featuredGuideIds).toEqual(["other-guide"]);
+    expect(userUpdate.data.publishedArticles).toBeUndefined();
   });
 
   test("throws for non-admin", async () => {
@@ -1032,7 +1026,7 @@ describe("approveSubmission", () => {
     expect(stored.status).toBe("pending");
   });
 
-  test("updates author record with publishedArticles", async () => {
+  test("sets author_id on user record when missing", async () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
       authorName: "Alice",
@@ -1223,17 +1217,15 @@ describe("approveSubmission", () => {
     expect(result.markdown).toContain('  - name: "Carol"');
     expect(result.markdown).not.toContain('  - name: "Bob"');
 
-    // Users already have author_id, so no set calls for author_id — only
-    // update calls for publishedArticles
+    // Users already have author_id, so ensureAuthorId is a no-op for all three
     const userSetCalls = mockSetCalls.filter(
       (call) => call.collection === "users" && call.docId !== "admin-uid"
     );
     expect(userSetCalls).toHaveLength(0);
 
-    const updatedUserIds = mockUpdateCalls
-      .filter((call) => call.collection === "users")
-      .map((call) => call.docId)
-      .sort();
-    expect(updatedUserIds).toEqual(["user-1", "user-2", "user-3"]);
+    const userUpdateCalls = mockUpdateCalls.filter(
+      (call) => call.collection === "users"
+    );
+    expect(userUpdateCalls).toHaveLength(0);
   });
 });

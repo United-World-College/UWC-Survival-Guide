@@ -17,7 +17,6 @@ async function appendSubmissionAuditEvent(docId, type, auth, details = {}) {
     ...details,
   });
   await auditRef.set({
-    submissionId: docId,
     updatedAt: FieldValue.serverTimestamp(),
     events: existingEvents,
   }, { merge: true });
@@ -69,7 +68,7 @@ async function ensureUniqueAuthorSlug(baseSlug) {
   }
 }
 
-async function updateAuthorRecord(uid, authorSlug, slug, title, category) {
+async function ensureAuthorId(uid, authorSlug) {
   if (!uid) return;
   // Only set author_id if user doesn't already have one — author_id is immutable
   const userDoc = await db.collection("users").doc(uid).get();
@@ -81,11 +80,6 @@ async function updateAuthorRecord(uid, authorSlug, slug, title, category) {
       { merge: true }
     );
   }
-  await db.collection("users").doc(uid).update({
-    publishedArticles: FieldValue.arrayUnion({
-      guide_id: slug, title, category,
-    }),
-  }).catch(() => {});
 }
 
 module.exports = {
@@ -94,5 +88,5 @@ module.exports = {
   resolveSubmissionAuthors,
   ensureUniqueGuideSlug,
   ensureUniqueAuthorSlug,
-  updateAuthorRecord,
+  ensureAuthorId,
 };

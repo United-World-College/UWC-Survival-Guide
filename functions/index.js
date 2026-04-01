@@ -8,7 +8,7 @@ const {
 const { getGitHubToken, githubApi, publishToGitHub, ensureAuthorPresenceOnGitHub } = require("./lib/github");
 const {
   appendSubmissionAuditEvent, resolveSubmissionAuthors,
-  ensureUniqueGuideSlug, updateAuthorRecord,
+  ensureUniqueGuideSlug, ensureAuthorId,
 } = require("./lib/firestore");
 const { getAnthropicKey, translateAndPublishMissingVariants } = require("./lib/translation");
 
@@ -178,7 +178,7 @@ exports.approveSubmission = onCall(async (request) => {
 
   await Promise.all(authors.map(async (author) => {
     if (!author.uid) return;
-    await updateAuthorRecord(author.uid, author.author_id, slug, d.title, d.category);
+    await ensureAuthorId(author.uid, author.author_id);
   }));
 
   if (authors.length > 1) {
@@ -318,24 +318,15 @@ exports.deleteSubmission = onCall(async (request) => {
     if (d.uid && !seenUids.has(d.uid)) {
       uidsToClean.push(d.uid);
     }
+    // Clean up featuredGuideIds (user preference) for all related authors
     await Promise.all(uidsToClean.map(async (cleanUid) => {
       if (!cleanUid) return;
       const userDoc = await db.collection("users").doc(cleanUid).get();
       if (userDoc.exists) {
-        const userData = userDoc.data();
-        const updates = {};
-        const articles = userData.publishedArticles || [];
-        const filtered = articles.filter((a) => a.guide_id !== d.guide_id);
-        if (filtered.length !== articles.length) {
-          updates.publishedArticles = filtered;
-        }
-        const featured = userData.featuredGuideIds || [];
+        const featured = userDoc.data().featuredGuideIds || [];
         const filteredFeatured = featured.filter((id) => id !== d.guide_id);
         if (filteredFeatured.length !== featured.length) {
-          updates.featuredGuideIds = filteredFeatured;
-        }
-        if (Object.keys(updates).length > 0) {
-          await db.collection("users").doc(cleanUid).update(updates);
+          await db.collection("users").doc(cleanUid).update({ featuredGuideIds: filteredFeatured });
         }
       }
     }));
