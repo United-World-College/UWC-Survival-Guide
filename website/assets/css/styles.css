@@ -1816,6 +1816,9 @@ span.coauthor-name {
   padding: 0.35rem 0.9rem;
   border: 1px solid;
   white-space: nowrap;
+  min-width: 9rem;
+  text-align: center;
+  display: inline-block;
 }
 
 .admin-status-pending {
