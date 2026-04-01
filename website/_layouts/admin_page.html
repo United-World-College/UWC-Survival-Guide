@@ -2046,7 +2046,7 @@ var ADMIN_I18N = {
           html += '<div class="admin-submission-item">';
           html += '<div class="admin-submission-main">';
           if (status === 'approved' && d.guide_id) {
-            html += '<h3 class="admin-submission-title"><a href="/guides/' + encodeURIComponent(d.guide_id) + '/" target="_blank" rel="noopener">' + escapeHtml(d.title) + '</a></h3>';
+            html += '<h3 class="admin-submission-title"><a href="' + guideUrl(d.guide_id, d.language) + '" target="_blank" rel="noopener">' + escapeHtml(d.title) + '</a></h3>';
           } else {
             html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
           }
@@ -2104,6 +2104,16 @@ var ADMIN_I18N = {
     var div = document.createElement('div');
     div.appendChild(document.createTextNode(str));
     return div.innerHTML;
+  }
+
+  var ADMIN_LANG_MAP = {
+    'en':    { folder: 'default', suffix: '' },
+    'zh-CN': { folder: 'chinese', suffix: '-CN' },
+    'zh-TW': { folder: 'chinese', suffix: '-TW' }
+  };
+  function guideUrl(guideId, lang) {
+    var info = ADMIN_LANG_MAP[lang] || ADMIN_LANG_MAP['en'];
+    return '{{ site.baseurl }}/guides/' + info.folder + '/' + guideId + info.suffix + '/';
   }
 
   function resolveAuthorIdForDisplay(author) {
