@@ -1764,6 +1764,15 @@ span.coauthor-name {
   margin-bottom: 0.25rem;
 }
 
+.admin-submission-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.admin-submission-title a:hover {
+  text-decoration: underline;
+}
+
 .admin-submission-meta {
   display: flex;
   flex-direction: column;
