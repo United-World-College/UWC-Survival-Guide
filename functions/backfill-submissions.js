@@ -55,9 +55,9 @@ async function findUserByAuthorId(authorId) {
   return { uid: doc.id, ...doc.data() };
 }
 
-async function submissionExists(guideId) {
+async function findSubmission(guideId) {
   const snap = await db.collection("submissions").where("guide_id", "==", guideId).limit(1).get();
-  return !snap.empty;
+  return snap.empty ? null : snap.docs[0];
 }
 
 async function main() {
@@ -87,13 +87,6 @@ async function main() {
   for (const { file, frontmatter, content } of guides) {
     const guideId = frontmatter.guide_id;
 
-    // Skip if a submission already exists for this guide_id
-    if (await submissionExists(guideId)) {
-      console.log(`SKIP  ${guideId} — submission already exists`);
-      skipped++;
-      continue;
-    }
-
     // Build a published date as a Firestore Timestamp
     const publishedDate = frontmatter.published
       ? Timestamp.fromDate(new Date(frontmatter.published + "T00:00:00Z"))
@@ -122,6 +115,37 @@ async function main() {
       reviewedAt: publishedDate,
     };
 
+    const existing = await findSubmission(guideId);
+
+    if (existing) {
+      // Update existing submission with current front matter data
+      const updates = {};
+      const data = existing.data();
+      if ((data.description || "") !== submissionData.description) updates.description = submissionData.description;
+      if ((data.title || "") !== submissionData.title) updates.title = submissionData.title;
+      if ((data.category || "") !== submissionData.category) updates.category = submissionData.category;
+      if ((data.content || "") !== submissionData.content) updates.content = submissionData.content;
+
+      if (Object.keys(updates).length === 0) {
+        console.log(`SKIP  ${guideId} — already up to date`);
+        skipped++;
+        continue;
+      }
+
+      if (dryRun) {
+        console.log(`WOULD UPDATE  ${guideId} (${existing.id}):`);
+        Object.entries(updates).forEach(([k, v]) => {
+          console.log(`  ${k}: ${typeof v === "string" && v.length > 80 ? v.slice(0, 80) + "…" : v}`);
+        });
+        console.log();
+      } else {
+        await existing.ref.update(updates);
+        console.log(`UPDATED  ${guideId} → ${existing.id} (${Object.keys(updates).join(", ")})`);
+      }
+      created++;
+      continue;
+    }
+
     if (dryRun) {
       console.log(`WOULD CREATE  ${guideId}:`);
       console.log(`  title:    ${submissionData.title}`);
@@ -133,15 +157,6 @@ async function main() {
     } else {
       const ref = await db.collection("submissions").add(submissionData);
       console.log(`CREATED  ${guideId} → ${ref.id}`);
-
-      // Also ensure the user's publishedArticles array includes this guide
-      await db.collection("users").doc(user.uid).update({
-        publishedArticles: require("firebase-admin/firestore").FieldValue.arrayUnion({
-          guide_id: guideId,
-          title: submissionData.title,
-          category: submissionData.category,
-        }),
-      });
     }
     created++;
   }
