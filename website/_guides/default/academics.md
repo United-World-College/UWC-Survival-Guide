@@ -3,6 +3,7 @@ title: "Academics"
 category: "Academics"
 description: "Maths, Physics, and other IB subject guides."
 order: 0
+original_language: "zh-CN"
 guide_id: "academics"
 language_code: "en"
 language_name: "English"

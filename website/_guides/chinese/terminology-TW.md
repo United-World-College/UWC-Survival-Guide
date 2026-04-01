@@ -5,6 +5,7 @@ description: "透過核心術語理解大學申請中的角色、系統與流程
 order: 2
 author: "William"
 author_id: "william-huang"
+original_language: "zh-CN"
 guide_id: "terminology"
 language_code: "zh-TW"
 language_name: "台灣繁體"

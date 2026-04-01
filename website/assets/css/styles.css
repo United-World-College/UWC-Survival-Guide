@@ -2586,18 +2586,23 @@ a.admin-coauthor-result-name:hover {
 .author-lang-pill {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.5rem;
-  border: 1px solid var(--border);
-  color: var(--warm-gray);
+  justify-content: center;
+  min-height: 32px;
+  min-width: 42px;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--dark);
+  color: var(--dark);
   text-decoration: none;
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   font-weight: 500;
+  letter-spacing: 0.08em;
   transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
-.author-lang-pill.is-original {
-  border-color: var(--accent);
-  color: var(--accent);
+.author-lang-pill.is-original,
+.author-lang-pill.is-current {
+  border-color: #4a8c5c;
+  color: #4a8c5c;
 }
 
 .author-lang-pill:hover {

@@ -140,6 +140,7 @@ function buildTranslatedMarkdown(originalData, translation, targetLang, authors,
     });
   }
   md += `guide_id: "${slug}"\n`;
+  md += `original_language: "${originalData.language || "en"}"\n`;
   md += `language_code: "${targetLang}"\n`;
   md += `language_name: "${langInfo.name}"\n`;
   md += `language_folder: "${langInfo.folder}"\n`;

@@ -5,6 +5,7 @@ description: "From applying to enrolling—an overview and guide to school selec
 order: 0
 author: "William"
 author_id: "william-huang"
+original_language: "zh-CN"
 guide_id: "college-application"
 language_code: "en"
 language_name: "English"

@@ -3,6 +3,7 @@ title: "Majors Overview"
 category: "College Application"
 description: "[Placeholder] Introductions to different major pathways and advice on choosing between them."
 order: 3
+original_language: "zh-CN"
 guide_id: "majors-intro"
 language_code: "en"
 language_name: "English"

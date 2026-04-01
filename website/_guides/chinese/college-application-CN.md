@@ -5,6 +5,7 @@ description: "从申请到入学——选校、术语、专业介绍的总览与
 order: 0
 author: "William"
 author_id: "william-huang"
+original_language: "zh-CN"
 guide_id: "college-application"
 language_code: "zh-CN"
 language_name: "简体中文"

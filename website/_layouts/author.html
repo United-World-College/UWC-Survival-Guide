@@ -399,7 +399,8 @@
   var AUTHOR_LOCALE = {
     empty: {{ current_locale.author.empty | jsonify }},
     article_singular: {{ current_locale.author.indexed_article_singular | jsonify }},
-    article_plural: {{ current_locale.author.indexed_article_plural | jsonify }}
+    article_plural: {{ current_locale.author.indexed_article_plural | jsonify }},
+    original_label: {{ current_locale.guide.original_label | default: "Original" | jsonify }}
   };
   var LANG_MAP = {
     "en":    { folder: "default", suffix: "", label: "English" },
@@ -443,7 +444,8 @@
           var info = LANG_MAP[lang];
           var url = guideUrl(guideId, lang);
           var isOriginal = lang === sourceLang;
-          return '<a href="' + url + '" class="author-lang-pill' + (isOriginal ? ' is-original' : '') + '">' + info.label + '</a>';
+          var label = isOriginal ? info.label + ' · ' + AUTHOR_LOCALE.original_label : info.label;
+          return '<a href="' + url + '" class="author-lang-pill' + (isOriginal ? ' is-original' : '') + '">' + label + '</a>';
         }).join('') +
         '</div>';
     }

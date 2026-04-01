@@ -5,6 +5,7 @@ description: "From the flow of money to the academic ecosystem, rethinking how t
 order: 1
 author: "William"
 author_id: "william-huang"
+original_language: "zh-CN"
 guide_id: "school-selection"
 language_code: "en"
 language_name: "English"

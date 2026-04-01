@@ -5,6 +5,7 @@ description: "Use a set of core terms to understand the roles, systems, and proc
 order: 2
 author: "William"
 author_id: "william-huang"
+original_language: "zh-CN"
 guide_id: "terminology"
 language_code: "en"
 language_name: "English"

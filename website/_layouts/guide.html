@@ -99,6 +99,27 @@
       {% if page.description %}
       <p class="hero-subtitle">{{ page.description }}</p>
       {% endif %}
+      {% assign guide_variants = site.guides | where: "guide_id", current_guide_id | sort: "language_sort" %}
+      {% assign original_lang = page.original_language | default: "en" %}
+      {% if guide_variants.size > 1 %}
+      <div class="author-latest-versions" style="justify-content:center;margin-top:1.2rem;">
+        {% for variant in guide_variants %}
+          {% if variant.language_code == original_lang %}
+            {% assign pill_class = "author-lang-pill is-original" %}
+          {% else %}
+            {% assign pill_class = "author-lang-pill" %}
+          {% endif %}
+          {% if variant.language_code == "en" %}{% assign pill_label = "English" %}
+          {% elsif variant.language_code == "zh-CN" %}{% assign pill_label = "大陆简体" %}
+          {% elsif variant.language_code == "zh-TW" %}{% assign pill_label = "台灣繁體" %}
+          {% else %}{% assign pill_label = variant.language_name %}{% endif %}
+          {% if variant.language_code == original_lang %}
+            {% assign pill_label = pill_label | append: " · " | append: current_locale.guide.original_label | default: "Original" %}
+          {% endif %}
+          <a href="{{ variant.url | relative_url }}" class="{{ pill_class }}">{{ pill_label }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
   </header>
 
