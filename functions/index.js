@@ -682,7 +682,26 @@ exports.approveSubmission = onCall(async (request) => {
   const uniqueSlug = d.guide_id || await ensureUniqueGuideSlug(makeSlug(d.title), docId);
   const { markdown, slug, fileName, folder, filePath } = generateMarkdown(d, authors, editorName, uniqueSlug);
 
-  // Update Firestore status
+  // Attempt GitHub publish first — only mark as approved if it succeeds
+  let published = false;
+  let githubError = null;
+  const token = await getGitHubToken();
+  if (token) {
+    try {
+      await publishToGitHub(token, d, markdown, filePath, primaryAuthor);
+      published = true;
+    } catch (err) {
+      githubError = err.message;
+    }
+  }
+
+  if (!published) {
+    throw new HttpsError("internal",
+      "Article could not be published to GitHub" + (githubError ? ": " + githubError : "") +
+      ". Status unchanged.");
+  }
+
+  // Update Firestore status only after successful publish
   const updateData = withoutPublicActorFields({
     status: "approved",
     guide_id: slug,
@@ -697,40 +716,25 @@ exports.approveSubmission = onCall(async (request) => {
     guideId: slug,
   });
 
-  // Attempt GitHub publish
-  let published = false;
-  let githubError = null;
-  const token = await getGitHubToken();
-  if (token) {
-    try {
-      await publishToGitHub(token, d, markdown, filePath, primaryAuthor);
-      published = true;
-    } catch (err) {
-      githubError = err.message;
-    }
-  }
-
   await Promise.all(authors.map(async (author) => {
     if (!author.uid) return;
     await updateAuthorRecord(author.uid, author.author_id, slug, d.title, d.category);
   }));
 
-  if (token && authors.length > 1) {
+  if (authors.length > 1) {
     await Promise.all(authors.slice(1).map((author) => ensureAuthorPresenceOnGitHub(token, author)));
   }
 
   // Auto-translate into missing language variants
   let translationResults = null;
-  if (published && token) {
-    const anthropicKey = await getAnthropicKey();
-    if (anthropicKey) {
-      try {
-        translationResults = await translateAndPublishMissingVariants(
-          token, anthropicKey, d, slug, authors, editorName
-        );
-      } catch (err) {
-        translationResults = [{ error: err.message, success: false }];
-      }
+  const anthropicKey = await getAnthropicKey();
+  if (anthropicKey) {
+    try {
+      translationResults = await translateAndPublishMissingVariants(
+        token, anthropicKey, d, slug, authors, editorName
+      );
+    } catch (err) {
+      translationResults = [{ error: err.message, success: false }];
     }
   }
 
@@ -855,10 +859,20 @@ exports.deleteSubmission = onCall(async (request) => {
       if (!cleanUid) return;
       const userDoc = await db.collection("users").doc(cleanUid).get();
       if (userDoc.exists) {
-        const articles = userDoc.data().publishedArticles || [];
+        const userData = userDoc.data();
+        const updates = {};
+        const articles = userData.publishedArticles || [];
         const filtered = articles.filter((a) => a.guide_id !== d.guide_id);
         if (filtered.length !== articles.length) {
-          await db.collection("users").doc(cleanUid).update({ publishedArticles: filtered });
+          updates.publishedArticles = filtered;
+        }
+        const featured = userData.featuredGuideIds || [];
+        const filteredFeatured = featured.filter((id) => id !== d.guide_id);
+        if (filteredFeatured.length !== featured.length) {
+          updates.featuredGuideIds = filteredFeatured;
+        }
+        if (Object.keys(updates).length > 0) {
+          await db.collection("users").doc(cleanUid).update(updates);
         }
       }
     }));

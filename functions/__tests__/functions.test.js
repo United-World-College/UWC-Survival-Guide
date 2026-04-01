@@ -115,6 +115,16 @@ jest.mock("firebase-functions/v2/https", () => ({
 // Mock global fetch for GitHub API calls
 global.fetch = jest.fn();
 
+function mockGitHubSuccess() {
+  setMockDoc("config", "github", { token: "gh-token-123" });
+  global.fetch.mockImplementation(async (url, opts) => {
+    if (opts && opts.method === "GET") {
+      return { ok: true, status: 404 };
+    }
+    return { ok: true, status: 200, json: async () => ({}) };
+  });
+}
+
 // ── Require the module under test ──
 const funcs = require("../index");
 
@@ -605,6 +615,7 @@ describe("deleteSubmission", () => {
         { guide_id: "test-guide", title: "Test", category: "Academics" },
         { guide_id: "other-guide", title: "Other", category: "Life Reflections" },
       ],
+      featuredGuideIds: ["test-guide", "other-guide"],
     });
     // No GitHub token
     setMockDoc("config", "github", { token: null });
@@ -618,7 +629,7 @@ describe("deleteSubmission", () => {
     expect(result.wasApproved).toBe(true);
     expect(result.guideId).toBe("test-guide");
 
-    // Verify the author's publishedArticles was updated
+    // Verify the author's publishedArticles and featuredGuideIds were updated
     const userUpdate = mockUpdateCalls.find(
       (c) => c.collection === "users" && c.docId === "user-1"
     );
@@ -626,6 +637,7 @@ describe("deleteSubmission", () => {
     expect(userUpdate.data.publishedArticles).toEqual([
       { guide_id: "other-guide", title: "Other", category: "Life Reflections" },
     ]);
+    expect(userUpdate.data.featuredGuideIds).toEqual(["other-guide"]);
   });
 
   test("throws for non-admin", async () => {
@@ -786,8 +798,7 @@ describe("approveSubmission", () => {
     });
     setMockDoc("users", "admin-uid", { displayName: "Editor Bob" });
     setMockDoc("users", "user-1", { author_id: "alice" });
-    // No GitHub token
-    setMockDoc("config", "github", { token: null });
+    mockGitHubSuccess();
 
     const result = await funcs.approveSubmission({
       auth: adminAuth(),
@@ -795,7 +806,7 @@ describe("approveSubmission", () => {
     });
 
     expect(result.success).toBe(true);
-    expect(result.published).toBe(false);
+    expect(result.published).toBe(true);
     expect(result.markdown).toContain('title: "My Article"');
     expect(result.markdown).toContain('author: "Alice"');
     expect(result.markdown).toContain('editor: "Editor Bob"');
@@ -831,7 +842,7 @@ describe("approveSubmission", () => {
     });
     setMockDoc("users", "admin-uid", { displayName: "" });
     setMockDoc("users", "user-1", {});
-    setMockDoc("config", "github", {});
+    mockGitHubSuccess();
 
     const result = await funcs.approveSubmission({
       auth: adminAuth(),
@@ -893,7 +904,7 @@ describe("approveSubmission", () => {
     });
     setMockDoc("users", "admin-uid", { displayName: "" });
     setMockDoc("users", "user-1", {});
-    setMockDoc("config", "github", {});
+    mockGitHubSuccess();
 
     await funcs.approveSubmission({
       auth: adminAuth(),
@@ -933,7 +944,7 @@ describe("approveSubmission", () => {
     });
     setMockDoc("users", "admin-uid", { displayName: "" });
     setMockDoc("users", "user-1", { author_id: "custom-slug" });
-    setMockDoc("config", "github", {});
+    mockGitHubSuccess();
 
     const result = await funcs.approveSubmission({
       auth: adminAuth(),
@@ -979,7 +990,7 @@ describe("approveSubmission", () => {
     expect(global.fetch).toHaveBeenCalled();
   });
 
-  test("returns githubError when GitHub publish fails", async () => {
+  test("throws and keeps status unchanged when GitHub publish fails", async () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
       authorName: "Alice",
@@ -1005,13 +1016,16 @@ describe("approveSubmission", () => {
         text: async () => "Internal Server Error",
       });
 
-    const result = await funcs.approveSubmission({
-      auth: adminAuth(),
-      data: { docId: "sub-1" },
-    });
+    await expect(
+      funcs.approveSubmission({
+        auth: adminAuth(),
+        data: { docId: "sub-1" },
+      })
+    ).rejects.toThrow("Article could not be published to GitHub");
 
-    expect(result.published).toBe(false);
-    expect(result.githubError).toBeTruthy();
+    // Status should remain pending
+    const stored = getMockDocData("submissions", "sub-1");
+    expect(stored.status).toBe("pending");
   });
 
   test("updates author record with publishedArticles", async () => {
@@ -1029,7 +1043,7 @@ describe("approveSubmission", () => {
     });
     setMockDoc("users", "admin-uid", { displayName: "" });
     setMockDoc("users", "user-1", {});
-    setMockDoc("config", "github", {});
+    mockGitHubSuccess();
 
     await funcs.approveSubmission({
       auth: adminAuth(),
@@ -1060,7 +1074,7 @@ describe("approveSubmission", () => {
     });
     setMockDoc("users", "admin-uid", { displayName: "" });
     setMockDoc("users", "user-1", { author_id: "alice-original" });
-    setMockDoc("config", "github", {});
+    mockGitHubSuccess();
 
     await funcs.approveSubmission({
       auth: adminAuth(),
@@ -1094,7 +1108,7 @@ describe("approveSubmission", () => {
     // user-new has no author_id yet, but "alice" is taken by another user
     setMockDoc("users", "user-new", {});
     setMockDoc("users", "user-existing", { author_id: "alice" });
-    setMockDoc("config", "github", {});
+    mockGitHubSuccess();
 
     await funcs.approveSubmission({
       auth: adminAuth(),
@@ -1124,7 +1138,7 @@ describe("approveSubmission", () => {
     });
     setMockDoc("users", "admin-uid", { displayName: "" });
     setMockDoc("users", "user-1", {});
-    setMockDoc("config", "github", {});
+    mockGitHubSuccess();
 
     const result = await funcs.approveSubmission({
       auth: adminAuth(),
@@ -1154,7 +1168,7 @@ describe("approveSubmission", () => {
     });
     setMockDoc("users", "admin-uid", { displayName: "" });
     setMockDoc("users", "user-1", {});
-    setMockDoc("config", "github", {});
+    mockGitHubSuccess();
 
     const result = await funcs.approveSubmission({
       auth: adminAuth(),
@@ -1190,7 +1204,7 @@ describe("approveSubmission", () => {
     setMockDoc("users", "user-1", { author_id: "alice" });
     setMockDoc("users", "user-2", { author_id: "bob" });
     setMockDoc("users", "user-3", { author_id: "carol" });
-    setMockDoc("config", "github", {});
+    mockGitHubSuccess();
 
     const result = await funcs.approveSubmission({
       auth: adminAuth(),
