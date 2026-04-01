@@ -2045,7 +2045,7 @@ var ADMIN_I18N = {
           html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
           html += '<div class="admin-submission-meta">';
           if (authors.length > 0) {
-            html += '<span>' + escapeHtml(getAuthorNames(authors)) + '</span>';
+            html += '<span class="admin-submission-authors" data-doc-id="' + doc.id + '"></span>';
           }
           html += '<span>' + escapeHtml(d.category) + '</span>';
           html += '<span>' + escapeHtml(ADMIN_I18N.submitted_label) + ' ' + date + '</span>';
@@ -2063,6 +2063,14 @@ var ADMIN_I18N = {
         });
         html += '</div>';
         container.innerHTML = html;
+
+        container.querySelectorAll('.admin-submission-authors[data-doc-id]').forEach(function (el) {
+          var docId = el.getAttribute('data-doc-id');
+          var match = allDocs.find(function (d) { return d.id === docId; });
+          if (match) {
+            renderSubmissionAuthorLinks(el, getSubmissionAuthors(match.data()), '');
+          }
+        });
 
         container.querySelectorAll('[data-resubmit]').forEach(function (btn) {
           btn.addEventListener('click', function () {
