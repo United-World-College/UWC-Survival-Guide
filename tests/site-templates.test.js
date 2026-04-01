@@ -172,7 +172,7 @@ describe("admin_page.html template", () => {
 
   test("has article submission handler", () => {
     expect(template).toContain("article-form");
-    expect(template).toContain("db.collection('submissions').add");
+    expect(template).toContain("functions.httpsCallable('submitArticle')");
   });
 
   test("has coauthors handling logic", () => {
