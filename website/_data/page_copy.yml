@@ -158,6 +158,11 @@
     bibliography_title_suffix: ""
     bibliography_desc: Each article is listed once, with links to every published language version available on the site.
     empty: No published guides are indexed for this author yet.
+    coauthor_singular: Coauthor
+    coauthor_plural: Coauthors
+    coauthors_label: Coauthors
+    coauthor_article_singular: article
+    coauthor_article_plural: articles
   guide:
     by_label: By
     published_label: Published
@@ -507,6 +512,11 @@
     bibliography_title_suffix: 的收录文章
     bibliography_desc: 每篇文章只列出一次，并附上站内已发布的所有语言版本链接。
     empty: 这位作者暂时还没有被收录的已发布文章。
+    coauthor_singular: 合著者
+    coauthor_plural: 合著者
+    coauthors_label: 合著者
+    coauthor_article_singular: 篇文章
+    coauthor_article_plural: 篇文章
   guide:
     by_label: 作者
     published_label: 发布于
@@ -856,6 +866,11 @@
     bibliography_title_suffix: 的收錄文章
     bibliography_desc: 每篇文章只列出一次，並附上站內已發布的所有語言版本連結。
     empty: 這位作者暫時還沒有被收錄的已發布文章。
+    coauthor_singular: 合著者
+    coauthor_plural: 合著者
+    coauthors_label: 合著者
+    coauthor_article_singular: 篇文章
+    coauthor_article_plural: 篇文章
   guide:
     by_label: 作者
     published_label: 發布於

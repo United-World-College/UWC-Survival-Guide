@@ -149,6 +149,23 @@ describe("i18n admin strings", () => {
       }
     }
   });
+
+  test("author coauthor i18n keys exist in all locales", () => {
+    const authorCoauthorKeys = [
+      "coauthor_singular",
+      "coauthor_plural",
+      "coauthors_label",
+      "coauthor_article_singular",
+      "coauthor_article_plural",
+    ];
+    for (const code of ["en", "zh-CN", "zh-TW"]) {
+      const author = getLocale(code).author;
+      for (const key of authorCoauthorKeys) {
+        expect(author[key]).toBeDefined();
+        expect(author[key]).toBeTruthy();
+      }
+    }
+  });
 });
 
 describe("i18n navigation strings", () => {

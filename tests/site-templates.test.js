@@ -102,6 +102,24 @@ describe("author.html template", () => {
   test("references author_id for article lookup", () => {
     expect(template).toContain("author_id");
   });
+
+  test("has coauthor list section", () => {
+    expect(template).toContain("coauthor-list");
+    expect(template).toContain("coauthor-item");
+    expect(template).toContain("coauthor-name");
+    expect(template).toContain("coauthor-count");
+  });
+
+  test("sorts coauthors by count descending", () => {
+    expect(template).toContain("best_count");
+    expect(template).toContain("ca_sorted_ids");
+  });
+
+  test("shows coauthor count in author stats", () => {
+    expect(template).toContain("coauthor_total");
+    expect(template).toContain("coauthor_singular");
+    expect(template).toContain("coauthor_plural");
+  });
 });
 
 // ══════════════════════════════════════

@@ -41,6 +41,106 @@
       {% assign authored_article_count = authored_article_count | plus: 1 %}
     {% endif %}
   {% endfor %}
+  {% comment %}--- Build coauthor map: for each guide this author is part of, collect other authors ---{% endcomment %}
+  {% assign coauthor_ids = "" %}
+  {% assign coauthor_names = "" %}
+  {% assign coauthor_counts = "" %}
+  {% assign seen_guide_ids_for_coauthor = "" %}
+  {% for guide in site.guides %}
+    {% assign is_my_guide = false %}
+    {% if guide.author_id == current_author_id %}
+      {% assign is_my_guide = true %}
+    {% elsif guide.coauthors %}
+      {% for ca in guide.coauthors %}
+        {% if ca.author_id == current_author_id %}
+          {% assign is_my_guide = true %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    {% if is_my_guide and guide.guide_id %}
+      {% capture gid_token %}|{{ guide.guide_id }}|{% endcapture %}
+      {% if seen_guide_ids_for_coauthor contains gid_token %}{% continue %}{% endif %}
+      {% assign seen_guide_ids_for_coauthor = seen_guide_ids_for_coauthor | append: gid_token %}
+      {% comment %}Collect all author IDs from this guide (primary + coauthors), excluding current author{% endcomment %}
+      {% assign guide_other_authors = "" %}
+      {% if guide.author_id != current_author_id and guide.author_id %}
+        {% capture oa_token %}|{{ guide.author_id }}|{% endcapture %}
+        {% unless guide_other_authors contains oa_token %}
+          {% assign guide_other_authors = guide_other_authors | append: oa_token %}
+        {% endunless %}
+      {% endif %}
+      {% if guide.coauthors %}
+        {% for ca in guide.coauthors %}
+          {% if ca.author_id and ca.author_id != current_author_id %}
+            {% capture oa_token %}|{{ ca.author_id }}|{% endcapture %}
+            {% unless guide_other_authors contains oa_token %}
+              {% assign guide_other_authors = guide_other_authors | append: oa_token %}
+            {% endunless %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      {% assign other_ids_raw = guide_other_authors | replace_first: "|", "" | split: "|" %}
+      {% for oid in other_ids_raw %}
+        {% if oid != nil and oid != "" %}
+          {% capture cid_token %}|{{ oid }}|{% endcapture %}
+          {% if coauthor_ids contains cid_token %}
+            {% comment %}Increment count for existing coauthor{% endcomment %}
+            {% assign ca_id_list = coauthor_ids | replace_first: "|", "" | split: "|" %}
+            {% assign ca_name_list = coauthor_names | replace_first: "|", "" | split: "|" %}
+            {% assign ca_count_list = coauthor_counts | replace_first: "|", "" | split: "|" %}
+            {% assign coauthor_ids = "" %}
+            {% assign coauthor_names = "" %}
+            {% assign coauthor_counts = "" %}
+            {% for caid in ca_id_list %}
+              {% if caid != nil and caid != "" %}
+                {% assign ca_idx = forloop.index0 | divided_by: 2 %}
+                {% capture id_check %}|{{ caid }}|{% endcapture %}
+                {% if caid == oid %}
+                  {% assign old_count = ca_count_list[forloop.index0] | plus: 0 %}
+                  {% assign new_count = old_count | plus: 1 %}
+                  {% assign coauthor_ids = coauthor_ids | append: "|" | append: caid | append: "|" %}
+                  {% assign coauthor_names = coauthor_names | append: "|" | append: ca_name_list[forloop.index0] | append: "|" %}
+                  {% assign coauthor_counts = coauthor_counts | append: "|" | append: new_count | append: "|" %}
+                {% else %}
+                  {% assign coauthor_ids = coauthor_ids | append: "|" | append: caid | append: "|" %}
+                  {% assign coauthor_names = coauthor_names | append: "|" | append: ca_name_list[forloop.index0] | append: "|" %}
+                  {% assign coauthor_counts = coauthor_counts | append: "|" | append: ca_count_list[forloop.index0] | append: "|" %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            {% comment %}Add new coauthor{% endcomment %}
+            {% assign coauthor_ids = coauthor_ids | append: "|" | append: oid | append: "|" %}
+            {% comment %}Look up the name from guide data{% endcomment %}
+            {% assign ca_display_name = oid %}
+            {% if guide.author_id == oid %}
+              {% assign ca_display_name = guide.author | default: oid %}
+            {% else %}
+              {% for ca in guide.coauthors %}
+                {% if ca.author_id == oid %}
+                  {% assign ca_display_name = ca.name | default: oid %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+            {% assign coauthor_names = coauthor_names | append: "|" | append: ca_display_name | append: "|" %}
+            {% assign coauthor_counts = coauthor_counts | append: "|1|" %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+  {% assign ca_id_list = coauthor_ids | replace_first: "|", "" | split: "|" %}
+  {% assign ca_name_list = coauthor_names | replace_first: "|", "" | split: "|" %}
+  {% assign ca_count_list = coauthor_counts | replace_first: "|", "" | split: "|" %}
+  {% comment %}Build sortable array as JSON for JS-based sorting (Liquid lacks sort-by-value for parallel arrays){% endcomment %}
+  {% assign coauthor_data = "" %}
+  {% assign coauthor_total = 0 %}
+  {% for caid in ca_id_list %}
+    {% if caid != nil and caid != "" %}
+      {% assign coauthor_total = coauthor_total | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+
   {% assign role_label = page.role %}
   {% assign editor_record = site.data.about.editors_in_chief | where: "id", current_author_id | first %}
   {% if editor_record %}
@@ -132,6 +232,12 @@
             <span class="author-stat-value">{{ authored_article_count }}</span>
             <span class="author-stat-label">{% if authored_article_count == 1 %}{{ current_locale.author.indexed_article_singular }}{% else %}{{ current_locale.author.indexed_article_plural }}{% endif %}</span>
           </div>
+          {% if coauthor_total > 0 %}
+          <div class="author-stat">
+            <span class="author-stat-value">{{ coauthor_total }}</span>
+            <span class="author-stat-label">{% if coauthor_total == 1 %}{{ current_locale.author.coauthor_singular | default: "Coauthor" }}{% else %}{{ current_locale.author.coauthor_plural | default: "Coauthors" }}{% endif %}</span>
+          </div>
+          {% endif %}
         </div>
         <div class="author-contact-list" id="author-contact-list" style="display:none;"></div>
         {% if has_author_contacts %}
@@ -198,6 +304,75 @@
       <div class="author-latest-list" id="author-featured-list"></div>
     </section>
   </div>
+
+  {% if coauthor_total > 0 %}
+  <div class="divider"></div>
+
+  <!-- Coauthors section -->
+  <section class="section author-section-cards">
+    <p class="section-label">{{ current_locale.author.coauthors_label | default: "Coauthors" }}</p>
+    <div class="coauthor-list" id="coauthor-list">
+      {% comment %}
+        Sort coauthors by count descending.
+        Liquid has no native sort-by-parallel-array, so we use a simple
+        selection-sort approach: repeatedly find the max-count entry.
+      {% endcomment %}
+      {% assign ca_sorted_ids = "" %}
+      {% assign ca_sorted_names = "" %}
+      {% assign ca_sorted_counts = "" %}
+      {% assign ca_used = "" %}
+      {% for i in (1..coauthor_total) %}
+        {% assign best_idx = -1 %}
+        {% assign best_count = -1 %}
+        {% assign idx = 0 %}
+        {% for caid in ca_id_list %}
+          {% if caid != nil and caid != "" %}
+            {% capture used_token %}|{{ idx }}|{% endcapture %}
+            {% unless ca_used contains used_token %}
+              {% assign this_count = ca_count_list[forloop.index0] | plus: 0 %}
+              {% if this_count > best_count %}
+                {% assign best_count = this_count %}
+                {% assign best_idx = idx %}
+                {% assign best_forloop_idx = forloop.index0 %}
+              {% endif %}
+            {% endunless %}
+            {% assign idx = idx | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+        {% if best_idx >= 0 %}
+          {% capture used_token %}|{{ best_idx }}|{% endcapture %}
+          {% assign ca_used = ca_used | append: used_token %}
+          {% assign ca_sorted_ids = ca_sorted_ids | append: "|" | append: ca_id_list[best_forloop_idx] | append: "|" %}
+          {% assign ca_sorted_names = ca_sorted_names | append: "|" | append: ca_name_list[best_forloop_idx] | append: "|" %}
+          {% assign ca_sorted_counts = ca_sorted_counts | append: "|" | append: ca_count_list[best_forloop_idx] | append: "|" %}
+        {% endif %}
+      {% endfor %}
+      {% assign sorted_id_arr = ca_sorted_ids | replace_first: "|", "" | split: "|" %}
+      {% assign sorted_name_arr = ca_sorted_names | replace_first: "|", "" | split: "|" %}
+      {% assign sorted_count_arr = ca_sorted_counts | replace_first: "|", "" | split: "|" %}
+      {% for sid in sorted_id_arr %}
+        {% if sid != nil and sid != "" %}
+          {% assign ca_page = site.authors | where: "author_id", sid | where: "language_code", current_language_code | first %}
+          {% if ca_page == nil %}
+            {% assign ca_page = site.authors | where: "author_id", sid | where: "language_code", "en" | first %}
+          {% endif %}
+          {% if ca_page == nil %}
+            {% assign ca_page = site.authors | where: "author_id", sid | first %}
+          {% endif %}
+          {% assign ca_count_val = sorted_count_arr[forloop.index0] | plus: 0 %}
+          <div class="coauthor-item">
+            {% if ca_page %}
+              <a class="coauthor-name" href="{{ ca_page.url | relative_url }}">{{ sorted_name_arr[forloop.index0] }}</a>
+            {% else %}
+              <span class="coauthor-name">{{ sorted_name_arr[forloop.index0] }}</span>
+            {% endif %}
+            <span class="coauthor-count">{{ ca_count_val }} {% if ca_count_val == 1 %}{{ current_locale.author.coauthor_article_singular | default: "article" }}{% else %}{{ current_locale.author.coauthor_article_plural | default: "articles" }}{% endif %}</span>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 
   <div class="divider"></div>
 

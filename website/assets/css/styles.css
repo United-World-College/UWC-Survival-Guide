@@ -1190,6 +1190,44 @@ a.author-contact-value:hover {
   margin-top: 0;
 }
 
+/* Coauthor list */
+.coauthor-list {
+  border-top: 1px solid var(--border);
+}
+
+.coauthor-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+a.coauthor-name {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--dark);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+a.coauthor-name:hover {
+  border-bottom-color: var(--dark);
+}
+
+span.coauthor-name {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--dark);
+}
+
+.coauthor-count {
+  font-size: 0.82rem;
+  color: var(--warm-gray);
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
 .author-bio {
   padding-top: 3rem;
   padding-bottom: 3rem;
