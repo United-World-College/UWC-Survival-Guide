@@ -1783,6 +1783,10 @@ span.coauthor-name {
   letter-spacing: 0.06em;
   margin-top: 0.2rem;
 }
+.admin-date-label {
+  display: inline-block;
+  min-width: 5.5em;
+}
 
 .admin-submission-side {
   display: flex;
