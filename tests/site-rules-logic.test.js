@@ -65,11 +65,22 @@ describe("Users collection security rules", () => {
     expect(usersBlock).toContain("request.resource.data.author_id.size() > 0");
   });
 
+  test("requires author_id to match the generated slug format", () => {
+    expect(usersBlock).toContain(
+      "request.resource.data.author_id.matches('^[a-z0-9]+(-[a-z0-9]+)*$')"
+    );
+  });
+
   test("prevents author_id from being changed on update", () => {
     expect(usersBlock).toContain("allow update");
     expect(usersBlock).toContain(
       "request.resource.data.author_id == resource.data.author_id"
     );
+  });
+
+  test("allows a one-time author_id backfill for legacy user docs missing one", () => {
+    expect(usersBlock).toContain("!('author_id' in resource.data)");
+    expect(usersBlock).toContain("'author_id' in request.resource.data");
   });
 
   test("restricts create and update to the authenticated user's own document", () => {

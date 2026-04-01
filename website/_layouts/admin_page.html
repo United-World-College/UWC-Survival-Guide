@@ -93,6 +93,7 @@ var ADMIN_I18N = {
   err_generic:          {{ t.err_generic | jsonify }},
   please_wait:          {{ t.please_wait | jsonify }},
   passwords_no_match:   {{ t.passwords_no_match | jsonify }},
+  display_name_latin_required: {{ t.display_name_latin_required | jsonify }},
   reset_email_sent:     {{ t.reset_email_sent | jsonify }},
   image_file_only:      {{ t.image_file_only | jsonify }},
   image_too_large:      {{ t.image_too_large | jsonify }},
@@ -589,8 +590,46 @@ var ADMIN_I18N = {
   }
 
   function makeAuthorSlug(text) {
-    var ascii = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    return ascii || makeSlug(text);
+    return (text || '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[ß]/g, 'ss')
+      .replace(/[Ææ]/g, 'ae')
+      .replace(/[Œœ]/g, 'oe')
+      .replace(/[Øø]/g, 'o')
+      .replace(/[ÐðĐđ]/g, 'd')
+      .replace(/[Þþ]/g, 'th')
+      .replace(/[Łł]/g, 'l')
+      .replace(/[Ħħ]/g, 'h')
+      .replace(/[ı]/g, 'i')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  }
+
+  function hasLatinDisplayName(text) {
+    return /[a-z]/.test(makeAuthorSlug(text));
+  }
+
+  function getAuthorSlugBase(user, preferredName) {
+    var slug = makeAuthorSlug(preferredName || '');
+    if (slug) return slug;
+    var authSlug = makeAuthorSlug(user && user.displayName ? user.displayName : '');
+    if (authSlug) return authSlug;
+    var emailSeed = user && user.email ? makeAuthorSlug(user.email.split('@')[0]) : '';
+    return emailSeed || (user && user.uid ? user.uid.toLowerCase() : '');
+  }
+
+  function ensureUniqueAuthorSlug(baseSlug, currentUid) {
+    if (!baseSlug) return Promise.resolve(currentUid ? currentUid.toLowerCase() : '');
+    return (function checkSlug(slug, attempt) {
+      return db.collection('users').where('author_id', '==', slug).get().then(function (snap) {
+        if (snap.empty || (snap.docs.length === 1 && snap.docs[0].id === currentUid)) {
+          return slug;
+        }
+        return checkSlug(baseSlug + '-' + (attempt + 1), attempt + 1);
+      });
+    })(baseSlug, 1);
   }
 
   // ── View Management ──
@@ -692,11 +731,17 @@ var ADMIN_I18N = {
     e.preventDefault();
     clearErrors();
     var displayName = document.getElementById('signup-name').value.trim();
+    var baseSlug = makeAuthorSlug(displayName);
     var email = document.getElementById('signup-email').value.trim();
     var password = document.getElementById('signup-password').value;
     var confirm = document.getElementById('signup-confirm').value;
     if (!displayName) {
       document.getElementById('signup-name').focus();
+      return;
+    }
+    if (!hasLatinDisplayName(displayName)) {
+      document.getElementById('signup-name').focus();
+      showError('signup-error', ADMIN_I18N.display_name_latin_required);
       return;
     }
     if (password !== confirm) {
@@ -707,31 +752,24 @@ var ADMIN_I18N = {
     var authorSlug;
     auth.createUserWithEmailAndPassword(email, password)
       .then(function (cred) {
-        authorSlug = makeAuthorSlug(displayName);
-        if (!authorSlug) authorSlug = cred.user.uid;
-        // Check for slug collision and append suffix if needed
-        var baseSlug = authorSlug;
-        return (function checkSlug(slug, attempt) {
-          return db.collection('users').where('author_id', '==', slug).get().then(function (snap) {
-            if (snap.empty) {
-              authorSlug = slug;
-              return;
-            }
-            // Collision — append incrementing suffix
-            return checkSlug(baseSlug + '-' + (attempt + 1), attempt + 1);
-          });
-        })(authorSlug, 1).then(function () {
-          return db.collection('users').doc(cred.user.uid).set({
-            displayName: displayName,
-            photoURL: '',
-            email: email,
-            author_id: authorSlug,
-            affiliation: '',
-            cohort: '',
-            summary: '',
-            profileLinks: [],
-            showEmail: false,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        authorSlug = baseSlug || getAuthorSlugBase(cred.user, displayName);
+        return ensureUniqueAuthorSlug(authorSlug, cred.user.uid).then(function (uniqueSlug) {
+          authorSlug = uniqueSlug;
+          return cred.user.updateProfile({ displayName: displayName }).catch(function () {
+            return null;
+          }).then(function () {
+            return db.collection('users').doc(cred.user.uid).set({
+              displayName: displayName,
+              photoURL: cred.user.photoURL || '',
+              email: email,
+              author_id: authorSlug,
+              affiliation: '',
+              cohort: '',
+              summary: '',
+              profileLinks: [],
+              showEmail: false,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
           });
         });
       })
@@ -788,71 +826,89 @@ var ADMIN_I18N = {
     return { label: ADMIN_I18N.role_member, className: 'admin-role-badge' };
   }
 
+  function buildDefaultProfile(user) {
+    var displayName = (user.displayName || '').trim();
+    return ensureUniqueAuthorSlug(getAuthorSlugBase(user, displayName), user.uid).then(function (authorId) {
+      return {
+        displayName: displayName,
+        photoURL: user.photoURL || '',
+        email: user.email,
+        author_id: authorId,
+        affiliation: '',
+        cohort: '',
+        summary: '',
+        profileLinks: [],
+        showEmail: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+    });
+  }
+
+  function renderProfileData(user, data) {
+    var displayName = data.displayName || '';
+    var authorId = data.author_id || '';
+    document.getElementById('profile-name').value = displayName;
+    document.getElementById('article-author').value = displayName;
+    document.getElementById('profile-affiliation').value = data.affiliation || '';
+    document.getElementById('profile-cohort').value = data.cohort || '';
+    document.getElementById('profile-summary').value = data.summary || '';
+    document.getElementById('profile-show-email').checked = !!data.showEmail;
+    updateNameCount();
+    updateSummaryCount();
+    if (data.photoURL) {
+      showAvatarImage(data.photoURL);
+    } else {
+      showAvatarPlaceholder(displayName || user.email);
+    }
+    loadProfileLinks(data.profileLinks || []);
+
+    document.getElementById('profile-author-id').textContent = '';
+    document.getElementById('profile-author-id-field').style.display = 'none';
+    document.getElementById('profile-role-field').style.display = 'none';
+    document.getElementById('published-articles-card').style.display = 'none';
+    currentUserAuthor = null;
+
+    if (!authorId) return;
+
+    document.getElementById('profile-author-id').textContent = authorId;
+    document.getElementById('profile-author-id-field').style.display = 'block';
+    currentUserAuthor = { author_id: authorId, name: displayName || authorId, uid: user.uid };
+    addSelfAsCoauthor();
+
+    var role = getAuthorRole(authorId);
+    var roleBadge = document.getElementById('profile-role-badge');
+    roleBadge.textContent = role.label;
+    roleBadge.className = role.className;
+    document.getElementById('profile-role-field').style.display = 'block';
+
+    var card = document.getElementById('published-articles-card');
+    card.style.display = 'block';
+    var linkEl = document.getElementById('published-articles-link');
+    if (typeof SITE_AUTHOR_IDS !== 'undefined' && SITE_AUTHOR_IDS.indexOf(authorId) !== -1) {
+      var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? '' : '/UWC-Survival-Guide';
+      var authorPage = '/authors/' + authorId + '/';
+      linkEl.innerHTML =
+        '<a href="' + baseUrl + ADMIN_I18N.lang_prefix + authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">' + ADMIN_I18N.view_published + '</a>';
+    } else {
+      linkEl.innerHTML = '<p style="font-size:0.88rem;color:var(--warm-gray);font-style:italic;margin-top:0.5rem;">' + escapeHtml(ADMIN_I18N.published_no_profile) + '</p>';
+    }
+  }
+
   function loadProfile(user) {
     document.getElementById('profile-email').value = user.email;
     db.collection('users').doc(user.uid).get().then(function (doc) {
       if (doc.exists) {
-        var data = doc.data();
-        document.getElementById('profile-name').value = data.displayName || '';
-        document.getElementById('article-author').value = data.displayName || '';
-        document.getElementById('profile-affiliation').value = data.affiliation || '';
-        document.getElementById('profile-cohort').value = data.cohort || '';
-        document.getElementById('profile-summary').value = data.summary || '';
-        document.getElementById('profile-show-email').checked = !!data.showEmail;
-        updateNameCount();
-        updateSummaryCount();
-        if (data.photoURL) {
-          showAvatarImage(data.photoURL);
-        } else {
-          showAvatarPlaceholder(data.displayName || user.email);
-        }
-        loadProfileLinks(data.profileLinks || []);
-        // Show author_id
-        var authorId = data.author_id || '';
-        if (authorId) {
-          document.getElementById('profile-author-id').textContent = authorId;
-          document.getElementById('profile-author-id-field').style.display = 'block';
-          // Store for auto-adding as first coauthor
-          currentUserAuthor = { author_id: authorId, name: data.displayName || authorId, uid: user.uid };
-          addSelfAsCoauthor();
-        }
-        // Show auto-calculated role badge
-        if (authorId) {
-          var role = getAuthorRole(authorId);
-          var roleField = document.getElementById('profile-role-field');
-          var roleBadge = document.getElementById('profile-role-badge');
-          roleBadge.textContent = role.label;
-          roleBadge.className = role.className;
-          roleField.style.display = 'block';
-        }
-        // Show published articles link or no-profile message
-        if (authorId) {
-          var card = document.getElementById('published-articles-card');
-          card.style.display = 'block';
-          var linkEl = document.getElementById('published-articles-link');
-          if (typeof SITE_AUTHOR_IDS !== 'undefined' && SITE_AUTHOR_IDS.indexOf(authorId) !== -1) {
-            var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-              ? '' : '/UWC-Survival-Guide';
-            var authorPage = '/authors/' + authorId + '/';
-            linkEl.innerHTML =
-              '<a href="' + baseUrl + ADMIN_I18N.lang_prefix + authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">' + ADMIN_I18N.view_published + '</a>';
-          } else {
-            linkEl.innerHTML = '<p style="font-size:0.88rem;color:var(--warm-gray);font-style:italic;margin-top:0.5rem;">' + escapeHtml(ADMIN_I18N.published_no_profile) + '</p>';
-          }
-        }
-      } else {
-        db.collection('users').doc(user.uid).set({
-          displayName: '',
-          photoURL: '',
-          email: user.email,
-          affiliation: '',
-          cohort: '',
-          summary: '',
-          profileLinks: [],
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        showAvatarPlaceholder(user.email);
+        renderProfileData(user, doc.data());
+        return;
       }
+      return buildDefaultProfile(user).then(function (profileData) {
+        return db.collection('users').doc(user.uid).set(profileData).then(function () {
+          renderProfileData(user, profileData);
+        });
+      });
+    }).catch(function () {
+      showAvatarPlaceholder(user.email);
     });
   }
 
@@ -1005,13 +1061,20 @@ var ADMIN_I18N = {
       showError('profile-error', ADMIN_I18N.err_fill_all);
       return;
     }
+    if (name && !hasLatinDisplayName(name)) {
+      document.getElementById('profile-name').focus();
+      showError('profile-error', ADMIN_I18N.display_name_latin_required);
+      return;
+    }
     var links = getProfileLinks();
     var showEmail = document.getElementById('profile-show-email').checked;
     setLoading('save-profile-btn', true);
     // Check if author_id already exists before saving
+    var existingData = {};
+    var profileData = null;
     db.collection('users').doc(user.uid).get().then(function (doc) {
-      var existingData = doc.exists ? doc.data() : {};
-      var profileData = {
+      existingData = doc.exists ? doc.data() : {};
+      profileData = {
         displayName: name,
         email: user.email,
         affiliation: affiliation,
@@ -1020,37 +1083,19 @@ var ADMIN_I18N = {
         profileLinks: links,
         showEmail: showEmail
       };
-      // Generate author_id on first save when name is present
-      if (!existingData.author_id && name) {
-        var baseId = makeAuthorSlug(name);
-        if (!baseId) baseId = user.uid;
-        // Check for slug collision and append suffix if needed
-        return (function checkSlug(slug, attempt) {
-          return db.collection('users').where('author_id', '==', slug).get().then(function (snap) {
-            if (snap.empty) {
-              profileData.author_id = slug;
-              return;
-            }
-            return checkSlug(baseId + '-' + (attempt + 1), attempt + 1);
-          });
-        })(baseId, 1).then(function () {
-          return db.collection('users').doc(user.uid).set(profileData, { merge: true });
-        }).then(function () {
-          if (profileData.author_id) {
-            document.getElementById('profile-author-id').textContent = profileData.author_id;
-            document.getElementById('profile-author-id-field').style.display = 'block';
-          }
-        });
+      if (existingData.author_id) {
+        return db.collection('users').doc(user.uid).set(profileData, { merge: true });
       }
-      return db.collection('users').doc(user.uid).set(profileData, { merge: true });
+      var baseId = makeAuthorSlug(name);
+      if (!baseId) baseId = getAuthorSlugBase(user, existingData.displayName || '');
+      return ensureUniqueAuthorSlug(baseId, user.uid).then(function (slug) {
+        profileData.author_id = slug;
+        return db.collection('users').doc(user.uid).set(profileData, { merge: true });
+      });
     }).then(function () {
       setLoading('save-profile-btn', false);
+      renderProfileData(user, Object.assign({}, existingData, profileData || {}));
       showSuccess('profile-success', ADMIN_I18N.profile_saved);
-      document.getElementById('article-author').value = name;
-      var img = document.getElementById('avatar-img');
-      if (img.style.display === 'none') {
-        showAvatarPlaceholder(name || user.email);
-      }
       setTimeout(function () {
         document.getElementById('profile-success').style.display = 'none';
       }, 3000);

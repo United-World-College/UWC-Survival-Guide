@@ -135,12 +135,24 @@ describe("makeAuthorSlug", () => {
     expect(makeAuthorSlug("Alice Smith")).toBe("alice-smith");
   });
 
+  test("transliterates accented Latin characters", () => {
+    expect(makeAuthorSlug("José Álvarez")).toBe("jose-alvarez");
+  });
+
+  test("transliterates Latin extended characters", () => {
+    expect(makeAuthorSlug("Łukasz Żółć")).toBe("lukasz-zolc");
+  });
+
   test("strips CJK from mixed English-CJK name", () => {
     expect(makeAuthorSlug("William Huang 黃靖然")).toBe("william-huang");
   });
 
-  test("keeps CJK for purely CJK name", () => {
-    expect(makeAuthorSlug("李东元")).toBe("李东元");
+  test("returns empty string for purely CJK name", () => {
+    expect(makeAuthorSlug("李东元")).toBe("");
+  });
+
+  test("returns empty string for other purely non-Latin names", () => {
+    expect(makeAuthorSlug("Алексей")).toBe("");
   });
 
   test("handles empty string", () => {

@@ -356,6 +356,9 @@ describe("Admin page JS — required functions exist", () => {
   const requiredFunctions = [
     "makeSlug",
     "makeAuthorSlug",
+    "hasLatinDisplayName",
+    "getAuthorSlugBase",
+    "ensureUniqueAuthorSlug",
     "showView",
     "clearErrors",
     "showError",
@@ -363,7 +366,9 @@ describe("Admin page JS — required functions exist", () => {
     "friendlyError",
     "getStatusLabel",
     "setLoading",
+    "buildDefaultProfile",
     "loadProfile",
+    "renderProfileData",
     "showAvatarImage",
     "showAvatarPlaceholder",
     "createLinkRow",
@@ -408,14 +413,74 @@ describe("Admin page JS — required functions exist", () => {
 });
 
 describe("Admin page JS — author_id generation uses makeAuthorSlug", () => {
-  test("signup uses makeAuthorSlug for author_id", () => {
-    // The signup flow should use makeAuthorSlug, not makeSlug, for generating author_id
-    expect(adminHtml).toMatch(/authorSlug\s*=\s*makeAuthorSlug\(/);
+  test("signup derives its base author_id with makeAuthorSlug", () => {
+    expect(adminHtml).toMatch(/var\s+baseSlug\s*=\s*makeAuthorSlug\(displayName\)/);
   });
 
   test("profile save uses makeAuthorSlug for author_id", () => {
-    // Profile save should use makeAuthorSlug when generating author_id from name
-    expect(adminHtml).toMatch(/baseId\s*=\s*makeAuthorSlug\(/);
+    expect(adminHtml).toMatch(/var\s+baseId\s*=\s*makeAuthorSlug\(name\)/);
+  });
+
+  test("missing-profile bootstrap creates an author_id", () => {
+    expect(adminHtml).toMatch(/function\s+buildDefaultProfile\(user\)[\s\S]*author_id:\s*authorId/);
+  });
+});
+
+describe("Admin page JS — display name validation and slug normalization", () => {
+  let makeAuthorSlug;
+  let hasLatinDisplayName;
+
+  beforeAll(() => {
+    const sandbox = {};
+    const makeAuthorSlugMatch = adminHtml.match(
+      /function makeAuthorSlug\(text\)\s*\{[\s\S]*?\n  \}/
+    );
+    expect(makeAuthorSlugMatch).not.toBeNull();
+    eval("sandbox.makeAuthorSlug = " + makeAuthorSlugMatch[0]);
+
+    const hasLatinMatch = adminHtml.match(
+      /function hasLatinDisplayName\(text\)\s*\{[\s\S]*?\n  \}/
+    );
+    expect(hasLatinMatch).not.toBeNull();
+    const hasLatinFn = hasLatinMatch[0].replace(
+      /makeAuthorSlug\(/g,
+      "sandbox.makeAuthorSlug("
+    );
+    eval("sandbox.hasLatinDisplayName = " + hasLatinFn);
+
+    makeAuthorSlug = sandbox.makeAuthorSlug;
+    hasLatinDisplayName = sandbox.hasLatinDisplayName;
+  });
+
+  test("transliterates accented Latin names for author_id generation", () => {
+    expect(makeAuthorSlug("José Álvarez")).toBe("jose-alvarez");
+  });
+
+  test("strips non-Latin characters from mixed-script names", () => {
+    expect(makeAuthorSlug("William Huang 黃靖然")).toBe("william-huang");
+  });
+
+  test("returns empty slug for pure non-Latin names", () => {
+    expect(makeAuthorSlug("李东元")).toBe("");
+    expect(makeAuthorSlug("Алексей")).toBe("");
+  });
+
+  test("accepts mixed or accented Latin display names", () => {
+    expect(hasLatinDisplayName("William Huang 黃靖然")).toBe(true);
+    expect(hasLatinDisplayName("José Álvarez")).toBe(true);
+  });
+
+  test("rejects pure non-Latin or numeric display names", () => {
+    expect(hasLatinDisplayName("李东元")).toBe(false);
+    expect(hasLatinDisplayName("12345")).toBe(false);
+  });
+
+  test("signup validates display names with the Latin-letter helper", () => {
+    expect(adminHtml).toMatch(/if\s*\(!hasLatinDisplayName\(displayName\)\)/);
+  });
+
+  test("profile save validates display names with the Latin-letter helper", () => {
+    expect(adminHtml).toMatch(/if\s*\(name\s*&&\s*!hasLatinDisplayName\(name\)\)/);
   });
 });
 

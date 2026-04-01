@@ -6,14 +6,25 @@ service cloud.firestore {
     // only the user themselves can write their own profile.
     match /users/{uid} {
       allow read;
-      // First write (create) — author_id must be present
+      // First write (create) — author_id must be present and valid
       allow create: if request.auth != null && request.auth.uid == uid
         && 'author_id' in request.resource.data
         && request.resource.data.author_id is string
-        && request.resource.data.author_id.size() > 0;
-      // Subsequent writes — author_id cannot be changed once set
+        && request.resource.data.author_id.size() > 0
+        && request.resource.data.author_id.matches('^[a-z0-9]+(-[a-z0-9]+)*$');
+      // Subsequent writes — author_id cannot be changed once set.
+      // Legacy docs without author_id may backfill it once using the same slug rules.
       allow update: if request.auth != null && request.auth.uid == uid
-        && request.resource.data.author_id == resource.data.author_id;
+        && (
+          request.resource.data.author_id == resource.data.author_id ||
+          (
+            !('author_id' in resource.data)
+            && 'author_id' in request.resource.data
+            && request.resource.data.author_id is string
+            && request.resource.data.author_id.size() > 0
+            && request.resource.data.author_id.matches('^[a-z0-9]+(-[a-z0-9]+)*$')
+          )
+        );
     }
 
     // Submissions: all writes go through Cloud Functions (Admin SDK bypasses

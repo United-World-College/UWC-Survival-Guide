@@ -63,10 +63,21 @@ function makeSlug(text) {
 }
 
 function makeAuthorSlug(text) {
-  // Strip CJK characters for author slugs (e.g. "William Huang 黃靖然" → "william-huang")
-  // Fall back to keeping CJK if the name is purely CJK
-  const ascii = text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  return ascii || makeSlug(text);
+  return (text || "")
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[ß]/g, "ss")
+      .replace(/[Ææ]/g, "ae")
+      .replace(/[Œœ]/g, "oe")
+      .replace(/[Øø]/g, "o")
+      .replace(/[ÐðĐđ]/g, "d")
+      .replace(/[Þþ]/g, "th")
+      .replace(/[Łł]/g, "l")
+      .replace(/[Ħħ]/g, "h")
+      .replace(/[ı]/g, "i")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 }
 
 function getAuthorKey(author) {
@@ -189,9 +200,9 @@ function generateMarkdown(d, authors, editorName) {
   md += `published: ${today}\n`;
   md += `updated: ${today}\n`;
   if (editorName) {
-    const editorSlug = makeAuthorSlug(editorName);
+    const editorSlug = makeAuthorSlug(editorName) || makeSlug(editorName);
     md += `editor: "${editorName.replace(/"/g, '\\"')}"\n`;
-    md += `editor_id: "${editorSlug}"\n`;
+    if (editorSlug) md += `editor_id: "${editorSlug}"\n`;
   }
   md += "---\n\n";
   md += d.content;
@@ -212,11 +223,14 @@ async function resolveAuthorSlug(uid, authorName) {
       return userDoc.data().author_id;
     }
   }
-  return makeAuthorSlug(authorName);
+  return makeAuthorSlug(authorName) || (uid ? uid.toLowerCase() : makeSlug(authorName));
 }
 
 async function ensureAuthorPresenceOnGitHub(token, author) {
-  const authorSlug = author.author_id || makeAuthorSlug(author.name);
+  const authorSlug = author.author_id ||
+    makeAuthorSlug(author.name) ||
+    (author.uid ? author.uid.toLowerCase() : "") ||
+    makeSlug(author.name);
   const esc = author.name.replace(/"/g, '\\"');
   const tKey = "author-" + authorSlug;
   const authorFiles = [
@@ -265,7 +279,10 @@ async function ensureAuthorPresenceOnGitHub(token, author) {
 }
 
 async function publishToGitHub(token, d, markdown, filePath, primaryAuthor) {
-  const authorSlug = primaryAuthor.author_id || makeAuthorSlug(primaryAuthor.name);
+  const authorSlug = primaryAuthor.author_id ||
+    makeAuthorSlug(primaryAuthor.name) ||
+    (primaryAuthor.uid ? primaryAuthor.uid.toLowerCase() : "") ||
+    makeSlug(primaryAuthor.name);
   // Push guide file
   const existing = await githubApi("GET", filePath, token);
   const putBody = {
@@ -300,7 +317,8 @@ async function updateAuthorRecord(uid, authorSlug, slug, title, category) {
   // Only set author_id if user doesn't already have one — author_id is immutable
   const userDoc = await db.collection("users").doc(uid).get();
   if (!userDoc.exists || !userDoc.data().author_id) {
-    const uniqueSlug = await ensureUniqueAuthorSlug(authorSlug);
+    const baseSlug = authorSlug || uid.toLowerCase();
+    const uniqueSlug = await ensureUniqueAuthorSlug(baseSlug);
     await db.collection("users").doc(uid).set(
       { author_id: uniqueSlug },
       { merge: true }

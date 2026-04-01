@@ -188,6 +188,7 @@
     confirm_placeholder: Confirm password
     signup_btn: Create Account
     signup_author_id_warning: "You can change your display name later, but a permanent Author ID will be generated from it at this point and cannot be changed."
+    display_name_latin_required: "Display name must include at least one Latin letter. Mixed names are fine, but fully non-Latin names are not allowed."
     back_to_signin: Back to sign in
     forgot_title: Reset Password
     forgot_subtitle: "Enter your email and we'll send a reset link."
@@ -542,6 +543,7 @@
     confirm_placeholder: 确认密码
     signup_btn: 创建账号
     signup_author_id_warning: 您之后可以更改显示名称，但系统将根据此名称生成一个永久的作者 ID，生成后无法更改。
+    display_name_latin_required: 显示名称必须至少包含一个拉丁字母。允许中英文混合，但不能全部为非拉丁字符。
     back_to_signin: 返回登录
     forgot_title: 重置密码
     forgot_subtitle: 输入邮箱，我们将向您发送重置链接。
@@ -896,6 +898,7 @@
     confirm_placeholder: 確認密碼
     signup_btn: 建立帳號
     signup_author_id_warning: 您之後可以更改顯示名稱，但系統將根據此名稱生成一個永久的作者 ID，生成後無法更改。
+    display_name_latin_required: 顯示名稱必須至少包含一個拉丁字母。可接受中英混合，但不能全部為非拉丁字元。
     back_to_signin: 返回登入
     forgot_title: 重設密碼
     forgot_subtitle: 輸入郵件，我們將向您傳送重設連結。

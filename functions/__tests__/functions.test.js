@@ -1111,6 +1111,66 @@ describe("approveSubmission", () => {
     expect(setCall.data.author_id).toBe("alice-2");
   });
 
+  test("transliterates accented Latin names when assigning author_id", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "José Álvarez",
+      coAuthors: orderedAuthors({ uid: "user-1", name: "José Álvarez" }),
+      title: "Accent Test",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", {});
+    setMockDoc("config", "github", {});
+
+    const result = await funcs.approveSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    const setCall = mockSetCalls.find(
+      (c) => c.collection === "users" && c.docId === "user-1"
+    );
+    expect(setCall).toBeDefined();
+    expect(setCall.data.author_id).toBe("jose-alvarez");
+    expect(result.authorSlug).toBe("jose-alvarez");
+  });
+
+  test("falls back to uid when generated author_id would be empty", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "李东元",
+      coAuthors: orderedAuthors({ uid: "user-1", name: "李东元" }),
+      title: "Fallback Test",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", {});
+    setMockDoc("config", "github", {});
+
+    const result = await funcs.approveSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    const setCall = mockSetCalls.find(
+      (c) => c.collection === "users" && c.docId === "user-1"
+    );
+    expect(setCall).toBeDefined();
+    expect(setCall.data.author_id).toBe("user-1");
+    expect(result.authorSlug).toBe("user-1");
+  });
+
   test("uses ordered authors for markdown and updates every listed author", async () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
