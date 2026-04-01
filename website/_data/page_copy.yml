@@ -169,6 +169,7 @@
     published_label: Published
     updated_label: Updated
     submitted_label: Submitted
+    approved_label: Approved
     editor_label: "Editor:"
     date_format: "%b %-d, %Y"
     more_guides_title: More guides in this language
@@ -526,6 +527,7 @@
     published_label: 发布于
     updated_label: 更新于
     submitted_label: 投稿于
+    approved_label: 通过于
     editor_label: 责任编辑：
     date_format: "%Y年%-m月%-d日"
     more_guides_title: 同语言的更多指南
@@ -883,6 +885,7 @@
     published_label: 發布於
     updated_label: 更新於
     submitted_label: 投稿於
+    approved_label: 通過於
     editor_label: 責任編輯：
     date_format: "%Y年%-m月%-d日"
     more_guides_title: 同語言的更多指南

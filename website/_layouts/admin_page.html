@@ -175,6 +175,7 @@ var ADMIN_I18N = {
   deleting:             {{ t.deleting | jsonify }},
   delete_confirm:       {{ t.delete_confirm | jsonify }},
   submitted_label:      {{ current_locale.guide.submitted_label | jsonify }},
+  approved_label:       {{ current_locale.guide.approved_label | jsonify }},
   copy_md_btn:          {{ t.copy_md_btn | jsonify }},
   categories:           {{ current_locale.categories | jsonify }},
   lang_prefix:          {{ current_locale.path_prefix | default: "" | jsonify }},
@@ -2051,6 +2052,10 @@ var ADMIN_I18N = {
           }
           html += '<span>' + escapeHtml(d.category) + '</span>';
           html += '<span>' + escapeHtml(ADMIN_I18N.submitted_label) + ' ' + date + '</span>';
+          if (status === 'approved' && d.reviewedAt) {
+            var approvedDate = (function(dt){ return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' }); })(d.reviewedAt.toDate());
+            html += '<span>' + escapeHtml(ADMIN_I18N.approved_label) + ' ' + approvedDate + '</span>';
+          }
           html += '</div>';
           html += renderSubmissionThread(d);
           if (isRnR) {
