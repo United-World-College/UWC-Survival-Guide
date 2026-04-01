@@ -128,10 +128,15 @@ describe("author.html template", () => {
 
 describe("admin_page.html template", () => {
   let template;
+  let adminJs;
 
   beforeAll(() => {
     template = fs.readFileSync(
       path.join(LAYOUTS_DIR, "admin_page.html"),
+      "utf-8"
+    );
+    adminJs = fs.readFileSync(
+      path.join(__dirname, "..", "website", "assets", "js", "admin.js"),
       "utf-8"
     );
   });
@@ -149,54 +154,54 @@ describe("admin_page.html template", () => {
   });
 
   test("initializes Firebase with config", () => {
-    expect(template).toContain("firebase.initializeApp");
-    expect(template).toContain("apiKey");
-    expect(template).toContain("projectId");
+    expect(adminJs).toContain("firebase.initializeApp");
+    expect(adminJs).toContain("apiKey");
+    expect(adminJs).toContain("projectId");
   });
 
   test("sets up auth state listener", () => {
-    expect(template).toContain("auth.onAuthStateChanged");
+    expect(adminJs).toContain("auth.onAuthStateChanged");
   });
 
   test("has sign-in form handler", () => {
-    expect(template).toContain("signInWithEmailAndPassword");
+    expect(adminJs).toContain("signInWithEmailAndPassword");
   });
 
   test("has sign-up form handler", () => {
-    expect(template).toContain("createUserWithEmailAndPassword");
+    expect(adminJs).toContain("createUserWithEmailAndPassword");
   });
 
   test("has password reset handler", () => {
-    expect(template).toContain("sendPasswordResetEmail");
+    expect(adminJs).toContain("sendPasswordResetEmail");
   });
 
   test("has article submission handler", () => {
     expect(template).toContain("article-form");
-    expect(template).toContain("functions.httpsCallable('submitArticle')");
+    expect(adminJs).toContain("functions.httpsCallable('submitArticle')");
   });
 
   test("has coauthors handling logic", () => {
-    expect(template).toContain("getCoauthors");
-    expect(template).toContain("createCoauthorRow");
-    expect(template).toContain("MAX_COAUTHORS");
+    expect(adminJs).toContain("getCoauthors");
+    expect(adminJs).toContain("createCoauthorRow");
+    expect(adminJs).toContain("MAX_COAUTHORS");
   });
 
   test("has admin review functions", () => {
-    expect(template).toContain("checkAdminStatus");
-    expect(template).toContain("approveSubmission");
-    expect(template).toContain("rejectSubmission");
-    expect(template).toContain("requestRevision");
-    expect(template).toContain("deleteSubmission");
+    expect(adminJs).toContain("checkAdminStatus");
+    expect(adminJs).toContain("approveSubmission");
+    expect(adminJs).toContain("rejectSubmission");
+    expect(adminJs).toContain("requestRevision");
+    expect(adminJs).toContain("deleteSubmission");
   });
 
   test("has resubmit article flow", () => {
-    expect(template).toContain("resubmitArticle");
+    expect(adminJs).toContain("resubmitArticle");
   });
 
   test("renders approval and rejection notes in submission timelines", () => {
-    expect(template).toContain("renderSubmissionDecisionFeedback");
-    expect(template).toContain("approveMessage");
-    expect(template).toContain("rejectionReason");
+    expect(adminJs).toContain("renderSubmissionDecisionFeedback");
+    expect(adminJs).toContain("approveMessage");
+    expect(adminJs).toContain("rejectionReason");
   });
 
   test("localises strings via ADMIN_I18N", () => {
