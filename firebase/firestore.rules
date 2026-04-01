@@ -34,11 +34,14 @@ service cloud.firestore {
     match /submissions/{docId} {
       allow create: if false;
 
-      allow read: if request.auth != null &&
-        (resource.data.uid == request.auth.uid ||
-         ('coauthorUids' in resource.data && request.auth.uid in resource.data.coauthorUids) ||
-         (request.auth.token.email_verified == true &&
-          request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com']));
+      // Approved submissions are publicly readable (for author pages);
+      // non-approved submissions require authentication as owner, coauthor, or admin.
+      allow read: if resource.data.status == 'approved'
+        || (request.auth != null &&
+            (resource.data.uid == request.auth.uid ||
+             ('coauthorUids' in resource.data && request.auth.uid in resource.data.coauthorUids) ||
+             (request.auth.token.email_verified == true &&
+              request.auth.token.email in ['li.dongyuan@ufl.edu', 'jingranhuang590@gmail.com'])));
 
       allow update: if false;
       allow delete: if false;

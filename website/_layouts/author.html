@@ -229,8 +229,8 @@
         <p class="author-summary" id="author-summary"{% unless author_summary %} style="display:none;"{% endunless %}>{{ author_summary }}</p>
         <div class="author-stats">
           <div class="author-stat">
-            <span class="author-stat-value">{{ authored_article_count }}</span>
-            <span class="author-stat-label">{% if authored_article_count == 1 %}{{ current_locale.author.indexed_article_singular }}{% else %}{{ current_locale.author.indexed_article_plural }}{% endif %}</span>
+            <span class="author-stat-value" id="author-article-count">–</span>
+            <span class="author-stat-label" id="author-article-count-label">{{ current_locale.author.indexed_article_plural }}</span>
           </div>
           {% if coauthor_total > 0 %}
           <div class="author-stat">
@@ -376,35 +376,11 @@
 
   <div class="divider"></div>
 
-  <!-- Latest section (replaces bibliography) -->
+  <!-- Latest section — loaded dynamically from Firestore -->
   <section class="section author-section-cards">
     <p class="section-label">Latest</p>
     <div class="author-latest-list" id="author-latest-list">
-      {% if authored_article_count > 0 %}
-        {% for authored_guide_id in authored_guide_ids %}
-          {% if authored_guide_id != nil and authored_guide_id != "" %}
-            {% assign guide_versions = site.guides | where: "guide_id", authored_guide_id | sort: "language_sort" %}
-            {% assign primary_guide = guide_versions | where: "language_code", current_language_code | first %}
-            {% if primary_guide == nil %}{% assign primary_guide = guide_versions | where: "language_code", "en" | first %}{% endif %}
-            {% if primary_guide == nil %}{% assign primary_guide = guide_versions | first %}{% endif %}
-            <div class="author-latest-item">
-              <span class="author-latest-date">{{ primary_guide.published | date: "%b %-d, %Y" }}</span>
-              <div class="author-latest-body">
-                <p class="author-latest-category">{{ primary_guide.category }}</p>
-                <h3><a href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
-                {% if primary_guide.description %}<p class="author-latest-desc">{{ primary_guide.description }}</p>{% endif %}
-                {% if guide_versions.size > 1 %}
-                  <div class="author-latest-versions">
-                    {% for v in guide_versions %}<a href="{{ v.url | relative_url }}" class="translation-pill">{{ v.language_name }}</a>{% endfor %}
-                  </div>
-                {% endif %}
-              </div>
-            </div>
-          {% endif %}
-        {% endfor %}
-      {% else %}
-        <p style="color:var(--warm-gray);font-size:0.9rem;">{{ current_locale.author.empty }}</p>
-      {% endif %}
+      <p style="color:var(--warm-gray);font-size:0.9rem;">{{ current_locale.author.loading | default: current_locale.common.loading | default: "Loading..." }}</p>
     </div>
   </section>
 
@@ -412,12 +388,7 @@
 
   <script src="{{ '/assets/js/script.js' | relative_url }}"></script>
 
-  <!-- Guide data for Featured section -->
-  <script>
-  var AUTHOR_GUIDES = [{% assign _first_author_guide = true %}{% for gid in authored_guide_ids %}{% if gid != nil and gid != "" %}{% assign gvs = site.guides | where: "guide_id", gid | sort: "language_sort" %}{% assign pg = gvs | where: "language_code", current_language_code | first %}{% if pg == nil %}{% assign pg = gvs | where: "language_code", "en" | first %}{% endif %}{% if pg == nil %}{% assign pg = gvs | first %}{% endif %}{% unless _first_author_guide %},{% endunless %}{"guide_id":{{ gid | jsonify }},"title":{{ pg.title | jsonify }},"description":{{ pg.description | default: "" | jsonify }},"url":{{ pg.url | relative_url | jsonify }},"published":{{ pg.published | date: "%b %-d, %Y" | jsonify }},"published_iso":{{ pg.published | jsonify }},"category":{{ pg.category | default: "" | jsonify }},"versions":[{% for v in gvs %}{"language_name":{{ v.language_name | jsonify }},"url":{{ v.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}]}{% assign _first_author_guide = false %}{% endif %}{% endfor %}];
-  </script>
-
-  <!-- Role & article count data -->
+  <!-- Role & locale data -->
   <script>
   var EIC_IDS = [{% for p in site.data.about.editors_in_chief %}{{ p.id | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}];
   var AUTHOR_ROLE_LABELS = {
@@ -425,7 +396,16 @@
     core_member: {{ current_locale.author.role_core_member | jsonify }},
     member: {{ current_locale.author.role_member | jsonify }}
   };
-  var CURRENT_AUTHOR_ARTICLE_COUNT = {{ authored_article_count }};
+  var AUTHOR_LOCALE = {
+    empty: {{ current_locale.author.empty | jsonify }},
+    article_singular: {{ current_locale.author.indexed_article_singular | jsonify }},
+    article_plural: {{ current_locale.author.indexed_article_plural | jsonify }}
+  };
+  var LANG_MAP = {
+    "en":    { folder: "default", suffix: "" },
+    "zh-CN": { folder: "chinese", suffix: "-CN" },
+    "zh-TW": { folder: "chinese", suffix: "-TW" }
+  };
   </script>
 
   <!-- Load dynamic profile data from Firestore -->
@@ -441,16 +421,42 @@
     var db = firebase.firestore();
     var authorId = {{ current_author_id | jsonify }};
 
+    function esc(s) { var d = document.createElement('div'); d.appendChild(document.createTextNode(s || '')); return d.innerHTML; }
+
+    function guideUrl(guideId, lang) {
+      var info = LANG_MAP[lang] || LANG_MAP['en'];
+      return '/guides/' + info.folder + '/' + guideId + info.suffix + '/';
+    }
+
+    function formatDate(val) {
+      if (!val) return '';
+      var dt = val && typeof val.toDate === 'function' ? val.toDate() : new Date(val);
+      if (!dt || isNaN(dt.getTime())) return '';
+      return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function renderArticleCard(sub) {
+      var date = formatDate(sub.reviewedAt || sub.createdAt);
+      var url = guideUrl(sub.guide_id, sub.language);
+      return '<div class="author-latest-item">' +
+        '<span class="author-latest-date">' + esc(date) + '</span>' +
+        '<div class="author-latest-body">' +
+        '<p class="author-latest-category">' + esc(sub.category) + '</p>' +
+        '<h3><a href="' + url + '">' + esc(sub.title) + '</a></h3>' +
+        (sub.description ? '<p class="author-latest-desc">' + esc(sub.description) + '</p>' : '') +
+        '</div></div>';
+    }
+
     // Find user with matching author_id
     db.collection('users').where('author_id', '==', authorId).get().then(function (snap) {
-      if (snap.empty) return;
-      var data = snap.docs[0].data();
+      if (snap.empty) return { userData: null, uid: null };
+      var doc = snap.docs[0];
+      var data = doc.data();
+      var uid = doc.id;
 
       // Sync display name
       if (data.displayName) {
         document.getElementById('author-name').textContent = data.displayName;
-        var bibAuthorName = document.getElementById('bibliography-author-name');
-        if (bibAuthorName) bibAuthorName.textContent = data.displayName;
       }
 
       // Sync profile photo
@@ -487,17 +493,6 @@
         var summaryEl = document.getElementById('author-summary');
         summaryEl.textContent = data.summary;
         summaryEl.style.display = '';
-      }
-
-      // Auto-calculate and sync role
-      var isEIC = EIC_IDS.indexOf(authorId) !== -1;
-      var roleEl = document.getElementById('author-role');
-      if (isEIC) {
-        roleEl.textContent = AUTHOR_ROLE_LABELS.eic;
-      } else if (CURRENT_AUTHOR_ARTICLE_COUNT >= 5) {
-        roleEl.textContent = AUTHOR_ROLE_LABELS.core_member;
-      } else {
-        roleEl.textContent = AUTHOR_ROLE_LABELS.member;
       }
 
       // Show email if author opted in
@@ -544,46 +539,107 @@
           container.appendChild(a);
         });
       }
-    }).then(function () {
-      var h = document.getElementById('author-header'); h.style.opacity = '1'; h.style.transform = 'translateY(0)';
+
+      return { userData: data, uid: uid };
+    }).then(function (result) {
+      var userData = result.userData;
+      var uid = result.uid;
+
+      // Show header now that profile is synced
+      var h = document.getElementById('author-header');
+      h.style.opacity = '1';
+      h.style.transform = 'translateY(0)';
+
+      if (!uid) {
+        // No user found — show empty state for articles
+        document.getElementById('author-latest-list').innerHTML =
+          '<p style="color:var(--warm-gray);font-size:0.9rem;">' + esc(AUTHOR_LOCALE.empty) + '</p>';
+        document.getElementById('author-article-count').textContent = '0';
+        return;
+      }
+
+      // Load approved submissions where this user is primary author or coauthor
+      var ownQuery = db.collection('submissions')
+        .where('status', '==', 'approved')
+        .where('uid', '==', uid)
+        .orderBy('createdAt', 'desc')
+        .get();
+      var coauthorQuery = db.collection('submissions')
+        .where('status', '==', 'approved')
+        .where('coauthorUids', 'array-contains', uid)
+        .orderBy('createdAt', 'desc')
+        .get();
+
+      Promise.all([ownQuery, coauthorQuery]).then(function (results) {
+        // Merge and deduplicate
+        var seen = {};
+        var allSubs = [];
+        results.forEach(function (snapshot) {
+          snapshot.forEach(function (doc) {
+            if (!seen[doc.id]) {
+              seen[doc.id] = true;
+              allSubs.push(doc.data());
+            }
+          });
+        });
+        // Sort by reviewedAt (approval date) descending, fallback to createdAt
+        allSubs.sort(function (a, b) {
+          var ta = a.reviewedAt ? (a.reviewedAt.toMillis ? a.reviewedAt.toMillis() : new Date(a.reviewedAt).getTime()) : 0;
+          var tb = b.reviewedAt ? (b.reviewedAt.toMillis ? b.reviewedAt.toMillis() : new Date(b.reviewedAt).getTime()) : 0;
+          if (!ta) ta = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt).getTime()) : 0;
+          if (!tb) tb = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt).getTime()) : 0;
+          return tb - ta;
+        });
+
+        var articleCount = allSubs.length;
+
+        // Update article count stat
+        document.getElementById('author-article-count').textContent = articleCount;
+        document.getElementById('author-article-count-label').textContent =
+          articleCount === 1 ? AUTHOR_LOCALE.article_singular : AUTHOR_LOCALE.article_plural;
+
+        // Update role badge based on live count
+        var isEIC = EIC_IDS.indexOf(authorId) !== -1;
+        var roleEl = document.getElementById('author-role');
+        if (isEIC) {
+          roleEl.textContent = AUTHOR_ROLE_LABELS.eic;
+        } else if (articleCount >= 5) {
+          roleEl.textContent = AUTHOR_ROLE_LABELS.core_member;
+        } else {
+          roleEl.textContent = AUTHOR_ROLE_LABELS.member;
+        }
+
+        // Render Latest section
+        var latestList = document.getElementById('author-latest-list');
+        if (articleCount === 0) {
+          latestList.innerHTML = '<p style="color:var(--warm-gray);font-size:0.9rem;">' + esc(AUTHOR_LOCALE.empty) + '</p>';
+        } else {
+          latestList.innerHTML = allSubs.map(renderArticleCard).join('');
+        }
+
+        // Render Featured section
+        var featuredIds = (userData && userData.featuredGuideIds) || [];
+        if (featuredIds.length > 0) {
+          var featuredSubs = featuredIds.map(function (fid) {
+            return allSubs.filter(function (s) { return s.guide_id === fid; })[0];
+          }).filter(Boolean);
+          if (featuredSubs.length > 0) {
+            var featuredList = document.getElementById('author-featured-list');
+            if (featuredList) {
+              featuredList.innerHTML = featuredSubs.map(renderArticleCard).join('');
+              document.getElementById('author-featured-section').style.display = 'block';
+            }
+          }
+        }
+      }).catch(function () {
+        document.getElementById('author-latest-list').innerHTML =
+          '<p style="color:var(--warm-gray);font-size:0.9rem;">' + esc(AUTHOR_LOCALE.empty) + '</p>';
+        document.getElementById('author-article-count').textContent = '0';
+      });
     }).catch(function () {
-      var h = document.getElementById('author-header'); h.style.opacity = '1'; h.style.transform = 'translateY(0)';
-    });
-
-    // Build Featured section from featuredGuideIds
-    db.collection('users').where('author_id', '==', authorId).get().then(function (snap) {
-      if (snap.empty) return;
-      var featuredIds = snap.docs[0].data().featuredGuideIds || [];
-      if (!featuredIds.length || typeof AUTHOR_GUIDES === 'undefined') return;
-      var featuredGuides = featuredIds.map(function (id) {
-        return AUTHOR_GUIDES.filter(function (g) { return g.guide_id === id; })[0];
-      }).filter(Boolean);
-      if (!featuredGuides.length) return;
-
-      function esc(s) { var d = document.createElement('div'); d.appendChild(document.createTextNode(s || '')); return d.innerHTML; }
-
-      var featuredList = document.getElementById('author-featured-list');
-      if (!featuredList) return;
-
-      featuredList.innerHTML = featuredGuides.map(function (g) {
-        var versionsHtml = g.versions && g.versions.length > 1
-          ? '<div class="author-latest-versions">' +
-            g.versions.map(function (v) {
-              return '<a href="' + v.url + '" class="translation-pill">' + esc(v.language_name) + '</a>';
-            }).join('') + '</div>'
-          : '';
-        return '<div class="author-latest-item">' +
-          '<span class="author-latest-date">' + esc(g.published) + '</span>' +
-          '<div class="author-latest-body">' +
-          '<p class="author-latest-category">' + esc(g.category) + '</p>' +
-          '<h3><a href="' + g.url + '">' + esc(g.title) + '</a></h3>' +
-          (g.description ? '<p class="author-latest-desc">' + esc(g.description) + '</p>' : '') +
-          versionsHtml +
-          '</div>' +
-          '</div>';
-      }).join('');
-
-      document.getElementById('author-featured-section').style.display = 'block';
+      var h = document.getElementById('author-header');
+      h.style.opacity = '1';
+      h.style.transform = 'translateY(0)';
     });
   })();
   </script>
