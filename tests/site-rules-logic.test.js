@@ -98,11 +98,8 @@ describe("Submissions collection security rules", () => {
     submissionsBlock = getMatchBlock("submissions/{docId}");
   });
 
-  test("allows create for any authenticated user", () => {
-    expect(submissionsBlock).toContain("allow create");
-    expect(submissionsBlock).toMatch(
-      /allow create.*request\.auth\s*!=\s*null/s
-    );
+  test("denies client-side create", () => {
+    expect(submissionsBlock).toMatch(/allow create:\s*if\s+false/);
   });
 
   test("allows read for submission owner", () => {

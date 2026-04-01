@@ -138,10 +138,12 @@ async function appendSubmissionAuditEvent(docId, type, auth, details = {}) {
   const existingEvents = snap.exists && Array.isArray(snap.data().events) ?
     snap.data().events.slice() :
     [];
+  const userDoc = await db.collection("users").doc(auth.uid).get();
+  const actorAuthorId = userDoc.exists && userDoc.data().author_id ? userDoc.data().author_id : null;
   existingEvents.push({
     type,
     actorUid: auth.uid,
-    actorEmail: auth.token.email || null,
+    actorAuthorId,
     actedAt: new Date().toISOString(),
     ...details,
   });
@@ -163,13 +165,13 @@ async function resolveSubmissionAuthors(d) {
   })));
 }
 
-function generateMarkdown(d, authors, editorName) {
+function generateMarkdown(d, authors, editorName, overrideSlug) {
   if (!authors || !authors.length) {
     throw new Error("Ordered authors are required to generate markdown.");
   }
   const lang = d.language || "en";
   const langInfo = LANG_MAP[lang] || LANG_MAP["en"];
-  const slug = makeSlug(d.title);
+  const slug = overrideSlug || makeSlug(d.title);
   const today = new Date().toISOString().slice(0, 10);
   const submittedDate = d.createdAt ? d.createdAt.toDate().toISOString().slice(0, 10) : "";
   const primaryAuthor = authors[0];
@@ -301,6 +303,19 @@ async function publishToGitHub(token, d, markdown, filePath, primaryAuthor) {
   });
 }
 
+async function ensureUniqueGuideSlug(baseSlug, excludeDocId) {
+  let slug = baseSlug;
+  let attempt = 1;
+  while (true) {
+    const snap = await db.collection("submissions")
+        .where("guide_id", "==", slug).get();
+    const conflict = snap.docs.some((d) => d.id !== excludeDocId);
+    if (!conflict) return slug;
+    attempt++;
+    slug = `${baseSlug}-${attempt}`;
+  }
+}
+
 async function ensureUniqueAuthorSlug(baseSlug) {
   let slug = baseSlug;
   let attempt = 1;
@@ -340,6 +355,43 @@ exports.checkAdminStatus = onCall(async (request) => {
   const email = request.auth.token.email;
   const verified = request.auth.token.email_verified === true;
   return { isAdmin: verified && ADMIN_EMAILS.includes(email) };
+});
+
+// ══════════════════════════════════════
+// 0. submitArticle — author creates a new submission
+// ══════════════════════════════════════
+
+exports.submitArticle = onCall(async (request) => {
+  assertAuth(request.auth);
+  const { title, category, language, description, content, authorName, coAuthors } = request.data;
+  if (!title || !category || !language || !description || !content || !authorName) {
+    throw new HttpsError("invalid-argument", "All content fields are required.");
+  }
+
+  const guideId = await ensureUniqueGuideSlug(makeSlug(title));
+  const coAuthorList = Array.isArray(coAuthors) ? coAuthors : [];
+  const uids = coAuthorList.map((c) => c.uid).filter(Boolean);
+
+  const ref = await db.collection("submissions").add({
+    uid: request.auth.uid,
+    authorName,
+    title,
+    category,
+    language,
+    description,
+    content,
+    status: "pending",
+    guide_id: guideId,
+    createdAt: FieldValue.serverTimestamp(),
+    coAuthors: coAuthorList,
+    ...(uids.length > 0 ? { coauthorUids: uids } : {}),
+  });
+
+  await appendSubmissionAuditEvent(ref.id, "submitted", request.auth, {
+    guideId,
+  });
+
+  return { success: true, docId: ref.id, guideId };
 });
 
 // ══════════════════════════════════════
@@ -626,7 +678,9 @@ exports.approveSubmission = onCall(async (request) => {
   const adminDoc = await db.collection("users").doc(request.auth.uid).get();
   const editorName = adminDoc.exists ? adminDoc.data().displayName || "" : "";
 
-  const { markdown, slug, fileName, folder, filePath } = generateMarkdown(d, authors, editorName);
+  // Preserve existing guide_id if the submission was previously approved (e.g. reject → resubmit → re-approve)
+  const uniqueSlug = d.guide_id || await ensureUniqueGuideSlug(makeSlug(d.title), docId);
+  const { markdown, slug, fileName, folder, filePath } = generateMarkdown(d, authors, editorName, uniqueSlug);
 
   // Update Firestore status
   const updateData = withoutPublicActorFields({

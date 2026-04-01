@@ -250,6 +250,7 @@
     content_label: "Content (Markdown)"
     content_placeholder: "Write your article content here using Markdown..."
     preview_btn: "Preview \u2197"
+    show_review_thread: "Show review history"
     submit_btn: Submit for Review
     featured_title: Featured Articles
     featured_desc: "Pin up to 3 articles to appear in the Featured section of your author page. Click the star to toggle."
@@ -606,6 +607,7 @@
     content_label: 正文（Markdown）
     content_placeholder: 在此使用 Markdown 撰写文章正文……
     preview_btn: "预览 \u2197"
+    show_review_thread: "显示审核记录"
     submit_btn: 提交审核
     featured_title: 精选文章
     featured_desc: 最多置顶 3 篇文章，显示在您的作者页面精选区域。点击星号进行切换。
@@ -962,6 +964,7 @@
     content_label: 正文（Markdown）
     content_placeholder: 在此使用 Markdown 撰寫文章正文……
     preview_btn: "預覽 \u2197"
+    show_review_thread: "顯示審核記錄"
     submit_btn: 提交審核
     featured_title: 精選文章
     featured_desc: 最多置頂 3 篇文章，顯示在您的作者頁面精選區域。點擊星號進行切換。

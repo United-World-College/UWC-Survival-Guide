@@ -165,6 +165,7 @@ var ADMIN_I18N = {
   author_message_placeholder: {{ t.author_message_placeholder | jsonify }},
   author_message_to_reviewer: {{ t.author_message_to_reviewer | jsonify }},
   preview_btn:          {{ t.preview_btn | jsonify }},
+  show_review_thread:   {{ t.show_review_thread | jsonify }},
   close_tab:            {{ t.close_tab | jsonify }},
   reject_comments_label: {{ t.reject_comments_label | jsonify }},
   reject_comments_placeholder: {{ t.reject_comments_placeholder | jsonify }},
@@ -1450,22 +1451,16 @@ var ADMIN_I18N = {
 
     setLoading('submit-article-btn', true);
 
-    var submissionData = {
-      uid: user.uid,
-      authorName: authorName,
+    var submitFn = functions.httpsCallable('submitArticle');
+    submitFn({
       title: title,
       category: category,
       language: language,
       description: description,
       content: content,
-      status: 'pending',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    submissionData.coAuthors = coAuthors;
-    var uids = coAuthors.map(function (c) { return c.uid; }).filter(Boolean);
-    if (uids.length > 0) submissionData.coauthorUids = uids;
-
-    db.collection('submissions').add(submissionData).then(function () {
+      authorName: authorName,
+      coAuthors: coAuthors
+    }).then(function () {
       setLoading('submit-article-btn', false);
       showSuccess('article-success', ADMIN_I18N.article_submitted);
       document.getElementById('article-form').reset();
@@ -1962,31 +1957,34 @@ var ADMIN_I18N = {
     var history = getSubmissionRevisionHistory(d);
     var decisionHtml = renderSubmissionDecisionFeedback(d);
     if (!history.length && !decisionHtml) return '';
-    var html = '<div class="admin-revision-thread">';
+    var threadContent = '';
     history.forEach(function (entry, idx) {
       var roundLabel = entry.round || (idx + 1);
-      html += '<div class="admin-revision-entry">';
-      html += '<p class="admin-revision-round-label">Round ' + roundLabel + '</p>';
+      threadContent += '<div class="admin-revision-entry">';
+      threadContent += '<p class="admin-revision-round-label">Round ' + roundLabel + '</p>';
       if (entry.reviewerComments) {
-        html += '<div class="admin-rnr-feedback">';
-        html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.revision_feedback_label) + '</p>';
-        html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.reviewerComments) + '</p>';
-        if (entry.reviewedAt) html += '<p class="admin-revision-timestamp">' + formatTimelineDate(entry.reviewedAt) + '</p>';
-        html += '</div>';
+        threadContent += '<div class="admin-rnr-feedback">';
+        threadContent += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.revision_feedback_label) + '</p>';
+        threadContent += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.reviewerComments) + '</p>';
+        if (entry.reviewedAt) threadContent += '<p class="admin-revision-timestamp">' + formatTimelineDate(entry.reviewedAt) + '</p>';
+        threadContent += '</div>';
       }
       if (entry.authorMessage) {
-        html += '<div class="admin-rnr-feedback">';
-        html += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.author_message_to_reviewer) + '</p>';
-        html += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.authorMessage) + '</p>';
-        if (entry.resubmittedAt) html += '<p class="admin-revision-timestamp">' + formatTimelineDate(entry.resubmittedAt) + '</p>';
-        html += '</div>';
+        threadContent += '<div class="admin-rnr-feedback">';
+        threadContent += '<p class="admin-rnr-feedback-label">' + escapeHtml(ADMIN_I18N.author_message_to_reviewer) + '</p>';
+        threadContent += '<p class="admin-rnr-feedback-body">' + escapeHtml(entry.authorMessage) + '</p>';
+        if (entry.resubmittedAt) threadContent += '<p class="admin-revision-timestamp">' + formatTimelineDate(entry.resubmittedAt) + '</p>';
+        threadContent += '</div>';
       }
-      html += '</div>';
+      threadContent += '</div>';
     });
     if (decisionHtml) {
-      html += '<div class="admin-revision-entry admin-revision-entry-decision">' + decisionHtml + '</div>';
+      threadContent += '<div class="admin-revision-entry admin-revision-entry-decision">' + decisionHtml + '</div>';
     }
-    html += '</div>';
+    var html = '<details class="admin-revision-thread">';
+    html += '<summary class="admin-thread-toggle">' + escapeHtml(ADMIN_I18N.show_review_thread || 'Show review history') + '</summary>';
+    html += threadContent;
+    html += '</details>';
     return html;
   }
 
@@ -2042,7 +2040,11 @@ var ADMIN_I18N = {
           var isRnR = status === 'revise_resubmit';
           html += '<div class="admin-submission-item">';
           html += '<div class="admin-submission-main">';
-          html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
+          if (status === 'approved' && d.guide_id) {
+            html += '<h3 class="admin-submission-title"><a href="/guides/' + encodeURIComponent(d.guide_id) + '/" target="_blank" rel="noopener">' + escapeHtml(d.title) + '</a></h3>';
+          } else {
+            html += '<h3 class="admin-submission-title">' + escapeHtml(d.title) + '</h3>';
+          }
           html += '<div class="admin-submission-meta">';
           if (authors.length > 0) {
             html += '<span class="admin-submission-authors" data-doc-id="' + doc.id + '"></span>';

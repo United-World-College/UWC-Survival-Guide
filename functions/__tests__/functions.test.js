@@ -556,9 +556,7 @@ describe("requestRevision", () => {
     expect(auditCall).toBeDefined();
     expect(auditCall.data.events[0].type).toBe("revision_requested");
     expect(auditCall.data.events[0].actorUid).toBe("admin-uid");
-    expect(auditCall.data.events[0].actorEmail).toBe(
-      "jingranhuang590@gmail.com"
-    );
+    expect(auditCall.data.events[0].actorAuthorId).toBeNull();
   });
 });
 

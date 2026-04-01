@@ -1906,6 +1906,26 @@ span.coauthor-name {
   margin-bottom: 1.25rem;
 }
 
+.admin-thread-toggle {
+  font-size: 0.82rem;
+  color: var(--warm-gray);
+  cursor: pointer;
+  padding: 0.3rem 0;
+  list-style: none;
+}
+
+.admin-thread-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.admin-thread-toggle::before {
+  content: "▸ ";
+}
+
+details[open] > .admin-thread-toggle::before {
+  content: "▾ ";
+}
+
 .admin-revision-entry {
   border-left: 2px solid var(--border);
   padding-left: 1rem;
