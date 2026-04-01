@@ -316,8 +316,7 @@
     card.style.display = 'block';
     var linkEl = document.getElementById('published-articles-link');
     if (typeof SITE_AUTHOR_IDS !== 'undefined' && SITE_AUTHOR_IDS.indexOf(authorId) !== -1) {
-      var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? '' : '/UWC-Survival-Guide';
+      var baseUrl = SITE_BASEURL;
       var authorPage = '/authors/' + authorId + '/';
       linkEl.innerHTML =
         '<a href="' + baseUrl + ADMIN_I18N.lang_prefix + authorPage + '" class="admin-btn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:0.5rem;">' + ADMIN_I18N.view_published + '</a>';
@@ -575,8 +574,7 @@
       var userData = snapshot.docs[0].data();
       var displayName = userData.displayName || searchId;
       var hasProfile = hasAuthorProfile(searchId);
-      var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? '' : '/UWC-Survival-Guide';
+      var baseUrl = SITE_BASEURL;
       var profileHref = baseUrl + ADMIN_I18N.lang_prefix + '/authors/' + searchId + '/';
 
       // Check if already added
@@ -1546,8 +1544,7 @@
     }
     targetEl.textContent = (prefix || '') + getAuthorNames(authors);
     Promise.all(authors.map(resolveAuthorIdForDisplay)).then(function (authorIds) {
-      var baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? '' : '/UWC-Survival-Guide';
+      var baseUrl = SITE_BASEURL;
       var parts = authors.map(function (author, index) {
         var resolvedId = authorIds[index];
         if (resolvedId) {
