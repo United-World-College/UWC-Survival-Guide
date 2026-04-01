@@ -1,25 +1,25 @@
 /**
  * Validates i18n completeness: every key that exists in the English
  * locale must also exist in zh-CN and zh-TW locales.
+ *
+ * Locale files live in website/_data/i18n/{code}.yml.
  */
 
 const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
 
-const PAGE_COPY_PATH = path.join(
-  __dirname,
-  "..",
-  "website",
-  "_data",
-  "page_copy.yml"
-);
+const I18N_DIR = path.join(__dirname, "..", "website", "_data", "i18n");
 
 let locales;
 
 beforeAll(() => {
-  const raw = fs.readFileSync(PAGE_COPY_PATH, "utf-8");
-  locales = yaml.load(raw);
+  locales = {};
+  for (const file of fs.readdirSync(I18N_DIR)) {
+    if (!file.endsWith(".yml")) continue;
+    const code = file.replace(".yml", "");
+    locales[code] = yaml.load(fs.readFileSync(path.join(I18N_DIR, file), "utf-8"));
+  }
 });
 
 function flattenKeys(obj, prefix = "") {
@@ -36,20 +36,20 @@ function flattenKeys(obj, prefix = "") {
 }
 
 function getLocale(code) {
-  return locales.find((l) => l.code === code);
+  return locales[code];
 }
 
-describe("i18n page_copy.yml validation", () => {
-  test("page_copy.yml is valid YAML and is an array", () => {
-    expect(Array.isArray(locales)).toBe(true);
-    expect(locales.length).toBeGreaterThanOrEqual(3);
+describe("i18n locale files validation", () => {
+  test("i18n directory contains en, zh-CN, and zh-TW files", () => {
+    expect(locales["en"]).toBeDefined();
+    expect(locales["zh-CN"]).toBeDefined();
+    expect(locales["zh-TW"]).toBeDefined();
   });
 
-  test("contains en, zh-CN, and zh-TW locales", () => {
-    const codes = locales.map((l) => l.code);
-    expect(codes).toContain("en");
-    expect(codes).toContain("zh-CN");
-    expect(codes).toContain("zh-TW");
+  test("each locale has a code field matching its filename", () => {
+    for (const [code, data] of Object.entries(locales)) {
+      expect(data.code).toBe(code);
+    }
   });
 
   test("all English keys exist in zh-CN", () => {

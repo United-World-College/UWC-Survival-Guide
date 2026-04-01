@@ -1,7 +1,7 @@
 {% assign current_language_code = page.language_code | default: site.lang | default: "en" %}
-{% assign current_locale = site.data.page_copy | where: "code", current_language_code | first %}
+{% assign current_locale = site.data.i18n[current_language_code] %}
 {% if current_locale == nil %}
-  {% assign current_locale = site.data.page_copy | where: "code", "en" | first %}
+  {% assign current_locale = site.data.i18n["en"] %}
 {% endif %}
 {% assign path_prefix = current_locale.path_prefix | default: "" %}
 

@@ -1,0 +1,362 @@
+code: zh-TW
+label: 繁體中文
+short_label: 繁中
+path_prefix: /zh-tw
+nav:
+  logo: UWC Changshu China
+  about: 關於計畫
+  campus_life: 校園生活
+  daily_essentials: 日常必備
+  explore_nearby: 周邊探索
+  all_guides: 全部指南
+language_labels:
+  en: 英文
+  zh-CN: 簡體中文
+  zh-TW: 繁體中文
+language_shorts:
+  en: EN
+  zh-CN: 簡中
+  zh-TW: 繁中
+categories:
+  College Application: 大學申請
+  大学申请: 大學申請
+  大學申請: 大學申請
+  Academics: 學業
+  学业: 學業
+  學業: 學業
+  Life Reflections: 人生雜談
+  Life Musings: 人生雜談
+  人生杂谈: 人生雜談
+  人生雜談: 人生雜談
+common:
+  language_switch_label: 語言
+  author_page: 作者頁面
+  profile: 個人頁面
+  article_singular: 篇文章
+  article_plural: 篇文章
+  version_singular: 個版本
+  version_plural: 個版本
+footer:
+  note_lines:
+    - 這是一個由學生維護的非官方資源。
+    - 涉及重要資訊時，請以 UWC 常熟官方管道為準。
+    - 網站程式碼採用 MIT 授權。除非另有說明，原始指南文字、貢獻者照片與其他媒體素材皆保留所有權利。
+  about: 關於計畫
+  content_rights: 內容版權
+  copy: 由 UWC 常熟學生編寫，也為 UWC 常熟學生服務。
+home:
+  hero_label: 由學生撰寫，為學生服務
+  hero_title_line_one: UWC Changshu China
+  hero_title_line_two: 生存指南
+  hero_subtitle: 一份由學生共同編寫的指南，幫你在這裡生活、學習，並找到自己的方向。
+  hero_cta: 開始探索
+  experiences_label: 校園生活
+  experiences_title: 每一天都從這裡開始
+  experiences_desc: 從湖邊安靜的清晨，到公共休息室裡的深夜長談，校園生活塑造了你在 UWC 的每一天。
+  essentials_label: 初來乍到
+  essentials_title: 必備資訊，一目了然
+  essentials_desc: 讓日常生活更順暢的實用細節，從支付到交通，都集中在這裡。
+  explore_label: 走出校園
+  explore_title: 附近有很多值得去的地方
+  explore_desc: 常熟只是起點。蘇州、上海，以及江南水鄉都在可到達的範圍內。
+  full_guide_label: 完整指南
+  full_guide_title: 瀏覽全部主題
+  full_guide_desc: 每篇指南都由學生撰寫並持續維護。先依語言瀏覽，再打開你需要的主題。
+  contribute_label: 共同建設
+  contribute_title: 這份指南會和我們一起成長
+  contribute_desc: 每一條建議、修正與經驗，都會讓下一位來到這裡的同學少走一些彎路。
+  steps:
+    - Fork 倉庫
+    - 新增或更新內容
+    - 提交 Pull Request
+about:
+  hero_label: 關於計畫
+  hero_title: UWC 常熟生存指南
+  hero_subtitle: 對本計畫、編輯宗旨以及參與學生的正式介紹。
+  overview_label: 計畫概覽
+  overview_title: 為 UWC 常熟社群持續維護的學生編輯資源
+  overview_desc: 本指南希望把學生之間容易隨屆流失的實用經驗沉澱下來，讓後來的同學繼續補充與改進。
+  introduction:
+    - UWC 常熟生存指南是一份由學生維護的知識庫，服務於即將入學與正在就讀的同學。
+    - 它的目標是保存那些最容易在一屆又一屆之間散失的實務經驗：如何安頓下來，如何適應學業體系，以及如何更好地利用校園和周邊的機會。
+    - 這個計畫被當作一份持續更新的出版物來維護。主編負責方向與標準，貢獻者則持續撰寫、修訂、翻譯並實質性完善各篇文章。
+  principles:
+    - title: 學生共建
+      description: 這份指南建立在真實的學生經驗之上，關注的是在實際生活裡真正有用的資訊，而不只是正式文件上的內容。
+    - title: 編輯維護
+      description: 我們把它當作一份長期更新的出版物來對待，擁有明確署名、清晰標準，以及隨著學校環境變化持續修訂的空間。
+    - title: 超越一屆
+      description: 倉庫把學校的集體記憶集中保存下來，讓每一屆畢業生都能把更有用的經驗交給下一屆，而不是留下零散建議。
+  recognition_label: 署名規則
+  recognition_title: 貢獻者如何被標註
+  recognition_desc: 主編單獨列出。核心貢獻者指對五篇或以上不同文章做出實質性貢獻的成員。其他所有撰寫、編輯、翻譯或實質性改進已發布內容的人都會列為貢獻者。
+  cfa_label: 徵稿啟事
+  cfa_title: 我們正在尋找貢獻者
+  cfa_desc: 生存指南的價值取決於貢獻者願意分享的知識。如果你是 UWC 常熟的在讀或往屆學生，並有值得留存的實用建議，我們邀請你為本指南撰稿。
+  cfa_portal_btn: 前往貢獻者門戶
+  cfa_learn_more: 了解詳情並投稿
+  leadership_label: 計畫團隊
+  leadership_title: 主編
+  leadership_desc: 主編負責計畫的編輯方向，並維護已發布指南的整體標準。
+  editor_in_chief_label: 主編
+  core_label: 貢獻者
+  core_title: 核心貢獻者
+  core_desc: 核心貢獻者指對五篇或以上不同文章做出實質性貢獻的成員。
+  core_contributor_label: 核心貢獻者
+  core_empty: 隨著計畫發展，新的核心貢獻者會列在這裡。
+  contributors_label: 貢獻者
+  contributor_label: 貢獻者
+  contributors_title: 其他貢獻者
+  contributors_desc: 本部分記錄所有對已發布內容做出實質性改進且未被列為主編的成員。
+  contributors_empty: 新的貢獻者與修訂紀錄會在後續發布中加入這裡。
+cfa_page:
+  hero_label: 徵稿啟事
+  hero_title: 為生存指南撰稿
+  hero_subtitle: 投稿指南——我們發布什麼、如何提交以及編輯流程。
+  overview_label: 概述
+  overview_title: 我們在尋找什麼
+  overview_desc: 生存指南的價值取決於貢獻者願意分享的知識。如果你是 UWC 常熟的在讀或往屆學生，並有值得留存的實用建議，我們邀請你為本指南撰稿。
+  guidelines_label: 準則
+  guidelines_title: 投稿準則
+  guidelines_desc: 撰寫文章時請注意以下幾點。
+  guidelines:
+    - title: 只要有幫助就行
+      description: 標準很簡單——只要對 UWC 常熟的同學有幫助，就適合發在這裡。實用指南、個人故事、心得感悟、小貼士——任何形式都歡迎，只要別人能從中學到東西。
+    - title: 要有實質性貢獻
+      description: 每篇文章應當貢獻全新的內容，不接受對已有文章的增量補充——如果你想改進現有文章，請聯繫主編。但是，對已發布文章提出有理有據的反駁或不同觀點非常歡迎。
+    - title: 一篇一題
+      description: 每篇文章應聚焦一個明確的主題。如果你發現自己在寫多個話題，請考慮拆分為多篇文章。
+    - title: 支援多種語言
+      description: 你可以用英文、簡體中文或繁體中文撰寫。任何支援語言的文章都同樣歡迎。
+  portal_btn: 前往貢獻者門戶
+  updated_label: 更新於：
+content_rights:
+  label: 內容版權
+  title: 程式碼與內容分別授權
+  desc: 網站原始碼以 MIT 協議開源；原創指南文字、貢獻者照片和其他媒體素材則不在此範圍內。
+  paragraphs:
+    - 除非另有說明，本站發布的原創指南文字、編輯內容、貢獻者肖像、頭像照片、攝影作品及其他媒體素材的版權均歸各自作者和貢獻者所有，並保留所有權利。
+    - 貢獻者肖像和頭像照片僅用於本計畫內的身分識別。未經相關權利人及在適用情況下被攝者本人事先書面許可，不得複製、轉載、編輯、再發布或用於暗示其認可。
+    - 除非適用法律另有獨立允許，未經相關著作權持有人事先書面許可，不得複製、轉載、改編、翻譯或再發布這些內容。
+    - 用於建置本站的原始碼與設定檔在倉庫中以 MIT 授權另行授權。
+section:
+  article_singular: 篇文章
+  article_plural: 篇文章
+  title_prefix: ""
+  title_suffix: 的全部文章
+  desc: 每篇文章只列出一次，並附上站內已發布的所有語言版本連結。
+  empty: 這個分區暫時還沒有已發布的指南。
+author:
+  author_label: 作者
+  role_editor_in_chief: 主編
+  role_core_member: 核心成員
+  role_member: 成員
+  role_contributor: 貢獻者
+  indexed_article_singular: 收錄文章
+  indexed_article_plural: 收錄文章
+  bibliography_label: 目錄
+  bibliography_title_prefix: ""
+  bibliography_title_suffix: 的收錄文章
+  bibliography_desc: 每篇文章只列出一次，並附上站內已發布的所有語言版本連結。
+  empty: 這位作者暫時還沒有被收錄的已發布文章。
+  coauthor_singular: 合著者
+  coauthor_plural: 合著者
+  coauthors_label: 合著者
+  coauthor_article_singular: 篇文章
+  coauthor_article_plural: 篇文章
+guide:
+  by_label: 作者
+  published_label: 發布於
+  updated_label: 更新於
+  submitted_label: 投稿於
+  approved_label: 通過於
+  editor_label: 責任編輯：
+  original_label: 原文
+  date_format: "%Y年%-m月%-d日"
+  more_guides_title: 同語言的更多指南
+  more_guides_desc: 繼續閱讀同一語言的其他內容，不必在不同版本之間來回切換。
+  empty: 該語言下暫時還沒有其他指南。
+admin:
+  portal_label: 貢獻者門戶
+  signin_title: 歡迎回來
+  signin_subtitle: 使用您的貢獻者帳號登入。
+  email_placeholder: 電子郵件
+  password_placeholder: 密碼
+  signin_btn: 登入
+  create_account_link: 建立帳號
+  forgot_link: 忘記密碼？
+  signup_title: 建立帳號
+  signup_subtitle: 註冊後即可開始投稿。
+  password_min_placeholder: 密碼（至少 6 位）
+  confirm_placeholder: 確認密碼
+  signup_btn: 建立帳號
+  signup_author_id_warning: 您之後可以更改顯示名稱，但系統將根據此名稱生成一個永久的作者 ID，生成後無法更改。
+  display_name_latin_required: 顯示名稱必須至少包含一個拉丁字母。可接受中英混合，但不能全部為非拉丁字元。
+  back_to_signin: 返回登入
+  forgot_title: 重設密碼
+  forgot_subtitle: 輸入郵件，我們將向您傳送重設連結。
+  forgot_btn: 傳送重設郵件
+  forgot_hint: 郵件可能需要幾分鐘才能抵達。若收件匣中沒有，請檢查垃圾郵件資料夾。
+  dashboard_label: 控制台
+  dashboard_title: 貢獻者控制台
+  dashboard_subtitle: 管理您的個人資料、提交文章並追蹤貢獻紀錄。
+  profile_title: 個人資料
+  profile_desc: 更新您的顯示名稱和大頭貼。
+  avatar_upload_title: 點擊上傳新大頭貼
+  avatar_alt: 大頭貼
+  avatar_overlay: 更換
+  avatar_hint: 點擊大頭貼以更換
+  display_name_label: 顯示名稱
+  display_name_placeholder: 您的姓名
+  email_label: 電子郵件
+  show_email_label: 在作者頁面顯示電子郵件
+  affiliation_label: 目前所屬機構（選填）
+  affiliation_placeholder: 你目前所在的大學或組織
+  cohort_label: 屆別
+  cohort_placeholder: 例：UWC Changshu China '24
+  summary_label: 個人簡介（選填）
+  summary_placeholder: 簡短介紹一下自己
+  role_label: 身分
+  profile_links_label: 個人頁面連結
+  profile_links_hint: 新增您的 GitHub、個人網站等連結，將顯示在您的作者頁面上。
+  add_link_btn: + 新增連結
+  links_limit: 最多新增 3 個連結。
+  save_profile_btn: 儲存資料
+  submit_title: 提交新文章
+  submit_desc: 撰寫文章並提交審核，通過後將發布至網站。
+  article_title_label: 標題
+  article_title_placeholder: 例：我的 UWC 經歷
+  category_label: 分類
+  category_placeholder: 選擇分類
+  language_label: 語言
+  language_placeholder: 選擇文章語言
+  author_name_label: 作者姓名
+  author_name_placeholder: 您的姓名
+  author_id_label: 作者 ID
+  coauthors_label: 共同作者
+  coauthors_hint: 透過作者 ID 添加共同作者。每位成員可在個人資料頂部找到自己的作者 ID。
+  coauthor_name_placeholder: 共同作者姓名
+  coauthor_id_placeholder: 輸入作者 ID（如 william-huang）
+  coauthor_lookup_btn: 查找
+  coauthor_searching: 搜尋中...
+  coauthor_not_found: 未找到此 ID 的用戶
+  coauthor_lookup_error: 查找失敗，請重試
+  coauthor_unresolved: 提交前請查找所有共同作者
+  coauthor_already_added: 已添加
+  coauthor_no_profile: 暫無作者主頁——第一篇文章通過審核後將自動建立
+  coauthor_add_btn: + 添加共同作者
+  coauthor_add_toggle: + 添加共同作者
+  coauthors_max: 最多允許 10 位共同作者。
+  description_label: 簡介
+  description_placeholder: 文章簡短摘要
+  content_label: 正文（Markdown）
+  content_placeholder: 在此使用 Markdown 撰寫文章正文……
+  preview_btn: 預覽 ↗
+  show_review_thread: 顯示審核記錄
+  submit_btn: 提交審核
+  featured_title: 精選文章
+  featured_desc: 最多置頂 3 篇文章，顯示在您的作者頁面精選區域。點擊星號進行切換。
+  loading: 載入中……
+  register_label: 註冊文章
+  register_hint: 如果您的文章是直接發布的（未透過此門戶），請在此填寫詳情以新增它。
+  add_article_btn: 新增文章
+  published_title: 我的已發布文章
+  published_desc: 以您的名義在網站上發布的文章。
+  published_no_profile: 您的作者主頁尚未建立。當您的第一篇文章通過審核後，系統將自動建立。
+  view_published: 查看我所有已發布的文章
+  submissions_title: 我的投稿
+  submissions_desc: 追蹤您已投稿文章的狀態。
+  review_title: 審核投稿
+  review_desc: 審核貢獻者提交的文章。批准後生成 Markdown 檔案，或附理由拒絕。
+  filter_pending: 待審核
+  filter_approved: 已批准
+  filter_rejected: 已拒絕
+  filter_all: 全部
+  approve_btn: 批准並發布
+  reject_btn: 拒絕
+  delete_btn: 刪除
+  deleting: 刪除中……
+  delete_confirm: 確定要永久刪除此投稿嗎？
+  copy_md_btn: 複製到剪貼簿
+  signout_btn: 登出
+  err_email_exists: 該郵件已被註冊。
+  err_invalid_email: 請輸入有效的電子郵件地址。
+  err_user_disabled: 該帳號已被停用。
+  err_user_not_found: 找不到該郵件對應的帳號。
+  err_wrong_password: 密碼錯誤，請重試。
+  err_weak_password: 密碼至少需要 6 位字元。
+  err_too_many_requests: 嘗試次數過多，請稍後再試。
+  err_invalid_credential: 郵件或密碼無效，請重試。
+  err_missing_password: 請輸入密碼。
+  err_network: 網路錯誤，請確認您的連線。
+  err_generic: 出了點問題，請重試。
+  please_wait: 請稍候……
+  passwords_no_match: 兩次密碼不一致。
+  reset_email_sent: 重設郵件已傳送，請查收。
+  image_file_only: 請選擇圖片檔案。
+  image_too_large: 圖片大小不能超過 2 MB。
+  uploading_photo: 正在上傳大頭貼……
+  photo_failed: 大頭貼上傳失敗，請重試。
+  link_label_ph: 例：GitHub、個人網站
+  profile_saved: 資料儲存成功。
+  err_fill_all: 請填寫所有欄位。
+  article_submitted: 文章提交成功！將在審核後發布。
+  article_failed: 文章提交失敗，請重試。
+  featured_max: 最多精選 3 篇文章。
+  all_registered: 您的所有文章均已註冊
+  select_register: 選擇要註冊的文章……
+  loading_panel_select: 載入您的文章中……
+  no_articles: 暫無已註冊文章。請使用下方表單新增您的文章。
+  load_articles_failed: 無法載入文章。
+  featured_updated: 精選文章已更新。
+  remove_featured: 從精選中移除
+  add_featured: 新增至精選
+  no_submissions: 暫無投稿記錄。在上方提交您的第一篇文章吧。
+  load_submissions_failed: 無法載入投稿記錄，請稍後再試。
+  just_now: 剛才
+  by_prefix: 作者：
+  author_unknown: 未知
+  no_filter_prefix: 暫無
+  no_filter_sep: ""
+  no_filter_suffix: 投稿。
+  load_review_failed: 無法載入投稿記錄。
+  loading_submissions: 載入投稿中……
+  preview_banner: 預覽 — 草稿 · 尚未發布
+  preview_by: 作者：
+  status_pending: 待審核
+  status_approved: 已批准
+  status_rejected: 已拒絕
+  role_eic: 主編
+  role_core_member: 核心成員
+  role_member: 成員
+  role_contributor: 貢獻者
+  rejecting: 拒絕中……
+  approving: 批准中……
+  rejection_prompt: 拒絕原因（可選）：
+  reject_comments_label: 拒絕原因
+  reject_comments_placeholder: 請說明拒絕此投稿的原因……
+  approve_message_label: 給作者的留言（選填）
+  approve_message_placeholder: 給作者添加備註……
+  filter_revise_resubmit: 需要修改
+  status_revise_resubmit: 需要修改
+  revise_resubmit_btn: 修改後重投
+  revising: 傳送中……
+  rnr_comments_label: 審稿意見
+  rnr_comments_placeholder: 請詳細說明作者應修改的內容……
+  rnr_submit: 傳送反饋
+  rnr_cancel: 取消
+  revision_feedback_label: 審稿反饋
+  resubmit_btn: 編輯並重新投稿
+  resubmitting: 重新投稿中……
+  resubmit_success: 您的修改稿已重新提交審核。
+  close_tab: 關閉分頁
+  author_message_label: 給審稿人的留言（選填）
+  author_message_placeholder: 簡要說明您所做的修改……
+  author_message_to_reviewer: 作者留言
+  copied: 已複製！
+  no_token: 未找到 GitHub Token，請重新解鎖管理面板並貼上您的 Token。
+  local_save_error: |-
+    本機儲存失敗。請確保 local-save-server.py 正在 4001 埠運行。
+
+    執行：python3 website/local-save-server.py
+  github_error: 已在 Firestore 中批准，但發布至 GitHub 失敗：

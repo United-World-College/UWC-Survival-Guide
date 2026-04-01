@@ -1,0 +1,362 @@
+code: en
+label: English
+short_label: EN
+path_prefix: ""
+nav:
+  logo: UWC Changshu China
+  about: About
+  campus_life: Campus Life
+  daily_essentials: Daily Essentials
+  explore_nearby: Explore Nearby
+  all_guides: All Guides
+language_labels:
+  en: English
+  zh-CN: Simplified Chinese
+  zh-TW: Traditional Chinese
+language_shorts:
+  en: EN
+  zh-CN: ZH-CN
+  zh-TW: ZH-TW
+categories:
+  College Application: College Application
+  大学申请: College Application
+  大學申請: College Application
+  Academics: Academics
+  学业: Academics
+  學業: Academics
+  Life Reflections: Life Reflections
+  Life Musings: Life Reflections
+  人生杂谈: Life Reflections
+  人生雜談: Life Reflections
+common:
+  language_switch_label: Language
+  author_page: Author Page
+  profile: Profile
+  article_singular: article
+  article_plural: articles
+  version_singular: version
+  version_plural: versions
+footer:
+  note_lines:
+    - An unofficial, student-maintained resource.
+    - Please verify critical details with official UWC Changshu China channels.
+    - Site code is licensed under MIT. Original guide text, contributor photos, and other media are all rights reserved unless otherwise noted.
+  about: About
+  content_rights: Content Rights
+  copy: By UWC Changshu China students, for UWC Changshu China students.
+home:
+  hero_label: By Students, For Students
+  hero_title_line_one: UWC Changshu China
+  hero_title_line_two: Survival Guide
+  hero_subtitle: A student-built guide to living, studying, and finding your way here.
+  hero_cta: Begin exploring
+  experiences_label: Life on Campus
+  experiences_title: Where every day begins
+  experiences_desc: From quiet mornings by the lake to late-night conversations in the common room, campus life shapes every part of your UWC experience.
+  essentials_label: Settling In
+  essentials_title: The essentials, simplified
+  essentials_desc: The practical details that make daily life seamless, from payments to transportation, all in one place.
+  explore_label: Beyond Campus
+  explore_title: There is so much to see
+  explore_desc: Changshu is your starting point. Suzhou, Shanghai, and the waterways of Jiangsu are all within reach.
+  full_guide_label: The Full Guide
+  full_guide_title: Browse all topics
+  full_guide_desc: Each guide is written and maintained by students. Browse by language, then open the topic you need.
+  contribute_label: Built Together
+  contribute_title: This guide grows with us
+  contribute_desc: Every recommendation, correction, and insight makes this resource better for the next student who arrives.
+  steps:
+    - Fork the repository
+    - Add or update content
+    - Submit a pull request
+about:
+  hero_label: About
+  hero_title: UWC Changshu China Survival Guide
+  hero_subtitle: A formal introduction to the project, its editorial mission, and the students who build it.
+  overview_label: Project Overview
+  overview_title: A living editorial resource for the UWC Changshu China community
+  overview_desc: The guide is intended to preserve practical student knowledge in a form that future cohorts can keep improving.
+  introduction:
+    - The UWC Changshu China Survival Guide is a student-run knowledge base for incoming and current students at UWC Changshu China.
+    - "It exists to preserve practical knowledge that is easy to lose between cohorts: how to settle in, how to navigate the academic system, and how to make use of the opportunities around campus and beyond."
+    - The project is maintained as a living publication. Editors set direction and uphold editorial standards, while contributors write, revise, translate, and materially improve individual articles over time.
+  principles:
+    - title: Student-built
+      description: The guide is grounded in lived student experience and focuses on what is useful in practice, not just what is formally documented.
+    - title: Editorially maintained
+      description: This is treated as a continuing publication with named leadership, clear attribution, and room for revision as the school environment changes.
+    - title: Built to outlast a cohort
+      description: The repository keeps institutional memory in one place so each graduating class can hand forward something more useful than scattered advice.
+  recognition_label: Recognition Policy
+  recognition_title: How contributors are recognized
+  recognition_desc: Editors-in-Chief are listed separately. Core contributors are contributors who have materially contributed to five or more distinct articles. Contributors include everyone else who has written, edited, translated, or materially improved published content.
+  cfa_label: Call for Articles
+  cfa_title: We are looking for contributors
+  cfa_desc: The Survival Guide is only as useful as the knowledge its contributors choose to share. If you are a current or former UWC Changshu China student and have practical advice worth preserving, we invite you to write for the guide.
+  cfa_portal_btn: Go to Contributor Portal
+  cfa_learn_more: Learn More & Contribute
+  leadership_label: Leadership
+  leadership_title: Editors-in-Chief
+  leadership_desc: The editors-in-chief are responsible for the editorial direction of the project and for maintaining the standard of the published guide.
+  editor_in_chief_label: Editor-in-Chief
+  core_label: Contributors
+  core_title: Core Contributors
+  core_desc: Core contributors are contributors who have materially contributed to five or more distinct articles.
+  core_contributor_label: Core Contributor
+  core_empty: Additional core contributors will be listed here as the project grows.
+  contributors_label: Contributors
+  contributor_label: Contributor
+  contributors_title: Contributors
+  contributors_desc: This section records everyone who has materially improved published content and is not already listed as an EDITOR-IN-CHIEF.
+  contributors_empty: Additional contributors will be listed here as new articles and revisions are published.
+cfa_page:
+  hero_label: Call for Articles
+  hero_title: Write for the Survival Guide
+  hero_subtitle: A guide to contributing articles — what we publish, how to submit, and what to expect from the editorial process.
+  overview_label: Overview
+  overview_title: What we are looking for
+  overview_desc: The Survival Guide is only as useful as the knowledge its contributors choose to share. If you are a current or former UWC Changshu China student and have practical advice worth preserving, we invite you to write for the guide.
+  guidelines_label: Guidelines
+  guidelines_title: Contributor guidelines
+  guidelines_desc: Please keep the following in mind when writing your article.
+  guidelines:
+    - title: Anything that helps
+      description: The bar is simple — if it helps students at UWC Changshu China, it belongs here. Practical guides, personal stories, reflections, tips — any format is welcome as long as someone can learn from it.
+    - title: Make a material contribution
+      description: Each article should contribute something substantially new. Incremental additions to existing articles are not accepted — if you want to improve an existing piece, contact the Editors-in-Chief. That said, well-reasoned rebuttals or alternative perspectives on published articles are very welcome.
+    - title: One topic per article
+      description: Each article should cover a single, well-defined topic. If you find yourself writing about multiple subjects, consider splitting them into separate articles.
+    - title: Any supported language
+      description: You may write in English, Simplified Chinese, or Traditional Chinese. Articles in any of these languages are equally welcome.
+  portal_btn: Go to Contributor Portal
+  updated_label: "Updated:"
+content_rights:
+  label: Content Rights
+  title: Code and content are licensed separately
+  desc: The site's source code is open source under MIT. The original written guides, contributor photos, and other media are not.
+  paragraphs:
+    - Unless otherwise noted, the original guide text, editorial content, contributor portraits, profile photos, photographs, and other media published on this site are copyright their respective authors and contributors. All rights reserved.
+    - Contributor portraits and profile photos are published for identification within this project only. They may not be copied, redistributed, edited, republished, or used to imply endorsement without prior written permission from the relevant rights holder and, where applicable, the depicted person.
+    - You may not reproduce, redistribute, adapt, translate, or republish this material without prior written permission from the relevant copyright holder, except where applicable law independently allows it.
+    - The source code and configuration used to build this site are licensed separately under the MIT License in the repository.
+section:
+  article_singular: article
+  article_plural: articles
+  title_prefix: "All articles in "
+  title_suffix: ""
+  desc: Each article is listed once, with links to every published language version available on the site.
+  empty: No published guides in this section yet.
+author:
+  author_label: Author
+  role_editor_in_chief: Editor-in-Chief
+  role_core_member: Core Member
+  role_member: Member
+  role_contributor: Contributor
+  indexed_article_singular: Indexed article
+  indexed_article_plural: Indexed articles
+  bibliography_label: Bibliography
+  bibliography_title_prefix: "Indexed articles by "
+  bibliography_title_suffix: ""
+  bibliography_desc: Each article is listed once, with links to every published language version available on the site.
+  empty: No published guides are indexed for this author yet.
+  coauthor_singular: Coauthor
+  coauthor_plural: Coauthors
+  coauthors_label: Coauthors
+  coauthor_article_singular: article
+  coauthor_article_plural: articles
+guide:
+  by_label: By
+  published_label: Published
+  updated_label: Updated
+  submitted_label: Submitted
+  approved_label: Approved
+  editor_label: "Editor:"
+  original_label: Original
+  date_format: "%b %-d, %Y"
+  more_guides_title: More guides in this language
+  more_guides_desc: Keep reading in the same language without jumping between versions.
+  empty: No other guides are available in this language yet.
+admin:
+  portal_label: Contributor Portal
+  signin_title: Welcome Back
+  signin_subtitle: Sign in with your contributor account to continue.
+  email_placeholder: Email address
+  password_placeholder: Password
+  signin_btn: Sign In
+  create_account_link: Create an account
+  forgot_link: Forgot password?
+  signup_title: Create Account
+  signup_subtitle: Register to start contributing articles.
+  password_min_placeholder: Password (min 6 characters)
+  confirm_placeholder: Confirm password
+  signup_btn: Create Account
+  signup_author_id_warning: You can change your display name later, but a permanent Author ID will be generated from it at this point and cannot be changed.
+  display_name_latin_required: Display name must include at least one Latin letter. Mixed names are fine, but fully non-Latin names are not allowed.
+  back_to_signin: Back to sign in
+  forgot_title: Reset Password
+  forgot_subtitle: Enter your email and we'll send a reset link.
+  forgot_btn: Send Reset Email
+  forgot_hint: The email may take a few minutes to arrive. Please check your junk/spam folder if you don't see it in your inbox.
+  dashboard_label: Dashboard
+  dashboard_title: Contributor Dashboard
+  dashboard_subtitle: Manage your profile, submit articles, and track your contributions.
+  profile_title: Your Profile
+  profile_desc: Update your display name and profile photo.
+  avatar_upload_title: Click to upload a new photo
+  avatar_alt: Profile photo
+  avatar_overlay: Change
+  avatar_hint: Click photo to change
+  display_name_label: Display Name
+  display_name_placeholder: Your name
+  email_label: Email
+  show_email_label: Show email on my author page
+  affiliation_label: Current Affiliation (optional)
+  affiliation_placeholder: Your current university or organization
+  cohort_label: Cohort
+  cohort_placeholder: e.g. UWC Changshu China '24
+  summary_label: Short Bio (optional)
+  summary_placeholder: A brief description about yourself
+  role_label: Role
+  profile_links_label: Profile Links
+  profile_links_hint: Add links to your GitHub, personal website, etc. These will appear on your author page.
+  add_link_btn: + Add Link
+  links_limit: Maximum 3 profile links.
+  save_profile_btn: Save Profile
+  submit_title: Submit New Article
+  submit_desc: Write and submit an article for review. Once approved, it will be published on the site.
+  article_title_label: Title
+  article_title_placeholder: e.g. My UWC Experience
+  category_label: Category
+  category_placeholder: Select a category
+  language_label: Language
+  language_placeholder: Select the language of your article
+  author_name_label: Author Name
+  author_name_placeholder: Your name
+  author_id_label: Author ID
+  coauthors_label: Co-Authors
+  coauthors_hint: Add co-authors by their Author ID. Each member can find their Author ID at the top of their profile above.
+  coauthor_name_placeholder: Co-author name
+  coauthor_id_placeholder: Enter author ID (e.g. william-huang)
+  coauthor_lookup_btn: Look up
+  coauthor_searching: Searching...
+  coauthor_not_found: No user found with this ID
+  coauthor_lookup_error: Lookup failed, try again
+  coauthor_unresolved: Please look up all co-authors before submitting
+  coauthor_already_added: Already added
+  coauthor_no_profile: No author profile yet — will be created when first article is approved
+  coauthor_add_btn: + Add Co-Author
+  coauthor_add_toggle: + Add Co-Author
+  coauthors_max: Maximum 10 co-authors allowed.
+  description_label: Description
+  description_placeholder: A brief summary of the article
+  content_label: Content (Markdown)
+  content_placeholder: Write your article content here using Markdown...
+  preview_btn: Preview ↗
+  show_review_thread: Show review history
+  submit_btn: Submit for Review
+  featured_title: Featured Articles
+  featured_desc: Pin up to 3 articles to appear in the Featured section of your author page. Click the star to toggle.
+  loading: Loading...
+  register_label: Register an Article
+  register_hint: If your article was published directly (not through this portal), enter its details to add it here.
+  add_article_btn: Add Article
+  published_title: My Published Articles
+  published_desc: Articles published on the site under your name.
+  published_no_profile: Your author profile page has not been created yet. It will be created automatically when your first article is approved.
+  view_published: View all my published articles
+  submissions_title: My Submissions
+  submissions_desc: Track the status of your submitted articles.
+  review_title: Review Submissions
+  review_desc: Review pending articles from contributors. Approve to generate the markdown file, or reject with a reason.
+  filter_pending: Under Review
+  filter_approved: Approved
+  filter_rejected: Rejected
+  filter_all: All
+  approve_btn: Approve & Publish
+  reject_btn: Reject
+  delete_btn: Delete
+  deleting: Deleting...
+  delete_confirm: Are you sure you want to permanently delete this submission?
+  copy_md_btn: Copy to Clipboard
+  signout_btn: Sign Out
+  err_email_exists: An account with this email already exists.
+  err_invalid_email: Please enter a valid email address.
+  err_user_disabled: This account has been disabled.
+  err_user_not_found: No account found with this email.
+  err_wrong_password: Incorrect password. Please try again.
+  err_weak_password: Password must be at least 6 characters.
+  err_too_many_requests: Too many attempts. Please try again later.
+  err_invalid_credential: Invalid email or password. Please try again.
+  err_missing_password: Please enter your password.
+  err_network: Network error. Please check your connection.
+  err_generic: Something went wrong. Please try again.
+  please_wait: Please wait...
+  passwords_no_match: Passwords do not match.
+  reset_email_sent: Reset email sent. Please check your inbox.
+  image_file_only: Please select an image file.
+  image_too_large: Image must be under 2 MB.
+  uploading_photo: Uploading photo...
+  photo_failed: Failed to upload photo. Please try again.
+  link_label_ph: e.g. GitHub, personal website
+  profile_saved: Profile saved successfully.
+  err_fill_all: Please fill out all fields.
+  article_submitted: Article submitted successfully! It will be reviewed before publishing.
+  article_failed: Failed to submit article. Please try again.
+  featured_max: You can feature up to 3 articles at a time.
+  all_registered: All your articles are registered
+  select_register: Select an article to register…
+  loading_panel_select: Loading your articles...
+  no_articles: No articles registered yet. Use the form below to add your articles.
+  load_articles_failed: Could not load articles.
+  featured_updated: Featured articles updated.
+  remove_featured: Remove from featured
+  add_featured: Add to featured
+  no_submissions: No submissions yet. Submit your first article above.
+  load_submissions_failed: Could not load submissions. Please try again later.
+  just_now: Just now
+  by_prefix: "By "
+  author_unknown: Unknown
+  no_filter_prefix: "No"
+  no_filter_sep: " "
+  no_filter_suffix: submissions.
+  load_review_failed: Could not load submissions.
+  loading_submissions: Loading submissions...
+  preview_banner: Preview — Draft · Not yet published
+  preview_by: "By "
+  status_pending: Under Review
+  status_approved: Approved
+  status_rejected: Rejected
+  role_eic: Editor-in-Chief
+  role_core_member: Core Member
+  role_member: Member
+  role_contributor: Contributor
+  rejecting: Rejecting...
+  approving: Approving...
+  rejection_prompt: "Rejection reason (optional):"
+  reject_comments_label: Rejection Reason
+  reject_comments_placeholder: Explain why this submission is being rejected...
+  approve_message_label: Message to Author (optional)
+  approve_message_placeholder: Add a note for the author...
+  filter_revise_resubmit: Revision Requested
+  status_revise_resubmit: Revision Requested
+  revise_resubmit_btn: Revise & Resubmit
+  revising: Sending...
+  rnr_comments_label: Reviewer Comments
+  rnr_comments_placeholder: Provide detailed feedback on what the author should revise...
+  rnr_submit: Send Feedback
+  rnr_cancel: Cancel
+  revision_feedback_label: Reviewer Feedback
+  resubmit_btn: Edit & Resubmit
+  resubmitting: Resubmitting...
+  resubmit_success: Your revised article has been resubmitted for review.
+  close_tab: Close Tab
+  author_message_label: Message to Reviewer (optional)
+  author_message_placeholder: Briefly describe the changes you made...
+  author_message_to_reviewer: Author's Note
+  copied: Copied!
+  no_token: No GitHub token found. Please unlock the admin panel again and paste your token.
+  local_save_error: |-
+    Failed to save locally. Make sure local-save-server.py is running on port 4001.
+
+    Run: python3 website/local-save-server.py
+  github_error: "Approved in Firestore but failed to publish to GitHub: "
