@@ -1993,15 +1993,26 @@ var ADMIN_I18N = {
     var container = document.getElementById('submissions-list');
     container.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.loading_submissions) + '</p>';
 
-    // Query both own submissions and coauthored submissions
-    var ownQuery = db.collection('submissions').where('uid', '==', uid).orderBy('createdAt', 'desc').get();
-    var coauthorQuery = db.collection('submissions').where('coauthorUids', 'array-contains', uid).orderBy('createdAt', 'desc').get();
+    // Query both own submissions and coauthored submissions without relying on
+    // composite indexes; merged results are sorted client-side below.
+    var ownQuery = db.collection('submissions').where('uid', '==', uid).get();
+    var coauthorQuery = db.collection('submissions').where('coauthorUids', 'array-contains', uid).get();
 
-    Promise.all([ownQuery, coauthorQuery]).then(function (results) {
+    Promise.allSettled([ownQuery, coauthorQuery]).then(function (results) {
+      var fulfilled = results.filter(function (result) {
+        return result.status === 'fulfilled';
+      }).map(function (result) {
+        return result.value;
+      });
+
+      if (fulfilled.length === 0) {
+        throw new Error('Could not load submissions.');
+      }
+
       // Merge and deduplicate
       var seen = {};
       var allDocs = [];
-      results.forEach(function (snapshot) {
+      fulfilled.forEach(function (snapshot) {
         snapshot.forEach(function (doc) {
           if (!seen[doc.id]) {
             seen[doc.id] = true;

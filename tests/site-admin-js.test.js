@@ -484,6 +484,21 @@ describe("Admin page JS — display name validation and slug normalization", () 
   });
 });
 
+describe("Admin page JS — my submissions query resilience", () => {
+  test("loads submissions without composite orderBy requirements", () => {
+    expect(adminHtml).toContain(
+      "var ownQuery = db.collection('submissions').where('uid', '==', uid).get();"
+    );
+    expect(adminHtml).toContain(
+      "var coauthorQuery = db.collection('submissions').where('coauthorUids', 'array-contains', uid).get();"
+    );
+  });
+
+  test("uses Promise.allSettled so one failing query does not blank the whole list", () => {
+    expect(adminHtml).toContain("Promise.allSettled([ownQuery, coauthorQuery])");
+  });
+});
+
 // ══════════════════════════════════════
 // HTML ↔ JS ID cross-reference
 // ══════════════════════════════════════
