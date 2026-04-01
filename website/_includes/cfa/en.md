@@ -6,4 +6,6 @@
 
 **Questions?** If you have any questions about the submission process, formatting, or anything else, feel free to contact the Editors-in-Chief through the About page.
 
+**Co-authorship.** You can add up to 10 co-authors when submitting an article. Co-authors must have a Contributor Portal account so they can be linked by their profile. The first author listed is treated as the primary author; the order of the remaining co-authors is preserved as you set it. All listed co-authors can view the submission status and resubmit revisions on behalf of the group. Every co-author receives their own author page and contributor credit upon publication. We encourage authors to follow the [Vancouver Convention on Authorship](https://www.icmje.org/recommendations/browse/roles-and-responsibilities/defining-the-role-of-authors-and-contributors.html) when deciding who should be listed as a co-author.
+
 **What happens next.** Approved articles are published on the site under your name, with a permanent author page linking to all your work. You will be listed as a contributor on this page.
