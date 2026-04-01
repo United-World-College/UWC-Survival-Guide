@@ -1,586 +1,948 @@
 # Action Flow Reference
 
-Complete mapping of every user action — what triggers it, what fields are involved (frontend & database), and where each action reads from / writes to.
+Complete reference of every action in the UWC Survival Guide project, documenting triggers, inputs, outputs, and side effects.
 
 ---
 
 ## Table of Contents
 
-- [Authentication](#authentication)
-- [Profile Management](#profile-management)
-- [Article Submission](#article-submission)
-- [Resubmit Article](#resubmit-article)
-- [View My Submissions](#view-my-submissions)
-- [Admin: Approve Submission](#admin-approve-submission)
-- [Admin: Reject Submission](#admin-reject-submission)
-- [Admin: Request Revision](#admin-request-revision)
-- [Admin: Delete Submission](#admin-delete-submission)
-- [Admin: Review Panel](#admin-review-panel)
-- [Register Published Article](#register-published-article)
-- [Feature Articles](#feature-articles)
-- [Coauthor Search & Add](#coauthor-search--add)
-- [Database Schema Summary](#database-schema-summary)
-- [Status Flow Diagram](#status-flow-diagram)
+- [Cloud Functions (Callable)](#cloud-functions-callable)
+  - [checkAdminStatus](#checkadminstatus)
+  - [submitArticle](#submitarticle)
+  - [resubmitArticle](#resubmitarticle)
+  - [approveSubmission](#approvesubmission)
+  - [rejectSubmission](#rejectsubmission)
+  - [requestRevision](#requestrevision)
+  - [deleteSubmission](#deletesubmission)
+- [Internal Library Functions](#internal-library-functions)
+  - [Auth](#auth)
+  - [GitHub](#github)
+  - [Translation](#translation)
+  - [Firestore Helpers](#firestore-helpers)
+  - [Utility Helpers](#utility-helpers)
+- [GitHub Actions Workflows](#github-actions-workflows)
+  - [deploy.yml](#deployyml)
+- [CLI Scripts](#cli-scripts)
+  - [script/translate](#scripttranslate)
+  - [script/serve](#scriptserve)
+  - [script/bootstrap](#scriptbootstrap)
+  - [script/firebase](#scriptfirebase)
+  - [script/test](#scripttest)
+- [Migration & Backfill Scripts](#migration--backfill-scripts)
+  - [backfill-submissions.js](#backfill-submissionsjs)
+  - [migrate-submission-actor-audit.js](#migrate-submission-actor-auditjs)
+  - [migrate-submission-authors.js](#migrate-submission-authorsjs)
+  - [migrate-author-id.js](#migrate-author-idjs)
+- [Data Flow Diagrams](#data-flow-diagrams)
+  - [Submission → Publication](#submission--publication-flow)
+  - [Revision Workflow](#revision-workflow)
+  - [Auto-Translation](#auto-translation-workflow)
+- [Firestore Data Structures](#firestore-data-structures)
+- [Summary Table](#summary-table)
 
 ---
 
-## Authentication
+## Cloud Functions (Callable)
 
-### Sign In
-
-| | Details |
-|---|---|
-| **Trigger** | User fills sign-in form and clicks "Sign In" |
-| **Frontend fields** | Email, Password |
-| **Frontend location** | `website/_layouts/admin_page.html` — `#signin-form` |
-| **API call** | `firebase.auth().signInWithEmailAndPassword()` |
-| **Reads from** | Firebase Auth |
-| **Writes to** | Nothing (session only) |
-
-### Sign Up
-
-| | Details |
-|---|---|
-| **Trigger** | User fills sign-up form and clicks "Sign Up" |
-| **Frontend fields** | Email, Password, Confirm Password, Display Name, Cohort |
-| **Frontend location** | `website/_layouts/admin_page.html` — `#signup-form` |
-| **API call** | `firebase.auth().createUserWithEmailAndPassword()` + direct Firestore write |
-| **Reads from** | Nothing |
-| **Writes to** | **Firebase Auth** (new user) + **`users/{uid}`** (profile document with `displayName`, `author_id`, `cohort`, `email`, `createdAt`) |
-
-### Forgot Password
-
-| | Details |
-|---|---|
-| **Trigger** | User enters email and clicks reset button |
-| **Frontend fields** | Email |
-| **API call** | `firebase.auth().sendPasswordResetEmail()` |
-| **Reads from** | Firebase Auth |
-| **Writes to** | Nothing (sends email) |
+All callable functions are defined in `functions/index.js` and invoked via Firebase `onCall`.
 
 ---
 
-## Profile Management
+### checkAdminStatus
 
-| | Details |
-|---|---|
-| **Trigger** | User edits profile fields and clicks "Save Profile" |
-| **Frontend fields** | Avatar (file upload), Display Name, Show Email (checkbox), Affiliation, Cohort, Summary, Profile Links (up to 5, each with label + URL) |
-| **Frontend location** | `website/_layouts/admin_page.html` — profile card section |
-| **API call** | Direct Firestore write: `db.collection('users').doc(uid).set(data, { merge: true })` |
-| **Reads from** | **`users/{uid}`** (to populate form on page load) |
-| **Writes to** | **`users/{uid}`** — fields: `displayName`, `photoURL`, `showEmail`, `affiliation`, `cohort`, `summary`, `profileLinks`, `updatedAt` |
-| **Storage** | Avatar uploaded to **Firebase Storage** at `/avatars/{uid}/*` (<5MB, images only) |
+**Location:** `functions/index.js`
 
-**Database fields written:**
+**Trigger:** Client calls via Firebase SDK
 
-| Field | Type | Notes |
-|---|---|---|
-| `displayName` | string | Max 40 chars |
-| `photoURL` | string | Firebase Storage URL |
-| `showEmail` | boolean | Public visibility toggle |
-| `affiliation` | string | Max 80 chars |
-| `cohort` | string | Max 60 chars |
-| `summary` | string | Max 120 chars |
-| `profileLinks` | array of `{label, url}` | Max 5 entries |
-| `updatedAt` | timestamp | Auto-set |
+**Auth:** Any authenticated user
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | *(none)* | — | Uses `request.auth` context only |
+| **Output** | `isAdmin` | `boolean` | Whether the caller's email is in the admin list |
+
+**Logic:**
+1. Verifies caller has a verified email
+2. Fetches admin email list from `config/admins` Firestore doc
+3. Returns `true` if email is in the list
+
+**Side Effects:** None
 
 ---
 
-## Article Submission
+### submitArticle
 
-| | Details |
-|---|---|
-| **Trigger** | Author fills article form and clicks "Submit Article" |
-| **Frontend fields** | Title, Category (dropdown: College Application / Life Reflections / Academics), Language (en / zh-CN / zh-TW), Author Name (auto-filled, disabled), Coauthors (optional, up to 5), Description, Content (markdown) |
-| **Frontend location** | `website/_layouts/admin_page.html` — `#article-form` |
-| **API call** | `functions.httpsCallable('submitArticle')` |
-| **Reads from** | **`users/{uid}`** (for author info, `author_id`) |
-| **Writes to** | **`submissions/{newDocId}`** (new document) + **`submissionAudit/{newDocId}`** (audit event) |
+**Location:** `functions/index.js`
 
-**Payload sent to backend:**
+**Trigger:** Client calls via Firebase SDK
 
-```js
+**Auth:** Any authenticated user
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `title` | `string` | Guide title |
+| **Input** | `category` | `string` | Guide category |
+| **Input** | `language` | `string` | One of `en`, `zh-CN`, `zh-TW` |
+| **Input** | `description` | `string` | Short description |
+| **Input** | `content` | `string` | Markdown body |
+| **Input** | `authorName` | `string` | Display name of submitter |
+| **Input** | `coAuthors` | `array` | `[{ uid?, author_id?, name, order? }]` |
+| **Output** | `success` | `boolean` | Always `true` on success |
+| **Output** | `docId` | `string` | Firestore document ID |
+| **Output** | `guideId` | `string` | Generated unique slug (e.g. `college-application`) |
+
+**Logic:**
+1. Validates all required fields are present and non-empty
+2. Generates `guide_id` slug from title via `makeSlug()`
+3. Ensures slug uniqueness via `ensureUniqueGuideSlug()`
+4. Resolves author slug via `resolveAuthorSlug()`
+5. Creates `submissions/{docId}` document with status `"pending"`
+
+**Side Effects:**
+- Creates Firestore document in `submissions` collection
+- May set `author_id` on `users/{uid}` if first submission
+- Appends audit event (`type: "submitted"`) to `submissionAudit/{docId}`
+
+---
+
+### resubmitArticle
+
+**Location:** `functions/index.js`
+
+**Trigger:** Client calls via Firebase SDK
+
+**Auth:** Submission owner or listed co-author
+
+**Precondition:** Submission status must be `"revise_resubmit"`
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `docId` | `string` | Submission document ID |
+| **Input** | `title` | `string` | Updated title |
+| **Input** | `category` | `string` | Updated category |
+| **Input** | `language` | `string` | Updated language code |
+| **Input** | `description` | `string` | Updated description |
+| **Input** | `content` | `string` | Updated markdown body |
+| **Input** | `authorMessage` | `string?` | Optional message to reviewer |
+| **Output** | `success` | `boolean` | Always `true` on success |
+
+**Logic:**
+1. Validates ownership (caller is `uid` owner or in `coauthorUids`)
+2. Validates status is `"revise_resubmit"`
+3. Updates content fields on submission document
+4. Marks latest revision round with `resubmittedAt` timestamp and `authorMessage`
+5. Sets status back to `"pending"`
+
+**Side Effects:**
+- Updates `submissions/{docId}` document
+- Appends audit event (`type: "resubmitted"`) to `submissionAudit/{docId}`
+
+---
+
+### approveSubmission
+
+**Location:** `functions/index.js`
+
+**Trigger:** Admin calls via Firebase SDK
+
+**Auth:** Admin only (verified email in admin list)
+
+**Precondition:** Submission status is `"pending"` or `"revise_resubmit"`
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `docId` | `string` | Submission document ID |
+| **Input** | `approveMessage` | `string?` | Optional approval message |
+| **Output** | `success` | `boolean` | Overall success |
+| **Output** | `published` | `boolean` | Whether GitHub publish succeeded |
+| **Output** | `githubError` | `string?` | Error message if publish failed |
+| **Output** | `markdown` | `string` | Generated markdown content |
+| **Output** | `filePath` | `string` | Path within repo (e.g. `website/_guides/default/college-application.md`) |
+| **Output** | `fileName` | `string` | File name only |
+| **Output** | `folder` | `string` | Target folder (e.g. `website/_guides/default`) |
+| **Output** | `authorSlug` | `string` | Primary author's slug |
+| **Output** | `authorName` | `string` | Primary author's display name |
+| **Output** | `authors` | `array` | Ordered list of `{ author_id, name }` |
+| **Output** | `slug` | `string` | Guide slug |
+| **Output** | `translationResults` | `array?` | `[{ lang, filePath, success, title, category, description, error? }]` |
+
+**Logic:**
+1. Asserts admin auth
+2. Fetches and validates submission document
+3. Resolves all submission authors via `resolveSubmissionAuthors()`
+4. Determines target folder from `LANG_MAP[language]`
+5. Generates markdown with frontmatter via `generateMarkdown()`
+6. Publishes to GitHub via `publishToGitHub()`
+   - Creates/updates guide file
+   - Ensures author presence (author pages + about.yml entry)
+7. If GitHub publish succeeds:
+   - Sets status to `"approved"`
+   - Records `reviewedAt`, `approveMessage`
+   - Adds `guide_id` to each author's `featuredGuideIds`
+   - Auto-translates missing language variants via `translateAndPublishMissingVariants()`
+   - Stores `translationResults` and `translations` metadata on submission
+8. If GitHub publish fails: returns success but with `published: false` and error
+
+**Side Effects:**
+- Creates/updates file on GitHub repository
+- Creates author markdown files on GitHub (if new author)
+- Updates `website/_data/about.yml` on GitHub
+- Calls Anthropic Claude API for translation (up to 2 calls)
+- Creates translated guide files on GitHub
+- Updates `submissions/{docId}` with status, translation results, metadata
+- Updates `users/{uid}` `featuredGuideIds` for each author
+- Appends audit event (`type: "approved"`) to `submissionAudit/{docId}`
+
+---
+
+### rejectSubmission
+
+**Location:** `functions/index.js`
+
+**Trigger:** Admin calls via Firebase SDK
+
+**Auth:** Admin only
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `docId` | `string` | Submission document ID |
+| **Input** | `reason` | `string` | Rejection reason |
+| **Output** | `success` | `boolean` | Always `true` on success |
+
+**Logic:**
+1. Asserts admin auth
+2. Fetches submission, verifies it exists
+3. Sets status to `"rejected"`, stores `rejectionReason`
+
+**Side Effects:**
+- Updates `submissions/{docId}` document
+- Appends audit event (`type: "rejected"`) to `submissionAudit/{docId}`
+
+---
+
+### requestRevision
+
+**Location:** `functions/index.js`
+
+**Trigger:** Admin calls via Firebase SDK
+
+**Auth:** Admin only
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `docId` | `string` | Submission document ID |
+| **Input** | `comments` | `string` | Reviewer comments for the author |
+| **Output** | `success` | `boolean` | Always `true` on success |
+| **Output** | `revisionHistory` | `array` | Sanitized revision history (PII removed) |
+
+**Logic:**
+1. Asserts admin auth
+2. Fetches submission, verifies it exists
+3. Calculates next revision round number
+4. Creates revision history entry with:
+   - `round` number
+   - `reviewerComments`
+   - Content snapshot (`title`, `category`, `language`, `description`, `content`)
+   - `reviewedAt` timestamp
+5. Sets status to `"revise_resubmit"`
+6. Returns sanitized revision history (UIDs/emails stripped)
+
+**Side Effects:**
+- Updates `submissions/{docId}` with new revision round and status
+- Appends audit event (`type: "revision_requested"`) to `submissionAudit/{docId}`
+
+---
+
+### deleteSubmission
+
+**Location:** `functions/index.js`
+
+**Trigger:** Admin calls via Firebase SDK
+
+**Auth:** Admin only
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `docId` | `string` | Submission document ID |
+| **Output** | `success` | `boolean` | Always `true` on success |
+| **Output** | `guideId` | `string?` | Guide slug (if was approved) |
+| **Output** | `language` | `string?` | Language code (if was approved) |
+| **Output** | `wasApproved` | `boolean` | Whether submission was previously approved |
+
+**Logic:**
+1. Asserts admin auth
+2. Fetches submission, verifies it exists
+3. If previously approved:
+   - Removes `guide_id` from all authors' `featuredGuideIds` arrays
+   - Determines file path from `LANG_MAP`
+   - Deletes file from GitHub via API
+4. Deletes `submissions/{docId}` from Firestore
+
+**Side Effects:**
+- Deletes file from GitHub repository (if was approved)
+- Updates `users/{uid}` `featuredGuideIds` for each author (if was approved)
+- Deletes Firestore document
+- Appends audit event (`type: "deleted"`) with full original data to `submissionAudit/{docId}`
+
+---
+
+## Internal Library Functions
+
+### Auth
+
+**Location:** `functions/lib/auth.js`
+
+#### getAdminEmails()
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | *(none)* | — | — |
+| **Output** | `emails` | `string[]` | Cached admin email list (5 min TTL) |
+
+**Source:** Reads `config/admins` Firestore document.
+
+#### assertAuth(auth)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `auth` | `object` | Firebase auth context from request |
+| **Output** | *(none)* | — | Throws `unauthenticated` if no auth |
+
+#### assertAdmin(auth)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `auth` | `object` | Firebase auth context from request |
+| **Output** | *(none)* | — | Throws if not admin or email not verified |
+
+---
+
+### GitHub
+
+**Location:** `functions/lib/github.js`
+
+#### getGitHubToken()
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | *(none)* | — | — |
+| **Output** | `token` | `string` | GitHub API token from `config/github` doc |
+
+#### githubApi(method, path, token, body)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `method` | `string` | HTTP method (`GET`, `PUT`, `DELETE`) |
+| **Input** | `path` | `string` | Path relative to repo contents URL |
+| **Input** | `token` | `string` | GitHub API token |
+| **Input** | `body` | `object?` | Request body |
+| **Output** | `response` | `object\|null` | Parsed JSON response; `null` on 404 for GET |
+
+**Base URL:** `https://api.github.com/repos/United-World-College/UWC-Survival-Guide/contents/`
+
+#### publishToGitHub(token, d, markdown, filePath, primaryAuthor)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `token` | `string` | GitHub API token |
+| **Input** | `d` | `object` | Submission data |
+| **Input** | `markdown` | `string` | Generated markdown content |
+| **Input** | `filePath` | `string` | Target file path in repo |
+| **Input** | `primaryAuthor` | `object` | `{ author_id, name }` |
+| **Output** | *(none)* | — | Throws on failure |
+
+**Side Effects:**
+- Creates or updates guide file on GitHub
+- Calls `ensureAuthorPresenceOnGitHub()` for primary author
+
+#### ensureAuthorPresenceOnGitHub(token, author)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `token` | `string` | GitHub API token |
+| **Input** | `author` | `object` | `{ author_id, name }` |
+| **Output** | *(none)* | — | — |
+
+**Side Effects (if author files don't exist):**
+- Creates `website/_authors/default/{slug}.md`
+- Creates `website/_authors/chinese/{slug}-cn.md`
+- Creates `website/_authors/chinese/{slug}-tw.md`
+- Appends contributor entry to `website/_data/about.yml`
+
+---
+
+### Translation
+
+**Location:** `functions/lib/translation.js`
+
+**Constants:**
+- `TRANSLATE_MODEL`: `"claude-sonnet-4-6"`
+- `TRANSLATE_MAX_TOKENS`: `16000`
+
+#### getAnthropicKey()
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | *(none)* | — | — |
+| **Output** | `apiKey` | `string\|null` | API key from `config/anthropic` doc |
+
+#### buildTranslationPrompt(sourceLang, targetLang, payload)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `sourceLang` | `string` | Source language code |
+| **Input** | `targetLang` | `string` | Target language code |
+| **Input** | `payload` | `object` | `{ title, category, description, body }` |
+| **Output** | `messages` | `array` | Claude API message array |
+
+#### translateGuide(apiKey, sourceLang, targetLang, guideData)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `apiKey` | `string` | Anthropic API key |
+| **Input** | `sourceLang` | `string` | Source language code |
+| **Input** | `targetLang` | `string` | Target language code |
+| **Input** | `guideData` | `object` | `{ title, category, description, content }` |
+| **Output** | `translation` | `object` | `{ title, category, description, body }` |
+
+**Side Effects:** Calls Anthropic Claude API (Claude Sonnet with tool use)
+
+#### buildTranslatedMarkdown(originalData, translation, targetLang, authors, editorName, slug)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `originalData` | `object` | Original submission data |
+| **Input** | `translation` | `object` | `{ title, category, description, body }` |
+| **Input** | `targetLang` | `string` | Target language code |
+| **Input** | `authors` | `array` | `[{ author_id, name }]` |
+| **Input** | `editorName` | `string` | Reviewer/editor name |
+| **Input** | `slug` | `string` | Guide slug |
+| **Output** | `markdown` | `string` | Complete markdown with frontmatter |
+
+#### translateAndPublishMissingVariants(token, apiKey, d, slug, authors, editorName)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `token` | `string` | GitHub API token |
+| **Input** | `apiKey` | `string` | Anthropic API key |
+| **Input** | `d` | `object` | Submission data |
+| **Input** | `slug` | `string` | Guide slug |
+| **Input** | `authors` | `array` | Author list |
+| **Input** | `editorName` | `string` | Reviewer name |
+| **Output** | `results` | `array` | `[{ lang, filePath, success, title, category, description, error? }]` |
+
+**Side Effects:**
+- Calls Claude API for each missing language (up to 2 calls)
+- Creates translated guide files on GitHub
+
+---
+
+### Firestore Helpers
+
+**Location:** `functions/lib/firestore.js`
+
+#### appendSubmissionAuditEvent(docId, type, auth, details)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `docId` | `string` | Submission document ID |
+| **Input** | `type` | `string` | Event type (`submitted`, `approved`, etc.) |
+| **Input** | `auth` | `object` | Caller auth context |
+| **Input** | `details` | `object` | Additional event-specific fields |
+| **Output** | *(none)* | — | — |
+
+**Side Effects:** Creates or updates `submissionAudit/{docId}` with new event appended
+
+#### resolveAuthorSlug(uid, authorName)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `uid` | `string` | Firebase user UID |
+| **Input** | `authorName` | `string` | Fallback display name |
+| **Output** | `authorSlug` | `string` | Resolved `author_id` |
+
+**Side Effects:** May set `author_id` on `users/{uid}` via `ensureAuthorId()`
+
+#### resolveSubmissionAuthors(d)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `d` | `object` | Submission data (needs `uid`, `authorName`, `coAuthors`) |
+| **Output** | `authors` | `array` | `[{ author_id, name }]` ordered and deduplicated |
+
+#### ensureUniqueGuideSlug(baseSlug, excludeDocId)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `baseSlug` | `string` | Base slug from title |
+| **Input** | `excludeDocId` | `string?` | Doc ID to exclude from uniqueness check |
+| **Output** | `slug` | `string` | Unique slug (appends `-2`, `-3`, etc. if needed) |
+
+#### ensureUniqueAuthorSlug(baseSlug)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `baseSlug` | `string` | Base slug from author name |
+| **Output** | `slug` | `string` | Unique author slug |
+
+#### ensureAuthorId(uid, authorSlug)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `uid` | `string` | Firebase user UID |
+| **Input** | `authorSlug` | `string` | Author slug to set |
+| **Output** | *(none)* | — | — |
+
+**Side Effects:** Sets immutable `author_id` on `users/{uid}` if not already set
+
+---
+
+### Utility Helpers
+
+**Location:** `functions/lib/helpers.js`
+
+#### toBase64(str)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `str` | `string` | Plain text |
+| **Output** | `encoded` | `string` | Base64-encoded string |
+
+#### makeSlug(text)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `text` | `string` | Title or text |
+| **Output** | `slug` | `string` | Kebab-case slug (handles Chinese via pinyin-style) |
+
+#### makeAuthorSlug(text)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `text` | `string` | Author name |
+| **Output** | `slug` | `string` | Normalized author slug (handles accents, special chars) |
+
+#### getOrderedSubmissionAuthors(d)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `d` | `object` | Submission data with `authorName`, `author_id`, `coAuthors` |
+| **Output** | `authors` | `array` | Deduplicated, ordered `[{ author_id, name }]` |
+
+#### sanitizeRevisionHistory(history)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `history` | `array` | Revision history entries |
+| **Output** | `sanitized` | `array` | Same entries with `uid` and `email` fields removed |
+
+#### generateMarkdown(d, authors, editorName, overrideSlug)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `d` | `object` | Submission data |
+| **Input** | `authors` | `array` | `[{ author_id, name }]` |
+| **Input** | `editorName` | `string` | Reviewer/editor display name |
+| **Input** | `overrideSlug` | `string?` | Optional slug override |
+| **Output** | `markdown` | `string` | Complete markdown with YAML frontmatter and body |
+
+**Frontmatter fields generated:** `title`, `category`, `description`, `order`, `author` (first author name), `author_id`, `co_authors` (if multiple), `guide_id`, `language_code`, `language_name`, `language_folder`, `language_sort`, `published_date`, `editor`
+
+---
+
+## GitHub Actions Workflows
+
+### deploy.yml
+
+**Location:** `.github/workflows/deploy.yml`
+
+**Triggers:**
+- Push to `main` branch
+- Manual `workflow_dispatch`
+
+| Phase | Step | Input | Output |
+|-------|------|-------|--------|
+| **Test** | Setup Node.js 22 | — | Node environment |
+| **Test** | Install function deps | `functions/package.json` | `functions/node_modules/` |
+| **Test** | Install test deps | `tests/package.json` | `tests/node_modules/` |
+| **Test** | Run function tests | `functions/__tests__/*.test.js` | Pass/fail (blocks build) |
+| **Test** | Run site tests | `tests/*.test.js` | Pass/fail (blocks build) |
+| **Build** | Setup Ruby 3.3 | `website/Gemfile` | Ruby + Bundler |
+| **Build** | Jekyll build | `website/` (all source) | `website/_site/` (static HTML) |
+| **Deploy** | Deploy to Pages | `website/_site/` artifact | Live site at GitHub Pages URL |
+
+**Environment variables:**
+- `JEKYLL_ENV=production` during build
+
+**Side Effects:**
+- Deploys static site to GitHub Pages
+- Tests must pass before build proceeds
+- Build must succeed before deploy proceeds
+
+---
+
+## CLI Scripts
+
+### script/translate
+
+**Location:** `script/translate` → `auto-translator/main.py`
+
+**Trigger:** Manual: `./script/translate [options]`
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `--dry-run` | flag | Show what would be translated (default behavior) |
+| **Input** | `--guide-id <id>` | `string` | Translate a specific guide only |
+| **Input** | `--target-language <code>` | `string` | Translate into a specific language only |
+| **Output** | New `.md` files | files | Written to `website/_guides/` |
+
+**Logic:**
+1. Scans `website/_guides/default/` and `website/_guides/chinese/`
+2. Groups files by `guide_id` (from frontmatter or filename)
+3. Identifies missing language variants for each guide
+4. Selects preferred source language (prefers `zh-CN` when available)
+5. Calls Claude Sonnet with language-specific style notes
+6. Rewrites internal Liquid links to target language folder
+7. Writes translated markdown files
+
+**Source preference rules:**
+- Translating to English → prefer `zh-CN` source
+- Translating to `zh-TW` → prefer `zh-CN` source
+- Translating to `zh-CN` → prefer English source
+
+**Environment:**
+- `ANTHROPIC_API_KEY` (required)
+- `ANTHROPIC_MODEL` (optional, default: `claude-sonnet-4-6`)
+
+---
+
+### script/serve
+
+**Location:** `script/serve`
+
+**Trigger:** Manual: `./script/serve [args]`
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | CLI args | passthrough | Forwarded to Jekyll (e.g. `--port 8000`) |
+| **Output** | Local server | HTTP | Jekyll dev server on auto-detected port (starting from 4000) |
+
+**Environment:** `JEKYLL_ENV` (default: `development`)
+
+---
+
+### script/bootstrap
+
+**Location:** `script/bootstrap`
+
+**Trigger:** Manual: `./script/bootstrap`
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `website/Gemfile` | file | Ruby dependency list |
+| **Output** | Installed gems | directory | `website/vendor/bundle/` |
+
+---
+
+### script/firebase
+
+**Location:** `script/firebase`
+
+**Trigger:** Manual: `./script/firebase [--import] [--export]`
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `--import` | flag | Restore from `.firebase-data/` |
+| **Input** | `--export` | flag | Save to `.firebase-data/` on exit |
+| **Output** | Emulator suite | services | Auth (9099), Firestore (8080), Storage (9199), UI (4010) |
+
+---
+
+### script/test
+
+**Location:** `script/test`
+
+**Trigger:** Manual: `./script/test`
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | Test files | `*.test.js` | `functions/__tests__/` and `tests/` |
+| **Output** | Test results | stdout | Jest verbose output |
+
+---
+
+## Migration & Backfill Scripts
+
+### backfill-submissions.js
+
+**Location:** `functions/backfill-submissions.js`
+
+**Trigger:** Manual: `node backfill-submissions.js [--dry-run]`
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `--dry-run` | flag | Preview without writing |
+| **Input** | Hardcoded guide paths | constants | `college-application.md`, `school-selection.md`, `terminology.md` |
+| **Output** | Firestore documents | `submissions/` | Backfilled submission records with status `"approved"` |
+
+**Logic:** Parses guide frontmatter, looks up user by `author_id`, creates submission docs.
+
+---
+
+### migrate-submission-actor-audit.js
+
+**Location:** `scripts/migrate-submission-actor-audit.js`
+
+**Trigger:** Manual: `node scripts/migrate-submission-actor-audit.js [--write]`
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `--write` | flag | Actually persist changes (default: dry-run) |
+| **Output** | Migrated submissions | Firestore | PII removed from `revisionHistory`, moved to `submissionAudit` |
+
+---
+
+### migrate-submission-authors.js
+
+**Location:** `scripts/migrate-submission-authors.js`
+
+**Purpose:** Normalize `coAuthors` format in existing submissions.
+
+---
+
+### migrate-author-id.js
+
+**Location:** `scripts/migrate-author-id.js`
+
+**Purpose:** Migrate author identifier fields.
+
+---
+
+## Data Flow Diagrams
+
+### Submission → Publication Flow
+
+```
+User fills form in admin UI
+         │
+         ▼
+  submitArticle()
+    ├─ Validate fields
+    ├─ Generate guide_id slug
+    ├─ Create submissions/{docId}  ──►  Firestore
+    ├─ Status: "pending"
+    └─ Audit event: "submitted"    ──►  submissionAudit/{docId}
+         │
+         ▼
+  [Admin reviews in dashboard]
+         │
+         ▼
+  approveSubmission()
+    ├─ Resolve all authors
+    ├─ Generate markdown + frontmatter
+    ├─ publishToGitHub()
+    │   ├─ PUT guide file             ──►  GitHub repo
+    │   └─ ensureAuthorPresence()
+    │       ├─ PUT author .md files   ──►  GitHub repo
+    │       └─ Update about.yml       ──►  GitHub repo
+    ├─ Status: "approved"             ──►  Firestore
+    ├─ Update featuredGuideIds        ──►  users/{uid}
+    ├─ translateAndPublishMissing()
+    │   ├─ Call Claude API            ──►  Anthropic
+    │   └─ PUT translated files       ──►  GitHub repo
+    └─ Audit event: "approved"        ──►  submissionAudit/{docId}
+         │
+         ▼
+  Push to main triggers deploy.yml
+    ├─ Run tests (Jest)
+    ├─ Build Jekyll site
+    │   ├─ Read _guides/**/*.md
+    │   ├─ Read _data/**/*.yml
+    │   ├─ Apply _layouts/
+    │   └─ Output _site/
+    └─ Deploy to GitHub Pages         ──►  Live website
+```
+
+### Revision Workflow
+
+```
+  requestRevision()
+    ├─ Record revisionHistory round
+    │   ├─ reviewerComments
+    │   ├─ Content snapshot
+    │   └─ reviewedAt timestamp
+    ├─ Status: "revise_resubmit"      ──►  Firestore
+    └─ Audit: "revision_requested"    ──►  submissionAudit/{docId}
+         │
+         ▼
+  [Author edits and resubmits]
+         │
+         ▼
+  resubmitArticle()
+    ├─ Validate ownership
+    ├─ Update content fields
+    ├─ Mark round resubmittedAt
+    ├─ Status: "pending"              ──►  Firestore
+    └─ Audit: "resubmitted"          ──►  submissionAudit/{docId}
+         │
+         ▼
+  [Returns to admin review]
+```
+
+### Auto-Translation Workflow
+
+```
+  ./script/translate
+         │
+         ▼
+  Scan _guides/default/ and _guides/chinese/
+    ├─ Parse frontmatter from all guide files
+    └─ Group by guide_id
+         │
+         ▼
+  For each guide, identify missing language variants
+    ├─ Has en but not zh-CN?  → translate
+    ├─ Has en but not zh-TW?  → translate
+    ├─ Has zh-CN but not en?  → translate
+    └─ (etc. for all 3 languages)
+         │
+         ▼
+  Select best source language
+    ├─ Target en  → prefer zh-CN source
+    ├─ Target zh-TW → prefer zh-CN source
+    └─ Target zh-CN → prefer en source
+         │
+         ▼
+  Call Claude Sonnet (tool use)
+    ├─ System: "You are a translation editor"
+    ├─ User: source content + style notes
+    └─ Tool: guide_translation
+         │       ├─ title
+         │       ├─ category
+         │       ├─ description
+         │       └─ body
+         ▼
+  Post-process
+    ├─ Rewrite Liquid links to target folder
+    └─ Normalize frontmatter field order
+         │
+         ▼
+  Write .md file to _guides/
+```
+
+---
+
+## Firestore Data Structures
+
+### submissions/{docId}
+
+```javascript
 {
-  title, category, language, description, content, authorName,
-  coAuthors: [{ uid, author_id, name, order }]
+  // Identity
+  uid: string,                    // Creator's Firebase UID
+  authorName: string,             // Creator's display name
+  guide_id: string,               // Unique slug
+
+  // Content
+  title: string,
+  category: string,
+  language: "en" | "zh-CN" | "zh-TW",
+  description: string,
+  content: string,                // Markdown body
+
+  // Status
+  status: "pending" | "revise_resubmit" | "approved" | "rejected",
+  createdAt: Timestamp,
+  updatedAt: Timestamp,
+  reviewedAt: Timestamp,
+
+  // Co-authorship
+  coAuthors: [{ uid?, author_id?, name, order? }],
+  coauthorUids: [string],
+
+  // Revision history
+  revisionHistory: [{
+    round: number,
+    reviewerComments?: string,
+    authorMessage?: string,
+    approveMessage?: string,
+    resubmittedAt?: string,       // ISO timestamp
+    reviewedAt: string,           // ISO timestamp
+    contentSnapshot: { title, category, language, description, content }
+  }],
+
+  // Review messages
+  approveMessage?: string,
+  reviewerComments?: string,
+  rejectionReason?: string,
+
+  // Translation (post-approval)
+  translationResults?: [{ lang, filePath, success, title, category, description, error? }],
+  translations?: {
+    en?: { title, category, description },
+    "zh-CN"?: { title, category, description },
+    "zh-TW"?: { title, category, description }
+  }
 }
 ```
 
-**Database fields written to `submissions/{docId}`:**
+### submissionAudit/{docId}
 
-| Field | Value |
-|---|---|
-| `uid` | Author's Firebase UID |
-| `authorName` | Author display name |
-| `title` | From form |
-| `category` | From form |
-| `language` | From form |
-| `description` | From form |
-| `content` | Markdown from form |
-| `guide_id` | Auto-generated slug from title |
-| `status` | `"pending"` |
-| `coAuthors` | Array from form |
-| `coauthorUids` | Array of coauthor UIDs |
-| `createdAt` | Server timestamp |
-| `updatedAt` | Server timestamp |
-
-**Audit event:** `{ type: "submitted", guideId }`
-
----
-
-## Resubmit Article
-
-| | Details |
-|---|---|
-| **Trigger** | Author clicks "Resubmit" on a submission with status `revise_resubmit`; opens pop-up window |
-| **Frontend fields** | Title, Category, Language, Description, Content (all editable, pre-filled with current values), Author Message (optional, max 500 chars) |
-| **Frontend location** | `website/_layouts/admin_page.html` — separate pop-up window, `#rs-form` |
-| **API call** | `functions.httpsCallable('resubmitArticle')` |
-| **Reads from** | **`submissions/{docId}`** (to populate form + verify status is `revise_resubmit` and user is owner/coauthor) |
-| **Writes to** | **`submissions/{docId}`** (update) + **`submissionAudit/{docId}`** (audit event) |
-
-**Payload:**
-
-```js
-{ docId, title, category, language, description, content, authorMessage }
-```
-
-**Database changes to `submissions/{docId}`:**
-
-| Field | Change |
-|---|---|
-| `title` | Updated |
-| `category` | Updated |
-| `language` | Updated |
-| `description` | Updated |
-| `content` | Updated |
-| `status` | Changed to `"pending"` |
-| `revisionHistory[last]` | Adds `resubmittedAt` and `authorMessage` to last entry |
-| `approveMessage` | Removed |
-| `rejectionReason` | Removed |
-| `updatedAt` | Server timestamp |
-
-**Audit event:** `{ type: "resubmitted", authorMessage, round }`
-
----
-
-## View My Submissions
-
-| | Details |
-|---|---|
-| **Trigger** | Page load (authenticated user) |
-| **Frontend location** | `website/_layouts/admin_page.html` — `#submissions-list` |
-| **API call** | Two direct Firestore queries, results merged |
-| **Reads from** | **`submissions`** — (1) `where('uid', '==', currentUid)` (own submissions) + (2) `where('coauthorUids', 'array-contains', currentUid)` (coauthored submissions) |
-| **Writes to** | Nothing |
-
-**Data displayed per submission:**
-
-- Title, Category, Language, Status badge (color-coded), Submission date, Approved/Reviewed date
-- Rejection reason (if rejected)
-- Resubmit link (if `revise_resubmit`)
-
----
-
-## Admin: Approve Submission
-
-| | Details |
-|---|---|
-| **Trigger** | Admin clicks "Approve" in review modal, optionally adds message, clicks confirm |
-| **Frontend fields** | Approve Message (optional, max 500 chars) |
-| **Frontend location** | `website/_layouts/admin_page.html` — `#modal-approve-form` |
-| **API call** | `functions.httpsCallable('approveSubmission')` |
-| **Auth required** | Verified email in `ADMIN_EMAILS` list |
-| **Reads from** | **`submissions/{docId}`**, **`users/{authorUid}`** (for all authors), **`config/github`** (token), **`config/anthropic`** (API key for translation) |
-| **Writes to** | **`submissions/{docId}`**, **`users/{authorUid}`** (all authors), **GitHub repo**, **`submissionAudit/{docId}`** |
-
-**Payload:** `{ docId, approveMessage }`
-
-**Full process:**
-
-1. Validates submission status is `pending` or `revise_resubmit`
-2. Reuses the existing `guide_id` (generated at submission time; immutable)
-3. Resolves all coauthors — fetches/generates `author_id` for each
-4. Generates markdown file with YAML frontmatter
-5. **GitHub writes:**
-   - `PUT website/_guides/{lang_folder}/{guide_id}{suffix}.md` (article file)
-   - `PUT website/_authors/{lang_folder}/{author_id}{suffix}.md` (author pages, if missing)
-6. Auto-translates to missing language variants via **Claude API** (`claude-sonnet-4-6`)
-7. Updates `submissions/{docId}`: `status → "approved"`, `reviewedAt`, `approveMessage`
-8. Updates each author's `users/{uid}`: appends to `publishedArticles` array
-
-**Audit event:** `{ type: "approved", approveMessage, guideId }`
-
----
-
-## Admin: Reject Submission
-
-| | Details |
-|---|---|
-| **Trigger** | Admin clicks "Reject" in review modal, enters reason, clicks confirm |
-| **Frontend fields** | Rejection Reason (required, max 1000 chars) |
-| **Frontend location** | `website/_layouts/admin_page.html` — `#modal-reject-form` |
-| **API call** | `functions.httpsCallable('rejectSubmission')` |
-| **Reads from** | **`submissions/{docId}`** (verify exists) |
-| **Writes to** | **`submissions/{docId}`** + **`submissionAudit/{docId}`** |
-
-**Payload:** `{ docId, reason }`
-
-**Database changes to `submissions/{docId}`:**
-
-| Field | Change |
-|---|---|
-| `status` | `"rejected"` |
-| `rejectionReason` | Set to provided reason |
-| `approveMessage` | Removed |
-| `reviewedAt` | Server timestamp |
-| `updatedAt` | Server timestamp |
-
-**Audit event:** `{ type: "rejected", rejectionReason }`
-
----
-
-## Admin: Request Revision
-
-| | Details |
-|---|---|
-| **Trigger** | Admin clicks "Revise & Resubmit" in review modal, enters feedback, clicks confirm |
-| **Frontend fields** | Reviewer Comments (required, max 1000 chars) |
-| **Frontend location** | `website/_layouts/admin_page.html` — `#modal-rnr-form` |
-| **API call** | `functions.httpsCallable('requestRevision')` |
-| **Reads from** | **`submissions/{docId}`** (current content for snapshot) |
-| **Writes to** | **`submissions/{docId}`** + **`submissionAudit/{docId}`** |
-
-**Payload:** `{ docId, comments }`
-
-**Database changes to `submissions/{docId}`:**
-
-| Field | Change |
-|---|---|
-| `status` | `"revise_resubmit"` |
-| `reviewerComments` | Set to provided comments |
-| `approveMessage` | Removed |
-| `rejectionReason` | Removed |
-| `revisionHistory` | Appends new entry (see below) |
-| `reviewedAt` | Server timestamp |
-| `updatedAt` | Server timestamp |
-
-**Revision history entry appended:**
-
-```js
+```javascript
 {
-  round: <next round number>,
-  reviewerComments: "...",
-  reviewedAt: "<ISO string>",
-  resubmittedAt: null,
-  contentSnapshot: { title, category, language, description, content }
+  updatedAt: Timestamp,
+  events: [{
+    type: "submitted" | "resubmitted" | "approved" | "rejected"
+         | "revision_requested" | "deleted",
+    actorUid: string,
+    actorAuthorId?: string,
+    actedAt: string,              // ISO timestamp
+    // Event-specific fields:
+    guideId?: string,
+    authorMessage?: string,
+    reviewerComments?: string,
+    approveMessage?: string,
+    rejectionReason?: string,
+    round?: number,
+    status?: string,
+    language?: string,
+    title?: string
+  }]
 }
 ```
 
-**Audit event:** `{ type: "revision_requested", reviewerComments, round }`
+### users/{uid}
 
----
-
-## Admin: Delete Submission
-
-| | Details |
-|---|---|
-| **Trigger** | Admin clicks "Delete" in review modal and confirms |
-| **Frontend fields** | None (confirmation only) |
-| **Frontend location** | `website/_layouts/admin_page.html` — `#modal-delete-form` |
-| **API call** | `functions.httpsCallable('deleteSubmission')` |
-| **Reads from** | **`submissions/{docId}`** (to get guide_id, language, status, author info) |
-| **Writes to** | **`submissions/{docId}`** (deleted), **`users/{authorUid}`** (if was approved — removes from `publishedArticles` and `featuredGuideIds`), **GitHub repo** (if was approved — deletes file), **`submissionAudit/{docId}`** |
-
-**Payload:** `{ docId }`
-
-**If submission was approved, additional cleanup:**
-- Removes article from all authors' `publishedArticles` arrays
-- Removes `guide_id` from all authors' `featuredGuideIds` arrays
-- Deletes file from GitHub: `DELETE website/_guides/{lang_folder}/{guide_id}{suffix}.md`
-
-**Audit event:** `{ type: "deleted", status, guideId, language, title }`
-
----
-
-## Admin: Review Panel
-
-| | Details |
-|---|---|
-| **Trigger** | Page load (admin user) |
-| **Frontend location** | `website/_layouts/admin_page.html` — review panel with status filter tabs |
-| **API call** | Direct Firestore query |
-| **Reads from** | **`submissions`** — all documents (admin has global read access) |
-| **Writes to** | Nothing |
-
-**Filter tabs:** Pending, Approved, Rejected, Revise & Resubmit, All
-
-**Data displayed per submission:** Title, Author, Category, Language, Status, Date, Coauthors
-
-**Modal displays:** Full content, revision history thread, action buttons based on status
-
----
-
-## Register Published Article
-
-| | Details |
-|---|---|
-| **Trigger** | Author selects a published guide from dropdown and clicks "Register" |
-| **Frontend fields** | Guide selector dropdown (populated from `SITE_GUIDES` — Jekyll-generated list of all published guides by this author) |
-| **Frontend location** | `website/_layouts/admin_page.html` — featured articles card |
-| **API call** | Direct Firestore write: `db.collection('users').doc(uid).update({ publishedArticles: [...] })` |
-| **Reads from** | `SITE_GUIDES` (Jekyll build-time data embedded in page), **`users/{uid}`** (current `publishedArticles`) |
-| **Writes to** | **`users/{uid}`** — `publishedArticles` array (appends `{ guide_id, title, category }`) |
-
----
-
-## Feature Articles
-
-| | Details |
-|---|---|
-| **Trigger** | Author toggles star/feature on a registered article |
-| **Frontend location** | `website/_layouts/admin_page.html` — featured articles card |
-| **API call** | Direct Firestore write: `db.collection('users').doc(uid).update({ featuredGuideIds: [...] })` |
-| **Reads from** | **`users/{uid}`** (current `featuredGuideIds` and `publishedArticles`) |
-| **Writes to** | **`users/{uid}`** — `featuredGuideIds` array (add/remove `guide_id` strings) |
-
----
-
-## Coauthor Search & Add
-
-| | Details |
-|---|---|
-| **Trigger** | Author types an `author_id` in coauthor search field and clicks search |
-| **Frontend fields** | Coauthor Search Input (`author_id` string) |
-| **Frontend location** | `website/_layouts/admin_page.html` — coauthor section in article form |
-| **API call** | Direct Firestore query: `db.collection('users').where('author_id', '==', searchValue).get()` |
-| **Reads from** | **`users`** collection (query by `author_id`) |
-| **Writes to** | Nothing (adds to in-memory coauthor list only; persisted on article submit) |
-
----
-
-## Database Schema Summary
-
-### `users/{uid}`
-
-| Field | Type | Set By | Notes |
-|---|---|---|---|
-| `uid` | string | Sign Up | Firebase Auth UID |
-| `email` | string | Sign Up | |
-| `displayName` | string | Sign Up / Profile | Max 40 chars |
-| `author_id` | string | Sign Up (auto-gen) | Immutable after creation |
-| `photoURL` | string | Profile | Firebase Storage URL |
-| `showEmail` | boolean | Profile | |
-| `affiliation` | string | Profile | Max 80 chars |
-| `cohort` | string | Sign Up / Profile | Max 60 chars |
-| `summary` | string | Profile | Max 120 chars |
-| `profileLinks` | array | Profile | `[{label, url}]`, max 5 |
-| `publishedArticles` | array | Approve / Register | `[{guide_id, title, category}]` |
-| `featuredGuideIds` | array | Feature toggle | `[guide_id, ...]` |
-| `createdAt` | timestamp | Sign Up | |
-| `updatedAt` | timestamp | Profile / Approve | |
-
-### `submissions/{docId}`
-
-| Field | Type | Set By | Notes |
-|---|---|---|---|
-| `uid` | string | Submit | Primary author UID |
-| `authorName` | string | Submit | |
-| `title` | string | Submit / Resubmit | |
-| `category` | string | Submit / Resubmit | |
-| `language` | string | Submit / Resubmit | en, zh-CN, zh-TW |
-| `description` | string | Submit / Resubmit | |
-| `content` | string | Submit / Resubmit | Markdown |
-| `guide_id` | string | Submit | Auto-generated slug, immutable after approval |
-| `status` | string | Submit / Admin actions | pending, approved, rejected, revise_resubmit |
-| `coAuthors` | array | Submit | `[{uid, author_id, name, order}]` |
-| `coauthorUids` | array | Submit | UIDs for permission checks |
-| `approveMessage` | string | Approve | Cleared on reject/revise |
-| `rejectionReason` | string | Reject | Cleared on revise |
-| `reviewerComments` | string | Request Revision | |
-| `authorMessage` | string | Resubmit | |
-| `revisionHistory` | array | Request Revision / Resubmit | See revision entry format above |
-| `createdAt` | timestamp | Submit | |
-| `updatedAt` | timestamp | All mutations | |
-| `reviewedAt` | timestamp | Approve / Reject / Revise | |
-
-### `submissionAudit/{docId}`
-
-| Field | Type | Notes |
-|---|---|---|
-| `submissionId` | string | Matches `submissions` doc ID |
-| `updatedAt` | timestamp | |
-| `events` | array | `[{type, actorUid, actorAuthorId, actedAt, ...type-specific fields}]` |
-
-### `config/github` & `config/anthropic`
-
-| Field | Collection | Purpose |
-|---|---|---|
-| `token` | `config/github` | GitHub API personal access token |
-| `apiKey` | `config/anthropic` | Claude API key for auto-translation |
-
----
-
-## Status Flow Diagram
-
-```
-                    ┌──────────┐
-                    │  Submit   │
-                    └────┬─────┘
-                         │
-                         ▼
-                    ┌──────────┐
-              ┌─────│  pending  │─────┐
-              │     └────┬─────┘     │
-              │          │           │
-              ▼          ▼           ▼
-        ┌──────────┐ ┌────────┐ ┌──────────────────┐
-        │ approved  │ │rejected│ │ revise_resubmit  │
-        └──────────┘ └────────┘ └────────┬─────────┘
-                                         │
-                                    Resubmit
-                                         │
-                                         ▼
-                                    ┌──────────┐
-                                    │  pending  │  (cycle continues)
-                                    └──────────┘
+```javascript
+{
+  displayName?: string,
+  author_id: string,              // Immutable after first set
+  featuredGuideIds?: [string]
+}
 ```
 
-**Any status → Deleted** (admin can delete from any state)
+### config/*
+
+| Document | Fields |
+|----------|--------|
+| `config/admins` | `{ emails: [string] }` |
+| `config/github` | `{ token: string }` |
+| `config/anthropic` | `{ apiKey: string }` |
 
 ---
 
-## Author Page Creation (on Approval)
+## Summary Table
 
-When a submission is approved, author pages are auto-created on GitHub for every author (primary + coauthors) via `ensureAuthorPresenceOnGitHub()` in `functions/index.js:231`.
-
-**Trigger:** Part of the `approveSubmission` flow — runs after the guide file is pushed to GitHub.
-
-**Condition:** Only creates files that don't already exist (idempotent — skips if author page is already present).
-
-### Files created per author
-
-| File | Path | Permalink |
-|---|---|---|
-| English | `website/_authors/default/{author_id}.md` | `/authors/{author_id}/` |
-| Simplified Chinese | `website/_authors/chinese/{author_id}-cn.md` | `/zh-cn/authors/{author_id}/` |
-| Traditional Chinese | `website/_authors/chinese/{author_id}-tw.md` | `/zh-tw/authors/{author_id}/` |
-
-### Author page frontmatter
-
-```yaml
----
-title: "Author Display Name"
-author_id: author-slug
-permalink: /authors/author-slug/
-translation_key: author-author-slug
-language_code: en
-language_name: English
-language_sort: 1
----
-```
-
-### Contributor entry in `about.yml`
-
-Also appends to `website/_data/about.yml` under `contributors:` if the `author_id` is not already listed:
-
-```yaml
-- id: author-slug
-  name: "Author Display Name"
-  affiliation:
-  cohort:
-  profile_label:
-  profile_url:
-  contacts: []
-  photo:
-  summary: "Contributor."
-```
-
-### Reads from
-- **GitHub API** (`GET` each file path to check existence, `GET` `about.yml` to check for existing entry)
-- **`users/{uid}`** (author's `author_id` and `displayName`)
-
-### Writes to
-- **GitHub repo** (`PUT` up to 3 author page files + `PUT` updated `about.yml`)
-
----
-
-## Author Page Display (Public)
-
-**File:** `website/_layouts/author.html`
-
-The author page combines **static build-time data** (Jekyll) and **dynamic runtime data** (Firestore JS).
-
-### Articles — "Latest" section (dynamic, runtime JS)
-
-| | Details |
-|---|---|
-| **Reads from** | **Firestore `submissions` collection** — two queries: (1) `where('status', '==', 'approved').where('uid', '==', authorUid)` and (2) `where('status', '==', 'approved').where('coauthorUids', 'array-contains', authorUid)` |
-| **Prerequisite** | First resolves `author_id` → `uid` via a `users` collection query |
-| **Deduplication** | By document ID (merged from both queries) |
-| **Sorting** | By `reviewedAt` (approval date) descending, fallback to `createdAt` |
-| **Displays** | Date, category, title (linked), description |
-| **URL construction** | Built from `guide_id` + `language` using the language map: `/guides/{folder}/{guide_id}{suffix}/` |
-
-Articles appear here **as soon as the submission is marked approved in Firestore** — no need to wait for a Jekyll rebuild. Requires approved submissions to be publicly readable (Firestore security rules allow unauthenticated read when `status == 'approved'`).
-
-### Featured articles section (dynamic, runtime JS)
-
-| | Details |
-|---|---|
-| **Reads from** | **Firestore `users` collection** — `featuredGuideIds` array from the user doc |
-| **Cross-referenced with** | The approved submissions already loaded for the Latest section |
-| **Logic** | Filters the loaded submissions to only those whose `guide_id` is in `featuredGuideIds` |
-| **Displays** | Same card format as Latest (date, category, title, description) |
-| **Hidden if** | `featuredGuideIds` is empty or no matches found |
-
-### Profile info (layered: static base + dynamic override)
-
-| Data | Static source (build time) | Dynamic source (runtime JS) |
-|---|---|---|
-| Name | `about.yml` → `person.name` | Firestore `users` → `displayName` |
-| Photo | `about.yml` → `person.photo` | Firestore `users` → `photoURL` |
-| Affiliation | `about.yml` → `person.affiliation` | Firestore `users` → `affiliation` |
-| Cohort | `about.yml` → `person.cohort` | Firestore `users` → `cohort` |
-| Summary | `about.yml` → `person.summary` | Firestore `users` → `summary` |
-| Role badge | `about.yml` EIC list + locale strings | JS recalculates: EIC > Core Member (≥5 articles) > Member |
-| Email | Not shown statically | Firestore `users` → `email` (only if `showEmail` is true) |
-| Profile links | `about.yml` → `person.profile_label/url` | Firestore `users` → `profileLinks` (merged with static links) |
-| Contacts | Author page frontmatter or `about.yml` | Not overridden dynamically |
-
-**Static reads:** `website/_data/about.yml` (editors_in_chief + contributors arrays), author page frontmatter
-
-**Dynamic reads:** Firestore `users` collection (queried by `author_id`) + Firestore `submissions` collection (approved, queried by `uid`)
-
-### Coauthors section (static, build time)
-
-| | Details |
-|---|---|
-| **Reads from** | **`site.guides`** — same Jekyll collection |
-| **Logic** | For each guide this author is part of, collects all *other* authors (primary + coauthors excluding self) |
-| **Displays** | Coauthor name (linked to their author page), number of shared articles, sorted by count descending |
-
----
-
-## External Systems Touched
-
-| System | When | Operation |
-|---|---|---|
-| **GitHub API** | Approve | PUT article file + author pages to repo |
-| **GitHub API** | Delete (if approved) | DELETE article file from repo |
-| **Claude API** | Approve | Auto-translate to missing language variants |
-| **Firebase Storage** | Profile update | Upload avatar image |
-| **Firebase Auth** | Sign In / Sign Up / Reset | Authentication |
-
----
-
-## Language Mapping
-
-| Code | Folder | File Suffix | Sort Order |
-|---|---|---|---|
-| `en` | `default` | _(none)_ | 1 |
-| `zh-CN` | `chinese` | `-CN` | 2 |
-| `zh-TW` | `chinese` | `-TW` | 3 |
-
-**File path pattern:** `website/_guides/{folder}/{guide_id}{suffix}.md`
+| Action | Type | Trigger | Key Input | Key Output | Side Effects |
+|--------|------|---------|-----------|------------|--------------|
+| `checkAdminStatus` | Cloud Fn | Client call | auth context | `{ isAdmin }` | None |
+| `submitArticle` | Cloud Fn | Client call | title, content, language, coAuthors | `{ docId, guideId }` | Firestore write, audit |
+| `resubmitArticle` | Cloud Fn | Client call | docId, updated content | `{ success }` | Firestore update, audit |
+| `approveSubmission` | Cloud Fn | Admin call | docId | `{ published, translationResults }` | GitHub publish, translate, Firestore, audit |
+| `rejectSubmission` | Cloud Fn | Admin call | docId, reason | `{ success }` | Firestore update, audit |
+| `requestRevision` | Cloud Fn | Admin call | docId, comments | `{ revisionHistory }` | Firestore update, audit |
+| `deleteSubmission` | Cloud Fn | Admin call | docId | `{ wasApproved }` | GitHub delete, Firestore delete, audit |
+| `deploy.yml` | GitHub Action | Push to main | Repo code | Live site | Tests, build, deploy to Pages |
+| `script/translate` | CLI | Manual | guide-id, target-lang | Translated .md files | Filesystem write, Claude API |
+| `backfill-submissions.js` | Script | Manual | Hardcoded guides | Firestore docs | Firestore write |
+| `migrate-*` | Scripts | Manual | --write flag | Migrated data | Firestore updates |
