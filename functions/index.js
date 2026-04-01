@@ -62,6 +62,13 @@ function makeSlug(text) {
   return text.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+function makeAuthorSlug(text) {
+  // Strip CJK characters for author slugs (e.g. "William Huang 黃靖然" → "william-huang")
+  // Fall back to keeping CJK if the name is purely CJK
+  const ascii = text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return ascii || makeSlug(text);
+}
+
 function getAuthorKey(author) {
   if (!author) return "";
   if (author.uid) return `uid:${author.uid}`;
@@ -182,7 +189,7 @@ function generateMarkdown(d, authors, editorName) {
   md += `published: ${today}\n`;
   md += `updated: ${today}\n`;
   if (editorName) {
-    const editorSlug = makeSlug(editorName);
+    const editorSlug = makeAuthorSlug(editorName);
     md += `editor: "${editorName.replace(/"/g, '\\"')}"\n`;
     md += `editor_id: "${editorSlug}"\n`;
   }
@@ -205,11 +212,11 @@ async function resolveAuthorSlug(uid, authorName) {
       return userDoc.data().author_id;
     }
   }
-  return makeSlug(authorName);
+  return makeAuthorSlug(authorName);
 }
 
 async function ensureAuthorPresenceOnGitHub(token, author) {
-  const authorSlug = author.author_id || makeSlug(author.name);
+  const authorSlug = author.author_id || makeAuthorSlug(author.name);
   const esc = author.name.replace(/"/g, '\\"');
   const tKey = "author-" + authorSlug;
   const authorFiles = [
@@ -258,7 +265,7 @@ async function ensureAuthorPresenceOnGitHub(token, author) {
 }
 
 async function publishToGitHub(token, d, markdown, filePath, primaryAuthor) {
-  const authorSlug = primaryAuthor.author_id || makeSlug(primaryAuthor.name);
+  const authorSlug = primaryAuthor.author_id || makeAuthorSlug(primaryAuthor.name);
   // Push guide file
   const existing = await githubApi("GET", filePath, token);
   const putBody = {

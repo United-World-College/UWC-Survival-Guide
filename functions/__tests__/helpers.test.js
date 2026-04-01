@@ -48,6 +48,12 @@ function extractHelpers() {
   if (makeSlugMatch) {
     eval("sandbox.makeSlug = " + makeSlugMatch[0]);
   }
+  // Extract makeAuthorSlug (depends on makeSlug)
+  const makeAuthorSlugMatch = source.match(/function makeAuthorSlug\(text\)\s*\{[\s\S]*?\n\}/);
+  if (makeAuthorSlugMatch) {
+    const fnBody = makeAuthorSlugMatch[0].replace(/makeSlug\(/g, "sandbox.makeSlug(");
+    eval("sandbox.makeAuthorSlug = " + fnBody);
+  }
   // Extract toBase64
   const toBase64Match = source.match(/function toBase64\(str\)\s*\{[^}]+\}/);
   if (toBase64Match) {
@@ -115,6 +121,30 @@ describe("makeSlug", () => {
 
   test("lowercases uppercase letters", () => {
     expect(makeSlug("COLLEGE APPLICATION")).toBe("college-application");
+  });
+});
+
+// ══════════════════════════════════════
+// makeAuthorSlug
+// ══════════════════════════════════════
+
+describe("makeAuthorSlug", () => {
+  const { makeAuthorSlug } = helpers;
+
+  test("converts English name to kebab-case", () => {
+    expect(makeAuthorSlug("Alice Smith")).toBe("alice-smith");
+  });
+
+  test("strips CJK from mixed English-CJK name", () => {
+    expect(makeAuthorSlug("William Huang 黃靖然")).toBe("william-huang");
+  });
+
+  test("keeps CJK for purely CJK name", () => {
+    expect(makeAuthorSlug("李东元")).toBe("李东元");
+  });
+
+  test("handles empty string", () => {
+    expect(makeAuthorSlug("")).toBe("");
   });
 });
 
@@ -204,7 +234,7 @@ describe("generateMarkdown", () => {
       md += `published: ${today}\n`;
       md += `updated: ${today}\n`;
       if (editorName) {
-        const editorSlug = makeSlug(editorName);
+        const editorSlug = helpers.makeAuthorSlug(editorName);
         md += `editor: "${editorName.replace(/"/g, '\\"')}"\n`;
         md += `editor_id: "${editorSlug}"\n`;
       }
