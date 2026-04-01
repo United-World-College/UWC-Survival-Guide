@@ -2583,6 +2583,29 @@ a.admin-coauthor-result-name:hover {
   margin-top: 0.75rem;
 }
 
+.author-lang-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+  color: var(--warm-gray);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.author-lang-pill.is-original {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.author-lang-pill:hover {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: var(--ivory);
+}
+
 /* Admin role badge */
 .admin-role-badge {
   display: inline-block;

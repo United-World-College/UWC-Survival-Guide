@@ -402,9 +402,9 @@
     article_plural: {{ current_locale.author.indexed_article_plural | jsonify }}
   };
   var LANG_MAP = {
-    "en":    { folder: "default", suffix: "", label: "EN" },
-    "zh-CN": { folder: "chinese", suffix: "-CN", label: "简" },
-    "zh-TW": { folder: "chinese", suffix: "-TW", label: "繁" }
+    "en":    { folder: "default", suffix: "", label: "English" },
+    "zh-CN": { folder: "chinese", suffix: "-CN", label: "大陆简体" },
+    "zh-TW": { folder: "chinese", suffix: "-TW", label: "台灣繁體" }
   };
   </script>
 
@@ -442,8 +442,8 @@
         langs.map(function (lang) {
           var info = LANG_MAP[lang];
           var url = guideUrl(guideId, lang);
-          var isSource = lang === sourceLang;
-          return '<a href="' + url + '" class="nav-language-pill' + (isSource ? ' is-active' : '') + '">' + info.label + '</a>';
+          var isOriginal = lang === sourceLang;
+          return '<a href="' + url + '" class="author-lang-pill' + (isOriginal ? ' is-original' : '') + '">' + info.label + '</a>';
         }).join('') +
         '</div>';
     }
