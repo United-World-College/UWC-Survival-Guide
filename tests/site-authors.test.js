@@ -159,6 +159,19 @@ describe("Author permalink format", () => {
     }
   });
 
+  test("no duplicate permalinks across all author files", () => {
+    const seen = {};
+    for (const f of authorFiles) {
+      const fm = parseFrontMatter(f);
+      if (!fm) continue;
+      if (!seen[fm.permalink]) seen[fm.permalink] = [];
+      seen[fm.permalink].push(path.relative(AUTHORS_DIR, f));
+    }
+    for (const [permalink, files] of Object.entries(seen)) {
+      expect(files.length).toBe(1);
+    }
+  });
+
   test("author files are in the correct folder for their language", () => {
     for (const f of authorFiles) {
       const fm = parseFrontMatter(f);

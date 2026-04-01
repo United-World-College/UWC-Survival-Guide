@@ -252,6 +252,24 @@ describe("resubmitArticle", () => {
     ).rejects.toThrow("You can only resubmit your own articles.");
   });
 
+  test("succeeds for coauthor with revise_resubmit status", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      coauthorUids: ["user-2"],
+      status: "revise_resubmit",
+      revisionHistory: [
+        { round: 1, reviewerComments: "Fix this" },
+      ],
+    });
+
+    const result = await funcs.resubmitArticle({
+      auth: userAuth("user-2"),
+      data: validData,
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   test("throws failed-precondition when status is not revise_resubmit", async () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",

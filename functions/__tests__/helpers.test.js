@@ -53,6 +53,22 @@ function extractHelpers() {
   if (toBase64Match) {
     eval("sandbox.toBase64 = " + toBase64Match[0]);
   }
+  // Extract getAuthorKey
+  const getAuthorKeyMatch = source.match(/function getAuthorKey\(author\)\s*\{[\s\S]*?\n\}/);
+  if (getAuthorKeyMatch) {
+    eval("sandbox.getAuthorKey = " + getAuthorKeyMatch[0]);
+  }
+  // Extract getOrderedSubmissionAuthors (depends on getAuthorKey)
+  const getOrderedMatch = source.match(/function getOrderedSubmissionAuthors\(d\)\s*\{[\s\S]*?\n\}/);
+  if (getOrderedMatch) {
+    const fnBody = getOrderedMatch[0].replace(/getAuthorKey\(/g, "sandbox.getAuthorKey(");
+    eval("sandbox.getOrderedSubmissionAuthors = " + fnBody);
+  }
+  // Extract sanitizeRevisionHistory
+  const sanitizeMatch = source.match(/function sanitizeRevisionHistory\(history\)\s*\{[\s\S]*?\n\}/);
+  if (sanitizeMatch) {
+    eval("sandbox.sanitizeRevisionHistory = " + sanitizeMatch[0]);
+  }
   return sandbox;
 }
 
@@ -348,5 +364,161 @@ describe("generateMarkdown", () => {
     const submission = { ...baseSubmission, createdAt: null };
     const result = generateMarkdown(submission, baseAuthors, "");
     expect(result.markdown).not.toContain("submitted:");
+  });
+});
+
+// ══════════════════════════════════════
+// getAuthorKey
+// ══════════════════════════════════════
+
+describe("getAuthorKey", () => {
+  const { getAuthorKey } = helpers;
+
+  test("returns uid-based key when uid is present", () => {
+    expect(getAuthorKey({ uid: "u1", name: "Alice" })).toBe("uid:u1");
+  });
+
+  test("returns author_id-based key when uid is missing", () => {
+    expect(getAuthorKey({ author_id: "alice", name: "Alice" })).toBe("author:alice");
+  });
+
+  test("returns name-based key when only name is present", () => {
+    expect(getAuthorKey({ name: "Alice Smith" })).toBe("name:alice smith");
+  });
+
+  test("returns empty string for null/undefined", () => {
+    expect(getAuthorKey(null)).toBe("");
+    expect(getAuthorKey(undefined)).toBe("");
+  });
+
+  test("returns empty string for author with empty name and no uid", () => {
+    expect(getAuthorKey({ name: "" })).toBe("");
+    expect(getAuthorKey({ name: "  " })).toBe("");
+  });
+
+  test("prefers uid over author_id over name", () => {
+    expect(getAuthorKey({ uid: "u1", author_id: "a1", name: "N" })).toBe("uid:u1");
+    expect(getAuthorKey({ author_id: "a1", name: "N" })).toBe("author:a1");
+  });
+});
+
+// ══════════════════════════════════════
+// getOrderedSubmissionAuthors
+// ══════════════════════════════════════
+
+describe("getOrderedSubmissionAuthors", () => {
+  const { getOrderedSubmissionAuthors } = helpers;
+
+  test("sorts by order field", () => {
+    const result = getOrderedSubmissionAuthors({
+      coAuthors: [
+        { name: "B", order: 2, uid: "u2" },
+        { name: "A", order: 1, uid: "u1" },
+      ],
+    });
+    expect(result[0].name).toBe("A");
+    expect(result[1].name).toBe("B");
+  });
+
+  test("deduplicates by uid", () => {
+    const result = getOrderedSubmissionAuthors({
+      coAuthors: [
+        { name: "Alice", order: 1, uid: "u1" },
+        { name: "Alice Copy", order: 2, uid: "u1" },
+      ],
+    });
+    expect(result).toHaveLength(1);
+  });
+
+  test("deduplicates by name when uid is missing", () => {
+    const result = getOrderedSubmissionAuthors({
+      coAuthors: [
+        { name: "Alice", order: 1 },
+        { name: "alice", order: 2 },
+      ],
+    });
+    expect(result).toHaveLength(1);
+  });
+
+  test("filters out entries with empty name", () => {
+    const result = getOrderedSubmissionAuthors({
+      coAuthors: [
+        { name: "", order: 1, uid: "u1" },
+        { name: "Alice", order: 2, uid: "u2" },
+      ],
+    });
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("Alice");
+  });
+
+  test("returns empty array when coAuthors is missing", () => {
+    expect(getOrderedSubmissionAuthors({})).toEqual([]);
+    expect(getOrderedSubmissionAuthors({ coAuthors: null })).toEqual([]);
+  });
+
+  test("trims author names", () => {
+    const result = getOrderedSubmissionAuthors({
+      coAuthors: [{ name: "  Alice  ", order: 1, uid: "u1" }],
+    });
+    expect(result[0].name).toBe("Alice");
+  });
+});
+
+// ══════════════════════════════════════
+// sanitizeRevisionHistory
+// ══════════════════════════════════════
+
+describe("sanitizeRevisionHistory", () => {
+  const { sanitizeRevisionHistory } = helpers;
+
+  test("strips private actor fields from entries", () => {
+    const result = sanitizeRevisionHistory([
+      {
+        round: 1,
+        reviewerComments: "Fix this",
+        reviewerUid: "admin-1",
+        reviewerEmail: "admin@test.com",
+        authorUid: "user-1",
+        authorEmail: "user@test.com",
+        actorUid: "admin-1",
+        actorEmail: "admin@test.com",
+      },
+    ]);
+    expect(result).toHaveLength(1);
+    expect(result[0].reviewerComments).toBe("Fix this");
+    expect(result[0].reviewerUid).toBeUndefined();
+    expect(result[0].reviewerEmail).toBeUndefined();
+    expect(result[0].authorUid).toBeUndefined();
+    expect(result[0].authorEmail).toBeUndefined();
+    expect(result[0].actorUid).toBeUndefined();
+    expect(result[0].actorEmail).toBeUndefined();
+  });
+
+  test("assigns round numbers when missing", () => {
+    const result = sanitizeRevisionHistory([
+      { reviewerComments: "First" },
+      { reviewerComments: "Second" },
+    ]);
+    expect(result[0].round).toBe(1);
+    expect(result[1].round).toBe(2);
+  });
+
+  test("preserves existing round numbers", () => {
+    const result = sanitizeRevisionHistory([
+      { round: 5, reviewerComments: "Late round" },
+    ]);
+    expect(result[0].round).toBe(5);
+  });
+
+  test("returns empty array for non-array input", () => {
+    expect(sanitizeRevisionHistory(null)).toEqual([]);
+    expect(sanitizeRevisionHistory(undefined)).toEqual([]);
+    expect(sanitizeRevisionHistory("not-array")).toEqual([]);
+  });
+
+  test("filters out null/non-object entries", () => {
+    const result = sanitizeRevisionHistory([null, undefined, "string", { round: 1, reviewerComments: "OK" }]);
+    expect(result).toHaveLength(1);
+    expect(result[0].reviewerComments).toBe("OK");
   });
 });

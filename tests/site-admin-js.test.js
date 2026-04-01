@@ -302,14 +302,12 @@ describe("Admin page JS — section-level checks", () => {
         if (ch === "[") brackets++;
         if (ch === "]") brackets--;
       }
-      expect({ section: name, braces, parens, brackets }).toEqual({
-        section: name,
-        braces: expect.any(Number),
-        parens: expect.any(Number),
-        brackets: expect.any(Number),
-      });
-      // The sections cut mid-function, so we only flag *large* imbalances
-      // (a ±1 between sections is expected). The full-file brace test catches exact balance.
+      // Sections cut mid-function so ±1 is expected, but large imbalances
+      // (≥3) indicate a real bug. The full-file tests catch exact balance.
+      const THRESHOLD = 3;
+      expect(Math.abs(braces)).toBeLessThan(THRESHOLD);
+      expect(Math.abs(parens)).toBeLessThan(THRESHOLD);
+      expect(Math.abs(brackets)).toBeLessThan(THRESHOLD);
     }
   );
 

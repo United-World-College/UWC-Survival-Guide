@@ -273,6 +273,31 @@ describe("Translation completeness", () => {
     }
   });
 
+  test("no orphan translations (zh-CN/zh-TW guides without an English counterpart)", () => {
+    const enGuideIds = new Set(
+      guideFiles
+        .filter((f) => {
+          const fm = parseFrontMatter(f);
+          return fm && fm.language_code === "en";
+        })
+        .map((f) => parseFrontMatter(f).guide_id)
+    );
+
+    const cnGuides = guideFiles.filter((f) => {
+      const fm = parseFrontMatter(f);
+      return fm && fm.language_code === "zh-CN";
+    });
+    const twGuides = guideFiles.filter((f) => {
+      const fm = parseFrontMatter(f);
+      return fm && fm.language_code === "zh-TW";
+    });
+
+    for (const f of [...cnGuides, ...twGuides]) {
+      const fm = parseFrontMatter(f);
+      expect(enGuideIds).toContain(fm.guide_id);
+    }
+  });
+
   test("guide_id is consistent across translations of the same guide", () => {
     const byGuideId = {};
     for (const f of guideFiles) {
