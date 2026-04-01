@@ -402,9 +402,9 @@
     article_plural: {{ current_locale.author.indexed_article_plural | jsonify }}
   };
   var LANG_MAP = {
-    "en":    { folder: "default", suffix: "" },
-    "zh-CN": { folder: "chinese", suffix: "-CN" },
-    "zh-TW": { folder: "chinese", suffix: "-TW" }
+    "en":    { folder: "default", suffix: "", label: "EN" },
+    "zh-CN": { folder: "chinese", suffix: "-CN", label: "简" },
+    "zh-TW": { folder: "chinese", suffix: "-TW", label: "繁" }
   };
   </script>
 
@@ -435,6 +435,18 @@
       return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     }
 
+    function renderLanguageLinks(guideId, sourceLang) {
+      var langs = ['en', 'zh-CN', 'zh-TW'];
+      return '<div class="author-latest-versions">' +
+        langs.map(function (lang) {
+          var info = LANG_MAP[lang];
+          var url = guideUrl(guideId, lang);
+          var isSource = lang === sourceLang;
+          return '<a href="' + url + '" class="nav-language-pill' + (isSource ? ' is-active' : '') + '">' + info.label + '</a>';
+        }).join('') +
+        '</div>';
+    }
+
     function renderArticleCard(sub) {
       var date = formatDate(sub.reviewedAt || sub.createdAt);
       var url = guideUrl(sub.guide_id, sub.language);
@@ -444,6 +456,7 @@
         '<p class="author-latest-category">' + esc(sub.category) + '</p>' +
         '<h3><a href="' + url + '">' + esc(sub.title) + '</a></h3>' +
         (sub.description ? '<p class="author-latest-desc">' + esc(sub.description) + '</p>' : '') +
+        renderLanguageLinks(sub.guide_id, sub.language) +
         '</div></div>';
     }
 
