@@ -368,10 +368,34 @@
     document.getElementById('avatar-input').click();
   });
 
+  function convertToJpeg(file) {
+    return new Promise(function (resolve, reject) {
+      var needsConversion = /^image\/(heic|heif|webp|bmp|tiff)$/i.test(file.type)
+        || /\.(heic|heif)$/i.test(file.name);
+      if (!needsConversion) { resolve(file); return; }
+
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function () {
+        var canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(function (blob) {
+          if (blob) { resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' })); }
+          else { reject(new Error('Conversion failed')); }
+        }, 'image/jpeg', 0.9);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Could not read image')); };
+      img.src = url;
+    });
+  }
+
   document.getElementById('avatar-input').addEventListener('change', function (e) {
     var file = e.target.files[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith('image/') && !/\.(heic|heif)$/i.test(file.name)) {
       showError('profile-error', ADMIN_I18N.image_file_only);
       return;
     }
@@ -384,9 +408,11 @@
     clearErrors();
     showSuccess('profile-success', ADMIN_I18N.uploading_photo);
 
-    var ref = storage.ref('avatars/' + user.uid);
-    ref.put(file).then(function (snapshot) {
-      return snapshot.ref.getDownloadURL();
+    convertToJpeg(file).then(function (readyFile) {
+      var ref = storage.ref('avatars/' + user.uid);
+      return ref.put(readyFile).then(function (snapshot) {
+        return snapshot.ref.getDownloadURL();
+      });
     }).then(function (url) {
       return db.collection('users').doc(user.uid).update({ photoURL: url }).then(function () {
         showAvatarImage(url);
