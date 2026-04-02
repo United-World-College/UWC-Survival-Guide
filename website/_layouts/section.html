@@ -59,8 +59,8 @@
             {% assign primary_guide = guide_versions | first %}
           {% endif %}
           <div class="author-latest-item">
+            <span class="author-latest-date">{{ primary_guide.published | date: "%b %-d, %Y" }}</span>
             <div class="author-latest-body">
-              <span class="author-latest-date">{{ primary_guide.published | date: "%b %-d, %Y" }}</span>
               <p class="author-latest-category">{{ page.section_category }}</p>
               <h3><a href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
               {% if primary_guide.description %}

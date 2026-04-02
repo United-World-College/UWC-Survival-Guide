@@ -459,8 +459,8 @@
       var displayDesc = t.description || sub.description;
       var url = guideUrl(sub.guide_id, currentLang);
       return '<div class="author-latest-item">' +
-        '<div class="author-latest-body">' +
         '<span class="author-latest-date">' + esc(date) + '</span>' +
+        '<div class="author-latest-body">' +
         '<p class="author-latest-category">' + esc(displayCategory) + '</p>' +
         '<h3><a href="' + url + '">' + esc(displayTitle) + '</a></h3>' +
         (displayDesc ? '<p class="author-latest-desc">' + esc(displayDesc) + '</p>' : '') +

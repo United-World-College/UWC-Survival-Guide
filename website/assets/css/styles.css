@@ -2526,14 +2526,18 @@ a.admin-coauthor-result-name:hover {
 }
 
 .author-latest-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 1.5rem;
   padding: 1.5rem 0;
   border-bottom: 1px solid var(--border);
+  align-items: start;
 }
 
 .author-latest-date {
   font-size: 0.8rem;
   color: var(--muted);
-  margin-bottom: 0.35rem;
+  padding-top: 0.2rem;
 }
 
 .author-latest-category {
@@ -2670,5 +2674,6 @@ a.admin-coauthor-result-name:hover {
 }
 
 @media (max-width: 768px) {
-  .author-latest-date { margin-bottom: 0.25rem; }
+  .author-latest-item { grid-template-columns: 1fr; gap: 0.5rem; }
+  .author-latest-date { padding-top: 0; }
 }
