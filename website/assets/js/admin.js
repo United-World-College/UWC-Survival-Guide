@@ -369,9 +369,15 @@
   });
 
   function convertToJpeg(file) {
+    var isHeic = /^image\/(heic|heif)$/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+    if (isHeic && typeof heic2any !== 'undefined') {
+      return heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 }).then(function (blob) {
+        return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+      });
+    }
+
     return new Promise(function (resolve, reject) {
-      var needsConversion = /^image\/(heic|heif|webp|bmp|tiff)$/i.test(file.type)
-        || /\.(heic|heif)$/i.test(file.name);
+      var needsConversion = /^image\/(heic|heif|webp|bmp|tiff)$/i.test(file.type) || isHeic;
       if (!needsConversion) { resolve(file); return; }
 
       var img = new Image();
@@ -399,7 +405,7 @@
       showError('profile-error', ADMIN_I18N.image_file_only);
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
+    if (file.size > 5 * 1024 * 1024) {
       showError('profile-error', ADMIN_I18N.image_too_large);
       return;
     }
