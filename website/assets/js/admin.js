@@ -386,6 +386,8 @@
       });
     }
 
+    var HEIC_ERR = 'HEIC/HEIF format is not supported by your browser. Please convert to JPG or PNG before uploading.';
+
     // Try createImageBitmap first (works for HEIC in Safari and recent Chrome)
     if (typeof createImageBitmap !== 'undefined') {
       return createImageBitmap(file).then(toJpegViaCanvas).catch(function () {
@@ -394,9 +396,9 @@
           return heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 }).then(function (result) {
             var blob = Array.isArray(result) ? result[0] : result;
             return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
-          });
+          }).catch(function () { return Promise.reject(new Error(HEIC_ERR)); });
         }
-        return Promise.reject(new Error('Cannot convert this image format. Please convert to JPG or PNG before uploading.'));
+        return Promise.reject(new Error(isHeic ? HEIC_ERR : 'Cannot convert this image format. Please convert to JPG or PNG before uploading.'));
       });
     }
 
@@ -405,10 +407,10 @@
       return heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 }).then(function (result) {
         var blob = Array.isArray(result) ? result[0] : result;
         return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
-      });
+      }).catch(function () { return Promise.reject(new Error(HEIC_ERR)); });
     }
 
-    return Promise.reject(new Error('Cannot convert this image format. Please convert to JPG or PNG before uploading.'));
+    return Promise.reject(new Error(isHeic ? HEIC_ERR : 'Cannot convert this image format. Please convert to JPG or PNG before uploading.'));
   }
 
   document.getElementById('avatar-input').addEventListener('change', function (e) {
@@ -439,8 +441,7 @@
       });
     }).catch(function (err) {
       document.getElementById('profile-success').style.display = 'none';
-      var msg = (err && err.message && err.message.includes('convert')) ? err.message : ADMIN_I18N.photo_failed;
-      showError('profile-error', msg);
+      showError('profile-error', (err && err.message) || ADMIN_I18N.photo_failed);
     });
   });
 
