@@ -384,7 +384,7 @@ All callable functions are defined in `functions/index.js` and invoked via Fireb
 | Direction | Field | Type | Description |
 |-----------|-------|------|-------------|
 | **Input** | *(none)* | — | — |
-| **Output** | `apiKey` | `string\|null` | API key from `config/anthropic` doc |
+| **Output** | `apiKey` | `string\|null` | API key from `config/gemini` doc |
 
 #### buildTranslationPrompt(sourceLang, targetLang, payload)
 
@@ -611,8 +611,8 @@ All callable functions are defined in `functions/index.js` and invoked via Fireb
 - Translating to `zh-CN` → prefer English source
 
 **Environment:**
-- `ANTHROPIC_API_KEY` (required)
-- `ANTHROPIC_MODEL` (optional, default: `claude-sonnet-4-6`)
+- `GEMINI_API_KEY` (required)
+- `GEMINI_MODEL` (optional, default: `gemini-2.5-flash`)
 
 ---
 
@@ -952,7 +952,7 @@ User fills form in admin UI
 |----------|--------|
 | `config/admins` | `{ emails: [string] }` |
 | `config/github` | `{ token: string }` |
-| `config/anthropic` | `{ apiKey: string }` |
+| `config/gemini` | `{ apiKey: string }` |
 
 ---
 

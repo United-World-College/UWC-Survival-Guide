@@ -113,7 +113,7 @@ Run it from the repository root with:
 
 The helper script executes the translator with `uv run python` inside `auto-translator/`.
 
-When an editor approves an article in the admin panel, the system also automatically calls Claude to translate it into the other two languages and pushes the translations to GitHub. To enable this, store your Anthropic API key in Firestore at `config/anthropic` with field `apiKey`.
+When an editor approves an article in the admin panel, the system also automatically calls Google Gemini to translate it into the other two languages and pushes the translations to GitHub. To enable this, store your Gemini API key in Firestore at `config/gemini` with field `apiKey`.
 
 ## Tests
 

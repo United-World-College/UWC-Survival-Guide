@@ -1,6 +1,6 @@
 # Auto Translator
 
-This CLI scans `website/_guides/default/` and `website/_guides/chinese/`, matches files by `guide_id`, and creates any missing language variants with the Anthropic Messages API.
+This CLI scans `website/_guides/default/` and `website/_guides/chinese/`, matches files by `guide_id`, and creates any missing language variants with the Google Gemini API.
 
 ## What It Preserves
 
@@ -13,8 +13,8 @@ This CLI scans `website/_guides/default/` and `website/_guides/chinese/`, matche
 ## Requirements
 
 - `uv`
-- `ANTHROPIC_API_KEY` in the repository root `.env`
-- Optional: `ANTHROPIC_MODEL` if you do not want the default `claude-sonnet-4-6`
+- `GEMINI_API_KEY` in the repository root `.env`
+- Optional: `GEMINI_MODEL` if you do not want the default `gemini-2.5-flash`
 
 ## Usage
 

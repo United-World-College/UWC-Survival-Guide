@@ -102,7 +102,7 @@ firebase.json   ← Firebase CLI 設定（模擬器埠號、規則路徑）
 
 該腳本透過 `uv run python` 在 `auto-translator/` 目錄下執行翻譯器。
 
-當編輯在管理後台審批通過一篇文章時，系統也會自動呼叫 Claude 將該文章翻譯為其餘兩種語言並推送到 GitHub。要啟用此功能，需要在 Firestore 的 `config/anthropic` 文件中設定 `apiKey` 欄位為你的 Anthropic API 金鑰。
+當編輯在管理後台審批通過一篇文章時，系統也會自動呼叫 Google Gemini 將該文章翻譯為其餘兩種語言並推送到 GitHub。要啟用此功能，需要在 Firestore 的 `config/gemini` 文件中設定 `apiKey` 欄位為你的 Gemini API 金鑰。
 
 ## 測試
 

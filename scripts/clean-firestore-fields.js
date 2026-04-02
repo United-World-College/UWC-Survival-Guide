@@ -49,7 +49,7 @@ const USERS_FIELDS = new Set([
 
 const CONFIG_ADMINS_FIELDS = new Set(["emails"]);
 const CONFIG_GITHUB_FIELDS = new Set(["token"]);
-const CONFIG_ANTHROPIC_FIELDS = new Set(["apiKey"]);
+const CONFIG_GEMINI_FIELDS = new Set(["apiKey"]);
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -134,7 +134,7 @@ async function main() {
   console.log("\n── config ──");
   results.configAdmins = await auditConfigDoc("config/admins", CONFIG_ADMINS_FIELDS);
   results.configGithub = await auditConfigDoc("config/github", CONFIG_GITHUB_FIELDS);
-  results.configAnthropic = await auditConfigDoc("config/anthropic", CONFIG_ANTHROPIC_FIELDS);
+  results.configGemini = await auditConfigDoc("config/gemini", CONFIG_GEMINI_FIELDS);
 
   console.log("\n── Summary ──");
   let grandTotal = 0;
