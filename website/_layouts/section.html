@@ -48,7 +48,7 @@
       <p class="section-desc">{{ current_locale.section.desc }}</p>
     </div>
     {% if article_count > 0 %}
-      <div class="author-articles">
+      <div class="author-latest-list">
         {% for gid in guide_ids %}
           {% assign guide_versions = section_guides | where: "guide_id", gid | sort: "language_sort" %}
           {% assign primary_guide = guide_versions | where: "language_code", current_language_code | first %}
@@ -58,23 +58,21 @@
           {% if primary_guide == nil %}
             {% assign primary_guide = guide_versions | first %}
           {% endif %}
-          <article class="author-article-card">
-            <div class="author-article-head">
-              <div>
-                <p class="author-article-category">{{ page.section_category }}</p>
-                <h3><a class="contributor-name-link" href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
+          <div class="author-latest-item">
+            <span class="author-latest-date">{{ guide_versions.size }} {% if guide_versions.size == 1 %}{{ current_locale.common.version_singular }}{% else %}{{ current_locale.common.version_plural }}{% endif %}</span>
+            <div class="author-latest-body">
+              <p class="author-latest-category">{{ page.section_category }}</p>
+              <h3><a href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
+              {% if primary_guide.description %}
+                <p class="author-latest-desc">{{ primary_guide.description }}</p>
+              {% endif %}
+              <div class="author-latest-versions">
+                {% for guide_version in guide_versions %}
+                  <a href="{{ guide_version.url | relative_url }}" class="author-lang-pill{% if guide_version.language_code == guide_version.source_language %} is-original{% endif %}">{{ guide_version.language_name }}{% if guide_version.language_code == guide_version.source_language %} · {{ current_locale.guide.original_label | default: "Original" }}{% endif %}</a>
+                {% endfor %}
               </div>
-              <p class="author-article-count">{{ guide_versions.size }} {% if guide_versions.size == 1 %}{{ current_locale.common.version_singular }}{% else %}{{ current_locale.common.version_plural }}{% endif %}</p>
             </div>
-            {% if primary_guide.description %}
-              <p class="author-article-desc">{{ primary_guide.description }}</p>
-            {% endif %}
-            <div class="author-article-links">
-              {% for guide_version in guide_versions %}
-                <a href="{{ guide_version.url | relative_url }}" class="translation-pill">{{ guide_version.language_name }}</a>
-              {% endfor %}
-            </div>
-          </article>
+          </div>
         {% endfor %}
       </div>
     {% else %}
