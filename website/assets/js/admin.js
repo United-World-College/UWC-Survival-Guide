@@ -370,32 +370,45 @@
 
   function convertToJpeg(file) {
     var isHeic = /^image\/(heic|heif)$/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+    var needsConversion = isHeic || /^image\/(webp|bmp|tiff)$/i.test(file.type);
+    if (!needsConversion) return Promise.resolve(file);
+
+    function toJpegViaCanvas(bitmap) {
+      var canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      canvas.getContext('2d').drawImage(bitmap, 0, 0);
+      return new Promise(function (resolve, reject) {
+        canvas.toBlob(function (blob) {
+          if (blob) resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+          else reject(new Error('Conversion failed'));
+        }, 'image/jpeg', 0.9);
+      });
+    }
+
+    // Try createImageBitmap first (works for HEIC in Safari and recent Chrome)
+    if (typeof createImageBitmap !== 'undefined') {
+      return createImageBitmap(file).then(toJpegViaCanvas).catch(function () {
+        // Fallback to heic2any if bitmap decode fails
+        if (isHeic && typeof heic2any !== 'undefined') {
+          return heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 }).then(function (result) {
+            var blob = Array.isArray(result) ? result[0] : result;
+            return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+          });
+        }
+        return Promise.reject(new Error('Cannot convert this image format. Please convert to JPG or PNG before uploading.'));
+      });
+    }
+
+    // No createImageBitmap — try heic2any directly
     if (isHeic && typeof heic2any !== 'undefined') {
-      return heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 }).then(function (blob) {
+      return heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 }).then(function (result) {
+        var blob = Array.isArray(result) ? result[0] : result;
         return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
       });
     }
 
-    return new Promise(function (resolve, reject) {
-      var needsConversion = /^image\/(heic|heif|webp|bmp|tiff)$/i.test(file.type) || isHeic;
-      if (!needsConversion) { resolve(file); return; }
-
-      var img = new Image();
-      var url = URL.createObjectURL(file);
-      img.onload = function () {
-        var canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
-        canvas.toBlob(function (blob) {
-          if (blob) { resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' })); }
-          else { reject(new Error('Conversion failed')); }
-        }, 'image/jpeg', 0.9);
-      };
-      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Could not read image')); };
-      img.src = url;
-    });
+    return Promise.reject(new Error('Cannot convert this image format. Please convert to JPG or PNG before uploading.'));
   }
 
   document.getElementById('avatar-input').addEventListener('change', function (e) {
@@ -424,9 +437,10 @@
         showAvatarImage(url);
         document.getElementById('profile-success').style.display = 'none';
       });
-    }).catch(function () {
+    }).catch(function (err) {
       document.getElementById('profile-success').style.display = 'none';
-      showError('profile-error', ADMIN_I18N.photo_failed);
+      var msg = (err && err.message && err.message.includes('convert')) ? err.message : ADMIN_I18N.photo_failed;
+      showError('profile-error', msg);
     });
   });
 
