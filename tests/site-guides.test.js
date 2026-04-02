@@ -273,28 +273,21 @@ describe("Translation completeness", () => {
     }
   });
 
-  test("no orphan translations (zh-CN/zh-TW guides without an English counterpart)", () => {
-    const enGuideIds = new Set(
-      guideFiles
-        .filter((f) => {
-          const fm = parseFrontMatter(f);
-          return fm && fm.language_code === "en";
-        })
-        .map((f) => parseFrontMatter(f).guide_id)
-    );
+  test("no orphan translations (every guide_id exists in at least two languages)", () => {
+    const byGuideId = {};
+    for (const f of guideFiles) {
+      const fm = parseFrontMatter(f);
+      if (!fm || !fm.guide_id) continue;
+      if (!byGuideId[fm.guide_id]) byGuideId[fm.guide_id] = new Set();
+      byGuideId[fm.guide_id].add(fm.language_code);
+    }
 
-    const cnGuides = guideFiles.filter((f) => {
-      const fm = parseFrontMatter(f);
-      return fm && fm.language_code === "zh-CN";
-    });
-    const twGuides = guideFiles.filter((f) => {
-      const fm = parseFrontMatter(f);
-      return fm && fm.language_code === "zh-TW";
-    });
-
-    for (const f of [...cnGuides, ...twGuides]) {
-      const fm = parseFrontMatter(f);
-      expect(enGuideIds).toContain(fm.guide_id);
+    // A guide with only one language variant is orphan — it means
+    // translation was expected but never completed.  Guides that are
+    // the original source will always have at least two variants once
+    // the auto-translator runs (source + one translation).
+    for (const [guideId, langs] of Object.entries(byGuideId)) {
+      expect(langs.size).toBeGreaterThanOrEqual(2);
     }
   });
 

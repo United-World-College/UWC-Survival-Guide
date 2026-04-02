@@ -5,7 +5,13 @@ function toBase64(str) {
 }
 
 function makeSlug(text) {
-  return text.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-").replace(/(^-|-$)/g, "");
+  const slug = text
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  return slug || "untitled";
 }
 
 function makeAuthorSlug(text) {

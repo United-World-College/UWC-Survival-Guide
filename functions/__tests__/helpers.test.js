@@ -58,20 +58,20 @@ describe("makeSlug", () => {
     expect(makeSlug("a   b   c")).toBe("a-b-c");
   });
 
-  test("preserves Chinese characters", () => {
-    expect(makeSlug("关于挫折")).toBe("关于挫折");
+  test("strips Chinese characters and returns fallback for pure Chinese", () => {
+    expect(makeSlug("关于挫折")).toBe("untitled");
   });
 
-  test("handles mixed English and Chinese", () => {
-    expect(makeSlug("My 经历 at UWC")).toBe("my-经历-at-uwc");
+  test("handles mixed English and Chinese by keeping only ASCII", () => {
+    expect(makeSlug("My 经历 at UWC")).toBe("my-at-uwc");
   });
 
   test("handles empty string", () => {
-    expect(makeSlug("")).toBe("");
+    expect(makeSlug("")).toBe("untitled");
   });
 
   test("handles string with only special characters", () => {
-    expect(makeSlug("!@#$%")).toBe("");
+    expect(makeSlug("!@#$%")).toBe("untitled");
   });
 
   test("lowercases uppercase letters", () => {
@@ -201,10 +201,10 @@ describe("generateMarkdown", () => {
 
   test("generates correct file metadata for zh-CN", () => {
     const submission = { ...baseSubmission, language: "zh-CN", title: "我的经历" };
-    const result = generateMarkdown(submission, [{ ...baseAuthors[0], author_id: "alice" }], "");
-    expect(result.fileName).toBe("我的经历-CN.md");
+    const result = generateMarkdown(submission, [{ ...baseAuthors[0], author_id: "alice" }], "", "my-experience");
+    expect(result.fileName).toBe("my-experience-CN.md");
     expect(result.folder).toBe("chinese");
-    expect(result.filePath).toBe("website/_guides/chinese/我的经历-CN.md");
+    expect(result.filePath).toBe("website/_guides/chinese/my-experience-CN.md");
     expect(result.markdown).toContain('language_code: "zh-CN"');
     expect(result.markdown).toContain('language_name: "简体中文"');
     expect(result.markdown).toContain("language_sort: 2");
