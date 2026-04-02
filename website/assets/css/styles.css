@@ -830,6 +830,16 @@ a.feature:hover {
 .cfa-body p {
   text-align: left;
 }
+.cfa-body a:not(.cfa-portal-btn) {
+  color: var(--dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--muted);
+  transition: text-decoration-color 0.3s;
+}
+.cfa-body a:not(.cfa-portal-btn):hover {
+  text-decoration-color: var(--dark);
+}
 .cfa-body p ~ .cfa-portal-btn {
   margin-top: 2rem;
 }
