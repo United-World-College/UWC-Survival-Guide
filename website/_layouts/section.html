@@ -59,7 +59,7 @@
             {% assign primary_guide = guide_versions | first %}
           {% endif %}
           <div class="author-latest-item">
-            <span class="author-latest-date">{{ guide_versions.size }} {% if guide_versions.size == 1 %}{{ current_locale.common.version_singular }}{% else %}{{ current_locale.common.version_plural }}{% endif %}</span>
+            <span class="author-latest-date">{{ primary_guide.published | date: "%b %-d, %Y" }}</span>
             <div class="author-latest-body">
               <p class="author-latest-category">{{ page.section_category }}</p>
               <h3><a href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
@@ -68,7 +68,7 @@
               {% endif %}
               <div class="author-latest-versions">
                 {% for guide_version in guide_versions %}
-                  <a href="{{ guide_version.url | relative_url }}" class="author-lang-pill{% if guide_version.language_code == guide_version.source_language %} is-original{% endif %}">{{ guide_version.language_name }}{% if guide_version.language_code == guide_version.source_language %} · {{ current_locale.guide.original_label | default: "Original" }}{% endif %}</a>
+                  <a href="{{ guide_version.url | relative_url }}" class="author-lang-pill{% if guide_version.language_code == guide_version.original_language %} is-original{% endif %}">{{ guide_version.language_name }}{% if guide_version.language_code == guide_version.original_language %} · {{ current_locale.guide.original_label | default: "Original" }}{% endif %}</a>
                 {% endfor %}
               </div>
             </div>
