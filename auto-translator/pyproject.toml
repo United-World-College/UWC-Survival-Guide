@@ -4,4 +4,4 @@ version = "0.1.0"
 description = "Generate missing guide translations for the UWC Survival Guide."
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["anthropic", "python-dotenv"]
+dependencies = ["google-generativeai", "python-dotenv"]

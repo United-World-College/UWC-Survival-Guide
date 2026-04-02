@@ -2,7 +2,7 @@
  * Unit tests for auto-translation helpers in lib/translation.js.
  *
  * Tests buildTranslationPrompt, buildTranslatedMarkdown, and the
- * TRANSLATE_TOOL schema by importing them directly from the module.
+ * RESPONSE_SCHEMA by importing them directly from the module.
  */
 
 // ── Mock Firebase before requiring any module ──
@@ -26,7 +26,7 @@ jest.mock("firebase-functions/v2/https", () => ({
 // ── Require the modules under test ──
 
 const {
-  TRANSLATE_TOOL,
+  RESPONSE_SCHEMA,
   STYLE_NOTES,
   PROMPT_NAMES,
   buildTranslationPrompt,
@@ -34,32 +34,27 @@ const {
 } = require("../lib/translation");
 
 // ══════════════════════════════════════
-// TRANSLATE_TOOL schema
+// RESPONSE_SCHEMA
 // ══════════════════════════════════════
 
-describe("TRANSLATE_TOOL schema", () => {
-  test("is defined with correct name", () => {
-    expect(TRANSLATE_TOOL).toBeDefined();
-    expect(TRANSLATE_TOOL.name).toBe("guide_translation");
+describe("RESPONSE_SCHEMA", () => {
+  test("is defined with correct type", () => {
+    expect(RESPONSE_SCHEMA).toBeDefined();
+    expect(RESPONSE_SCHEMA.type).toBe("OBJECT");
   });
 
-  test("has all required fields in input_schema", () => {
-    const schema = TRANSLATE_TOOL.input_schema;
-    expect(schema.required).toEqual(
+  test("has all required fields", () => {
+    expect(RESPONSE_SCHEMA.required).toEqual(
       expect.arrayContaining(["title", "category", "description", "body"])
     );
-    expect(schema.required).toHaveLength(4);
+    expect(RESPONSE_SCHEMA.required).toHaveLength(4);
   });
 
-  test("all required fields are typed as string", () => {
-    const props = TRANSLATE_TOOL.input_schema.properties;
+  test("all required fields are typed as STRING", () => {
+    const props = RESPONSE_SCHEMA.properties;
     for (const field of ["title", "category", "description", "body"]) {
-      expect(props[field].type).toBe("string");
+      expect(props[field].type).toBe("STRING");
     }
-  });
-
-  test("disallows additional properties", () => {
-    expect(TRANSLATE_TOOL.input_schema.additionalProperties).toBe(false);
   });
 });
 

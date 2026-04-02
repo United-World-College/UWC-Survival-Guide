@@ -10,7 +10,7 @@ const {
   appendSubmissionAuditEvent, resolveSubmissionAuthors,
   ensureUniqueGuideSlug, ensureAuthorId,
 } = require("./lib/firestore");
-const { getAnthropicKey, translateAndPublishMissingVariants } = require("./lib/translation");
+const { getGeminiKey, translateAndPublishMissingVariants } = require("./lib/translation");
 
 // ══════════════════════════════════════
 // 0. checkAdminStatus
@@ -187,11 +187,11 @@ exports.approveSubmission = onCall(async (request) => {
 
   // Auto-translate into missing language variants
   let translationResults = null;
-  const anthropicKey = await getAnthropicKey();
-  if (anthropicKey) {
+  const geminiKey = await getGeminiKey();
+  if (geminiKey) {
     try {
       translationResults = await translateAndPublishMissingVariants(
-        token, anthropicKey, d, slug, authors, editorName
+        token, geminiKey, d, slug, authors, editorName
       );
     } catch (err) {
       translationResults = [{ error: err.message, success: false }];

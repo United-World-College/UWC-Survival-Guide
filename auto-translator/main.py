@@ -10,13 +10,13 @@ from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
-from anthropic import Anthropic
+import google.generativeai as genai
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_GUIDE_ROOT = REPO_ROOT / "website" / "_guides"
 ENV_FILE = REPO_ROOT / ".env"
 PROMPT_TEMPLATE_FILE = Path(__file__).with_name("prompt_instructions.txt")
-DEFAULT_MODEL = "claude-sonnet-4-6"
+DEFAULT_MODEL = "gemini-2.5-flash"
 DEFAULT_MAX_OUTPUT_TOKENS = 16000
 
 LANGUAGE_CONFIG: dict[str, dict[str, Any]] = {
@@ -92,26 +92,10 @@ SUPPORTED_FOLDERS_PATTERN = "|".join(
 GUIDE_URL_PATTERN = re.compile(
     rf"(?P<prefix>{LIQUID_OPEN}\s*['\"])/guides/(?:(?:{SUPPORTED_FOLDERS_PATTERN})/)?(?P<slug>[a-z0-9-]+(?:-(?:CN|TW))?)/(?P<suffix>['\"]\s*\|\s*relative_url\s*{LIQUID_CLOSE})"
 )
-TRANSLATION_TOOL = {
-    "name": "guide_translation",
-    "description": "Return the translated guide fields.",
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "title": {"type": "string"},
-            "category": {"type": "string"},
-            "description": {"type": "string"},
-            "body": {"type": "string"},
-        },
-        "required": ["title", "category", "description", "body"],
-        "additionalProperties": False,
-    },
-}
 SYSTEM_PROMPT = (
     "You are the lead translation editor for the UWC Changshu China Survival Guide. "
     "Produce publication-ready translations that preserve the original author's voice, "
-    "tone, pacing, and meaning. You MUST call the guide_translation tool with the "
-    "translated fields. Do not return plain text."
+    "tone, pacing, and meaning. Return the translated fields as JSON."
 )
 
 
@@ -406,47 +390,18 @@ def build_translation_prompt(job: TranslationJob, prompt_template: str) -> str:
     )
 
 
-def post_anthropic(
+def post_gemini(
     job: TranslationJob,
-    client: Anthropic,
-    model: str,
+    client: genai.GenerativeModel,
     prompt_template: str,
-) -> Any:
+) -> dict[str, Any]:
     try:
-        return client.messages.create(
-            model=model,
-            max_tokens=DEFAULT_MAX_OUTPUT_TOKENS,
-            system=SYSTEM_PROMPT,
-            tools=[TRANSLATION_TOOL],
-            tool_choice={"type": "tool", "name": "guide_translation"},
-            messages=[
-                {
-                    "role": "user",
-                    "content": build_translation_prompt(job, prompt_template),
-                },
-            ],
+        response = client.generate_content(
+            build_translation_prompt(job, prompt_template)
         )
+        return json.loads(response.text)
     except Exception as exc:
-        raise RuntimeError(f"Anthropic API request failed: {exc}") from exc
-
-
-def extract_tool_input(response: Any) -> dict[str, Any]:
-    for block in response.content:
-        if block.type == "tool_use" and block.name == "guide_translation":
-            return block.input
-
-    debug_payload = ""
-    if hasattr(response, "model_dump_json"):
-        debug_payload = response.model_dump_json(indent=2)[:1200]
-    elif hasattr(response, "model_dump"):
-        debug_payload = json.dumps(response.model_dump(), ensure_ascii=False)[:1200]
-    else:
-        debug_payload = str(response)[:1200]
-
-    raise RuntimeError(
-        "The Anthropic response did not contain a guide_translation tool call. "
-        f"Response excerpt: {debug_payload}"
-    )
+        raise RuntimeError(f"Gemini API request failed: {exc}") from exc
 
 
 def parse_translation_response(data: dict[str, Any]) -> dict[str, str]:
@@ -516,7 +471,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        help=f"Anthropic model to use. Defaults to ANTHROPIC_MODEL or {DEFAULT_MODEL}.",
+        help=f"Gemini model to use. Defaults to GEMINI_MODEL or {DEFAULT_MODEL}.",
     )
     parser.add_argument(
         "--dry-run",
@@ -541,7 +496,7 @@ def main() -> int:
         print(f"Guide root does not exist: {guide_root}", file=sys.stderr)
         return 1
 
-    model = args.model or os.environ.get("ANTHROPIC_MODEL", DEFAULT_MODEL)
+    model = args.model or os.environ.get("GEMINI_MODEL", DEFAULT_MODEL)
 
     try:
         guides = discover_guides(guide_root)
@@ -563,12 +518,30 @@ def main() -> int:
             )
         return 0
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        print("ANTHROPIC_API_KEY is not set. Add it to .env or your shell environment.", file=sys.stderr)
+        print("GEMINI_API_KEY is not set. Add it to .env or your shell environment.", file=sys.stderr)
         return 1
 
-    client = Anthropic(api_key=api_key)
+    genai.configure(api_key=api_key)
+    client = genai.GenerativeModel(
+        model_name=model,
+        system_instruction=SYSTEM_PROMPT,
+        generation_config=genai.GenerationConfig(
+            max_output_tokens=DEFAULT_MAX_OUTPUT_TOKENS,
+            response_mime_type="application/json",
+            response_schema={
+                "type": "OBJECT",
+                "properties": {
+                    "title": {"type": "STRING"},
+                    "category": {"type": "STRING"},
+                    "description": {"type": "STRING"},
+                    "body": {"type": "STRING"},
+                },
+                "required": ["title", "category", "description", "body"],
+            },
+        ),
+    )
 
     for job in jobs:
         print(
@@ -576,9 +549,8 @@ def main() -> int:
             f"from {job.source.language_code} to {job.target_language_code}..."
         )
         try:
-            response = post_anthropic(job, client, model, prompt_template)
-            tool_input = extract_tool_input(response)
-            translation = parse_translation_response(tool_input)
+            response_data = post_gemini(job, client, prompt_template)
+            translation = parse_translation_response(response_data)
             written_path = write_translation(job, translation)
         except RuntimeError as exc:
             print(f"Failed to translate {job.source.guide_id}: {exc}", file=sys.stderr)

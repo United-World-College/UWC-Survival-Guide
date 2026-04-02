@@ -2,28 +2,22 @@ const { db, LANG_MAP } = require("./config");
 const { makeSlug, makeAuthorSlug, toBase64 } = require("./helpers");
 const { githubApi } = require("./github");
 
-const TRANSLATE_MODEL = "claude-sonnet-4-6";
+const TRANSLATE_MODEL = "gemini-2.5-flash";
 const TRANSLATE_MAX_TOKENS = 16000;
 const TRANSLATE_SYSTEM_PROMPT =
   "You are the lead translation editor for the UWC Changshu China Survival Guide. " +
   "Produce publication-ready translations that preserve the original author's voice, " +
-  "tone, pacing, and meaning. You MUST call the guide_translation tool with the " +
-  "translated fields. Do not return plain text.";
+  "tone, pacing, and meaning. Return the translated fields as JSON.";
 
-const TRANSLATE_TOOL = {
-  name: "guide_translation",
-  description: "Return the translated guide fields.",
-  input_schema: {
-    type: "object",
-    properties: {
-      title: { type: "string" },
-      category: { type: "string" },
-      description: { type: "string" },
-      body: { type: "string" },
-    },
-    required: ["title", "category", "description", "body"],
-    additionalProperties: false,
+const RESPONSE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    title: { type: "STRING" },
+    category: { type: "STRING" },
+    description: { type: "STRING" },
+    body: { type: "STRING" },
   },
+  required: ["title", "category", "description", "body"],
 };
 
 const STYLE_NOTES = {
@@ -78,14 +72,14 @@ Guide payload:
 ${JSON.stringify(payload, null, 2)}`;
 }
 
-async function getAnthropicKey() {
-  const doc = await db.collection("config").doc("anthropic").get();
+async function getGeminiKey() {
+  const doc = await db.collection("config").doc("gemini").get();
   return doc.exists && doc.data().apiKey ? doc.data().apiKey : null;
 }
 
 async function translateGuide(apiKey, sourceLang, targetLang, guideData) {
-  const Anthropic = require("@anthropic-ai/sdk");
-  const client = new Anthropic({ apiKey });
+  const { GoogleGenerativeAI } = require("@google/generative-ai");
+  const genAI = new GoogleGenerativeAI(apiKey);
 
   const payload = {
     guide_id: guideData.guide_id,
@@ -98,21 +92,30 @@ async function translateGuide(apiKey, sourceLang, targetLang, guideData) {
     body: guideData.content || "",
   };
 
-  const response = await client.messages.create({
+  const model = genAI.getGenerativeModel({
     model: TRANSLATE_MODEL,
-    max_tokens: TRANSLATE_MAX_TOKENS,
-    system: TRANSLATE_SYSTEM_PROMPT,
-    tools: [TRANSLATE_TOOL],
-    tool_choice: { type: "tool", name: "guide_translation" },
-    messages: [{ role: "user", content: buildTranslationPrompt(sourceLang, targetLang, payload) }],
+    systemInstruction: TRANSLATE_SYSTEM_PROMPT,
+    generationConfig: {
+      maxOutputTokens: TRANSLATE_MAX_TOKENS,
+      responseMimeType: "application/json",
+      responseSchema: RESPONSE_SCHEMA,
+    },
   });
 
-  for (const block of response.content) {
-    if (block.type === "tool_use" && block.name === "guide_translation") {
-      return block.input;
+  const result = await model.generateContent(
+    buildTranslationPrompt(sourceLang, targetLang, payload)
+  );
+
+  const text = result.response.text();
+  const parsed = JSON.parse(text);
+
+  for (const field of ["title", "category", "description", "body"]) {
+    if (typeof parsed[field] !== "string") {
+      throw new Error(`Gemini response missing required string field: ${field}`);
     }
   }
-  throw new Error("Anthropic response did not contain a guide_translation tool call.");
+
+  return parsed;
 }
 
 function buildTranslatedMarkdown(originalData, translation, targetLang, authors, editorName, slug) {
@@ -213,11 +216,11 @@ module.exports = {
   TRANSLATE_MODEL,
   TRANSLATE_MAX_TOKENS,
   TRANSLATE_SYSTEM_PROMPT,
-  TRANSLATE_TOOL,
+  RESPONSE_SCHEMA,
   STYLE_NOTES,
   PROMPT_NAMES,
   buildTranslationPrompt,
-  getAnthropicKey,
+  getGeminiKey,
   translateGuide,
   buildTranslatedMarkdown,
   translateAndPublishMissingVariants,
