@@ -360,3 +360,31 @@ admin:
 
     Run: python3 website/local-save-server.py
   github_error: "Approved in Firestore but failed to publish to GitHub: "
+  usage_title: Service Usage
+  usage_desc: Quota usage and resource metrics for Firebase and external services.
+  usage_refresh: Refresh
+  usage_load_failed: Could not load usage data. Please try again.
+  usage_cached_at: "Last updated: "
+  usage_section_quotas: Quotas & Limits
+  usage_section_operations: Operations (7 days)
+  usage_section_functions: Cloud Functions
+  usage_section_overview: Overview
+  usage_storage_label: "Cloud Storage"
+  usage_storage_free: "5 GB free tier"
+  usage_firestore_storage_label: "Firestore Storage"
+  usage_firestore_storage_free: "1 GiB free tier"
+  usage_firestore_reads: "Reads"
+  usage_firestore_writes: "Writes"
+  usage_firestore_deletes: "Deletes"
+  usage_firestore_daily_free: "50K / 20K / 20K daily free"
+  usage_functions_7d: "7d"
+  usage_functions_30d: "30d"
+  usage_gemini_label: "Gemini API"
+  usage_gemini_month: "this month"
+  usage_gemini_total: "total"
+  usage_col_users: Users
+  usage_col_submissions: Submissions
+  usage_col_audit: Audit Log
+  usage_col_config: Config
+  usage_of: " / "
+  usage_invocations: "invocations"

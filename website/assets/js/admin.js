@@ -245,6 +245,7 @@
       showView('view-signin');
       isAdmin = false;
       document.getElementById('admin-review-panel').style.display = 'none';
+      document.getElementById('admin-usage-panel').style.display = 'none';
     }
   });
 
@@ -1629,6 +1630,9 @@
         document.getElementById('admin-review-panel').style.display = 'block';
         loadReviewList('pending');
         initReviewTabs();
+        document.getElementById('admin-usage-panel').style.display = 'block';
+        loadUsageStats(false);
+        initUsageRefresh();
       }
     }).catch(function () {
       isAdmin = false;
@@ -1645,6 +1649,169 @@
         loadReviewList(currentFilter);
       });
     });
+  }
+
+  // ── Service Usage Panel ──
+
+  function initUsageRefresh() {
+    var btn = document.getElementById('usage-refresh-btn');
+    if (btn) {
+      btn.addEventListener('click', function () { loadUsageStats(true); });
+    }
+  }
+
+  function loadUsageStats(forceRefresh) {
+    var content = document.getElementById('usage-content');
+    var errorEl = document.getElementById('usage-error');
+    var cachedEl = document.getElementById('usage-cached-at');
+    var btn = document.getElementById('usage-refresh-btn');
+
+    content.innerHTML = '<p class="admin-empty-state">' + escapeHtml(ADMIN_I18N.loading) + '</p>';
+    errorEl.style.display = 'none';
+    cachedEl.style.display = 'none';
+    if (btn) btn.disabled = true;
+
+    var getServiceUsage = functions.httpsCallable('getServiceUsage');
+    getServiceUsage({ forceRefresh: !!forceRefresh }).then(function (result) {
+      renderUsageStats(result.data);
+      if (btn) btn.disabled = false;
+    }).catch(function () {
+      content.innerHTML = '';
+      errorEl.textContent = ADMIN_I18N.usage_load_failed;
+      errorEl.style.display = 'block';
+      if (btn) btn.disabled = false;
+    });
+  }
+
+  function fmtNum(n) { return n.toLocaleString(); }
+  function fmtBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+  }
+
+  function renderQuotaBar(label, valueStr, percent, note) {
+    var barClass = percent > 80 ? ' danger' : percent > 50 ? ' warn' : '';
+    var h = '<div class="admin-usage-quota">';
+    h += '<div class="admin-usage-quota-header">';
+    h += '<span class="admin-usage-quota-label">' + escapeHtml(label) + '</span>';
+    h += '<span class="admin-usage-quota-value">' + escapeHtml(valueStr) + '</span>';
+    h += '</div>';
+    h += '<div class="admin-usage-bar"><div class="admin-usage-bar-fill' + barClass + '" style="width:' + Math.min(percent, 100).toFixed(1) + '%"></div></div>';
+    if (note) h += '<div class="admin-usage-quota-note">' + note + '</div>';
+    h += '</div>';
+    return h;
+  }
+
+  function renderUsageStats(data) {
+    var content = document.getElementById('usage-content');
+    var cachedEl = document.getElementById('usage-cached-at');
+    var m = data.monitoring || {};
+    var g = data.gemini || {};
+    var html = '';
+
+    // ── Quotas & Limits ──
+    html += '<div class="admin-usage-section">';
+    html += '<div class="admin-usage-section-title">' + escapeHtml(ADMIN_I18N.usage_section_quotas) + '</div>';
+
+    // Cloud Storage bar
+    var storageMB = m.cloudStorageMB || 0;
+    var storageLimitMB = (m.cloudStorageLimitGB || 5) * 1024;
+    var storagePct = (storageMB / storageLimitMB) * 100;
+    html += renderQuotaBar(
+      ADMIN_I18N.usage_storage_label,
+      storageMB.toFixed(2) + ' MB' + ADMIN_I18N.usage_of + (m.cloudStorageLimitGB || 5) + ' GB',
+      storagePct,
+      escapeHtml(ADMIN_I18N.usage_storage_free)
+    );
+
+    // Firestore Storage bar
+    var fsBytes = m.firestoreStorageBytes || 0;
+    var fsLimitBytes = 1 * 1024 * 1024 * 1024; // 1 GiB
+    var fsPct = (fsBytes / fsLimitBytes) * 100;
+    html += renderQuotaBar(
+      ADMIN_I18N.usage_firestore_storage_label,
+      fmtBytes(fsBytes) + ADMIN_I18N.usage_of + '1 GiB',
+      fsPct,
+      escapeHtml(ADMIN_I18N.usage_firestore_storage_free)
+    );
+
+    html += '</div>';
+
+    // ── Firestore Operations (7 days) ──
+    html += '<div class="admin-usage-section">';
+    html += '<div class="admin-usage-section-title">' + escapeHtml(ADMIN_I18N.usage_section_operations) + '</div>';
+    html += '<div class="admin-usage-metrics">';
+    html += '<span class="admin-usage-metric"><b>' + fmtNum(m.firestoreReads7d || 0) + '</b> ' + escapeHtml(ADMIN_I18N.usage_firestore_reads) + '</span>';
+    html += '<span class="admin-usage-metric"><b>' + fmtNum(m.firestoreWrites7d || 0) + '</b> ' + escapeHtml(ADMIN_I18N.usage_firestore_writes) + '</span>';
+    html += '<span class="admin-usage-metric"><b>' + fmtNum(m.firestoreDeletes7d || 0) + '</b> ' + escapeHtml(ADMIN_I18N.usage_firestore_deletes) + '</span>';
+    html += '</div>';
+    html += '<div class="admin-usage-quota-note" style="margin-top:0.4rem;">' + escapeHtml(ADMIN_I18N.usage_firestore_daily_free) + '</div>';
+    html += '</div>';
+
+    // ── Cloud Functions ──
+    html += '<div class="admin-usage-section">';
+    html += '<div class="admin-usage-section-title">' + escapeHtml(ADMIN_I18N.usage_section_functions) + '</div>';
+    html += '<div class="admin-usage-metrics">';
+    html += '<span class="admin-usage-metric"><b>' + fmtNum(m.functionsExec7d || 0) + '</b> ' + escapeHtml(ADMIN_I18N.usage_invocations) + ' (' + escapeHtml(ADMIN_I18N.usage_functions_7d) + ')</span>';
+    html += '<span class="admin-usage-metric"><b>' + fmtNum(m.functionsExec30d || 0) + '</b> ' + escapeHtml(ADMIN_I18N.usage_invocations) + ' (' + escapeHtml(ADMIN_I18N.usage_functions_30d) + ')</span>';
+    html += '</div>';
+    // Per-function breakdown
+    var fnBreakdown = m.functionBreakdown || {};
+    var fnKeys = Object.keys(fnBreakdown).sort(function (a, b) { return fnBreakdown[b] - fnBreakdown[a]; });
+    if (fnKeys.length > 0) {
+      var fnParts = [];
+      for (var fi = 0; fi < fnKeys.length; fi++) {
+        fnParts.push(escapeHtml(fnKeys[fi]) + ':&nbsp;<b>' + fmtNum(fnBreakdown[fnKeys[fi]]) + '</b>');
+      }
+      html += '<div class="admin-usage-quota-note" style="margin-top:0.4rem;">' + fnParts.join(' &middot; ') + '</div>';
+    }
+    html += '</div>';
+
+    // ── Gemini API ──
+    html += '<div class="admin-usage-section">';
+    html += '<div class="admin-usage-section-title">' + escapeHtml(ADMIN_I18N.usage_gemini_label) + '</div>';
+    html += '<div class="admin-usage-metrics">';
+    var gemMonth = g.callsThisMonth || 0;
+    var gemTotal = g.callsTotal || 0;
+    html += '<span class="admin-usage-metric"><b>' + fmtNum(gemMonth) + '</b> ' + escapeHtml(ADMIN_I18N.usage_gemini_month) + '</span>';
+    if (gemTotal > 0) {
+      html += '<span class="admin-usage-metric"><b>' + fmtNum(gemTotal) + '</b> ' + escapeHtml(ADMIN_I18N.usage_gemini_total) + '</span>';
+    }
+    html += '</div>';
+    html += '<div class="admin-usage-quota-note">gemini-2.5-flash &middot; ' + escapeHtml(g.month || '') + '</div>';
+    html += '</div>';
+
+    // ── Overview (compact) ──
+    html += '<div class="admin-usage-section">';
+    html += '<div class="admin-usage-section-title">' + escapeHtml(ADMIN_I18N.usage_section_overview) + '</div>';
+    html += '<div class="admin-usage-metrics">';
+    var collLabels = { users: ADMIN_I18N.usage_col_users, submissions: ADMIN_I18N.usage_col_submissions, submissionAudit: ADMIN_I18N.usage_col_audit, config: ADMIN_I18N.usage_col_config };
+    var collKeys = ['users', 'submissions', 'submissionAudit', 'config'];
+    for (var ci = 0; ci < collKeys.length; ci++) {
+      var ck = collKeys[ci];
+      var cv = data.firestore && data.firestore[ck] != null ? data.firestore[ck] : 0;
+      html += '<span class="admin-usage-metric"><b>' + fmtNum(cv) + '</b> ' + escapeHtml(collLabels[ck] || ck) + '</span>';
+    }
+    html += '</div>';
+    html += '<div class="admin-usage-metrics" style="margin-top:0.3rem;">';
+    var statusLabels = { pending: ADMIN_I18N.filter_pending || 'Pending', approved: ADMIN_I18N.filter_approved || 'Approved', rejected: ADMIN_I18N.filter_rejected || 'Rejected', revise_resubmit: ADMIN_I18N.filter_revise_resubmit || 'Revision Requested' };
+    var statKeys = ['pending', 'approved', 'rejected', 'revise_resubmit'];
+    for (var j = 0; j < statKeys.length; j++) {
+      var sKey = statKeys[j];
+      var sCount = data.submissions && data.submissions[sKey] != null ? data.submissions[sKey] : 0;
+      html += '<span class="admin-usage-metric"><b>' + fmtNum(sCount) + '</b> ' + escapeHtml(statusLabels[sKey]) + '</span>';
+    }
+    html += '</div>';
+    html += '</div>';
+
+    content.innerHTML = html;
+
+    if (data.cachedAt) {
+      cachedEl.textContent = ADMIN_I18N.usage_cached_at + new Date(data.cachedAt).toLocaleString();
+      cachedEl.style.display = 'block';
+    }
   }
 
   function loadReviewList(filter) {

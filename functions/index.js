@@ -1,5 +1,5 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const { db, FieldValue, LANG_MAP } = require("./lib/config");
+const { db, FieldValue, getBucket, LANG_MAP } = require("./lib/config");
 const { assertAuth, assertAdmin } = require("./lib/auth");
 const {
   makeSlug, getOrderedSubmissionAuthors, sanitizeRevisionHistory,
@@ -389,4 +389,166 @@ exports.deleteSubmission = onCall(async (request) => {
     language: d.language || null,
     wasApproved: d.status === "approved",
   };
+});
+
+// ══════════════════════════════════════
+// 7. getServiceUsage
+// ══════════════════════════════════════
+
+let _usageCache = null;
+let _usageCacheTime = 0;
+const USAGE_CACHE_TTL = 5 * 60 * 1000; // 5 min
+
+exports.getServiceUsage = onCall(async (request) => {
+  await assertAdmin(request.auth);
+
+  const now = Date.now();
+  if (_usageCache && !request.data.forceRefresh && now - _usageCacheTime < USAGE_CACHE_TTL) {
+    return _usageCache;
+  }
+
+  const { GoogleAuth } = require("google-auth-library");
+  const gauth = new GoogleAuth({ scopes: ["https://www.googleapis.com/auth/monitoring.read"] });
+  const gclient = await gauth.getClient();
+  const proj = "projects/uwc-survival-guide";
+  const monitorUrl = `https://monitoring.googleapis.com/v3/${proj}/timeSeries`;
+
+  const endTime = new Date();
+  const startTime1d = new Date(endTime - 24 * 60 * 60 * 1000);
+  const startTime7d = new Date(endTime - 7 * 24 * 60 * 60 * 1000);
+  const startTime30d = new Date(endTime - 30 * 24 * 60 * 60 * 1000);
+  const currentMonth = endTime.toISOString().slice(0, 7);
+
+  async function queryMetric(metricType, startTime, aligner, crossAligner) {
+    const params = {
+      filter: `metric.type = "${metricType}"`,
+      "interval.startTime": startTime.toISOString(),
+      "interval.endTime": endTime.toISOString(),
+      "aggregation.alignmentPeriod": "86400s",
+      "aggregation.perSeriesAligner": aligner || "ALIGN_SUM",
+    };
+    if (crossAligner) {
+      params["aggregation.crossSeriesReducer"] = crossAligner;
+    }
+    const res = await gclient.request({ url: monitorUrl, params });
+    return res.data.timeSeries || [];
+  }
+
+  function sumPoints(seriesList) {
+    let total = 0;
+    for (const ts of seriesList) {
+      for (const p of ts.points || []) {
+        total += parseInt(p.value.int64Value || "0", 10) + parseFloat(p.value.doubleValue || 0);
+      }
+    }
+    return Math.round(total);
+  }
+
+  function latestValue(seriesList) {
+    for (const ts of seriesList) {
+      if (ts.points && ts.points.length > 0) {
+        const v = ts.points[0].value;
+        return parseFloat(v.doubleValue || v.int64Value || "0");
+      }
+    }
+    return 0;
+  }
+
+  const collections = ["users", "submissions", "submissionAudit", "config"];
+  const statuses = ["pending", "approved", "rejected", "revise_resubmit"];
+
+  const [
+    collCounts, statusCounts,
+    fsReads7d, fsWrites7d, fsDeletes7d,
+    fsStorageBytes, cloudStorageBytes,
+    fnExec7d, fnExec30d,
+    usageDoc,
+  ] = await Promise.all([
+    // Firestore doc counts
+    Promise.all(collections.map(async (name) => {
+      const snap = await db.collection(name).count().get();
+      return { name, count: snap.data().count };
+    })),
+    // Submission status breakdown
+    Promise.all(statuses.map(async (status) => {
+      const snap = await db.collection("submissions").where("status", "==", status).count().get();
+      return { status, count: snap.data().count };
+    })),
+    // Monitoring: Firestore reads/writes/deletes (7 days)
+    queryMetric("firestore.googleapis.com/document/read_count", startTime7d),
+    queryMetric("firestore.googleapis.com/document/write_count", startTime7d),
+    queryMetric("firestore.googleapis.com/document/delete_count", startTime7d),
+    // Monitoring: Firestore storage (latest)
+    queryMetric("firestore.googleapis.com/storage/data_and_index_storage_bytes", startTime1d, "ALIGN_MEAN"),
+    // Monitoring: Cloud Storage total bytes (latest)
+    queryMetric("storage.googleapis.com/storage/total_bytes", startTime1d, "ALIGN_MEAN"),
+    // Monitoring: Cloud Functions executions (7d and 30d)
+    queryMetric("cloudfunctions.googleapis.com/function/execution_count", startTime7d),
+    queryMetric("cloudfunctions.googleapis.com/function/execution_count", startTime30d),
+    // Gemini usage counter
+    db.collection("config").doc("usage").get(),
+  ]);
+
+  // Firestore doc counts
+  const firestore = {};
+  let totalDocs = 0;
+  for (const c of collCounts) { firestore[c.name] = c.count; totalDocs += c.count; }
+  firestore.totalDocs = totalDocs;
+
+  // Submission breakdown
+  const submissions = { total: 0 };
+  for (const s of statusCounts) { submissions[s.status] = s.count; submissions.total += s.count; }
+
+  // Cloud Storage: sum only the app bucket
+  let cloudStorageMB = 0;
+  for (const ts of cloudStorageBytes) {
+    if (ts.resource && ts.resource.labels &&
+        ts.resource.labels.bucket_name === "uwc-survival-guide.firebasestorage.app") {
+      cloudStorageMB = latestValue([ts]) / (1024 * 1024);
+    }
+  }
+
+  // Cloud Functions: per-function breakdown (7d)
+  const fnBreakdown = {};
+  let fnTotal7d = 0;
+  for (const ts of fnExec7d) {
+    const name = ts.resource && ts.resource.labels ? ts.resource.labels.function_name : "unknown";
+    let count = 0;
+    for (const p of ts.points || []) count += parseInt(p.value.int64Value || "0", 10);
+    fnBreakdown[name] = (fnBreakdown[name] || 0) + count;
+    fnTotal7d += count;
+  }
+  const fnTotal30d = sumPoints(fnExec30d);
+
+  // Gemini usage
+  const usageData = usageDoc.exists ? usageDoc.data() : {};
+  const geminiByMonth = usageData.gemini || {};
+  const geminiThisMonth = geminiByMonth[currentMonth] || 0;
+  let geminiTotal = 0;
+  for (const m of Object.keys(geminiByMonth)) geminiTotal += geminiByMonth[m] || 0;
+
+  const result = {
+    monitoring: {
+      firestoreReads7d: sumPoints(fsReads7d),
+      firestoreWrites7d: sumPoints(fsWrites7d),
+      firestoreDeletes7d: sumPoints(fsDeletes7d),
+      firestoreStorageBytes: latestValue(fsStorageBytes),
+      cloudStorageMB: parseFloat(cloudStorageMB.toFixed(2)),
+      cloudStorageLimitGB: 5,
+      functionsExec7d: fnTotal7d,
+      functionsExec30d: fnTotal30d,
+      functionBreakdown: fnBreakdown,
+    },
+    gemini: {
+      callsThisMonth: geminiThisMonth,
+      callsTotal: geminiTotal,
+      month: currentMonth,
+    },
+    firestore,
+    submissions,
+    cachedAt: endTime.toISOString(),
+  };
+  _usageCache = result;
+  _usageCacheTime = now;
+  return result;
 });

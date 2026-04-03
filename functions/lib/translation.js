@@ -1,4 +1,4 @@
-const { db, LANG_MAP } = require("./config");
+const { db, FieldValue, LANG_MAP } = require("./config");
 const { makeSlug, makeAuthorSlug, toBase64 } = require("./helpers");
 const { githubApi } = require("./github");
 
@@ -114,6 +114,14 @@ async function translateGuide(apiKey, sourceLang, targetLang, guideData) {
       throw new Error(`Gemini response missing required string field: ${field}`);
     }
   }
+
+  // Track Gemini API usage
+  const month = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+  const usageRef = db.collection("config").doc("usage");
+  await usageRef.set(
+    { gemini: { [month]: FieldValue.increment(1) } },
+    { merge: true }
+  );
 
   return parsed;
 }

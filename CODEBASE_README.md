@@ -19,6 +19,7 @@
   - [rejectSubmission](#rejectsubmission)
   - [requestRevision](#requestrevision)
   - [deleteSubmission](#deletesubmission)
+  - [getServiceUsage](#getserviceusage)
 - [Internal Library Functions](#internal-library-functions)
   - [Auth](#auth)
   - [Config](#config)
@@ -291,6 +292,30 @@ All callable functions are defined in `functions/index.js` and invoked via Fireb
 - Updates `users/{uid}` `featuredGuideIds` for each author (if was approved)
 - Deletes Firestore document
 - Appends audit event (`type: "deleted"`) with original metadata to `submissionAudit/{docId}`
+
+---
+
+### getServiceUsage
+
+**Location:** `functions/index.js`
+
+**Trigger:** Admin calls via Firebase SDK
+
+**Auth:** Admin only
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `forceRefresh` | `boolean?` | Bypass 5-min server cache |
+| **Output** | `firestore` | `object` | Document counts per collection (`users`, `submissions`, `submissionAudit`, `config`) |
+| **Output** | `submissions` | `object` | Breakdown by status (`pending`, `approved`, `rejected`, `revise_resubmit`, `total`) |
+| **Output** | `storage` | `object` | `{ avatarCount, totalSizeMB }` |
+| **Output** | `cachedAt` | `string` | ISO timestamp of when data was gathered |
+
+**Logic:**
+1. Calls `assertAdmin()`
+2. Returns cached result if within 5-min TTL and `forceRefresh` is not true
+3. Gathers metrics in parallel: Firestore aggregation counts, submission status counts, Storage file listing
+4. Caches result in memory
 
 ---
 
@@ -1068,6 +1093,7 @@ User fills form in admin UI
 | `rejectSubmission` | Cloud Fn | Admin call | docId, reason | `{ success }` | Firestore update, audit |
 | `requestRevision` | Cloud Fn | Admin call | docId, comments | `{ revisionHistory }` | Firestore update, audit |
 | `deleteSubmission` | Cloud Fn | Admin call | docId | `{ wasApproved }` | GitHub delete, Firestore delete, audit |
+| `getServiceUsage` | Cloud Fn | Admin call | forceRefresh? | `{ firestore, submissions, storage, cachedAt }` | Firestore count, Storage list |
 | `deploy.yml` | GitHub Action | Push to main | Repo code | Live site | Tests, build, deploy to Pages |
 | `script/translate` | CLI | Manual | guide-id, target-lang | Translated .md files | Filesystem write, Gemini API |
 | `backfill-submissions.js` | Script | Manual | Hardcoded guides | Firestore docs | Firestore write |

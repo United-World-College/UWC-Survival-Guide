@@ -73,10 +73,25 @@ const mockDoc = jest.fn((docId) => {
   };
 });
 
+function countDocsInCollection(collectionName, field, value) {
+  const prefix = collectionName + "/";
+  let count = 0;
+  for (const [key, data] of Object.entries(mockDocs)) {
+    if (!key.startsWith(prefix) || !data) continue;
+    if (field === undefined || data[field] === value) count++;
+  }
+  return count;
+}
+
 const mockCollection = jest.fn((name) => {
   mockDoc._currentCollection = name;
   return {
     doc: mockDoc,
+    count: jest.fn(() => ({
+      get: jest.fn(async () => ({
+        data: () => ({ count: countDocsInCollection(name) }),
+      })),
+    })),
     where: jest.fn((field, op, value) => ({
       get: jest.fn(async () => {
         // Search all docs in this collection for matching field value
@@ -89,6 +104,11 @@ const mockCollection = jest.fn((name) => {
         }
         return { empty: matches.length === 0, docs: matches };
       }),
+      count: jest.fn(() => ({
+        get: jest.fn(async () => ({
+          data: () => ({ count: countDocsInCollection(name, field, value) }),
+        })),
+      })),
     })),
   };
 });
@@ -114,6 +134,14 @@ class MockHttpsError extends Error {
 jest.mock("firebase-functions/v2/https", () => ({
   onCall: (fn) => fn,
   HttpsError: MockHttpsError,
+}));
+
+// Mock google-auth-library for getServiceUsage monitoring queries
+const mockGcpRequest = jest.fn();
+jest.mock("google-auth-library", () => ({
+  GoogleAuth: jest.fn(() => ({
+    getClient: jest.fn(async () => ({ request: mockGcpRequest })),
+  })),
 }));
 
 // Mock global fetch for GitHub API calls
@@ -1249,5 +1277,112 @@ describe("approveSubmission", () => {
       (call) => call.collection === "users"
     );
     expect(userUpdateCalls).toHaveLength(0);
+  });
+});
+
+// ══════════════════════════════════════
+// getServiceUsage
+// ══════════════════════════════════════
+
+describe("getServiceUsage", () => {
+  function setupMonitoringMock() {
+    mockGcpRequest.mockImplementation(async ({ params }) => {
+      const filter = params.filter || "";
+      if (filter.includes("read_count")) {
+        return { data: { timeSeries: [{ points: [{ value: { int64Value: "100" }, interval: {} }] }] } };
+      }
+      if (filter.includes("write_count")) {
+        return { data: { timeSeries: [{ points: [{ value: { int64Value: "50" }, interval: {} }] }] } };
+      }
+      if (filter.includes("delete_count")) {
+        return { data: { timeSeries: [{ points: [{ value: { int64Value: "5" }, interval: {} }] }] } };
+      }
+      if (filter.includes("data_and_index_storage_bytes")) {
+        return { data: { timeSeries: [{ points: [{ value: { doubleValue: 50000 }, interval: {} }] }] } };
+      }
+      if (filter.includes("storage.googleapis.com/storage/total_bytes")) {
+        return { data: { timeSeries: [{
+          resource: { labels: { bucket_name: "uwc-survival-guide.firebasestorage.app" } },
+          points: [{ value: { doubleValue: 2000000 }, interval: {} }],
+        }] } };
+      }
+      if (filter.includes("execution_count")) {
+        return { data: { timeSeries: [{
+          resource: { labels: { function_name: "submitArticle" } },
+          points: [{ value: { int64Value: "10" }, interval: {} }],
+        }] } };
+      }
+      return { data: { timeSeries: [] } };
+    });
+  }
+
+  beforeEach(() => {
+    resetMockDb();
+    mockGcpRequest.mockReset();
+    setupMonitoringMock();
+  });
+
+  test("rejects unauthenticated users", async () => {
+    await expect(funcs.getServiceUsage({ auth: null, data: {} }))
+      .rejects.toThrow("Sign in required");
+  });
+
+  test("rejects non-admin users", async () => {
+    await expect(funcs.getServiceUsage({ auth: userAuth("u1"), data: {} }))
+      .rejects.toThrow("Admin access required");
+  });
+
+  test("returns monitoring data for admins", async () => {
+    setMockDoc("users", "u1", { displayName: "A" });
+    setMockDoc("submissions", "s1", { status: "approved", title: "T" });
+    setMockDoc("submissions", "s2", { status: "pending", title: "T2" });
+    setMockDoc("config", "usage", { gemini: { "2026-04": 3, "_backfill": 5 } });
+
+    const result = await funcs.getServiceUsage({ auth: adminAuth(), data: { forceRefresh: true } });
+
+    // Monitoring data
+    expect(result.monitoring).toBeDefined();
+    expect(result.monitoring.firestoreReads7d).toBe(100);
+    expect(result.monitoring.firestoreWrites7d).toBe(50);
+    expect(result.monitoring.firestoreDeletes7d).toBe(5);
+    expect(result.monitoring.firestoreStorageBytes).toBe(50000);
+    expect(result.monitoring.cloudStorageMB).toBeCloseTo(1.91, 1);
+    expect(result.monitoring.cloudStorageLimitGB).toBe(5);
+    expect(result.monitoring.functionsExec7d).toBe(10);
+    expect(result.monitoring.functionBreakdown).toEqual({ submitArticle: 10 });
+
+    // Gemini
+    expect(result.gemini.callsThisMonth).toBe(3);
+    expect(result.gemini.callsTotal).toBe(8); // 3 + 5
+
+    // Firestore doc counts
+    expect(result.firestore.users).toBe(1);
+    expect(result.firestore.submissions).toBe(2);
+    expect(result.firestore.totalDocs).toBeGreaterThan(0);
+
+    // Submissions breakdown
+    expect(result.submissions.approved).toBe(1);
+    expect(result.submissions.pending).toBe(1);
+    expect(result.submissions.total).toBe(2);
+
+    expect(result.cachedAt).toBeDefined();
+  });
+
+  test("uses cache on second call without forceRefresh", async () => {
+    const result1 = await funcs.getServiceUsage({ auth: adminAuth(), data: { forceRefresh: true } });
+    mockGcpRequest.mockReset(); // clear so we can verify no new calls
+    const result2 = await funcs.getServiceUsage({ auth: adminAuth(), data: {} });
+
+    expect(result2.cachedAt).toBe(result1.cachedAt);
+    expect(mockGcpRequest).not.toHaveBeenCalled();
+  });
+
+  test("bypasses cache with forceRefresh", async () => {
+    await funcs.getServiceUsage({ auth: adminAuth(), data: { forceRefresh: true } });
+    setupMonitoringMock();
+    const result2 = await funcs.getServiceUsage({ auth: adminAuth(), data: { forceRefresh: true } });
+
+    expect(mockGcpRequest).toHaveBeenCalled();
+    expect(result2.cachedAt).toBeDefined();
   });
 });

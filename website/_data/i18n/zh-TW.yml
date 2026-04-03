@@ -360,3 +360,31 @@ admin:
 
     執行：python3 website/local-save-server.py
   github_error: 已在 Firestore 中批准，但發布至 GitHub 失敗：
+  usage_title: 服務用量
+  usage_desc: Firebase 和外部服務的配額用量與資源概覽。
+  usage_refresh: 重新整理
+  usage_load_failed: 無法載入用量資料，請重試。
+  usage_cached_at: 上次更新：
+  usage_section_quotas: 配額與限額
+  usage_section_operations: 操作量（7 天）
+  usage_section_functions: Cloud Functions
+  usage_section_overview: 概覽
+  usage_storage_label: 雲端儲存
+  usage_storage_free: 5 GB 免費額度
+  usage_firestore_storage_label: Firestore 儲存
+  usage_firestore_storage_free: 1 GiB 免費額度
+  usage_firestore_reads: 讀取
+  usage_firestore_writes: 寫入
+  usage_firestore_deletes: 刪除
+  usage_firestore_daily_free: 每日免費 50K / 20K / 20K
+  usage_functions_7d: 7 天
+  usage_functions_30d: 30 天
+  usage_gemini_label: Gemini API
+  usage_gemini_month: 本月
+  usage_gemini_total: 累計
+  usage_col_users: 使用者
+  usage_col_submissions: 投稿
+  usage_col_audit: 稽核記錄
+  usage_col_config: 設定
+  usage_of: " / "
+  usage_invocations: 次呼叫

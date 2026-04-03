@@ -199,7 +199,35 @@ var ADMIN_I18N = {
   coauthor_add_btn:     {{ t.coauthor_add_btn | jsonify }},
   coauthor_add_toggle:  {{ t.coauthor_add_toggle | jsonify }},
   coauthors_max:        {{ t.coauthors_max | jsonify }},
-  author_id_label:      {{ t.author_id_label | jsonify }}
+  author_id_label:      {{ t.author_id_label | jsonify }},
+  usage_title:          {{ t.usage_title | jsonify }},
+  usage_desc:           {{ t.usage_desc | jsonify }},
+  usage_refresh:        {{ t.usage_refresh | jsonify }},
+  usage_load_failed:    {{ t.usage_load_failed | jsonify }},
+  usage_cached_at:      {{ t.usage_cached_at | jsonify }},
+  usage_section_quotas: {{ t.usage_section_quotas | jsonify }},
+  usage_section_operations: {{ t.usage_section_operations | jsonify }},
+  usage_section_functions: {{ t.usage_section_functions | jsonify }},
+  usage_section_overview: {{ t.usage_section_overview | jsonify }},
+  usage_storage_label:  {{ t.usage_storage_label | jsonify }},
+  usage_storage_free:   {{ t.usage_storage_free | jsonify }},
+  usage_firestore_storage_label: {{ t.usage_firestore_storage_label | jsonify }},
+  usage_firestore_storage_free: {{ t.usage_firestore_storage_free | jsonify }},
+  usage_firestore_reads: {{ t.usage_firestore_reads | jsonify }},
+  usage_firestore_writes: {{ t.usage_firestore_writes | jsonify }},
+  usage_firestore_deletes: {{ t.usage_firestore_deletes | jsonify }},
+  usage_firestore_daily_free: {{ t.usage_firestore_daily_free | jsonify }},
+  usage_functions_7d:   {{ t.usage_functions_7d | jsonify }},
+  usage_functions_30d:  {{ t.usage_functions_30d | jsonify }},
+  usage_gemini_label:   {{ t.usage_gemini_label | jsonify }},
+  usage_gemini_month:   {{ t.usage_gemini_month | jsonify }},
+  usage_gemini_total:   {{ t.usage_gemini_total | jsonify }},
+  usage_col_users:      {{ t.usage_col_users | jsonify }},
+  usage_col_submissions: {{ t.usage_col_submissions | jsonify }},
+  usage_col_audit:      {{ t.usage_col_audit | jsonify }},
+  usage_col_config:     {{ t.usage_col_config | jsonify }},
+  usage_of:             {{ t.usage_of | jsonify }},
+  usage_invocations:    {{ t.usage_invocations | jsonify }}
 };
 </script>
 
@@ -473,6 +501,22 @@ var ADMIN_I18N = {
             <div id="review-list">
               <p class="admin-empty-state">{{ t.loading }}</p>
             </div>
+          </div>
+        </div>
+
+        <!-- Admin Service Usage Panel (auto-shown for admin accounts) -->
+        <div id="admin-usage-panel" style="display:none;">
+          <div class="admin-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <h2 class="admin-card-title" style="margin-bottom:0;">{{ t.usage_title }}</h2>
+              <button type="button" id="usage-refresh-btn" class="admin-btn admin-btn-outline admin-btn-small">{{ t.usage_refresh }}</button>
+            </div>
+            <p class="admin-card-desc">{{ t.usage_desc }}</p>
+            <div id="usage-content">
+              <p class="admin-empty-state">{{ t.loading }}</p>
+            </div>
+            <p id="usage-error" class="admin-error" style="display:none;"></p>
+            <p id="usage-cached-at" class="admin-guide-meta" style="margin-top:1rem;display:none;"></p>
           </div>
         </div>
 

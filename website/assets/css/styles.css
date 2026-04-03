@@ -2040,6 +2040,7 @@ details[open] > .admin-thread-toggle::before {
   .admin-submission-item { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
   .admin-modal-content { width: 95%; max-height: 85vh; }
   .admin-modal-actions { flex-direction: column; }
+  .admin-usage-metrics { gap: 0.4rem 1rem; }
 }
 
 /* ── Admin Review Panel ── */
@@ -2100,6 +2101,82 @@ details[open] > .admin-thread-toggle::before {
 
 .admin-review-item:hover {
   background: var(--cream);
+}
+
+/* ── Usage Panel ── */
+.admin-usage-section {
+  margin-top: 1.8rem;
+}
+.admin-usage-section:first-child {
+  margin-top: 1.2rem;
+}
+.admin-usage-section-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+/* Quota rows */
+.admin-usage-quota {
+  margin-bottom: 1.4rem;
+}
+.admin-usage-quota-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+}
+.admin-usage-quota-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--dark);
+}
+.admin-usage-quota-value {
+  font-family: var(--mono, monospace);
+  font-size: 0.78rem;
+  color: #7a7570;
+}
+.admin-usage-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.admin-usage-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--olive, #8a7e6b);
+  transition: width 0.4s ease;
+}
+.admin-usage-bar-fill.warn {
+  background: #c9a227;
+}
+.admin-usage-bar-fill.danger {
+  background: #b44;
+}
+.admin-usage-quota-note {
+  font-size: 0.68rem;
+  color: #7a7570;
+  margin-top: 0.25rem;
+}
+
+/* Compact metric row for overview */
+.admin-usage-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.6rem;
+}
+.admin-usage-metric {
+  font-size: 0.78rem;
+  color: #7a7570;
+}
+.admin-usage-metric b {
+  font-weight: 600;
+  color: var(--dark);
+  font-family: var(--mono, monospace);
 }
 
 /* ── Modal ── */
