@@ -4,7 +4,7 @@ This CLI scans `website/_guides/default/` and `website/_guides/chinese/`, matche
 
 ## What It Preserves
 
-- Front matter like `author` and `order`
+- Front matter metadata (e.g. `author`, `guide_id`); `order` is replaced with `language_sort` for locale-aware ordering
 - The author's tone, structure, and code-switching
 - Markdown, HTML, Liquid tags, and image paths
 - Internal guide links, rewritten into the target language path
@@ -12,6 +12,7 @@ This CLI scans `website/_guides/default/` and `website/_guides/chinese/`, matche
 
 ## Requirements
 
+- Python ≥ 3.13
 - `uv`
 - `GEMINI_API_KEY` in the repository root `.env`
 - Optional: `GEMINI_MODEL` if you do not want the default `gemini-2.5-flash`
