@@ -50,6 +50,17 @@ service cloud.firestore {
 
       allow update: if false;
       allow delete: if false;
+
+      // Article images uploaded to R2; all writes via Cloud Functions.
+      match /images/{imageId} {
+        allow read: if get(/databases/$(database)/documents/submissions/$(docId)).data.status == 'approved'
+          || (request.auth != null &&
+              (get(/databases/$(database)/documents/submissions/$(docId)).data.uid == request.auth.uid ||
+               ('coauthorUids' in get(/databases/$(database)/documents/submissions/$(docId)).data &&
+                request.auth.uid in get(/databases/$(database)/documents/submissions/$(docId)).data.coauthorUids) ||
+               isAdmin()));
+        allow write: if false;
+      }
     }
 
     // Private workflow audit trail for editor/coauthor actions.

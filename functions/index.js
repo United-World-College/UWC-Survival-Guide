@@ -11,6 +11,10 @@ const {
   ensureUniqueGuideSlug, ensureAuthorId,
 } = require("./lib/firestore");
 const { getGeminiKey, translateMissingVariants } = require("./lib/translation");
+const {
+  uploadToR2, deleteFromR2, deleteMultipleFromR2,
+  R2_ALLOWED_TYPES, R2_MAX_SIZE,
+} = require("./lib/r2");
 
 // ══════════════════════════════════════
 // 0. checkAdminStatus
@@ -375,6 +379,16 @@ exports.deleteSubmission = onCall(async (request) => {
     }
   }
 
+  // Clean up R2 images (if any)
+  try {
+    const imagesSnap = await ref.collection("images").get();
+    if (!imagesSnap.empty) {
+      const keys = imagesSnap.docs.map((imgDoc) => imgDoc.data().key).filter(Boolean);
+      await deleteMultipleFromR2(keys);
+      await Promise.all(imagesSnap.docs.map((imgDoc) => imgDoc.ref.delete()));
+    }
+  } catch (_) { /* non-fatal: log but don't block deletion */ }
+
   await appendSubmissionAuditEvent(docId, "deleted", request.auth, {
     status: d.status || null,
     guideId: d.guide_id || null,
@@ -392,7 +406,106 @@ exports.deleteSubmission = onCall(async (request) => {
 });
 
 // ══════════════════════════════════════
-// 7. getServiceUsage
+// 7. uploadArticleImage
+// ══════════════════════════════════════
+
+function sanitizeFileName(name) {
+  return name
+    .replace(/[/\\:*?"<>|]/g, "")
+    .replace(/\s+/g, "-")
+    .slice(-80);
+}
+
+exports.uploadArticleImage = onCall(async (request) => {
+  assertAuth(request.auth);
+  const { docId, imageData, fileName, contentType } = request.data;
+  if (!docId || !imageData || !fileName || !contentType) {
+    throw new HttpsError("invalid-argument", "docId, imageData, fileName, and contentType are required.");
+  }
+  if (!R2_ALLOWED_TYPES.includes(contentType)) {
+    throw new HttpsError("invalid-argument", "Unsupported image type. Allowed: " + R2_ALLOWED_TYPES.join(", "));
+  }
+
+  const buffer = Buffer.from(imageData, "base64");
+  if (buffer.length > R2_MAX_SIZE) {
+    throw new HttpsError("invalid-argument", "Image exceeds 5 MB limit.");
+  }
+
+  const ref = db.collection("submissions").doc(docId);
+  const snap = await ref.get();
+  if (!snap.exists) throw new HttpsError("not-found", "Submission not found.");
+  const d = snap.data();
+
+  const isOwner = d.uid === request.auth.uid;
+  const isCoauthor = d.coauthorUids && d.coauthorUids.includes(request.auth.uid);
+  if (!isOwner && !isCoauthor) {
+    throw new HttpsError("permission-denied", "You can only upload images for your own submissions.");
+  }
+  if (d.status !== "pending" && d.status !== "revise_resubmit") {
+    throw new HttpsError("failed-precondition", "Cannot upload images in current state.");
+  }
+
+  const rand = require("crypto").randomBytes(4).toString("hex");
+  const sanitized = sanitizeFileName(fileName);
+  const key = `guides/${d.guide_id}/${Date.now()}-${rand}-${sanitized}`;
+
+  const url = await uploadToR2(key, buffer, contentType);
+
+  const imageRef = await ref.collection("images").add({
+    key,
+    fileName,
+    contentType,
+    size: buffer.length,
+    uid: request.auth.uid,
+    url,
+    uploadedAt: FieldValue.serverTimestamp(),
+  });
+
+  return { success: true, url, key, imageDocId: imageRef.id };
+});
+
+// ══════════════════════════════════════
+// 8. deleteArticleImage
+// ══════════════════════════════════════
+
+exports.deleteArticleImage = onCall(async (request) => {
+  assertAuth(request.auth);
+  const { docId, imageDocId } = request.data;
+  if (!docId || !imageDocId) {
+    throw new HttpsError("invalid-argument", "docId and imageDocId are required.");
+  }
+
+  const ref = db.collection("submissions").doc(docId);
+  const snap = await ref.get();
+  if (!snap.exists) throw new HttpsError("not-found", "Submission not found.");
+  const d = snap.data();
+
+  const isOwner = d.uid === request.auth.uid;
+  const isCoauthor = d.coauthorUids && d.coauthorUids.includes(request.auth.uid);
+  let isAdmin = false;
+  if (!isOwner && !isCoauthor) {
+    const { getAdminEmails } = require("./lib/auth");
+    const email = request.auth.token.email;
+    const verified = request.auth.token.email_verified === true;
+    const adminEmails = await getAdminEmails();
+    isAdmin = verified && adminEmails.includes(email);
+    if (!isAdmin) {
+      throw new HttpsError("permission-denied", "Not authorized to delete this image.");
+    }
+  }
+
+  const imageRef = ref.collection("images").doc(imageDocId);
+  const imageSnap = await imageRef.get();
+  if (!imageSnap.exists) throw new HttpsError("not-found", "Image not found.");
+
+  await deleteFromR2(imageSnap.data().key);
+  await imageRef.delete();
+
+  return { success: true };
+});
+
+// ══════════════════════════════════════
+// 9. getServiceUsage
 // ══════════════════════════════════════
 
 let _usageCache = null;

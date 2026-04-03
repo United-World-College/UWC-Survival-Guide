@@ -19,6 +19,7 @@ function resetMockDb() {
   mockUpdateCalls = [];
   mockSetCalls = [];
   mockDeleteCalls = [];
+  mockAddCounter = 0;
   // Seed admin config so getAdminEmails() works in all tests
   mockDocs["config/admins"] = {
     emails: ["jingranhuang590@gmail.com", "li.dongyuan@ufl.edu"],
@@ -46,15 +47,16 @@ function applyMockWrite(existing, data, opts = {}) {
   return next;
 }
 
-const mockDoc = jest.fn((docId) => {
-  // The collection is captured in closure via mockCollection
-  const collectionName = mockDoc._currentCollection;
+let mockAddCounter = 0;
+
+function buildDocRef(collectionName, docId) {
   const key = `${collectionName}/${docId}`;
   return {
     get: jest.fn(async () => ({
       exists: key in mockDocs,
       data: () => mockDocs[key] || null,
       id: docId,
+      ref: buildDocRef(collectionName, docId),
     })),
     set: jest.fn(async (data, opts) => {
       mockSetCalls.push({ collection: collectionName, docId, data, opts });
@@ -70,7 +72,61 @@ const mockDoc = jest.fn((docId) => {
       mockDeleteCalls.push({ collection: collectionName, docId });
       delete mockDocs[key];
     }),
+    collection: jest.fn((subName) => buildCollectionRef(`${collectionName}/${docId}/${subName}`)),
   };
+}
+
+function buildCollectionRef(name) {
+  return {
+    doc: jest.fn((id) => buildDocRef(name, id)),
+    add: jest.fn(async (data) => {
+      const autoId = `auto-${++mockAddCounter}`;
+      const key = `${name}/${autoId}`;
+      mockDocs[key] = data;
+      return { id: autoId };
+    }),
+    get: jest.fn(async () => {
+      const prefix = name + "/";
+      const docs = [];
+      for (const [k, data] of Object.entries(mockDocs)) {
+        if (k.startsWith(prefix) && data) {
+          const id = k.slice(prefix.length);
+          // Only match direct children (no nested subcollections)
+          if (!id.includes("/")) {
+            docs.push({ id, data: () => data, ref: buildDocRef(name, id) });
+          }
+        }
+      }
+      return { empty: docs.length === 0, docs };
+    }),
+    count: jest.fn(() => ({
+      get: jest.fn(async () => ({
+        data: () => ({ count: countDocsInCollection(name) }),
+      })),
+    })),
+    where: jest.fn((field, op, value) => ({
+      get: jest.fn(async () => {
+        const matches = [];
+        const prefix = name + "/";
+        for (const [k, data] of Object.entries(mockDocs)) {
+          if (k.startsWith(prefix) && data && data[field] === value) {
+            matches.push({ id: k.slice(prefix.length), data: () => data });
+          }
+        }
+        return { empty: matches.length === 0, docs: matches };
+      }),
+      count: jest.fn(() => ({
+        get: jest.fn(async () => ({
+          data: () => ({ count: countDocsInCollection(name, field, value) }),
+        })),
+      })),
+    })),
+  };
+}
+
+const mockDoc = jest.fn((docId) => {
+  const collectionName = mockDoc._currentCollection;
+  return buildDocRef(collectionName, docId);
 });
 
 function countDocsInCollection(collectionName, field, value) {
@@ -85,32 +141,14 @@ function countDocsInCollection(collectionName, field, value) {
 
 const mockCollection = jest.fn((name) => {
   mockDoc._currentCollection = name;
-  return {
-    doc: mockDoc,
-    count: jest.fn(() => ({
-      get: jest.fn(async () => ({
-        data: () => ({ count: countDocsInCollection(name) }),
-      })),
-    })),
-    where: jest.fn((field, op, value) => ({
-      get: jest.fn(async () => {
-        // Search all docs in this collection for matching field value
-        const matches = [];
-        const prefix = name + "/";
-        for (const [key, data] of Object.entries(mockDocs)) {
-          if (key.startsWith(prefix) && data && data[field] === value) {
-            matches.push({ id: key.slice(prefix.length), data: () => data });
-          }
-        }
-        return { empty: matches.length === 0, docs: matches };
-      }),
-      count: jest.fn(() => ({
-        get: jest.fn(async () => ({
-          data: () => ({ count: countDocsInCollection(name, field, value) }),
-        })),
-      })),
-    })),
-  };
+  const ref = buildCollectionRef(name);
+  // Override doc to also set _currentCollection for backward compatibility
+  const origDoc = ref.doc;
+  ref.doc = jest.fn((id) => {
+    mockDoc._currentCollection = name;
+    return origDoc(id);
+  });
+  return ref;
 });
 
 jest.mock("firebase-admin/app", () => ({ initializeApp: jest.fn() }));
@@ -142,6 +180,14 @@ jest.mock("google-auth-library", () => ({
   GoogleAuth: jest.fn(() => ({
     getClient: jest.fn(async () => ({ request: mockGcpRequest })),
   })),
+}));
+
+// Mock @aws-sdk/client-s3 for R2 operations
+const mockS3Send = jest.fn();
+jest.mock("@aws-sdk/client-s3", () => ({
+  S3Client: jest.fn(() => ({ send: mockS3Send })),
+  PutObjectCommand: jest.fn((params) => ({ ...params, _type: "PutObject" })),
+  DeleteObjectCommand: jest.fn((params) => ({ ...params, _type: "DeleteObject" })),
 }));
 
 // Mock global fetch for GitHub API calls
@@ -630,6 +676,7 @@ describe("deleteSubmission", () => {
   beforeEach(() => {
     resetMockDb();
     global.fetch.mockReset();
+    mockS3Send.mockReset();
   });
 
   test("deletes a pending submission", async () => {
@@ -1384,5 +1431,359 @@ describe("getServiceUsage", () => {
 
     expect(mockGcpRequest).toHaveBeenCalled();
     expect(result2.cachedAt).toBeDefined();
+  });
+});
+
+// ══════════════════════════════════════
+// uploadArticleImage
+// ══════════════════════════════════════
+
+describe("uploadArticleImage", () => {
+  const validImageBase64 = Buffer.from("fake-image-data").toString("base64");
+
+  beforeEach(() => {
+    resetMockDb();
+    mockS3Send.mockReset();
+    mockS3Send.mockResolvedValue({});
+    setMockDoc("config", "r2", {
+      accessKeyId: "test-key",
+      secretAccessKey: "test-secret",
+      endpoint: "https://test.r2.cloudflarestorage.com",
+      bucket: "uwc-survival-guide",
+      publicUrlBase: "https://pub-test.r2.dev",
+    });
+  });
+
+  function pendingSubmission(uid = "user-1") {
+    return {
+      uid,
+      guide_id: "test-guide",
+      status: "pending",
+      title: "Test Guide",
+    };
+  }
+
+  test("rejects unauthenticated calls", async () => {
+    await expect(
+      funcs.uploadArticleImage({ auth: null, data: {} })
+    ).rejects.toThrow("Sign in required");
+  });
+
+  test("rejects missing fields", async () => {
+    await expect(
+      funcs.uploadArticleImage({
+        auth: userAuth("user-1"),
+        data: { docId: "sub-1" },
+      })
+    ).rejects.toThrow("docId, imageData, fileName, and contentType are required");
+  });
+
+  test("rejects disallowed content type", async () => {
+    setMockDoc("submissions", "sub-1", pendingSubmission());
+    await expect(
+      funcs.uploadArticleImage({
+        auth: userAuth("user-1"),
+        data: {
+          docId: "sub-1",
+          imageData: validImageBase64,
+          fileName: "doc.pdf",
+          contentType: "application/pdf",
+        },
+      })
+    ).rejects.toThrow("Unsupported image type");
+  });
+
+  test("rejects oversized image", async () => {
+    setMockDoc("submissions", "sub-1", pendingSubmission());
+    const bigData = Buffer.alloc(6 * 1024 * 1024).toString("base64");
+    await expect(
+      funcs.uploadArticleImage({
+        auth: userAuth("user-1"),
+        data: {
+          docId: "sub-1",
+          imageData: bigData,
+          fileName: "big.jpg",
+          contentType: "image/jpeg",
+        },
+      })
+    ).rejects.toThrow("5 MB limit");
+  });
+
+  test("rejects non-owner/non-coauthor", async () => {
+    setMockDoc("submissions", "sub-1", pendingSubmission("other-user"));
+    await expect(
+      funcs.uploadArticleImage({
+        auth: userAuth("user-1"),
+        data: {
+          docId: "sub-1",
+          imageData: validImageBase64,
+          fileName: "photo.jpg",
+          contentType: "image/jpeg",
+        },
+      })
+    ).rejects.toThrow("your own submissions");
+  });
+
+  test("rejects when status is approved", async () => {
+    setMockDoc("submissions", "sub-1", { ...pendingSubmission(), status: "approved" });
+    await expect(
+      funcs.uploadArticleImage({
+        auth: userAuth("user-1"),
+        data: {
+          docId: "sub-1",
+          imageData: validImageBase64,
+          fileName: "photo.jpg",
+          contentType: "image/jpeg",
+        },
+      })
+    ).rejects.toThrow("current state");
+  });
+
+  test("rejects when status is rejected", async () => {
+    setMockDoc("submissions", "sub-1", { ...pendingSubmission(), status: "rejected" });
+    await expect(
+      funcs.uploadArticleImage({
+        auth: userAuth("user-1"),
+        data: {
+          docId: "sub-1",
+          imageData: validImageBase64,
+          fileName: "photo.jpg",
+          contentType: "image/jpeg",
+        },
+      })
+    ).rejects.toThrow("current state");
+  });
+
+  test("allows coauthor to upload", async () => {
+    setMockDoc("submissions", "sub-1", {
+      ...pendingSubmission("other-user"),
+      coauthorUids: ["user-1"],
+    });
+    const result = await funcs.uploadArticleImage({
+      auth: userAuth("user-1"),
+      data: {
+        docId: "sub-1",
+        imageData: validImageBase64,
+        fileName: "photo.jpg",
+        contentType: "image/jpeg",
+      },
+    });
+    expect(result.success).toBe(true);
+    expect(result.url).toMatch(/^https:\/\/pub-test\.r2\.dev\/guides\/test-guide\//);
+    expect(result.imageDocId).toBeDefined();
+    expect(mockS3Send).toHaveBeenCalledTimes(1);
+  });
+
+  test("uploads successfully and returns url", async () => {
+    setMockDoc("submissions", "sub-1", pendingSubmission());
+    const result = await funcs.uploadArticleImage({
+      auth: userAuth("user-1"),
+      data: {
+        docId: "sub-1",
+        imageData: validImageBase64,
+        fileName: "photo.jpg",
+        contentType: "image/jpeg",
+      },
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.url).toContain("pub-test.r2.dev/guides/test-guide/");
+    expect(result.url).toContain("photo.jpg");
+    expect(result.key).toMatch(/^guides\/test-guide\//);
+    expect(result.imageDocId).toBeDefined();
+    expect(mockS3Send).toHaveBeenCalledTimes(1);
+
+    // Verify image doc was created in subcollection
+    const imageDoc = getMockDocData("submissions/sub-1/images", result.imageDocId);
+    expect(imageDoc).toBeDefined();
+    expect(imageDoc.fileName).toBe("photo.jpg");
+    expect(imageDoc.contentType).toBe("image/jpeg");
+    expect(imageDoc.uid).toBe("user-1");
+  });
+
+  test("allows upload on revise_resubmit status", async () => {
+    setMockDoc("submissions", "sub-1", { ...pendingSubmission(), status: "revise_resubmit" });
+    const result = await funcs.uploadArticleImage({
+      auth: userAuth("user-1"),
+      data: {
+        docId: "sub-1",
+        imageData: validImageBase64,
+        fileName: "photo.png",
+        contentType: "image/png",
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+// ══════════════════════════════════════
+// deleteArticleImage
+// ══════════════════════════════════════
+
+describe("deleteArticleImage", () => {
+  beforeEach(() => {
+    resetMockDb();
+    mockS3Send.mockReset();
+    mockS3Send.mockResolvedValue({});
+    setMockDoc("config", "r2", {
+      accessKeyId: "test-key",
+      secretAccessKey: "test-secret",
+      endpoint: "https://test.r2.cloudflarestorage.com",
+      bucket: "uwc-survival-guide",
+      publicUrlBase: "https://pub-test.r2.dev",
+    });
+  });
+
+  test("rejects unauthenticated calls", async () => {
+    await expect(
+      funcs.deleteArticleImage({ auth: null, data: {} })
+    ).rejects.toThrow("Sign in required");
+  });
+
+  test("rejects missing fields", async () => {
+    await expect(
+      funcs.deleteArticleImage({
+        auth: userAuth("user-1"),
+        data: { docId: "sub-1" },
+      })
+    ).rejects.toThrow("docId and imageDocId are required");
+  });
+
+  test("rejects non-owner/non-coauthor/non-admin", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "other-user",
+      status: "pending",
+    });
+    setMockDoc("submissions/sub-1/images", "img-1", {
+      key: "guides/test/photo.jpg",
+    });
+    await expect(
+      funcs.deleteArticleImage({
+        auth: userAuth("user-1"),
+        data: { docId: "sub-1", imageDocId: "img-1" },
+      })
+    ).rejects.toThrow("Not authorized");
+  });
+
+  test("rejects if image not found", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      status: "pending",
+    });
+    await expect(
+      funcs.deleteArticleImage({
+        auth: userAuth("user-1"),
+        data: { docId: "sub-1", imageDocId: "nonexistent" },
+      })
+    ).rejects.toThrow("Image not found");
+  });
+
+  test("owner can delete image", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      status: "pending",
+    });
+    setMockDoc("submissions/sub-1/images", "img-1", {
+      key: "guides/test/photo.jpg",
+    });
+    const result = await funcs.deleteArticleImage({
+      auth: userAuth("user-1"),
+      data: { docId: "sub-1", imageDocId: "img-1" },
+    });
+    expect(result.success).toBe(true);
+    expect(mockS3Send).toHaveBeenCalledTimes(1);
+    expect(getMockDocData("submissions/sub-1/images", "img-1")).toBeUndefined();
+  });
+
+  test("admin can delete image", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "other-user",
+      status: "pending",
+    });
+    setMockDoc("submissions/sub-1/images", "img-1", {
+      key: "guides/test/photo.jpg",
+    });
+    const result = await funcs.deleteArticleImage({
+      auth: adminAuth(),
+      data: { docId: "sub-1", imageDocId: "img-1" },
+    });
+    expect(result.success).toBe(true);
+    expect(mockS3Send).toHaveBeenCalledTimes(1);
+  });
+
+  test("coauthor can delete image", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "other-user",
+      coauthorUids: ["user-1"],
+      status: "pending",
+    });
+    setMockDoc("submissions/sub-1/images", "img-1", {
+      key: "guides/test/photo.jpg",
+    });
+    const result = await funcs.deleteArticleImage({
+      auth: userAuth("user-1"),
+      data: { docId: "sub-1", imageDocId: "img-1" },
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+// ══════════════════════════════════════
+// deleteSubmission — R2 image cleanup
+// ══════════════════════════════════════
+
+describe("deleteSubmission — R2 image cleanup", () => {
+  beforeEach(() => {
+    resetMockDb();
+    global.fetch.mockReset();
+    mockS3Send.mockReset();
+    mockS3Send.mockResolvedValue({});
+    setMockDoc("config", "r2", {
+      accessKeyId: "test-key",
+      secretAccessKey: "test-secret",
+      endpoint: "https://test.r2.cloudflarestorage.com",
+      bucket: "uwc-survival-guide",
+      publicUrlBase: "https://pub-test.r2.dev",
+    });
+  });
+
+  test("cleans up R2 images when deleting submission with images", async () => {
+    setMockDoc("submissions", "sub-1", {
+      status: "pending",
+      title: "Test",
+    });
+    setMockDoc("submissions/sub-1/images", "img-1", {
+      key: "guides/test/photo1.jpg",
+    });
+    setMockDoc("submissions/sub-1/images", "img-2", {
+      key: "guides/test/photo2.png",
+    });
+
+    const result = await funcs.deleteSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    expect(result.success).toBe(true);
+    // Verify R2 delete calls (2 images)
+    expect(mockS3Send).toHaveBeenCalledTimes(2);
+    // Verify Firestore image docs deleted
+    expect(getMockDocData("submissions/sub-1/images", "img-1")).toBeUndefined();
+    expect(getMockDocData("submissions/sub-1/images", "img-2")).toBeUndefined();
+  });
+
+  test("succeeds even with no images", async () => {
+    setMockDoc("submissions", "sub-1", {
+      status: "pending",
+      title: "Test",
+    });
+
+    const result = await funcs.deleteSubmission({
+      auth: adminAuth(),
+      data: { docId: "sub-1" },
+    });
+
+    expect(result.success).toBe(true);
+    expect(mockS3Send).not.toHaveBeenCalled();
   });
 });

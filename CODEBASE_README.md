@@ -19,11 +19,14 @@
   - [rejectSubmission](#rejectsubmission)
   - [requestRevision](#requestrevision)
   - [deleteSubmission](#deletesubmission)
+  - [uploadArticleImage](#uploadarticleimage)
+  - [deleteArticleImage](#deletearticleimage)
   - [getServiceUsage](#getserviceusage)
 - [Internal Library Functions](#internal-library-functions)
   - [Auth](#auth)
   - [Config](#config)
   - [GitHub](#github)
+  - [R2 (Cloudflare)](#r2-cloudflare)
   - [Translation](#translation)
   - [Firestore Helpers](#firestore-helpers)
   - [Utility Helpers](#utility-helpers)
@@ -290,8 +293,78 @@ All callable functions are defined in `functions/index.js` and invoked via Fireb
 **Side Effects:**
 - Deletes guide file from GitHub repository (if was approved)
 - Updates `users/{uid}` `featuredGuideIds` for each author (if was approved)
+- Deletes all images from Cloudflare R2 (if any in `submissions/{docId}/images` subcollection)
+- Deletes all Firestore image documents in `submissions/{docId}/images` subcollection
 - Deletes Firestore document
 - Appends audit event (`type: "deleted"`) with original metadata to `submissionAudit/{docId}`
+
+---
+
+### uploadArticleImage
+
+**Location:** `functions/index.js`
+
+**Trigger:** Client calls via Firebase SDK
+
+**Auth:** Submission owner or listed co-author (via `coauthorUids`)
+
+**Precondition:** Submission status must be `"pending"` or `"revise_resubmit"`
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `docId` | `string` | Submission document ID |
+| **Input** | `imageData` | `string` | Base64-encoded image data |
+| **Input** | `fileName` | `string` | Original file name (e.g. `photo.jpg`) |
+| **Input** | `contentType` | `string` | MIME type (`image/jpeg`, `image/png`, `image/gif`, `image/webp`) |
+| **Output** | `success` | `boolean` | Always `true` on success |
+| **Output** | `url` | `string` | Public R2 URL of the uploaded image |
+| **Output** | `key` | `string` | R2 object key (e.g. `guides/my-guide/1712345678-a1b2c3d4-photo.jpg`) |
+| **Output** | `imageDocId` | `string` | Firestore document ID in the images subcollection |
+
+**Logic:**
+1. Calls `assertAuth()` — throws if no auth
+2. Validates all 4 input fields are present
+3. Validates `contentType` is in `R2_ALLOWED_TYPES`
+4. Decodes base64 to Buffer, validates size <= 5 MB (`R2_MAX_SIZE`)
+5. Fetches `submissions/{docId}`, verifies it exists
+6. Validates caller is `uid` owner or in `coauthorUids`
+7. Validates status is `"pending"` or `"revise_resubmit"`
+8. Sanitizes filename, generates unique R2 key: `guides/{guide_id}/{timestamp}-{random4hex}-{sanitizedFileName}`
+9. Uploads to R2 via `uploadToR2()`
+10. Creates `submissions/{docId}/images/{autoId}` document with metadata
+
+**Side Effects:**
+- Uploads file to Cloudflare R2 bucket
+- Creates Firestore document in `submissions/{docId}/images` subcollection
+
+---
+
+### deleteArticleImage
+
+**Location:** `functions/index.js`
+
+**Trigger:** Client calls via Firebase SDK
+
+**Auth:** Submission owner, co-author, or admin
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `docId` | `string` | Submission document ID |
+| **Input** | `imageDocId` | `string` | Firestore image document ID (from the images subcollection) |
+| **Output** | `success` | `boolean` | Always `true` on success |
+
+**Logic:**
+1. Calls `assertAuth()` — throws if no auth
+2. Validates `docId` and `imageDocId` are present
+3. Fetches `submissions/{docId}`, verifies it exists
+4. Checks authorization: caller is `uid` owner, in `coauthorUids`, or is admin
+5. Fetches `submissions/{docId}/images/{imageDocId}`, verifies it exists
+6. Deletes from R2 via `deleteFromR2()`
+7. Deletes the Firestore image document
+
+**Side Effects:**
+- Deletes file from Cloudflare R2 bucket
+- Deletes Firestore document from `submissions/{docId}/images` subcollection
 
 ---
 
@@ -446,6 +519,61 @@ Used for single-file operations (GET to check existence, PUT for single writes, 
 - Creates `website/_authors/chinese/{slug}-cn.md`
 - Creates `website/_authors/chinese/{slug}-tw.md`
 - Appends contributor entry to `website/_data/about.yml` (separate commit via Contents API PUT)
+
+---
+
+### R2 (Cloudflare)
+
+**Location:** `functions/lib/r2.js`
+
+**Constants:**
+- `R2_ALLOWED_TYPES`: `["image/jpeg", "image/png", "image/gif", "image/webp"]`
+- `R2_MAX_SIZE`: `5 * 1024 * 1024` (5 MB)
+
+#### getR2Config()
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | *(none)* | — | — |
+| **Output** | `config` | `object` | Cached R2 configuration (5 min TTL) |
+
+**Source:** Reads `config/r2` Firestore document. Throws `HttpsError("internal")` if doc missing or credentials absent.
+
+#### getR2Client()
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | *(none)* | — | — |
+| **Output** | `client` | `S3Client` | Configured AWS S3 client pointing at R2 endpoint |
+
+#### uploadToR2(key, buffer, contentType)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `key` | `string` | R2 object key (e.g. `guides/my-guide/photo.jpg`) |
+| **Input** | `buffer` | `Buffer` | Image data |
+| **Input** | `contentType` | `string` | MIME type |
+| **Output** | `url` | `string` | Public URL (`{publicUrlBase}/{key}`) |
+
+**Side Effects:** Uploads object to R2 bucket via `PutObjectCommand`
+
+#### deleteFromR2(key)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `key` | `string` | R2 object key |
+| **Output** | *(none)* | — | — |
+
+**Side Effects:** Deletes object from R2 bucket via `DeleteObjectCommand`
+
+#### deleteMultipleFromR2(keys)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `keys` | `string[]` | Array of R2 object keys |
+| **Output** | *(none)* | — | — |
+
+**Side Effects:** Deletes each object sequentially via `DeleteObjectCommand`
 
 ---
 
@@ -1072,6 +1200,20 @@ User fills form in admin UI
 }
 ```
 
+### submissions/{docId}/images/{imageId}
+
+```javascript
+{
+  key: string,                    // R2 object key (e.g. "guides/my-guide/1712345678-a1b2c3d4-photo.jpg")
+  fileName: string,               // Original file name
+  contentType: string,            // MIME type (image/jpeg, image/png, image/gif, image/webp)
+  size: number,                   // File size in bytes
+  uid: string,                    // Uploader's Firebase UID
+  url: string,                    // Public R2 URL
+  uploadedAt: Timestamp           // Upload timestamp
+}
+```
+
 ### config/*
 
 | Document | Fields |
@@ -1079,6 +1221,7 @@ User fills form in admin UI
 | `config/admins` | `{ emails: [string] }` |
 | `config/github` | `{ token: string }` |
 | `config/gemini` | `{ apiKey: string }` |
+| `config/r2` | `{ accessKeyId: string, secretAccessKey: string, endpoint: string, bucket: string, publicUrlBase: string }` |
 
 ---
 
@@ -1092,7 +1235,9 @@ User fills form in admin UI
 | `approveSubmission` | Cloud Fn | Admin call | docId | `{ published, translationResults }` | GitHub batch commit, Gemini translate, Firestore, audit |
 | `rejectSubmission` | Cloud Fn | Admin call | docId, reason | `{ success }` | Firestore update, audit |
 | `requestRevision` | Cloud Fn | Admin call | docId, comments | `{ revisionHistory }` | Firestore update, audit |
-| `deleteSubmission` | Cloud Fn | Admin call | docId | `{ wasApproved }` | GitHub delete, Firestore delete, audit |
+| `deleteSubmission` | Cloud Fn | Admin call | docId | `{ wasApproved }` | GitHub delete, R2 image cleanup, Firestore delete, audit |
+| `uploadArticleImage` | Cloud Fn | Client call | docId, imageData, fileName, contentType | `{ url, key, imageDocId }` | R2 upload, Firestore subcollection write |
+| `deleteArticleImage` | Cloud Fn | Client call | docId, imageDocId | `{ success }` | R2 delete, Firestore subcollection delete |
 | `getServiceUsage` | Cloud Fn | Admin call | forceRefresh? | `{ firestore, submissions, storage, cachedAt }` | Firestore count, Storage list |
 | `deploy.yml` | GitHub Action | Push to main | Repo code | Live site | Tests, build, deploy to Pages |
 | `script/translate` | CLI | Manual | guide-id, target-lang | Translated .md files | Filesystem write, Gemini API |
