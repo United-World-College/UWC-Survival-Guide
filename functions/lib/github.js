@@ -6,8 +6,30 @@ async function getGitHubToken() {
   return doc.exists && doc.data().token ? doc.data().token : null;
 }
 
+async function githubRest(method, endpoint, token, body) {
+  const url = `https://api.github.com/repos/${REPO}/${endpoint}`;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      Authorization: `token ${token}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+      "User-Agent": "uwc-survival-guide-functions",
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (method === "GET" && res.status === 404) return null;
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`GitHub ${method} ${endpoint}: ${res.status} ${text}`);
+  }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
 async function githubApi(method, path, token, body) {
-  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+  const endpoint = `contents/${path}`;
+  const url = `https://api.github.com/repos/${REPO}/${endpoint}`;
   const res = await fetch(url, {
     method,
     headers: {
@@ -24,6 +46,60 @@ async function githubApi(method, path, token, body) {
   }
   if (res.status === 204) return null;
   return res.json();
+}
+
+/**
+ * Commit multiple files to GitHub in a single commit using the Git Data API.
+ * @param {string} token - GitHub token
+ * @param {Array<{path: string, content: string}>} files - files to commit (content as UTF-8 string)
+ * @param {string} message - commit message
+ * @param {string} [branch="main"] - branch name
+ */
+async function batchCommitFiles(token, files, message, branch) {
+  branch = branch || "main";
+
+  // 1. Get the latest commit SHA on the branch
+  const ref = await githubRest("GET", `git/ref/heads/${branch}`, token);
+  const latestCommitSha = ref.object.sha;
+
+  // 2. Get the tree SHA of that commit
+  const latestCommit = await githubRest("GET", `git/commits/${latestCommitSha}`, token);
+  const baseTreeSha = latestCommit.tree.sha;
+
+  // 3. Create blobs for each file
+  const treeItems = [];
+  for (const file of files) {
+    const blob = await githubRest("POST", "git/blobs", token, {
+      content: file.content,
+      encoding: "utf-8",
+    });
+    treeItems.push({
+      path: file.path,
+      mode: "100644",
+      type: "blob",
+      sha: blob.sha,
+    });
+  }
+
+  // 4. Create a new tree
+  const newTree = await githubRest("POST", "git/trees", token, {
+    base_tree: baseTreeSha,
+    tree: treeItems,
+  });
+
+  // 5. Create a new commit
+  const newCommit = await githubRest("POST", "git/commits", token, {
+    message,
+    tree: newTree.sha,
+    parents: [latestCommitSha],
+  });
+
+  // 6. Update the branch reference
+  await githubRest("PATCH", `git/refs/heads/${branch}`, token, {
+    sha: newCommit.sha,
+  });
+
+  return newCommit;
 }
 
 async function ensureAuthorPresenceOnGitHub(token, author) {
@@ -48,14 +124,15 @@ async function ensureAuthorPresenceOnGitHub(token, author) {
     },
   ];
 
-  await Promise.all(authorFiles.map(async (f) => {
+  const filesToCommit = [];
+  for (const f of authorFiles) {
     const check = await githubApi("GET", f.path, token);
-    if (check) return;
-    await githubApi("PUT", f.path, token, {
-      message: `Add author page: ${author.name}`,
-      content: toBase64(f.content),
-    });
-  }));
+    if (!check) filesToCommit.push(f);
+  }
+
+  if (filesToCommit.length > 0) {
+    await batchCommitFiles(token, filesToCommit, `Add author page: ${author.name}`);
+  }
 
   const aboutPath = "website/_data/about.yml";
   const aboutFile = await githubApi("GET", aboutPath, token);
@@ -78,27 +155,4 @@ async function ensureAuthorPresenceOnGitHub(token, author) {
   });
 }
 
-async function publishToGitHub(token, d, markdown, filePath, primaryAuthor) {
-  const authorSlug = primaryAuthor.author_id ||
-    makeAuthorSlug(primaryAuthor.name) ||
-    (primaryAuthor.uid ? primaryAuthor.uid.toLowerCase() : "") ||
-    makeSlug(primaryAuthor.name);
-  // Push guide file
-  const existing = await githubApi("GET", filePath, token);
-  const putBody = {
-    message: `Add guide: ${d.title} by ${primaryAuthor.name}`,
-    content: toBase64(markdown),
-  };
-  if (existing) {
-    putBody.sha = existing.sha;
-    putBody.message = `Update guide: ${d.title} by ${primaryAuthor.name}`;
-  }
-  await githubApi("PUT", filePath, token, putBody);
-
-  await ensureAuthorPresenceOnGitHub(token, {
-    ...primaryAuthor,
-    author_id: authorSlug,
-  });
-}
-
-module.exports = { getGitHubToken, githubApi, publishToGitHub, ensureAuthorPresenceOnGitHub };
+module.exports = { getGitHubToken, githubApi, githubRest, batchCommitFiles, ensureAuthorPresenceOnGitHub };

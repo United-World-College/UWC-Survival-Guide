@@ -5,12 +5,12 @@ const {
   makeSlug, getOrderedSubmissionAuthors, sanitizeRevisionHistory,
   withoutPublicActorFields, generateMarkdown,
 } = require("./lib/helpers");
-const { getGitHubToken, githubApi, publishToGitHub, ensureAuthorPresenceOnGitHub } = require("./lib/github");
+const { getGitHubToken, githubApi, batchCommitFiles, ensureAuthorPresenceOnGitHub } = require("./lib/github");
 const {
   appendSubmissionAuditEvent, resolveSubmissionAuthors,
   ensureUniqueGuideSlug, ensureAuthorId,
 } = require("./lib/firestore");
-const { getGeminiKey, translateAndPublishMissingVariants } = require("./lib/translation");
+const { getGeminiKey, translateMissingVariants } = require("./lib/translation");
 
 // ══════════════════════════════════════
 // 0. checkAdminStatus
@@ -143,17 +143,40 @@ exports.approveSubmission = onCall(async (request) => {
   const uniqueSlug = d.guide_id || await ensureUniqueGuideSlug(makeSlug(d.title), docId);
   const { markdown, slug, fileName, folder, filePath } = generateMarkdown(d, authors, editorName, uniqueSlug);
 
-  // Attempt GitHub publish first — only mark as approved if it succeeds
+  const token = await getGitHubToken();
+  if (!token) {
+    throw new HttpsError("internal", "GitHub token not configured.");
+  }
+
+  // Collect all files to commit in a single batch
+  const filesToCommit = [{ path: filePath, content: markdown }];
+
+  // Auto-translate into missing language variants
+  let translationResults = null;
+  const geminiKey = await getGeminiKey();
+  if (geminiKey) {
+    try {
+      translationResults = await translateMissingVariants(
+        geminiKey, d, slug, authors, editorName
+      );
+      for (const r of translationResults) {
+        if (r.success) {
+          filesToCommit.push({ path: r.filePath, content: r.markdown });
+        }
+      }
+    } catch (err) {
+      translationResults = [{ error: err.message, success: false }];
+    }
+  }
+
+  // Batch commit all guide files (source + translations) in one commit
   let published = false;
   let githubError = null;
-  const token = await getGitHubToken();
-  if (token) {
-    try {
-      await publishToGitHub(token, d, markdown, filePath, primaryAuthor);
-      published = true;
-    } catch (err) {
-      githubError = err.message;
-    }
+  try {
+    await batchCommitFiles(token, filesToCommit, `Add guide: ${d.title} by ${primaryAuthor.name}`);
+    published = true;
+  } catch (err) {
+    githubError = err.message;
   }
 
   if (!published) {
@@ -181,22 +204,13 @@ exports.approveSubmission = onCall(async (request) => {
     await ensureAuthorId(author.uid, author.author_id);
   }));
 
-  if (authors.length > 1) {
-    await Promise.all(authors.slice(1).map((author) => ensureAuthorPresenceOnGitHub(token, author)));
-  }
-
-  // Auto-translate into missing language variants
-  let translationResults = null;
-  const geminiKey = await getGeminiKey();
-  if (geminiKey) {
-    try {
-      translationResults = await translateAndPublishMissingVariants(
-        token, geminiKey, d, slug, authors, editorName
-      );
-    } catch (err) {
-      translationResults = [{ error: err.message, success: false }];
+  // Ensure author pages exist (separate commits — these are idempotent)
+  try {
+    await ensureAuthorPresenceOnGitHub(token, { ...primaryAuthor, author_id: authorSlug });
+    if (authors.length > 1) {
+      await Promise.all(authors.slice(1).map((author) => ensureAuthorPresenceOnGitHub(token, author)));
     }
-  }
+  } catch (_) { /* non-fatal */ }
 
   if (translationResults && translationResults.length > 0) {
     // Store translated metadata for multi-language display (author pages, etc.)

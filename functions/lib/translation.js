@@ -167,7 +167,7 @@ function buildTranslatedMarkdown(originalData, translation, targetLang, authors,
   };
 }
 
-async function translateAndPublishMissingVariants(token, apiKey, d, slug, authors, editorName) {
+async function translateMissingVariants(apiKey, d, slug, authors, editorName) {
   const sourceLang = d.language || "en";
   const targetLangs = Object.keys(LANG_MAP).filter((lang) => lang !== sourceLang);
   const results = [];
@@ -187,19 +187,8 @@ async function translateAndPublishMissingVariants(token, apiKey, d, slug, author
         d, translation, targetLang, authors, editorName, slug
       );
 
-      const existing = await githubApi("GET", filePath, token);
-      const putBody = {
-        message: `Add translated guide (${targetLang}): ${d.title}`,
-        content: toBase64(markdown),
-      };
-      if (existing) {
-        putBody.sha = existing.sha;
-        putBody.message = `Update translated guide (${targetLang}): ${d.title}`;
-      }
-      await githubApi("PUT", filePath, token, putBody);
-
       results.push({
-        lang: targetLang, filePath, success: true,
+        lang: targetLang, filePath, markdown, success: true,
         title: translation.title,
         category: translation.category,
         description: translation.description,
@@ -223,5 +212,5 @@ module.exports = {
   getGeminiKey,
   translateGuide,
   buildTranslatedMarkdown,
-  translateAndPublishMissingVariants,
+  translateMissingVariants,
 };

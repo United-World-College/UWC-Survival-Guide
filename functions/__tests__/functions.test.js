@@ -122,6 +122,26 @@ global.fetch = jest.fn();
 function mockGitHubSuccess() {
   setMockDoc("config", "github", { token: "gh-token-123" });
   global.fetch.mockImplementation(async (url, opts) => {
+    // Git Data API endpoints used by batchCommitFiles
+    if (url.includes("/git/ref/")) {
+      return { ok: true, status: 200, json: async () => ({ object: { sha: "abc123" } }) };
+    }
+    if (url.includes("/git/commits/")) {
+      return { ok: true, status: 200, json: async () => ({ tree: { sha: "tree123" } }) };
+    }
+    if (url.includes("/git/blobs")) {
+      return { ok: true, status: 200, json: async () => ({ sha: "blob123" }) };
+    }
+    if (url.includes("/git/trees")) {
+      return { ok: true, status: 200, json: async () => ({ sha: "newtree123" }) };
+    }
+    if (url.includes("/git/commits") && opts && opts.method === "POST") {
+      return { ok: true, status: 200, json: async () => ({ sha: "newcommit123" }) };
+    }
+    if (url.includes("/git/refs/")) {
+      return { ok: true, status: 200, json: async () => ({}) };
+    }
+    // Contents API (used by ensureAuthorPresenceOnGitHub, deleteSubmission, etc.)
     if (opts && opts.method === "GET") {
       return { ok: true, status: 404 };
     }
@@ -969,12 +989,14 @@ describe("approveSubmission", () => {
     setMockDoc("users", "user-1", {});
     setMockDoc("config", "github", { token: "gh-token-123" });
 
-    // Mock GitHub API: GET calls return 404 (not found), PUT calls succeed
+    // Mock GitHub API: handle Git Data API for batch commit + Contents API
     global.fetch.mockImplementation(async (url, opts) => {
-      if (opts && opts.method === "GET") {
-        return { ok: true, status: 404 };
-      }
-      // PUT calls for guide and author files
+      if (url.includes("/git/ref/")) return { ok: true, status: 200, json: async () => ({ object: { sha: "abc123" } }) };
+      if (url.includes("/git/commits/")) return { ok: true, status: 200, json: async () => ({ tree: { sha: "tree123" } }) };
+      if (url.includes("/git/blobs")) return { ok: true, status: 200, json: async () => ({ sha: "blob123" }) };
+      if (url.includes("/git/trees")) return { ok: true, status: 200, json: async () => ({ sha: "newtree123" }) };
+      if (url.includes("/git/refs/")) return { ok: true, status: 200, json: async () => ({}) };
+      if (opts && opts.method === "GET") return { ok: true, status: 404 };
       return { ok: true, status: 200, json: async () => ({}) };
     });
 
