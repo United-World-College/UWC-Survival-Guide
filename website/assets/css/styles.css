@@ -718,8 +718,8 @@ body {
 .guide-content p {
   font-size: 1.05rem;
   color: var(--dark);
-  line-height: 1.9;
-  margin-bottom: 1.3rem;
+  line-height: 1.7;
+  margin-bottom: 1.6rem;
   text-align: justify;
   word-break: break-word;
   hyphens: auto;
@@ -732,8 +732,8 @@ body {
 .guide-content li {
   font-size: 1.05rem;
   color: var(--dark);
-  line-height: 1.9;
-  margin-bottom: 0.5rem;
+  line-height: 1.7;
+  margin-bottom: 0.7rem;
 }
 
 .guide-content a {
