@@ -126,6 +126,14 @@ async function main() {
       if ((data.category || "") !== submissionData.category) updates.category = submissionData.category;
       if ((data.content || "") !== submissionData.content) updates.content = submissionData.content;
 
+      // Always set updatedAt when there are changes
+      if (Object.keys(updates).length > 0) {
+        const updatedDate = frontmatter.updated
+          ? Timestamp.fromDate(new Date(frontmatter.updated + "T00:00:00Z"))
+          : Timestamp.now();
+        updates.updatedAt = updatedDate;
+      }
+
       if (Object.keys(updates).length === 0) {
         console.log(`SKIP  ${guideId} — already up to date`);
         skipped++;
