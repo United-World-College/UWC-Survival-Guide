@@ -1,7 +1,7 @@
 ---
 title: "審美幻覺的代價：為何莎士比亞救不了 Bug，也救不了人生"
 category: "人生雜談"
-description: "聊聊跨界優雅背後的審美代償，以及深刻洞察究竟從何而來。"
+description: "聊聊菁英敘述背後的審美代償。"
 order: 6
 author: "William"
 author_id: "william-huang"

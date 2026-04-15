@@ -1,7 +1,7 @@
 ---
 title: "The Cost of Aesthetic Illusion: Why Shakespeare Can't Save Your Bug—or Your Life"
 category: "Life Reflections"
-description: "On the aesthetic compensation behind interdisciplinary elegance, and where profound insight truly comes from."
+description: "On the aesthetic compensation behind elite narratives."
 order: 6
 author: "William"
 author_id: "william-huang"
