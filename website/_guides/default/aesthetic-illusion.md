@@ -19,7 +19,7 @@ In the narratives of the "social elite," nothing is more elegant than the image 
 
 In fact, I believe this "interdisciplinary elegance" is fundamentally isomorphic to another common obsession in academia: the so-called "ten-year sword" mentality — toiling in obscurity for one grand masterpiece. Both are cognitive sanctuaries constructed to evade the cutthroat reality of industrial-scale competition.
 
-Why are so many people obsessed with Shakespeare? Because in hardcore fields like algorithms, compute, and low-level implementation, mediocrity has nowhere to hide. When someone feels their brain suffocating while wrestling with system deadlocks or optimizing CUDA kernels, retreating into the comfort zone of "humanistic depth" becomes the most dignified escape route.
+Why are so many people obsessed with Shakespeare? Because when someone feels their brain suffocating while wrestling with system deadlocks or optimizing CUDA kernels, retreating into the comfort zone of "humanistic depth" becomes the most dignified escape route.
 
 At that moment, they tell themselves: "My code might not be as good as an [ICPC](https://en.wikipedia.org/wiki/International_Collegiate_Programming_Contest) god's, but I have deeper humanistic concerns. So even if these people are topping the leaderboards now, they'll end up working for me anyway." But in the era of [The Bitter Lesson](https://en.wikipedia.org/wiki/Bitter_lesson), this is a massive paradox. A system's loss function does not decrease because of your elegance. This "do-both" posture is, at its core, a form of hedging with mediocrity across multiple fronts, necessitated by an inability to break through in any single domain.
 
