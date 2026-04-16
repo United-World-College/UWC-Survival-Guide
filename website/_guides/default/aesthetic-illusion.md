@@ -35,7 +35,7 @@ I have always believed that deciphering the ancient pronunciation of a word is j
 
 ## Appendix: A Short Honesty Checklist
 
-In a place like UWC, where expectations run sky-high, it's hard not to get swept up in some "perfect elite" narrative. If you have ever wondered whether you yourself might be doing a little Class Signaling, try sitting alone late one night and gently asking yourself two questions:
+In a place like UWC, where expectations run sky-high, it's hard not to get swept up in some "perfect elite" narrative. If you have ever wondered whether you yourself might be doing a little Class Signaling, try sitting alone late one night and gently asking yourself a few questions:
 
 **On the audience:**
 If no one in your life ever knew what you were reading or studying — if no one gave you any credit for your "liberal-arts polish" — would the words or the logic still move you on their own? If that pure joy is gone, it may be because you have been carrying a script written for someone else's eyes.
@@ -43,4 +43,14 @@ If no one in your life ever knew what you were reading or studying — if no one
 **On superiority:**
 Have you, somewhere beneath the surface, been using this interdisciplinary identity as a defense mechanism? When you hit a wall in one domain, do you soothe the setback by telling yourself "at least I have depth elsewhere"? Real depth is not a step stool for looking down on others; it is the ground beneath your feet when you walk through a valley.
 
-There is no shame in needing a "persona" every now and then — just do not let those signals become the wall between you and the real world. The finest elegance is the one that arrives when you no longer need to prove anything to anyone, and yet still hold a quiet curiosity and reverence for how the world works.
+**On sanctuary:**
+Are you consuming the symbols of the humanities, or experiencing the spirit of the humanities? Admitting that you are tired and need to retreat into books for solace should be encouraged. What we need to distinguish is this: are you seeking a sanctuary that lets you keep living, or building a moat that advertises how different you are?
+
+**On awkward honesty:**
+Do you allow yourself to be "inelegant" when you cross disciplines? Genuine interdisciplinary exploration is almost always clumsy in its early stages. If you cannot bring yourself to admit that you are, in some field, really just a fumbling beginner — because it would damage your "bi-disciplinary" persona — then the persona itself has become the shackle on your growth.
+
+**A final word:**
+
+There is no shame in needing a "persona" from time to time; it can even serve as a social lubricant. But stay vigilant — do not let those signals become the wall between you and the real world, or between you and your real self.
+
+The finest elegance is the one that arrives when you no longer need to prove anything to anyone, and yet still hold a quiet curiosity and reverence for how the world works — whether it is that stubborn line of code, or that obscure line of verse.
