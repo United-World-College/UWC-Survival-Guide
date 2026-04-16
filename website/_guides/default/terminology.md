@@ -18,6 +18,8 @@ updated: 2026-04-16
 
 I want to start here by laying out a few terms and using them to introduce some of the key parts of the college application process. A lot of these words sound like pure jargon the first time you hear them, but once you put them back into the actual application process and understand them in context, you realize that each one maps onto a different person, system, or evaluation mechanism. If you get these basic concepts straight first, then later, when you move on to more concrete topics like building a college list, essays, and recommendation letters, everything becomes much easier.
 
+---
+
 ## **Admission Officer**
 
 <p><small>Abbreviation: AO</small></p>
@@ -38,6 +40,8 @@ That said, when it comes to professional judgment, AOs and HR are actually a bit
 
 One more thing worth knowing: most AOs don't get applications assigned to them at random; they're divided up by geographic region. A university will often have someone specifically responsible for applications from China, and many universities even have an AO dedicated to UWC students. That means while they may not be able to make deep judgments on specific subjects like CS, physics, or economics, they tend to be very familiar with the UWC curriculum (IB), its grading standards, and the weight of different activities. This also helps explain why UWC students enjoy a kind of insider advantage when applying — the environment you come from is already recognized, understood, and to a large extent trusted by AOs. For applicants, this is something you can actively take advantage of. You don't need to keep explaining in your essays what IB is, what the EE is, or what CAS means; you can save that limited space for content that better reflects who you are as a person. At the same time, keep in mind that AOs know UWC better than you might think, so any exaggeration or spin can be seen through at a glance.
 
+---
+
 ## **Common Application**
 
 <p><small>Abbreviation: CA</small></p>
@@ -45,6 +49,8 @@ One more thing worth knowing: most AOs don't get applications assigned to them a
 Common App is the most widely used online application system for undergraduate admissions in the United States. Through Common App, students can fill in their basic information and core essay once, then send those materials to multiple partner schools, which greatly simplifies the application process.
 
 Still, Common App is more like a unified entry point than something that turns every school into the same exact task. Many schools add their own supplemental essays, supplemental questions, or extra material requirements on top of Common App. So the best way to understand CA is not to treat it as "fill out one form and you're done," but to see it as the most basic and most commonly used underlying platform in the application process.
+
+---
 
 ## **College Counselor**
 
@@ -55,7 +61,7 @@ If AOs are the HR of a company, then counselors are more like your agent. They'r
 Their core responsibilities mainly include:
 
 - **Writing the School Profile**: explaining to universities what kind of school UWC is — for example, how strict our grading is and what a 40 in the IB system actually represents.
-- **Writing the Counselor Recommendation**: an extremely important official letter that endorses your academic performance, contribution to the community, and personal qualities from the school's official perspective.
+- **Serving as your primary contact for college applications**: throughout the application season, your counselor is your first point of contact for everything college-application-related — from school-selection strategy, recommendation coordination, and essay direction discussions, to official document submissions and deadline tracking, they stay involved throughout the entire process.
 - **Relationship management**: they stay in touch year after year with the AOs at various universities. Sometimes an AO will pick up the phone and directly ask your counselor: "This student's grades are only so-so, but what's their actual impact in the community like?"
 
 ### **How to Work with Your Counselor**
@@ -74,12 +80,14 @@ The most important thing about the relationship with your counselor, I think, is
 
 One small secret worth sharing here: among the three required recommendations, the counselor's letter is the single most important one, bar none. The reason is that counselors tend to have much more philosophical conversations with you than your subject teachers do. Compared with the other two teacher recommendations, the counselor understands best who you are as a person, how you think about high-level questions, and where you are in terms of maturity — which happen to be exactly the things U.S. universities care about the most.
 
+---
+
 ### **A Closing Note: Demystifying the Mindset**
 
-Having walked through all of these terms, the one thing I most want to flag is: don't mythologize AOs, and don't mythologize the application system.
+Having walked through all of these terms, the one thing I most want to flag is: don't mythologize AOs, and don't mythologize the application system. At the end of the day, even the most complex systems are made up of people, and admissions officers are, at their core, just ordinary workers standing at a particular post. Like HR at a big company, they're filters running themselves ragged through an enormous amount of information — which means they have their own aesthetic fatigue, their own cognitive limits, and, yes, their own mood swings too.
 
-An AO isn't some god holding your fate. They're just filters processing an enormous amount of information, much like HR at a big company — with their own aesthetic fatigue and their own cognitive limits. Common App isn't some kind of tribunal either; it's just an underlying platform for self-modeling, testing how well you can compress information within a limited character count. And your counselor is the agent standing next to you — they need to see the real, vivid, even occasionally clumsy version of you in order to write a recommendation with any soul to it.
+The same logic applies elsewhere in the process: Common App isn't some kind of tribunal — it's just an underlying platform for self-modeling, testing how well you can compress information within a limited character count. And your counselor is the agent standing next to you — they need to see the real, vivid, even occasionally clumsy version of you in order to write a recommendation with any soul to it.
 
 The reason I want to break down this jargon so plainly, and even with a bit of bite, is that this demystified perspective is exactly the kind of mental preparation every applicant needs most.
 
-Once you stop blindly worshipping these roles and systems, you'll realize that the core contest of application season isn't about how perfectly you perform, but about whether you have the courage to face what's actually true about yourself. An acceptance doesn't mean you're a genius, and a rejection doesn't mean you're mediocre. Once you bring these people back down to the level of professionals who need to be convinced, you'll find that communicating from a place of equality and honesty is usually far more effective than scheming to engineer a perfect persona. (Recommended reading: [*The Cost of Class Signaling: Why Shakespeare Can't Save Your Bug—or Your Life*]({{ '/guides/default/aesthetic-illusion/' | relative_url }}).)
+Once you stop blindly worshipping these roles and systems, you'll realize that the core contest of application season isn't about how perfectly you perform, but about whether you have the courage to face what's actually true about yourself. An acceptance doesn't mean you're a genius, and a rejection doesn't mean you're mediocre. Once you bring these people back down to the level of professionals who need to be convinced, you'll find that communicating from a place of equality and honesty is usually far more effective than scheming to engineer a perfect persona. After all, amid the noise of engineered personas, an un-alienated authenticity is the rarest signal of all. (Recommended reading: [*The Cost of Class Signaling: Why Shakespeare Can't Save Your Bug—or Your Life*]({{ '/guides/default/aesthetic-illusion/' | relative_url }}).)
