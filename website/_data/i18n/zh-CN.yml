@@ -4,7 +4,7 @@ short_label: 简中
 path_prefix: /zh-cn
 nav:
   logo: UWC Changshu China
-  about: 关于项目
+  about: 关于
   campus_life: 校园生活
   daily_essentials: 日常必备
   explore_nearby: 周边探索
@@ -41,7 +41,7 @@ footer:
     - 这是一个由学生维护的非官方资源。
     - 涉及重要信息时，请以 UWC 常熟官方渠道为准。
     - 网站代码采用 MIT 许可证。除非另有说明，原始指南文本、贡献者照片及其他媒体素材均保留所有权利。
-  about: 关于项目
+  about: 关于
   content_rights: 内容版权
   copy: 由 UWC 常熟学生编写，也为 UWC 常熟学生服务。
 home:
@@ -70,7 +70,7 @@ home:
     - 添加或更新内容
     - 提交 Pull Request
 about:
-  hero_label: 关于项目
+  hero_label: 关于
   hero_title: UWC 常熟生存指南
   hero_subtitle: 对本项目、编辑宗旨以及参与学生的正式介绍。
   overview_label: 项目概览
