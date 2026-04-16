@@ -78,7 +78,7 @@ One small secret worth sharing here: among the three required recommendations, t
 
 Having walked through all of these terms, the one thing I most want to flag is: don't mythologize AOs, and don't mythologize the application system.
 
-An AO isn't some god holding your fate. They're just filters processing an enormous amount of information, much like HR at a big company — with their own aesthetic fatigue and their own cognitive limits. Common App isn't some kind of tribunal either; it's just an underlying platform for self-modeling, testing how well you can compress information within a limited character count. And your counselor is the agent standing next to you — she needs to see the real, vivid, even occasionally clumsy version of you in order to write a recommendation with any soul to it.
+An AO isn't some god holding your fate. They're just filters processing an enormous amount of information, much like HR at a big company — with their own aesthetic fatigue and their own cognitive limits. Common App isn't some kind of tribunal either; it's just an underlying platform for self-modeling, testing how well you can compress information within a limited character count. And your counselor is the agent standing next to you — they need to see the real, vivid, even occasionally clumsy version of you in order to write a recommendation with any soul to it.
 
 The reason I want to break down this jargon so plainly, and even with a bit of bite, is that this demystified perspective is exactly the kind of mental preparation every applicant needs most.
 
