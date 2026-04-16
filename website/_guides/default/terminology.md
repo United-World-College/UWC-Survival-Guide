@@ -1,7 +1,7 @@
 ---
-title: "Key Terms"
+title: "An Introduction to College Application Jargons"
 category: "College Application"
-description: "Use a set of core terms to understand the roles, systems, and processes involved in college applications."
+description: "Decode the jargons of college applications to understand the roles, systems, and processes behind it."
 order: 2
 author: "William"
 author_id: "william-huang"
@@ -34,7 +34,7 @@ Beyond that, an AO's responsibilities usually also include:
 
 The work of an admissions officer sounds very formal and professional, but as applicants, the most direct experience we usually have is through our actual interactions with them, and through how they end up interpreting your application materials. What follows is more my own observations and thoughts about admissions officers' work style and depth of expertise.
 
-I've always felt that the role admissions officers play in a university is pretty similar to the role HR plays in a company. Recruiters from some of the best firms I've interviewed with felt like the concierge staff at a luxury hotel: extremely service-minded, thoughtful down to the smallest detail, careful about arranging everything properly, and very respectful toward me. Recruiters at solid firms like Microsoft felt more easygoing and warm, kind of like the servers you meet in most restaurants in the U.S. Then there are some more mediocre companies where the experience is much worse: condescending, bossy, acting like I'm begging them to give me a job. As for university AOs, at least from the ones I've met, regardless of school, I'd say they mostly fall into the latter two categories: quite a few are genuinely nice and easygoing, but some do come off as rather arrogant.
+I've always felt that the role admissions officers play in a university is pretty similar to the role HR plays in a company. Recruiters from some of the best firms I've interviewed with felt like the concierge staff at a luxury hotel: extremely service-minded, thoughtful down to the smallest detail, careful about arranging everything properly, and very respectful toward me. HR at big tech firms like Microsoft felt more easygoing and warm, kind of like the servers you meet in most restaurants in the U.S. Then there are some more mediocre companies where the experience is much worse: condescending, bossy, acting like I'm begging them to give me a job. As for university AOs, at least from the ones I've met, regardless of school, I'd say they mostly fall into the latter two categories: quite a few are genuinely nice and easygoing, but some do come off as rather arrogant.
 
 That said, when it comes to professional judgment, AOs and HR are actually a bit different. A lot of company HR or recruiters may in fact be more familiar with a relatively specialized field, because they look at resumes in that area every day and deal constantly with hiring managers in that area. Over time, they at least develop an experience-based sense of the common backgrounds, common projects, and rough level within that field. By contrast, AOs have to deal with applicants from every discipline and every type, from humanities to STEM to the arts, so it's hard for them to have especially deep expertise in any one specific area. Precisely because of that, unless you have one of those top-tier awards that even an outsider can recognize at a glance, what gets you admitted often isn't just technical depth. It's whether you can communicate your story, motivation, and potential in a way that's compelling enough. I've heard that quite a few schools ask professors to help review applications, but logically speaking, many professors are already overwhelmed with their own work, so they may not have that much energy to invest in this kind of thing over the long term. Still, I don't know that side particularly well, so readers who do are very welcome to correct me. Looking ahead, as AI-assisted tools gradually enter the admissions process, this may slowly change as well.
 
@@ -62,7 +62,7 @@ Their core responsibilities mainly include:
 
 - **Writing the School Profile**: explaining to universities what kind of school UWC is — for example, how strict our grading is and what a 40 in the IB system actually represents.
 - **Serving as your primary contact for college applications**: throughout the application season, your counselor is your first point of contact for everything college-application-related — from school-selection strategy, recommendation coordination, and essay direction discussions, to official document submissions and deadline tracking, they stay involved throughout the entire process.
-- **Relationship management**: they stay in touch year after year with the AOs at various universities. Sometimes an AO will pick up the phone and directly ask your counselor: "This student's grades are only so-so, but what's their actual impact in the community like?"
+- **Relationship management**: they stay in touch year after year with the AOs at various universities. Sometimes an AO will pick up the phone and directly ask your counselor: "This student's grades are only so-so, but what's their actual impact in the community like?" (Of course, when this happens it means they're willing to spend time on you, which is a pretty clear sign they're interested.)
 
 ### **How to Work with Your Counselor**
 

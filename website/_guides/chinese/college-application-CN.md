@@ -28,5 +28,5 @@ updated: 2026-03-26
 ## 本系列文章
 
 - [关于选校]({{ '/guides/chinese/school-selection-CN/' | relative_url }})
-- [术语介绍]({{ '/guides/chinese/terminology-CN/' | relative_url }})
+- [大学申请术语介绍]({{ '/guides/chinese/terminology-CN/' | relative_url }})
 - [专业介绍]({{ '/guides/chinese/majors-intro-CN/' | relative_url }}) *\[Placeholder\]*

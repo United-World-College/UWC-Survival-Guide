@@ -31,5 +31,5 @@ Alright, now we’ve arrived at school selection. Originally, this Survival Guid
 ## This Series
 
 - [On Choosing Schools]({{ '/guides/default/school-selection/' | relative_url }})
-- [Terminology]({{ '/guides/default/terminology/' | relative_url }})
+- [An Introduction to College Application Jargons]({{ '/guides/default/terminology/' | relative_url }})
 - [Introduction to Majors]({{ '/guides/default/majors-intro/' | relative_url }}) *\[Placeholder\]*
