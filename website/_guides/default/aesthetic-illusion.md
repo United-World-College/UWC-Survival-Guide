@@ -51,6 +51,6 @@ Do you allow yourself to be "inelegant" when you cross disciplines? Genuine inte
 
 **A final word:**
 
-There is no shame in needing a "persona" from time to time; it can even serve as a social lubricant. But stay vigilant — do not let those signals become the wall between you and the real world, or between you and your real self.
+There is no shame in needing a "persona" from time to time; it can even serve as a social lubricant. But stay vigilant — do not let those signals become the wall between you and the real world, or between you and your real self. This piece is not meant as an indictment of anyone who opens a book between coding sessions. Quite the opposite: in an age where everyone wants to be the protagonist of some perfect-elite narrative, the honesty I would rather pay tribute to is the honesty of those who can admit they did not really understand Shakespeare, or who can calmly accept that their code is, in the end, nothing special. Because we never need to reach for another kind of altitude to cover up how messy we are right now.
 
 The finest elegance is the one that arrives when you no longer need to prove anything to anyone, and yet still hold a quiet curiosity and reverence for how the world works — whether it is that stubborn line of code, or that obscure line of verse.
