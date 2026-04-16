@@ -2686,12 +2686,6 @@ a.admin-coauthor-result-name:hover {
   transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
-.author-lang-pill.is-original,
-.author-lang-pill.is-current {
-  border-color: #4a8c5c;
-  color: #4a8c5c;
-}
-
 .author-lang-pill:hover {
   background: var(--dark);
   border-color: var(--dark);
