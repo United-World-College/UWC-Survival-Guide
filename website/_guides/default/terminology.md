@@ -94,7 +94,7 @@ In terms of composition, essays fall into two main categories:
 Essays deserve an entire guide of their own. Here I just want to flag a few of the most common pitfalls:
 
 - **Don't turn your essay into a narrated version of your resume**: the AO can already see what you've done in your Activity List. What essays need to answer is why you are who you are, not what you've done.
-- **Don't chase grand narratives**: a 650-word essay about small moments at home can easily be more moving than one about volunteering in Africa. Small subjects are fine. What matters is that it's real and specific.
+- **Don't chase grand narratives**: a 650-word essay about small moments at home can easily be more moving than one about an overseas volunteer trip. Small subjects are fine. What matters is that it's real and specific.
 - **Don't repeat your Personal Statement in your supplements**: the AO reads all of your materials as a single whole, and every essay should reveal a new side of you.
 
 ---
