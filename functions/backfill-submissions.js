@@ -25,7 +25,7 @@ const GUIDE_FILES = [
   "college-application.md",
   "school-selection.md",
   "terminology.md",
-  "aesthetic-illusion.md",
+  "class-signaling.md",
 ];
 
 function parseGuide(filePath) {
