@@ -783,7 +783,9 @@ Used by all state-transition functions to strip legacy PII fields on every updat
 | **Input** | `overrideSlug` | `string?` | Optional slug override |
 | **Output** | `result` | `object` | `{ markdown, slug, fileName, folder, filePath }` |
 
-**Frontmatter fields generated:** `title`, `category`, `description`, `order` (hardcoded 99), `author` (first author name), `author_id`, `coauthors` (if multiple — note: lowercase, not `co_authors`), `guide_id`, `original_language`, `language_code`, `language_name`, `language_folder`, `language_sort`, `submitted` (from `createdAt`), `published` (today), `updated` (today), `editor`, `editor_id`
+**Frontmatter fields generated:** `title`, `category`, `description`, `order` (hardcoded `-1` as placeholder; see below), `author` (first author name), `author_id`, `coauthors` (if multiple — note: lowercase, not `co_authors`), `guide_id`, `original_language`, `language_code`, `language_name`, `language_folder`, `language_sort`, `submitted` (from `createdAt`), `published` (today), `updated` (today), `editor`, `editor_id`
+
+**About the `order` field:** `order` is a **globally unique** integer that determines the display order of guides everywhere they are listed (section pages, home page, "More guides in this language"). Each guide's `order` value is shared across its language variants (i.e., the CN, TW, and EN versions of the same `guide_id` carry the same `order`), but no two distinct `guide_id`s may share the same `order`. Published guides are manually assigned a real order editorially. Newly generated markdown files (from approved submissions) get `order: -1` as a placeholder, signaling that an editor still needs to assign a final order; `-1` is intentionally an invalid value outside the sorted range so such guides appear first and visibly require attention before the next publish cycle.
 
 ---
 

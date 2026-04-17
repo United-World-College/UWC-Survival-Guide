@@ -22,7 +22,6 @@ const GUIDES_DIR = path.resolve(__dirname, "../website/_guides/default");
 // Guides that have an author_id and were published before the submissions system.
 // Only English originals — translations were auto-generated at publish time.
 const GUIDE_FILES = [
-  "college-application.md",
   "school-selection.md",
   "terminology.md",
   "class-signaling.md",

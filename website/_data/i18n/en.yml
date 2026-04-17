@@ -24,10 +24,9 @@ categories:
   Academics: Academics
   学业: Academics
   學業: Academics
-  Life Reflections: Life Reflections
-  Life Musings: Life Reflections
-  人生杂谈: Life Reflections
-  人生雜談: Life Reflections
+  Musings: Musings
+  随想: Musings
+  隨想: Musings
 common:
   language_switch_label: Language
   author_page: Author Page
@@ -176,6 +175,7 @@ guide:
   more_guides_title: More guides in this language
   more_guides_desc: Keep reading in the same language without jumping between versions.
   empty: No other guides are available in this language yet.
+  toc_label: On this page
 admin:
   portal_label: Contributor Portal
   signin_title: Welcome Back

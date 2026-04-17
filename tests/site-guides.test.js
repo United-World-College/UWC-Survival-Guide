@@ -21,14 +21,13 @@ const VALID_LANGUAGES = ["en", "zh-CN", "zh-TW"];
 const VALID_FOLDERS = ["default", "chinese"];
 const VALID_CATEGORIES = [
   "College Application",
-  "Life Reflections",
-  "Life Musings",
+  "Musings",
   "Academics",
   // Chinese equivalents
   "大学申请",
   "大學申請",
-  "人生杂谈",
-  "人生雜談",
+  "随想",
+  "隨想",
   "学业",
   "學業",
 ];

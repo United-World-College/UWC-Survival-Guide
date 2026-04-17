@@ -1278,7 +1278,7 @@
         'h+="<select id=\\"rs-cat\\" class=\\"admin-input admin-select\\" required>";' +
         'h+="<option value=\\"\\" disabled>Select...<\/option>";' +
         'h+="<option value=\\"College Application\\">College Application<\/option>";' +
-        'h+="<option value=\\"Life Reflections\\">人生杂谈 / Life Reflections<\/option>";' +
+        'h+="<option value=\\"Musings\\">随想 / Musings<\/option>";' +
         'h+="<option value=\\"Academics\\">Academics<\/option>";' +
         'h+="<\/select><\/div>";' +
         'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Language<\/label>";' +

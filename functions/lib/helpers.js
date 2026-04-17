@@ -101,7 +101,9 @@ function generateMarkdown(d, authors, editorName, overrideSlug) {
   md += `title: "${d.title.replace(/"/g, '\\"')}"\n`;
   md += `category: "${d.category}"\n`;
   md += `description: "${d.description.replace(/"/g, '\\"')}"\n`;
-  md += "order: 99\n";
+  // order: -1 is a placeholder — a globally-unique order is assigned
+  // editorially after publish. See CODEBASE_README.md for conventions.
+  md += "order: -1\n";
   md += `author: "${primaryAuthor.name.replace(/"/g, '\\"')}"\n`;
   md += `author_id: "${primaryAuthor.author_id}"\n`;
   if (coAuthors.length > 0) {

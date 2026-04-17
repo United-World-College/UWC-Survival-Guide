@@ -24,10 +24,9 @@ categories:
   Academics: 学业
   学业: 学业
   學業: 学业
-  Life Reflections: 人生杂谈
-  Life Musings: 人生杂谈
-  人生杂谈: 人生杂谈
-  人生雜談: 人生杂谈
+  Musings: 随想
+  随想: 随想
+  隨想: 随想
 common:
   language_switch_label: 语言
   author_page: 作者页面
@@ -176,6 +175,7 @@ guide:
   more_guides_title: 同语言的更多指南
   more_guides_desc: 继续阅读同一语言的其他内容，不必在不同版本之间来回切换。
   empty: 该语言下暂时还没有其他指南。
+  toc_label: 目录
 admin:
   portal_label: 贡献者门户
   signin_title: 欢迎回来

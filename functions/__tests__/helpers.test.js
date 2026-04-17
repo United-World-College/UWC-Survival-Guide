@@ -150,7 +150,7 @@ describe("toBase64", () => {
 describe("generateMarkdown", () => {
   const baseSubmission = {
     title: "My UWC Experience",
-    category: "Life Reflections",
+    category: "Musings",
     description: "A short summary",
     language: "en",
     authorName: "Alice Smith",
@@ -171,9 +171,9 @@ describe("generateMarkdown", () => {
     const result = generateMarkdown(baseSubmission, baseAuthors, "");
     const md = result.markdown;
     expect(md).toContain('title: "My UWC Experience"');
-    expect(md).toContain('category: "Life Reflections"');
+    expect(md).toContain('category: "Musings"');
     expect(md).toContain('description: "A short summary"');
-    expect(md).toContain("order: 99");
+    expect(md).toContain("order: -1");
     expect(md).toContain('author: "Alice Smith"');
     expect(md).toContain('author_id: "alice-smith"');
     expect(md).toContain('guide_id: "my-uwc-experience"');

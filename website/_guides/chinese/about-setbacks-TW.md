@@ -1,8 +1,8 @@
 ---
 title: "關於挫折"
-category: "人生雜談"
+category: "隨想"
 description: "[Placeholder] 關於面對挫折的思考與經驗。"
-order: 5
+order: 2
 original_language: "zh-CN"
 guide_id: "about-setbacks"
 language_code: "zh-TW"
