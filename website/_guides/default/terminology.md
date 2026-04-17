@@ -198,7 +198,9 @@ For international students, the most important distinction is between Need-blind
 
 Applying for financial aid requires submitting additional forms like the CSS Profile (required by most private universities) or ISFAA. These forms ask you to disclose family income, assets, property, and so on in detail — it's a nontrivial amount of work, so it pays to start on them early.
 
-### **UWC Davis Scholars Program**
+---
+
+## **UWC Davis Scholars Program**
 
 This is a program exclusively for UWC students, founded by American philanthropist [Shelby M.C. Davis](https://en.wikipedia.org/wiki/Shelby_M._C._Davis). The Davis Foundation provides funding to many U.S. partner schools specifically to support UWC students who are admitted. For us, that means:
 
@@ -241,11 +243,11 @@ These two sections are where the AO reads, in a very short window, who you are. 
 
 U.S. college application interviews are overwhelmingly conducted by alumni, not by AOs. They usually happen after you submit your application but before decisions come out, in the form of a Zoom call or a local coffee meeting, and typically last 30–60 minutes.
 
-A few things to clarify:
+A few things that might not match what you'd expect:
 
 - **Interviews usually aren't decisive**: for the vast majority of schools, alumni interviews are informational only. Even if the interviewer sings your praises, it's very hard to turn a reject into an admit just based on the interview. Conversely, interviews really only hurt you when you do something clearly bad (for example, coming off as obviously arrogant, or showing you know nothing about the school).
 - **Not everyone offered an interview gets in, and not everyone who gets in was offered an interview**: the availability of alumni interviews depends on whether there are active alumni in your region. Not being offered an interview doesn't mean you're done for.
-- **What actually matters is the questions you ask**: while they're interviewing you, you're also interviewing them. It's a great chance to learn about the school from someone who actually went there.
+- **What actually matters is what you observe**: while they're interviewing you, you're also observing them. You'll likely find that alumni from these halo-wrapped schools are, for the most part, just ordinary people — they get nervous, show up late, ramble, get stuck on a question — just like the alumni interviewer you met back when you were applying to UWC.
 
 ---
 
