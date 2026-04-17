@@ -79,3 +79,53 @@ document.querySelectorAll('a[href]').forEach(function (link) {
     // Ignore malformed or non-standard href values.
   }
 });
+
+// ── Guide TOC (desktop sidebar) ──
+(function () {
+  var tocList = document.querySelector(".guide-toc-list");
+  var content = document.querySelector(".guide-content");
+  var wrap = document.querySelector(".guide-toc-wrap");
+  if (!tocList || !content || !wrap) return;
+
+  var items = [];
+  content.querySelectorAll("h2").forEach(function (h) {
+    if (!h.id) return;
+    var li = document.createElement("li");
+    var a = document.createElement("a");
+    a.href = "#" + h.id;
+    a.textContent = h.textContent;
+    li.appendChild(a);
+    tocList.appendChild(li);
+    items.push({ link: a, heading: h });
+  });
+
+  if (items.length < 2) {
+    wrap.style.display = "none";
+    return;
+  }
+
+  function updateActive() {
+    var marker = window.scrollY + window.innerHeight * 0.2;
+    var current = null;
+    for (var i = 0; i < items.length; i++) {
+      var top = items[i].heading.getBoundingClientRect().top + window.scrollY;
+      if (top <= marker) {
+        current = items[i];
+      } else {
+        break;
+      }
+    }
+    items.forEach(function (it) {
+      it.link.classList.remove("active");
+      it.link.removeAttribute("aria-current");
+    });
+    if (current) {
+      current.link.classList.add("active");
+      current.link.setAttribute("aria-current", "location");
+    }
+  }
+
+  window.addEventListener("scroll", updateActive, { passive: true });
+  window.addEventListener("resize", updateActive);
+  updateActive();
+})();

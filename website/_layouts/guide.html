@@ -125,9 +125,17 @@
 
   <div class="divider"></div>
 
-  <article class="guide-content">
-    {{ content }}
-  </article>
+  <div class="guide-layout">
+    <aside class="guide-toc-wrap">
+      <nav class="guide-toc" aria-label="{{ current_locale.guide.toc_label | default: 'On this page' }}">
+        <p class="guide-toc-label">{{ current_locale.guide.toc_label | default: 'On this page' }}</p>
+        <ul class="guide-toc-list"></ul>
+      </nav>
+    </aside>
+    <article class="guide-content">
+      {{ content }}
+    </article>
+  </div>
 
   <div class="divider"></div>
 
