@@ -694,6 +694,25 @@ body {
   padding: 4rem 2.5rem;
 }
 
+/* Safari selection-highlight containment: constrain selection paint to the centered content column rather than the full-viewport ancestor block. */
+.nav-inner,
+.hero-content,
+.guide-hero-content,
+.section,
+.guide-content,
+.translation-switch,
+.footer-inner,
+.about-intro,
+.author-summary,
+.author-bibliography-header,
+.author-articles,
+.contributor-list,
+.essentials-list,
+.guides-language-desc {
+  position: relative;
+  isolation: isolate;
+}
+
 .guide-content > p:first-child > em:only-child {
   color: var(--text);
   font-size: 0.95rem;
