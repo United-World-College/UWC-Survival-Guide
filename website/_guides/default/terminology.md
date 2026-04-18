@@ -64,9 +64,9 @@ Let me use my own college counselor, Alison, as an example. I've always thought 
 
 The most important thing about the relationship with your counselor, I think, is building a kind of mutual understanding. This isn't something you can deliberately engineer — or more accurately, the moment you try to engineer it, it's guaranteed not to happen. You have to fully trust her and open up, laying out all your thoughts, questions, and doubts (in a professional manner), so she can understand you as completely as possible and then actually help you in a targeted way. The whole thing is a fairly spontaneous process.
 
-### **One Small Secret About Recommendation Letters**
+### **An Important Nuance About Recommendation Letters**
 
-One small secret worth sharing here: among the three required recommendations, the counselor's letter is the single most important one, bar none. (I'll go into detail about which three letters those are in the Letters of Recommendation section below.) The reason is that counselors tend to have much more philosophical conversations with you than your subject teachers do. Compared with the other two teacher recommendations, the counselor understands best who you are as a person, how you think about high-level questions, and where you are in terms of maturity — which happen to be exactly the things U.S. universities care about the most.
+Among the three required recommendations, the counselor's letter is the single most important one, bar none. (I'll go into detail about which three letters those are in the Letters of Recommendation section below.) The reason is that counselors tend to have much more philosophical conversations with you than your subject teachers do. Compared with the other two teacher recommendations, the counselor understands best who you are as a person, how you think about high-level questions, and where you are in terms of maturity — which happen to be exactly the things U.S. universities care about the most.
 
 ---
 

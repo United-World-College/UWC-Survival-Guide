@@ -63,9 +63,9 @@ updated: 2026-04-17
 
 其實我覺得和 counselor 之間最重要的事情就是建立一種默契，這不是刻意去做什麼就能做到的（或者說刻意去做是一定做不到的），是你一定要完完全全地信任她，然後對她敞開心扉，把你所有的想法、問題、困惑都對她講（in a professional manner），才能讓她更了解你，並且在幫助你的時候也有的放矢。總之是個 spontaneous 的過程吧。
 
-### **關於推薦信的一個小秘密**
+### **關於推薦信的一個重要的 nuance**
 
-在這裡先透露個小秘密：counselor 的推薦信是三封 required recommendations 裡最重要的，沒有之一。（後面會在 Letters of Recommendation 一節裡詳細講這三封分別是哪三封。）因為 counselor 會和你聊很多 philosophical 的東西，相比於其他兩封任課老師的推薦信，是最了解你這個人是什麼樣的、你會如何思考 high-level 的問題，以及你的 maturity，而這些恰恰是美國大學最看中的部分。
+counselor 的推薦信是三封 required recommendations 裡最重要的，沒有之一。（後面會在 Letters of Recommendation 一節裡詳細講這三封分別是哪三封。）因為 counselor 會和你聊很多 philosophical 的東西，相比於其他兩封任課老師的推薦信，是最了解你這個人是什麼樣的、你會如何思考 high-level 的問題，以及你的 maturity，而這些恰恰是美國大學最看中的部分。
 
 ---
 
