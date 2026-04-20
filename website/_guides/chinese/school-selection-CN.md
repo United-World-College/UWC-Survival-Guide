@@ -47,7 +47,13 @@ updated: 2026-04-19
 
 ## 文理学院还是研究型大学
 
-最后再聊一个很多同学都会纠结的问题：[文理学院](https://en.wikipedia.org/wiki/Liberal_arts_college#In_North_America)和研究型大学到底怎么选？两者其实定位挺不一样的。研究型大学因为体量大、教授多，课程覆盖面天然就会广很多，基本上你想学什么方向都能找到对应的课。而文理学院走的是小而精的路线，更强调教学质量和师生之间的紧密互动，但相应地每个系的规模会小一些，能开的课可能主要集中在比较主流的方向。不过这也不是绝对的——像 Barnard 和 Wellesley 这样的文理学院就和附近的顶尖学府深度合作，比如 Wellesley 的同学可以直接去哈佛和 MIT 选课，课程覆盖面上的差距一下子就被拉平了。所以与其纠结哪种更好，不如想清楚自己更看重什么：是更丰富的课程和资源，还是更小的班级和更紧密的师生关系？这两种体验本身没有高下之分，关键在于哪个更适合你。
+最后再聊一个很多同学都会纠结的问题：[文理学院](https://en.wikipedia.org/wiki/Liberal_arts_college#In_North_America)和研究型大学到底怎么选？两者其实定位挺不一样的。研究型大学因为体量大、教授多，课程覆盖面天然就会广很多，基本上你想学什么方向都能找到对应的课。而文理学院走的是小而精的路线，更强调教学质量和师生之间的紧密互动，但相应地每个系的规模会小一些，能开的课可能主要集中在比较主流的方向。不过这也不是绝对的——像 Barnard 和 Wellesley 这样的文理学院就和附近的顶尖学府深度合作，比如 Wellesley 的同学可以直接去哈佛和 MIT 选课，而 Barnard 更是直接成为了 Columbia University 的一部分，这样课程覆盖面上的差距一下子就被拉平了。所以与其纠结哪种更好，不如想清楚自己更看重什么：是更丰富的课程和资源，还是更小的班级和更紧密的师生关系？这两种体验本身没有高下之分，关键在于哪个更适合你。
+
+但对于将来想要学习 STEM 专业的同学们来说一定要谨慎考虑文理学院。这里有一个常见的 myth："顶级文理学院的 placement 不输最好的研究型大学"。这个说法在 humanities 和 social sciences 里大致成立，但对 STEM 基本是个谎言。原因有两个：第一，LAC 的 STEM faculty 基本不在 research frontier。因为 LAC 的 hire model 优先 teaching load，教授的教学压力都巨大，基本上是 R1 的三倍，而且没有博士生 / postdoc 做 research leverage。更别提经费和设备方面也无法跟 R1 比。LAC 拿不到大型 federal grant，也撑不起 frontier-level infrastructure，比如[超算 cluster](https://en.wikipedia.org/wiki/Supercomputer) 和 [cleanroom](https://en.wikipedia.org/wiki/Cleanroom)。这些设施单价几百万到几亿，LAC 体量很难撑起 [ROI](https://en.wikipedia.org/wiki/Return_on_investment)。所以很多顶尖 LAC STEM 教授入职几年后 research 就基本 drop off，没有什么论文产出了。同学们可以试着搜一搜各大 LAC 自己感兴趣方向的教授上一次发文章是在多少年前。第二，STEM industry pipeline 弱。LAC 一届一共 500 人，学 STEM 方向的可能就 150-200 人，10 年累积的校友规模甚至远不如 R1 的一个系。这也就直接导致了已经在 industry 里的 LAC 校友数量少，referral network 也弱得多。当然，只要自己足够强，比如能进入 [ICPC World Finals](https://en.wikipedia.org/wiki/International_Collegiate_Programming_Contest)，那上面提到的一切都不是问题。
+
+此外，需要特别说明的一点是，这两个问题对 Harvey Mudd 应该是个例外，因为足够专注于 STEM 教育。而 Barnard 和 Wellesley 的同学也可以去附近的顶级院校找教授做研究来弥补没有 frontier researcher 的不足。
+
+所以如果你明确要走 STEM 路线，研究型大学 strictly dominate LAC，即便是顶级 LAC 也不例外。LAC 更适合想走 humanities、social sciences、pre-med、pre-law 路线的学生。
 
 ## 学校只是平台，成长靠自己
 
