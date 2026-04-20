@@ -126,6 +126,8 @@ Common App 上的 required recommendations 一共三封：一封来自你的 cou
 
 ED 的录取率通常显著高于 RD，但这里面有很多 confounding factor：ED 池子里往往包含了 recruited athletes（运动员招募）、legacy（校友子女）和一些很强而且早就决定好一心想去的学生，所以表面的数字差距并不意味着 ED 就稳多少。反而我觉得真正值得思考的问题是：你有没有一所录了就一定愿意去的学校，一个真正适合自己的学校？而对于该怎么选一个适合自己的学校，欢迎阅读[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})。
 
+另外有一点 UWC 内部的规则需要一起说明：UWC 常熟对每位同学的大学申请数量有上限，最多只能提交 10 所学校的申请。官方[政策说明](https://www.uwcchina.org/en/Orientation/single/112)给出的理由是申请本身非常耗时，提交过多会同时拖垮学业和每份申请的质量，所以学校希望你把精力放在真正适合自己的选择上。其中英国的 [UCAS](https://en.wikipedia.org/wiki/UCAS) 系统、美国的 [University of California](https://en.wikipedia.org/wiki/University_of_California) 系统、以及加拿大的 [Ontario Universities](https://en.wikipedia.org/wiki/Ontario_Universities%27_Application_Centre) 系统各自只算作 1 所申请，而不是系统内每所学校各算一所，所以如果你打算申请这些学校，实际能覆盖的范围会比 10 这个数字显得更宽一点。这个上限值得在规划 ED、EA、RD 各自几所时尽早纳入考虑。
+
 ---
 
 ## **Liberal Arts Colleges / Research Universities**

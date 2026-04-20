@@ -125,6 +125,8 @@ These three are the three application timelines in U.S. college admissions:
 
 ED admit rates are usually noticeably higher than RD, but there are a lot of confounding factors: the ED pool often includes recruited athletes, legacy applicants, and some very strong students who've long since made up their minds about where they want to go, so the surface-level number doesn't mean ED is that much "safer." I think the question actually worth asking is: is there a school you'd 100% want to attend if admitted, one that's truly a good fit for you? And on how to pick a school that's a good fit, you're welcome to read [*On Choosing Colleges*]({{ '/guides/default/school-selection/' | relative_url }}).
 
+One more UWC-internal rule worth mentioning here: UWC Changshu China caps the number of college applications each student can submit at 10. The [official policy](https://www.uwcchina.org/en/Orientation/single/112) explains that applying itself is very time-consuming and that submitting too many drags down both your academics and the quality of each application — so the school wants you to focus on choices that actually fit you. The UK's [UCAS](https://en.wikipedia.org/wiki/UCAS) system, the U.S.'s [University of California](https://en.wikipedia.org/wiki/University_of_California) system, and Canada's [Ontario Universities](https://en.wikipedia.org/wiki/Ontario_Universities%27_Application_Centre) system each count as 1 application rather than having each school within the system count separately, so if you're applying to these systems your actual reach is a bit broader than the number 10 would suggest. It's worth factoring this cap into how you plan out your ED, EA, and RD slots early on.
+
 ---
 
 ## **Liberal Arts Colleges / Research Universities**
