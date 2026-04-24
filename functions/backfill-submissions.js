@@ -24,7 +24,6 @@ const GUIDES_DIR = path.resolve(__dirname, "../website/_guides/default");
 const GUIDE_FILES = [
   "school-selection.md",
   "terminology.md",
-  "class-signaling.md",
 ];
 
 function parseGuide(filePath) {
