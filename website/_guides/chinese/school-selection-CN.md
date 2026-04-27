@@ -57,7 +57,7 @@ updated: 2026-04-19
 
 还有一个本科申请阶段经常被忽视的维度：PhD students 和 postdocs 的质量。教授大部分时间都在化缘，所以本科生在 lab 里日常接触的其实是 PhD students 和 postdocs，他们的水平才是本科生 research experience 真正的 ceiling。这里有一个关键的不对称：undergrad admissions 是 prestige-driven 的，但 PhD admissions 是 field-specific 的（看一个 program 在领域内的学术实力）。所以对于一个学科内顶尖的公立旗舰，它的 PhD pool 质量完全可以碾压综排前五但 field 较弱的私校。当然大部分公立旗舰在面对 Stanford 这种全学科都很强的学校的时候就相形见绌了（UC Berkeley 是少数例外，因为它本身也是全学科都很强的级别）。但要注意这只是 ceiling，结合前面 demand-side 的分析，"普通优秀"的 UWC 学生在顶校能不能真正 access 到这个 ceiling 又是另一回事。所以对大部分人而言，一个 sweet spot 其实是 field-specific 顶尖的公立旗舰：ceiling 已经足够高，竞争者 pool 又比顶级私校友好得多。
 
-在这里我想把前面的线索稍微串联一下进一步方便大家理解：学校经费尤其是联邦经费决定了一个学校在某领域的 research 投入 → research 投入决定该领域 PhD program 的吸引力，进而决定 PhD / postdoc pool 的质量 → PhD pool 决定本科生在 lab 里日常能 access 到的 ceiling → 但能不能真正 access 到这个 ceiling，取决于该校 demand 端的 outlier 集中度（即和你竞争的人到底有多强）。所以对一个想做 STEM research 的"普通优秀" UWC 学生而言，最优解既不是综合排名最高的学校，也不是 reputation 最响的学校，而是 ceiling 已经足够高、demand 端又没那么挤的学校——可能是 field-specific 的公立旗舰（比如 Stony Brook 的数学和 UMass Amherst 的 CS），可能是某些综排靠前但不被 outlier 扎堆的私校（比如 Duke、JHU 在它们的强势领域），也可能是有着强势领域的 mid-tier R1（比如 UIC 的数据挖掘、UTK 的高性能计算和 University of Utah 的图形学）。
+在这里我想把前面的线索稍微串联一下进一步方便大家理解：学校经费尤其是联邦经费决定了一个学校在某领域的 research 投入 → research 投入决定该领域 PhD program 的吸引力，进而决定 PhD / postdoc pool 的质量 → PhD pool 决定本科生在 lab 里日常能 access 到的 ceiling → 但能不能真正 access 到这个 ceiling，取决于该校 demand 端的 outlier 集中度（即和你竞争的人到底有多强）。所以对一个想做 STEM research 的"普通优秀" UWC 学生而言，最优解既不是综合排名最高的学校，也不是 reputation 最响的学校，而是 ceiling 已经足够高、demand 端又没那么挤的学校——可能是 field-specific 的公立旗舰（比如 Stony Brook 的数学），可能是某些综排靠前但不被 outlier 扎堆的私校（比如 Duke、JHU 在它们的强势领域），也可能是有着强势领域的 mid-tier R1（比如 UIC 的数据挖掘、UTK 的高性能计算和 University of Utah 的图形学）。
 
 ## 选校之于就业
 
