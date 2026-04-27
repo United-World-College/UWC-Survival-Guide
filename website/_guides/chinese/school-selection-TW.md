@@ -60,9 +60,9 @@ updated: 2026-04-27
 
 這裡要特別注意一下，上面的論證主要適用於依賴 lab / 大型 collaborator team / research infrastructure 的 lab-based research，包括實驗物理、化學、生物、工程、實驗 CS、醫學 research 等等很多方向。但對於依賴 advisor 1-on-1 + reading group / seminar 這種 mentorship mode 的方向——包括 STEM 裡的理論方向（純數、理論 CS、理論物理）、humanities（哲學、文學、歷史、古典學、藝術史）、social sciences（economics、political science、sociology、anthropology 等，不論 empirical 還是 theoretical）、business research（finance、accounting、marketing）等——它們的 ceiling driver 完全不一樣：mentorship 主要靠跟 advisor 直接 1-on-1 討論加上 reading group / seminar 的 peer effect，PhD pool 品質反而沒那麼重要，advisor individual reputation 和 daily peer 濃度反而更重要。雖然這些方向同樣會被 outlier 在 access 上碾壓（advisor 的 bandwidth 依然有限），但 reading group 和 seminar 也是學習的重要一環，daily peer effect 比在 lab-based research 裡重要得多，所以需要自行取捨。
 
-在這裡我想把前面的線索串起來，方便大家自己 audit 任何一所學校。
+在最後，我想把前面關於 lab-based research 的線索串起來，方便大家自行 audit 任何一所學校。
 
-驅動 STEM frontier research 的邏輯鏈如下：聯邦經費跟著頂級 faculty 走 → 頂級 faculty 集聚決定一個 program 在某領域的 research investment scale → research investment scale + faculty 品質決定該學校該領域能吸引到的 PhD / postdoc 品質 → 而 PhD / postdoc（不是 faculty 本身）才是本科生 daily mentor 的水準上限，因為教授大部分時間在 fundraising 而不是 day-to-day mentoring → 但能不能真正 access 到這個上限，取決於該校 demand 端的 outlier 集中度（即和你競爭同一個教授和 mentor 的時間的同學到底有多強）。
+驅動 STEM frontier research 的邏輯鏈基本如下：聯邦經費跟著頂級 faculty 走 → 頂級 faculty 集聚決定一個 program 在某領域的 research investment scale → research investment scale + faculty 品質決定該學校該領域能吸引到的 PhD / postdoc 品質 → 而 PhD / postdoc（不是 faculty 本身）才是本科生 daily mentor 的水準上限，因為教授大部分時間在 fundraising 而不是 day-to-day mentoring → 但能不能真正 access 到這個上限，取決於該校 demand 端的 outlier 集中度（即和你共享同一個教授和 mentor 的時間的同學到底有多強）。
 
 所以對一個想做 STEM research 的「普通優秀」UWC 學生而言，最優解既不是綜合排名最高的學校，也不是 reputation 最響的學校，而是 ceiling 已經足夠高、demand 端又沒那麼擠的學校——可能是 field-specific 頂尖的公立旗艦（比如 Penn State 的材料科學和 Texas A&M 的石油工程），可能是某些綜排靠前但不被 outlier 扎堆的私校（比如 Duke、JHU 和 Northwestern 的強勢學科），也可能是有著強勢領域的 mid-tier R1（比如 UIC 的資料探勘、UTK 的高效能運算和 University of Utah 的圖形學）。
 
