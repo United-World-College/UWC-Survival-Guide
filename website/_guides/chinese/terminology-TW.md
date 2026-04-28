@@ -121,7 +121,7 @@ Common App 上的 required recommendations 一共三封：一封來自你的 cou
 這三個是美國大學申請裡的三種時間線：
 
 - **Early Decision（ED）**：約束性（binding）提前批。申請截止通常在 11 月 1 日或 15 日，12 月中旬出結果。一旦被錄取，你必須入學。這也就意味著你只能選一所學校作為 ED 目標。一些學校還有 ED II（1 月截止，2 月出結果），給你一次 ED 被拒後換一所再衝的機會。
-- **Early Action（EA）**：非約束性（non-binding）提前批。時間線和 ED 類似，但錄了之後你可以不去，也可以同時申請好幾所大學。對於大部分人來說提前批次就是申請了一所 ED 的學校外加幾所 EA 的學校。不過需要注意的是 EA 裡還有一種特別的 Restrictive / Single-Choice EA（REA / SCEA），代表學校包括 Harvard、Yale、Princeton、Stanford。它們不 binding，但不允許你同時申其他私立學校的 ED/EA。
+- **Early Action（EA）**：非約束性（non-binding）提前批。時間線和 ED 類似，但錄了之後你可以不去，也可以同時申請好幾所大學。對於大部分人來說提前批次就是申請了一所 ED 的學校外加幾所 EA 的學校。不過需要注意的是 EA 裡還有一種特別的 Restrictive / Single-Choice EA（REA / SCEA），代表學校包括 Harvard、Yale、Princeton、Stanford。它們不 binding，但不允許你同時申其他私立學校的 ED/EA（具體限制條款各校略有差異，請以學校官網為準）。
 - **Regular Decision（RD）**：常規批。通常 1 月 1 日截止，3 月底到 4 月初出結果。
 
 ED 的錄取率通常顯著高於 RD，但這裡面有很多 confounding factor：ED 池子裡往往包含了 recruited athletes（運動員招募）、legacy（校友子女）和一些很強而且早就決定好一心想去的學生，所以表面的數字差距並不意味著 ED 就穩多少。反而我覺得真正值得思考的問題是：你有沒有一所錄了就一定願意去的學校，一個真正適合自己的學校？而對於該怎麼選一個適合自己的學校，歡迎閱讀[《關於選校》]({{ '/guides/chinese/school-selection-TW/' | relative_url }})。
