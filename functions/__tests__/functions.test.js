@@ -1383,7 +1383,8 @@ describe("getServiceUsage", () => {
     setMockDoc("users", "u1", { displayName: "A" });
     setMockDoc("submissions", "s1", { status: "approved", title: "T" });
     setMockDoc("submissions", "s2", { status: "pending", title: "T2" });
-    setMockDoc("config", "usage", { gemini: { "2026-04": 3, "_backfill": 5 } });
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    setMockDoc("config", "usage", { gemini: { [currentMonth]: 3, "_backfill": 5 } });
 
     const result = await funcs.getServiceUsage({ auth: adminAuth(), data: { forceRefresh: true } });
 
