@@ -1187,6 +1187,7 @@ User fills form in admin UI
   email: string,
   photoURL: string,               // Avatar download URL (from Firebase Storage), or ""
   author_id: string,              // Immutable after first set, format: /^[a-z0-9]+(-[a-z0-9]+)*$/
+  role: string,                   // "member" (default) | "core_member" | "founding_editor_in_chief"; client-locked, mutated only by Cloud Functions (auto-bumped to core_member at >=5 approved articles)
   affiliation: string,            // School or organization
   cohort: string,                 // Graduating year/class
   summary: string,                // Short bio (max 120 chars in UI)

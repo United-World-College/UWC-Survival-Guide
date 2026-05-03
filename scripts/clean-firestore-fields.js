@@ -42,7 +42,7 @@ const SUBMISSION_AUDIT_FIELDS = new Set([
 ]);
 
 const USERS_FIELDS = new Set([
-  "displayName", "email", "photoURL", "author_id",
+  "displayName", "email", "photoURL", "author_id", "role",
   "affiliation", "cohort", "summary", "profileLinks",
   "showEmail", "createdAt", "featuredGuideIds",
 ]);
