@@ -141,13 +141,7 @@
     {% endif %}
   {% endfor %}
 
-  {% assign role_label = page.role %}
-  {% assign editor_record = site.data.about.editors_in_chief | where: "id", current_author_id | first %}
-  {% if editor_record %}
-    {% assign role_label = current_locale.author.role_editor_in_chief %}
-  {% elsif role_label == nil or role_label == "" %}
-    {% assign role_label = current_locale.author.role_contributor %}
-  {% endif %}
+  {% comment %}Role badge is filled in by Firestore JS below; render hidden initially.{% endcomment %}
   {% assign author_name = page.title %}
   {% if person and person.name %}
     {% assign author_name = person.name %}
@@ -221,7 +215,7 @@
       <div class="author-copy">
         <p class="section-label">{{ current_locale.author.author_label }}</p>
         <h1 id="author-name">{{ author_name }}</h1>
-        <p class="author-role" id="author-role">{{ role_label }}</p>
+        <p class="author-role" id="author-role" style="display:none;"></p>
         <p class="author-meta" id="author-meta"{% unless has_author_meta %} style="display:none;"{% endunless %}>
           {% if has_affiliation %}<span class="person-meta-line" id="author-affiliation">{{ person.affiliation }}</span>{% else %}<span class="person-meta-line" id="author-affiliation" style="display:none;"></span>{% endif %}
           {% if has_cohort %}<span class="person-meta-line" id="author-cohort">{{ person.cohort }}</span>{% else %}<span class="person-meta-line" id="author-cohort" style="display:none;"></span>{% endif %}
@@ -392,7 +386,8 @@
   <script>
   var EIC_IDS = [{% for p in site.data.about.editors_in_chief %}{{ p.id | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}];
   var AUTHOR_ROLE_LABELS = {
-    eic: {{ current_locale.author.role_editor_in_chief | jsonify }},
+    founding_editor_in_chief: {{ current_locale.author.role_founding_editor_in_chief | jsonify }},
+    editor_in_chief: {{ current_locale.author.role_editor_in_chief | jsonify }},
     core_member: {{ current_locale.author.role_core_member | jsonify }},
     member: {{ current_locale.author.role_member | jsonify }}
   };
@@ -619,16 +614,13 @@
         document.getElementById('author-article-count-label').textContent =
           articleCount === 1 ? AUTHOR_LOCALE.article_singular : AUTHOR_LOCALE.article_plural;
 
-        // Update role badge based on live count
-        var isEIC = EIC_IDS.indexOf(authorId) !== -1;
+        // Update role badge from Firestore role; hide plain `member` until first article
         var roleEl = document.getElementById('author-role');
-        if (isEIC) {
-          roleEl.textContent = AUTHOR_ROLE_LABELS.eic;
-        } else if (articleCount >= 5) {
-          roleEl.textContent = AUTHOR_ROLE_LABELS.core_member;
-        } else {
-          roleEl.textContent = AUTHOR_ROLE_LABELS.member;
-        }
+        var roleKey = (userData && userData.role) || 'member';
+        var roleLabel = AUTHOR_ROLE_LABELS[roleKey] || AUTHOR_ROLE_LABELS.member;
+        var hideRole = roleKey === 'member' && articleCount === 0;
+        roleEl.textContent = hideRole ? '' : roleLabel;
+        roleEl.style.display = hideRole ? 'none' : '';
 
         // Render Latest section
         var latestList = document.getElementById('author-latest-list');

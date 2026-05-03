@@ -148,6 +148,7 @@ section:
 author:
   author_label: 作者
   role_editor_in_chief: 主編
+  role_founding_editor_in_chief: 創始主編
   role_core_member: 核心成員
   role_member: 成員
   role_contributor: 貢獻者
@@ -327,6 +328,7 @@ admin:
   status_approved: 已批准
   status_rejected: 已拒絕
   role_eic: 主編
+  role_founding_eic: 創始主編
   role_core_member: 核心成員
   role_member: 成員
   role_contributor: 貢獻者

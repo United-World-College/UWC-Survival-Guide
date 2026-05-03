@@ -148,6 +148,7 @@ section:
 author:
   author_label: Author
   role_editor_in_chief: Editor-in-Chief
+  role_founding_editor_in_chief: Founding Editor-in-Chief
   role_core_member: Core Member
   role_member: Member
   role_contributor: Contributor
@@ -327,6 +328,7 @@ admin:
   status_approved: Approved
   status_rejected: Rejected
   role_eic: Editor-in-Chief
+  role_founding_eic: Founding Editor-in-Chief
   role_core_member: Core Member
   role_member: Member
   role_contributor: Contributor

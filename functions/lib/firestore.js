@@ -75,10 +75,32 @@ async function ensureAuthorId(uid, authorSlug) {
   if (!userDoc.exists || !userDoc.data().author_id) {
     const baseSlug = authorSlug || uid.toLowerCase();
     const uniqueSlug = await ensureUniqueAuthorSlug(baseSlug);
-    await db.collection("users").doc(uid).set(
-      { author_id: uniqueSlug },
-      { merge: true }
-    );
+    const update = { author_id: uniqueSlug };
+    if (!userDoc.exists || !userDoc.data().role) update.role = "member";
+    await db.collection("users").doc(uid).set(update, { merge: true });
+  }
+}
+
+const CORE_MEMBER_THRESHOLD = 5;
+
+// Bump role member -> core_member when approved article count crosses the
+// threshold. Never downgrades; never overwrites founding_editor_in_chief.
+async function maybeBumpRoleForUid(uid) {
+  if (!uid) return;
+  const userDoc = await db.collection("users").doc(uid).get();
+  if (!userDoc.exists) return;
+  const role = userDoc.data().role || "member";
+  if (role !== "member") return;
+
+  const [ownSnap, coauthorSnap] = await Promise.all([
+    db.collection("submissions").where("status", "==", "approved").where("uid", "==", uid).get(),
+    db.collection("submissions").where("status", "==", "approved").where("coauthorUids", "array-contains", uid).get(),
+  ]);
+  const ids = new Set();
+  ownSnap.forEach((d) => ids.add(d.id));
+  coauthorSnap.forEach((d) => ids.add(d.id));
+  if (ids.size >= CORE_MEMBER_THRESHOLD) {
+    await userDoc.ref.update({ role: "core_member" });
   }
 }
 
@@ -88,5 +110,6 @@ module.exports = {
   resolveSubmissionAuthors,
   ensureUniqueGuideSlug,
   ensureUniqueAuthorSlug,
+  maybeBumpRoleForUid,
   ensureAuthorId,
 };

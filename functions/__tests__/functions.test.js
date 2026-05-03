@@ -104,22 +104,45 @@ function buildCollectionRef(name) {
         data: () => ({ count: countDocsInCollection(name) }),
       })),
     })),
-    where: jest.fn((field, op, value) => ({
+    where: jest.fn((field, op, value) => buildQueryRef(name, [{ field, op, value }])),
+  };
+}
+
+function matchesCondition(data, { field, op, value }) {
+  if (!data) return false;
+  if (op === "array-contains") {
+    return Array.isArray(data[field]) && data[field].includes(value);
+  }
+  return data[field] === value;
+}
+
+function buildQueryRef(name, conditions) {
+  return {
+    where: jest.fn((field, op, value) =>
+      buildQueryRef(name, conditions.concat([{ field, op, value }]))),
+    get: jest.fn(async () => {
+      const matches = [];
+      const prefix = name + "/";
+      for (const [k, data] of Object.entries(mockDocs)) {
+        if (!k.startsWith(prefix) || !data) continue;
+        if (k.slice(prefix.length).includes("/")) continue;
+        if (conditions.every((c) => matchesCondition(data, c))) {
+          matches.push({ id: k.slice(prefix.length), data: () => data });
+        }
+      }
+      return { empty: matches.length === 0, docs: matches, forEach: (fn) => matches.forEach(fn), size: matches.length };
+    }),
+    count: jest.fn(() => ({
       get: jest.fn(async () => {
-        const matches = [];
+        let count = 0;
         const prefix = name + "/";
         for (const [k, data] of Object.entries(mockDocs)) {
-          if (k.startsWith(prefix) && data && data[field] === value) {
-            matches.push({ id: k.slice(prefix.length), data: () => data });
-          }
+          if (!k.startsWith(prefix) || !data) continue;
+          if (k.slice(prefix.length).includes("/")) continue;
+          if (conditions.every((c) => matchesCondition(data, c))) count++;
         }
-        return { empty: matches.length === 0, docs: matches };
+        return { data: () => ({ count }) };
       }),
-      count: jest.fn(() => ({
-        get: jest.fn(async () => ({
-          data: () => ({ count: countDocsInCollection(name, field, value) }),
-        })),
-      })),
     })),
   };
 }
@@ -1324,6 +1347,88 @@ describe("approveSubmission", () => {
       (call) => call.collection === "users"
     );
     expect(userUpdateCalls).toHaveLength(0);
+  });
+
+  test("bumps role member -> core_member when reaching 5 approved articles", async () => {
+    // Seed 4 prior approved submissions for user-1
+    for (let i = 1; i <= 4; i++) {
+      setMockDoc("submissions", `prior-${i}`, {
+        uid: "user-1", status: "approved", title: `T${i}`,
+      });
+    }
+    // Pending submission (the 5th) about to be approved
+    setMockDoc("submissions", "sub-5", {
+      uid: "user-1",
+      authorName: "Alice",
+      coAuthors: orderedAuthors({ uid: "user-1", author_id: "alice", name: "Alice" }),
+      title: "Fifth Article",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", { author_id: "alice", role: "member" });
+    mockGitHubSuccess();
+
+    await funcs.approveSubmission({ auth: adminAuth(), data: { docId: "sub-5" } });
+
+    const bumpCall = mockUpdateCalls.find(
+      (call) => call.collection === "users" && call.docId === "user-1" && call.data.role === "core_member"
+    );
+    expect(bumpCall).toBeDefined();
+  });
+
+  test("does not downgrade core_member or touch founding_editor_in_chief", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "Founder",
+      coAuthors: orderedAuthors({ uid: "user-1", author_id: "founder", name: "Founder" }),
+      title: "First",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", { author_id: "founder", role: "founding_editor_in_chief" });
+    mockGitHubSuccess();
+
+    await funcs.approveSubmission({ auth: adminAuth(), data: { docId: "sub-1" } });
+
+    const roleChange = mockUpdateCalls.find(
+      (call) => call.collection === "users" && call.docId === "user-1" && "role" in call.data
+    );
+    expect(roleChange).toBeUndefined();
+  });
+
+  test("does not bump member when total approved articles still under 5", async () => {
+    setMockDoc("submissions", "sub-1", {
+      uid: "user-1",
+      authorName: "Alice",
+      coAuthors: orderedAuthors({ uid: "user-1", author_id: "alice", name: "Alice" }),
+      title: "First",
+      category: "Academics",
+      language: "en",
+      description: "Desc",
+      content: "Content",
+      status: "pending",
+      createdAt: { toDate: () => new Date("2026-01-15T00:00:00Z") },
+    });
+    setMockDoc("users", "admin-uid", { displayName: "" });
+    setMockDoc("users", "user-1", { author_id: "alice", role: "member" });
+    mockGitHubSuccess();
+
+    await funcs.approveSubmission({ auth: adminAuth(), data: { docId: "sub-1" } });
+
+    const roleChange = mockUpdateCalls.find(
+      (call) => call.collection === "users" && call.docId === "user-1" && "role" in call.data
+    );
+    expect(roleChange).toBeUndefined();
   });
 });
 

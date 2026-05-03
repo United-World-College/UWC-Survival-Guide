@@ -197,6 +197,7 @@
               affiliation: '',
               cohort: '',
               summary: '',
+              role: 'member',
               profileLinks: [],
               showEmail: false,
               createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -250,11 +251,10 @@
   });
 
   // ── Profile ──
-  function getAuthorRole(authorId) {
-    var isEIC = EIC_IDS.indexOf(authorId) !== -1;
-    if (isEIC) return { label: ADMIN_I18N.role_eic, className: 'admin-role-badge admin-role-badge-eic' };
-    var count = AUTHOR_ARTICLE_COUNTS[authorId] || 0;
-    if (count >= 5) return { label: ADMIN_I18N.role_core_member, className: 'admin-role-badge admin-role-badge-core' };
+  function getAuthorRole(role) {
+    if (role === 'founding_editor_in_chief') return { label: ADMIN_I18N.role_founding_eic, className: 'admin-role-badge admin-role-badge-eic' };
+    if (role === 'editor_in_chief') return { label: ADMIN_I18N.role_eic, className: 'admin-role-badge admin-role-badge-eic' };
+    if (role === 'core_member') return { label: ADMIN_I18N.role_core_member, className: 'admin-role-badge admin-role-badge-core' };
     return { label: ADMIN_I18N.role_member, className: 'admin-role-badge' };
   }
 
@@ -269,6 +269,7 @@
         affiliation: '',
         cohort: '',
         summary: '',
+        role: 'member',
         profileLinks: [],
         showEmail: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -307,7 +308,7 @@
     currentUserAuthor = { author_id: authorId, name: displayName || authorId, uid: user.uid };
     addSelfAsCoauthor();
 
-    var role = getAuthorRole(authorId);
+    var role = getAuthorRole(data.role);
     var roleBadge = document.getElementById('profile-role-badge');
     roleBadge.textContent = role.label;
     roleBadge.className = role.className;

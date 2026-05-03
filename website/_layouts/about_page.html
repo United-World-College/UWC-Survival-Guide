@@ -242,6 +242,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script>
+  var ROLE_LABELS = {
+    founding_editor_in_chief: {{ current_locale.author.role_founding_editor_in_chief | jsonify }},
+    editor_in_chief: {{ current_locale.author.role_editor_in_chief | jsonify }},
+    core_member: {{ current_locale.author.role_core_member | jsonify }},
+    member: {{ current_locale.author.role_member | jsonify }}
+  };
   (function () {
     firebase.initializeApp({
       apiKey: "AIzaSyC2PkxnmMwJiD73ouo8Jxmk536_A2RkNy8",
@@ -301,10 +307,10 @@
           if (metaEl2) metaEl2.style.display = '';
         }
 
-        if (user.summary) {
-          var summaryEl = card.querySelector('[data-card-summary]');
-          if (summaryEl) { summaryEl.textContent = user.summary; summaryEl.style.display = ''; }
-        }
+        var roleKey = user.role || 'member';
+        var roleLabel = ROLE_LABELS[roleKey] || ROLE_LABELS.member;
+        var summaryEl = card.querySelector('[data-card-summary]');
+        if (summaryEl) { summaryEl.textContent = roleLabel; summaryEl.style.display = ''; }
       });
     }).catch(function () {});
   })();

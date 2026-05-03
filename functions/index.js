@@ -8,7 +8,7 @@ const {
 const { getGitHubToken, githubApi, batchCommitFiles, ensureAuthorPresenceOnGitHub } = require("./lib/github");
 const {
   appendSubmissionAuditEvent, resolveSubmissionAuthors,
-  ensureUniqueGuideSlug, ensureAuthorId,
+  ensureUniqueGuideSlug, ensureAuthorId, maybeBumpRoleForUid,
 } = require("./lib/firestore");
 const { getGeminiKey, translateMissingVariants } = require("./lib/translation");
 const {
@@ -206,6 +206,7 @@ exports.approveSubmission = onCall(async (request) => {
   await Promise.all(authors.map(async (author) => {
     if (!author.uid) return;
     await ensureAuthorId(author.uid, author.author_id);
+    await maybeBumpRoleForUid(author.uid);
   }));
 
   // Ensure author pages exist (separate commits — these are idempotent)
