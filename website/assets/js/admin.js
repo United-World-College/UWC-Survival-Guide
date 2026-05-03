@@ -2119,10 +2119,6 @@
               });
 
               var newEntry = '\n  - id: ' + author.author_id + '\n';
-              newEntry += '    name: "' + author.name + '"\n';
-              newEntry += '    affiliation:\n    cohort:\n    profile_label:\n    profile_url:\n';
-              newEntry += '    contacts: []\n    photo:\n';
-              newEntry += '    summary: "Contributor."\n';
               var withEntry = updated.replace('contributors: []', 'contributors:' + newEntry);
               updated = withEntry === updated ? updated.trimEnd() + newEntry : withEntry;
             });
