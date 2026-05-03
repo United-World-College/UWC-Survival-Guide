@@ -17,53 +17,16 @@ recognition:
   label: Recognition Policy
   title: How contributors are recognized
   description: Editors-in-Chief are listed separately. Core contributors are contributors who have materially contributed to five or more distinct articles. Contributors include everyone else who has written, edited, translated, or materially improved published content.
+# Editor-in-Chief roster: only `id` is stored here. Names, affiliations,
+# cohorts, summaries, photos, and links are read live from each user's
+# Firestore profile (`users/<uid>`). The `id` must match `author_id` in
+# Firestore and the corresponding file under website/_authors/.
 editors_in_chief:
   - id: william-huang
-    name: William Huang 黃靖然
-    affiliation: University of Illinois Urbana-Champaign
-    cohort: "UWC Changshu China '24"
-    profile_label:
-    profile_url:
-    contacts: []
-    photo:
-    summary: Founding Editor-in-Chief.
-    summary_zh_cn: 创始主编。
-    summary_zh_tw: 創始主編。
   - id: tom-li
-    name: Tom Li 李東源
-    affiliation: University of Florida
-    cohort: "UWC Changshu China '24"
-    profile_label:
-    profile_url:
-    contacts: []
-    photo:
-    summary: Founding Editor-in-Chief.
-    summary_zh_cn: 创始主编。
-    summary_zh_tw: 創始主編。
   - id: edwardpanwh
-    name: E_P_silon
-    affiliation:
-    cohort: "UWC Changshu China '24"
-    profile_label:
-    profile_url:
-    contacts: []
-    photo:
-    summary: Founding Editor-in-Chief.
-    summary_zh_cn: 创始主编。
-    summary_zh_tw: 創始主編。
 
-# Optional `photo` paths should point to files under /assets/images/contributors/.
-# Optional shared contact details can be added with:
-# contacts:
-#   - label: Email
-#     value: name@example.com
-#   - label: Instagram
-#     value: @yourhandle
-#     url: https://instagram.com/yourhandle
-# Use author page front matter instead when you want per-language contact labels.
-# Add all non-editor contributors here. If a contributor should have an author page,
-# also create a matching file in website/_authors/ and use the same `id`.
-# Recognition is assigned automatically:
+# Non-editor contributors are auto-derived from approved guides:
 # - 5 or more distinct articles -> Core Contributors
 # - fewer than 5 distinct articles -> Contributors
 contributors: []

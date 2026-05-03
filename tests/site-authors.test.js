@@ -111,10 +111,9 @@ describe("about.yml validation", () => {
     expect(aboutData).toHaveProperty("contributors");
   });
 
-  test("each editor-in-chief has required fields", () => {
+  test("each editor-in-chief has an id", () => {
     for (const eic of aboutData.editors_in_chief) {
       expect(eic.id).toBeTruthy();
-      expect(eic.name).toBeTruthy();
     }
   });
 
