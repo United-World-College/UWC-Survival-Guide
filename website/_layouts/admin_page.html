@@ -22,58 +22,8 @@
 var SITE_BASEURL = "{{ site.baseurl }}";
 </script>
 
-<!-- EIC IDs for role display -->
 <script>
-var EIC_IDS = [{% for p in site.data.about.editors_in_chief %}{{ p.id | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}];
 var SITE_AUTHOR_IDS = [{% assign all_site_authors = site.authors | map: "author_id" | uniq %}{% for aid in all_site_authors %}{% if aid != nil and aid != "" %}{{ aid | jsonify }},{% endif %}{% endfor %}];
-var AUTHOR_ARTICLE_COUNTS = {
-  {% assign count_author_tokens = "" %}
-  {% for guide in site.guides %}
-    {% if guide.author_id != nil and guide.author_id != "" %}
-      {% capture count_author_token %}|{{ guide.author_id }}|{% endcapture %}
-      {% unless count_author_tokens contains count_author_token %}
-        {% assign count_author_tokens = count_author_tokens | append: count_author_token %}
-      {% endunless %}
-    {% endif %}
-    {% if guide.coauthors %}
-      {% for ca in guide.coauthors %}
-        {% if ca.author_id != nil and ca.author_id != "" %}
-          {% capture count_author_token %}|{{ ca.author_id }}|{% endcapture %}
-          {% unless count_author_tokens contains count_author_token %}
-            {% assign count_author_tokens = count_author_tokens | append: count_author_token %}
-          {% endunless %}
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-  {% endfor %}
-  {% assign counted_author_ids = count_author_tokens | replace_first: "|", "" | split: "|" %}{% assign _first = true %}
-  {% for aid in counted_author_ids %}
-    {% if aid != nil and aid != "" %}
-      {% assign matched_guide_tokens = "" %}
-      {% assign article_count = 0 %}
-      {% for guide in site.guides %}
-        {% assign include_guide = false %}
-        {% if guide.author_id == aid %}
-          {% assign include_guide = true %}
-        {% elsif guide.coauthors %}
-          {% for ca in guide.coauthors %}
-            {% if ca.author_id == aid %}
-              {% assign include_guide = true %}
-            {% endif %}
-          {% endfor %}
-        {% endif %}
-        {% if include_guide and guide.guide_id %}
-          {% capture matched_guide_token %}|{{ guide.guide_id }}|{% endcapture %}
-          {% unless matched_guide_tokens contains matched_guide_token %}
-            {% assign matched_guide_tokens = matched_guide_tokens | append: matched_guide_token %}
-            {% assign article_count = article_count | plus: 1 %}
-          {% endunless %}
-        {% endif %}
-      {% endfor %}
-      {% unless _first %},{% endunless %}{{ aid | jsonify }}: {{ article_count }}{% assign _first = false %}
-    {% endif %}
-  {% endfor %}
-};
 </script>
 
 <!-- Site guide data for article registration validation -->

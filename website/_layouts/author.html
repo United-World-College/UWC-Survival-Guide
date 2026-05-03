@@ -384,7 +384,6 @@
 
   <!-- Role & locale data -->
   <script>
-  var EIC_IDS = [{% for p in site.data.about.editors_in_chief %}{{ p.id | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}];
   var AUTHOR_ROLE_LABELS = {
     founding_editor_in_chief: {{ current_locale.author.role_founding_editor_in_chief | jsonify }},
     editor_in_chief: {{ current_locale.author.role_editor_in_chief | jsonify }},
