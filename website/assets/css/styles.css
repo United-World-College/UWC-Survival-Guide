@@ -1128,7 +1128,7 @@ a.feature:hover {
 
 .author-meta {
   display: grid;
-  grid-template-columns: minmax(110px, auto) minmax(0, 1fr);
+  grid-template-columns: 170px minmax(0, 1fr);
   gap: 0.4rem 1rem;
   align-items: baseline;
   max-width: 620px;
@@ -1189,7 +1189,7 @@ a.feature:hover {
 
 .author-contact-item {
   display: grid;
-  grid-template-columns: minmax(110px, auto) minmax(0, 1fr);
+  grid-template-columns: 170px minmax(0, 1fr);
   gap: 1rem;
   align-items: baseline;
   margin: 0;
