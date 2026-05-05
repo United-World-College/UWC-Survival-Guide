@@ -147,6 +147,8 @@ section:
   empty: 這個分區暫時還沒有已發布的指南。
 author:
   author_label: 作者
+  affiliation_label: 目前隸屬
+  cohort_label: 屆別
   role_editor_in_chief: 主編
   role_founding_editor_in_chief: 創始主編
   role_core_member: 核心成員

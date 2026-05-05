@@ -16,6 +16,8 @@ auto-translator/__pycache__/
 
 .firebase-data/
 .firebase/
+firebase-debug.log
+firebase-debug.*.log
 
 functions/node_modules/
 tests/node_modules/

@@ -1130,6 +1130,23 @@ a.feature:hover {
   color: var(--text);
   font-size: 0.95rem;
   margin-bottom: 1rem;
+  display: inline-grid;
+  grid-template-columns: max-content auto;
+  column-gap: 0.5rem;
+  row-gap: 0.1rem;
+  text-align: left;
+}
+
+.author-meta .person-meta-line {
+  display: contents;
+}
+
+.author-meta .person-meta-label {
+  color: var(--warm-gray);
+}
+
+.author-meta .person-meta-label::after {
+  content: ":";
 }
 
 .author-summary {

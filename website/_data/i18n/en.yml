@@ -147,6 +147,8 @@ section:
   empty: No published guides in this section yet.
 author:
   author_label: Author
+  affiliation_label: Current Affiliation
+  cohort_label: Cohort
   role_editor_in_chief: Editor-in-Chief
   role_founding_editor_in_chief: Founding Editor-in-Chief
   role_core_member: Core Member

@@ -223,8 +223,8 @@
         <h1 id="author-name">{{ author_name }}</h1>
         <p class="author-role" id="author-role" style="display:none;"></p>
         <p class="author-meta" id="author-meta"{% unless has_author_meta %} style="display:none;"{% endunless %}>
-          {% if has_affiliation %}<span class="person-meta-line" id="author-affiliation">{{ person.affiliation }}</span>{% else %}<span class="person-meta-line" id="author-affiliation" style="display:none;"></span>{% endif %}
-          {% if has_cohort %}<span class="person-meta-line" id="author-cohort">{{ person.cohort }}</span>{% else %}<span class="person-meta-line" id="author-cohort" style="display:none;"></span>{% endif %}
+          <span class="person-meta-line" id="author-affiliation-line"{% unless has_affiliation %} style="display:none;"{% endunless %}><span class="person-meta-label">{{ current_locale.author.affiliation_label }}</span><span id="author-affiliation">{{ person.affiliation }}</span></span>
+          <span class="person-meta-line" id="author-cohort-line"{% unless has_cohort %} style="display:none;"{% endunless %}><span class="person-meta-label">{{ current_locale.author.cohort_label }}</span><span id="author-cohort">{{ person.cohort }}</span></span>
         </p>
         <p class="author-summary" id="author-summary"{% unless author_summary %} style="display:none;"{% endunless %}>{{ author_summary }}</p>
         <div class="author-stats">
@@ -495,17 +495,15 @@
 
       // Sync affiliation
       if (data.affiliation) {
-        var affiliationEl = document.getElementById('author-affiliation');
-        affiliationEl.textContent = data.affiliation;
-        affiliationEl.style.display = '';
+        document.getElementById('author-affiliation').textContent = data.affiliation;
+        document.getElementById('author-affiliation-line').style.display = '';
         document.getElementById('author-meta').style.display = '';
       }
 
       // Sync cohort
       if (data.cohort) {
-        var cohortEl = document.getElementById('author-cohort');
-        cohortEl.textContent = data.cohort;
-        cohortEl.style.display = '';
+        document.getElementById('author-cohort').textContent = data.cohort;
+        document.getElementById('author-cohort-line').style.display = '';
         document.getElementById('author-meta').style.display = '';
       }
 
