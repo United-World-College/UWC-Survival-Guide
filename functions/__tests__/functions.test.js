@@ -197,6 +197,10 @@ jest.mock("firebase-functions/v2/https", () => ({
   HttpsError: MockHttpsError,
 }));
 
+jest.mock("firebase-functions/v2/firestore", () => ({
+  onDocumentUpdated: (_path, fn) => fn,
+}));
+
 // Mock google-auth-library for getServiceUsage monitoring queries
 const mockGcpRequest = jest.fn();
 jest.mock("google-auth-library", () => ({
@@ -1891,5 +1895,151 @@ describe("deleteSubmission — R2 image cleanup", () => {
 
     expect(result.success).toBe(true);
     expect(mockS3Send).not.toHaveBeenCalled();
+  });
+});
+
+// ══════════════════════════════════════
+// onUserDisplayNameChange
+// ══════════════════════════════════════
+
+describe("onUserDisplayNameChange", () => {
+  function makeEvent(beforeData, afterData) {
+    return {
+      data: {
+        before: { data: () => beforeData },
+        after: { data: () => afterData },
+      },
+      params: { uid: "uid-1" },
+    };
+  }
+
+  // Mock fetch so contents API returns a stale author file
+  // (different title) and Git Data API succeeds.
+  function mockGitHubWithStaleAuthor(authorSlug, staleTitle) {
+    setMockDoc("config", "github", { token: "gh-token-123" });
+    const tKey = "author-" + authorSlug;
+    const staleContent = (lang, perm) =>
+      `---\ntitle: "${staleTitle}"\nauthor_id: ${authorSlug}\npermalink: ${perm}\ntranslation_key: ${tKey}\nlanguage_code: ${lang.code}\nlanguage_name: ${lang.name}\nlanguage_sort: ${lang.sort}\n---\n`;
+    const langSpecs = {
+      [`website/_authors/default/${authorSlug}.md`]: staleContent(
+        { code: "en", name: "English", sort: 1 }, `/authors/${authorSlug}/`),
+      [`website/_authors/chinese/${authorSlug}-cn.md`]: staleContent(
+        { code: "zh-CN", name: '"简体中文"', sort: 2 }, `/zh-cn/authors/${authorSlug}/`),
+      [`website/_authors/chinese/${authorSlug}-tw.md`]: staleContent(
+        { code: "zh-TW", name: '"繁體中文"', sort: 3 }, `/zh-tw/authors/${authorSlug}/`),
+    };
+    global.fetch.mockImplementation(async (url, opts) => {
+      // Git Data API endpoints used by batchCommitFiles
+      if (url.includes("/git/ref/")) {
+        return { ok: true, status: 200, json: async () => ({ object: { sha: "abc123" } }) };
+      }
+      if (url.includes("/git/commits/")) {
+        return { ok: true, status: 200, json: async () => ({ tree: { sha: "tree123" } }) };
+      }
+      if (url.includes("/git/blobs")) {
+        return { ok: true, status: 200, json: async () => ({ sha: "blob123" }) };
+      }
+      if (url.includes("/git/trees")) {
+        return { ok: true, status: 200, json: async () => ({ sha: "newtree123" }) };
+      }
+      if (url.includes("/git/commits") && opts && opts.method === "POST") {
+        return { ok: true, status: 200, json: async () => ({ sha: "newcommit123" }) };
+      }
+      if (url.includes("/git/refs/")) {
+        return { ok: true, status: 200, json: async () => ({}) };
+      }
+      // Contents API: return base64-encoded existing file when path matches
+      if (opts && opts.method === "GET") {
+        for (const [path, content] of Object.entries(langSpecs)) {
+          if (url.includes(`/contents/${path}`)) {
+            return {
+              ok: true,
+              status: 200,
+              json: async () => ({
+                content: Buffer.from(content, "utf-8").toString("base64"),
+                sha: "filesha",
+              }),
+            };
+          }
+        }
+        return { ok: true, status: 404 };
+      }
+      return { ok: true, status: 200, json: async () => ({}) };
+    });
+  }
+
+  beforeEach(() => {
+    resetMockDb();
+    global.fetch.mockReset();
+  });
+
+  test("commits renamed _authors files when displayName changes", async () => {
+    mockGitHubWithStaleAuthor("alice-smith", "Alice Smith");
+
+    await funcs.onUserDisplayNameChange(makeEvent(
+      { displayName: "Alice Smith", author_id: "alice-smith" },
+      { displayName: "Alice Chen", author_id: "alice-smith" },
+    ));
+
+    // Confirm a Git Data commit was created with the rename message
+    const treeCalls = global.fetch.mock.calls.filter(([u, o]) =>
+      u.includes("/git/commits") && o && o.method === "POST");
+    expect(treeCalls.length).toBe(1);
+    const body = JSON.parse(treeCalls[0][1].body);
+    expect(body.message).toBe("Rename author alice-smith to Alice Chen");
+
+    // And blobs were created for all three language files (one per file)
+    const blobCalls = global.fetch.mock.calls.filter(([u, o]) =>
+      u.includes("/git/blobs") && o && o.method === "POST");
+    expect(blobCalls.length).toBe(3);
+    const blobContents = blobCalls.map((c) => JSON.parse(c[1].body).content);
+    blobContents.forEach((c) => expect(c).toContain('title: "Alice Chen"'));
+  });
+
+  test("no-op when displayName unchanged", async () => {
+    mockGitHubWithStaleAuthor("alice-smith", "Alice Smith");
+
+    await funcs.onUserDisplayNameChange(makeEvent(
+      { displayName: "Alice Smith", author_id: "alice-smith" },
+      { displayName: "Alice Smith", author_id: "alice-smith" },
+    ));
+
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  test("no-op when new displayName is empty", async () => {
+    mockGitHubWithStaleAuthor("alice-smith", "Alice Smith");
+
+    await funcs.onUserDisplayNameChange(makeEvent(
+      { displayName: "Alice Smith", author_id: "alice-smith" },
+      { displayName: "", author_id: "alice-smith" },
+    ));
+
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  test("no-op when user has no author_id", async () => {
+    mockGitHubWithStaleAuthor("alice-smith", "Alice Smith");
+
+    await funcs.onUserDisplayNameChange(makeEvent(
+      { displayName: "Alice Smith" },
+      { displayName: "Alice Chen" },
+    ));
+
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  test("skips commit when existing file content already matches", async () => {
+    // Put the "stale" content as the new name — file is already up to date
+    mockGitHubWithStaleAuthor("alice-smith", "Alice Chen");
+
+    await funcs.onUserDisplayNameChange(makeEvent(
+      { displayName: "Alice Smith", author_id: "alice-smith" },
+      { displayName: "Alice Chen", author_id: "alice-smith" },
+    ));
+
+    // Only GET requests were made (to check existing content); no commit.
+    const postCalls = global.fetch.mock.calls.filter(([, o]) => o && o.method === "POST");
+    expect(postCalls.length).toBe(0);
   });
 });

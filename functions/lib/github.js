@@ -102,14 +102,10 @@ async function batchCommitFiles(token, files, message, branch) {
   return newCommit;
 }
 
-async function ensureAuthorPresenceOnGitHub(token, author) {
-  const authorSlug = author.author_id ||
-    makeAuthorSlug(author.name) ||
-    (author.uid ? author.uid.toLowerCase() : "") ||
-    makeSlug(author.name);
-  const esc = author.name.replace(/"/g, '\\"');
+function buildAuthorFileSpecs(authorSlug, displayName) {
+  const esc = displayName.replace(/"/g, '\\"');
   const tKey = "author-" + authorSlug;
-  const authorFiles = [
+  return [
     {
       path: `website/_authors/default/${authorSlug}.md`,
       content: `---\ntitle: "${esc}"\nauthor_id: ${authorSlug}\npermalink: /authors/${authorSlug}/\ntranslation_key: ${tKey}\nlanguage_code: en\nlanguage_name: English\nlanguage_sort: 1\n---\n`,
@@ -123,6 +119,14 @@ async function ensureAuthorPresenceOnGitHub(token, author) {
       content: `---\ntitle: "${esc}"\nauthor_id: ${authorSlug}\npermalink: /zh-tw/authors/${authorSlug}/\ntranslation_key: ${tKey}\nlanguage_code: zh-TW\nlanguage_name: "繁體中文"\nlanguage_sort: 3\n---\n`,
     },
   ];
+}
+
+async function ensureAuthorPresenceOnGitHub(token, author) {
+  const authorSlug = author.author_id ||
+    makeAuthorSlug(author.name) ||
+    (author.uid ? author.uid.toLowerCase() : "") ||
+    makeSlug(author.name);
+  const authorFiles = buildAuthorFileSpecs(authorSlug, author.name);
 
   const filesToCommit = [];
   for (const f of authorFiles) {
@@ -155,4 +159,21 @@ async function ensureAuthorPresenceOnGitHub(token, author) {
   });
 }
 
-module.exports = { getGitHubToken, githubApi, githubRest, batchCommitFiles, ensureAuthorPresenceOnGitHub };
+async function renameAuthorOnGitHub(token, authorSlug, newName) {
+  if (!authorSlug || !newName) return;
+  const authorFiles = buildAuthorFileSpecs(authorSlug, newName);
+
+  const filesToCommit = [];
+  for (const f of authorFiles) {
+    const existing = await githubApi("GET", f.path, token);
+    if (!existing) continue;
+    const existingContent = Buffer.from(existing.content, "base64").toString("utf-8");
+    if (existingContent !== f.content) filesToCommit.push(f);
+  }
+
+  if (filesToCommit.length > 0) {
+    await batchCommitFiles(token, filesToCommit, `Rename author ${authorSlug} to ${newName}`);
+  }
+}
+
+module.exports = { getGitHubToken, githubApi, githubRest, batchCommitFiles, ensureAuthorPresenceOnGitHub, renameAuthorOnGitHub };

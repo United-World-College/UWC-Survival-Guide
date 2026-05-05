@@ -1,11 +1,15 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const { db, FieldValue, getBucket, LANG_MAP } = require("./lib/config");
 const { assertAuth, assertAdmin } = require("./lib/auth");
 const {
   makeSlug, getOrderedSubmissionAuthors, sanitizeRevisionHistory,
   withoutPublicActorFields, generateMarkdown,
 } = require("./lib/helpers");
-const { getGitHubToken, githubApi, batchCommitFiles, ensureAuthorPresenceOnGitHub } = require("./lib/github");
+const {
+  getGitHubToken, githubApi, batchCommitFiles,
+  ensureAuthorPresenceOnGitHub, renameAuthorOnGitHub,
+} = require("./lib/github");
 const {
   appendSubmissionAuditEvent, resolveSubmissionAuthors,
   ensureUniqueGuideSlug, ensureAuthorId, maybeBumpRoleForUid,
@@ -665,4 +669,29 @@ exports.getServiceUsage = onCall(async (request) => {
   _usageCache = result;
   _usageCacheTime = now;
   return result;
+});
+
+// ══════════════════════════════════════
+// onUserDisplayNameChange
+// ══════════════════════════════════════
+//
+// Mirrors a user's displayName change from Firestore to the static
+// _authors/<lang>/<id>.md files on GitHub. The byline on every guide
+// page reads from those files at build time, so without this trigger
+// renames would only show up on the author's own profile page (which
+// is hydrated client-side).
+
+exports.onUserDisplayNameChange = onDocumentUpdated("users/{uid}", async (event) => {
+  const before = event.data && event.data.before ? event.data.before.data() : null;
+  const after = event.data && event.data.after ? event.data.after.data() : null;
+  if (!before || !after) return;
+  const beforeName = (before.displayName || "").trim();
+  const afterName = (after.displayName || "").trim();
+  if (beforeName === afterName) return;
+  if (!afterName) return;
+  if (!after.author_id) return;
+
+  const token = await getGitHubToken();
+  if (!token) return;
+  await renameAuthorOnGitHub(token, after.author_id, afterName);
 });
