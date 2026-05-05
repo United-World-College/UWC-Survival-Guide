@@ -3,7 +3,6 @@ title: "大學申請術語介紹"
 category: "大學申請"
 description: "透過專業術語理解大學申請中的角色、系統與流程。"
 order: 0
-author: "William"
 author_id: "william-huang"
 original_language: "zh-CN"
 guide_id: "terminology"

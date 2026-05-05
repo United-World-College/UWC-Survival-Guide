@@ -218,7 +218,7 @@ describe("buildTranslatedMarkdown", () => {
     const result = buildTranslatedMarkdown(
       originalData, translation, "zh-CN", authors, "", "test-guide"
     );
-    expect(result.markdown).toContain('author: "Alice Smith"');
+    expect(result.markdown).not.toContain('author: "Alice Smith"');
     expect(result.markdown).toContain('author_id: "alice-smith"');
     expect(result.markdown).toContain("coauthors:");
     expect(result.markdown).toContain('  - name: "Bob Jones"');

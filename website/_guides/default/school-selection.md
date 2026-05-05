@@ -3,7 +3,6 @@ title: "On Choosing Colleges"
 category: "College Application"
 description: "From the flow of money to the academic ecosystem, rethinking how to choose among American universities."
 order: 1
-author: "William"
 author_id: "william-huang"
 original_language: "zh-CN"
 guide_id: "school-selection"

@@ -15,7 +15,7 @@
   {% assign author_records = site.data.about.editors_in_chief | concat: site.data.about.contributors %}
   {% assign current_author = nil %}
   {% assign current_author_page = nil %}
-  {% assign current_author_name = page.author %}
+  {% assign current_author_name = nil %}
   {% if page.author_id %}
     {% assign current_author = author_records | where: "id", page.author_id | first %}
     {% assign current_author_page = site.authors | where: "author_id", page.author_id | where: "language_code", current_language_code | first %}
@@ -25,6 +25,8 @@
   {% endif %}
   {% if current_author and current_author.name %}
     {% assign current_author_name = current_author.name %}
+  {% elsif current_author_page %}
+    {% assign current_author_name = current_author_page.title %}
   {% endif %}
   {% if current_language_name == nil or current_language_name == '' %}
     {% assign current_language_info = site.data.guide_languages | where: "code", current_language_code | first %}

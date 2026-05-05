@@ -114,7 +114,13 @@
             {% comment %}Look up the name from guide data{% endcomment %}
             {% assign ca_display_name = oid %}
             {% if guide.author_id == oid %}
-              {% assign ca_display_name = guide.author | default: oid %}
+              {% assign primary_author_page = site.authors | where: "author_id", oid | where: "language_code", current_language_code | first %}
+              {% if primary_author_page == nil %}
+                {% assign primary_author_page = site.authors | where: "author_id", oid | first %}
+              {% endif %}
+              {% if primary_author_page %}
+                {% assign ca_display_name = primary_author_page.title %}
+              {% endif %}
             {% else %}
               {% for ca in guide.coauthors %}
                 {% if ca.author_id == oid %}

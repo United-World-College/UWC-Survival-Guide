@@ -104,7 +104,6 @@ function generateMarkdown(d, authors, editorName, overrideSlug) {
   // order: -1 is a placeholder — a globally-unique order is assigned
   // editorially after publish. See CODEBASE_README.md for conventions.
   md += "order: -1\n";
-  md += `author: "${primaryAuthor.name.replace(/"/g, '\\"')}"\n`;
   md += `author_id: "${primaryAuthor.author_id}"\n`;
   if (coAuthors.length > 0) {
     md += "coauthors:\n";

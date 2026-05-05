@@ -3,7 +3,6 @@ title: "關於選校"
 category: "大學申請"
 description: "從資金流動到學術生態，重新認識美國大學選校。"
 order: 1
-author: "William"
 author_id: "william-huang"
 original_language: "zh-CN"
 guide_id: "school-selection"

@@ -924,7 +924,7 @@ describe("approveSubmission", () => {
     expect(result.success).toBe(true);
     expect(result.published).toBe(true);
     expect(result.markdown).toContain('title: "My Article"');
-    expect(result.markdown).toContain('author: "Alice"');
+    expect(result.markdown).not.toContain('author: "Alice"');
     expect(result.markdown).toContain('editor: "Editor Bob"');
     expect(result.authorSlug).toBe("alice");
     expect(result.slug).toBe("my-article");
@@ -1331,7 +1331,7 @@ describe("approveSubmission", () => {
 
     expect(result.authorSlug).toBe("bob");
     expect(result.authorName).toBe("Bob");
-    expect(result.markdown).toContain('author: "Bob"');
+    expect(result.markdown).not.toContain('author: "Bob"');
     expect(result.markdown).toContain('author_id: "bob"');
     expect(result.markdown).toContain('  - name: "Alice"');
     expect(result.markdown).toContain('  - name: "Carol"');

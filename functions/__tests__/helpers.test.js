@@ -174,7 +174,7 @@ describe("generateMarkdown", () => {
     expect(md).toContain('category: "Musings"');
     expect(md).toContain('description: "A short summary"');
     expect(md).toContain("order: -1");
-    expect(md).toContain('author: "Alice Smith"');
+    expect(md).not.toContain('author: "Alice Smith"');
     expect(md).toContain('author_id: "alice-smith"');
     expect(md).toContain('guide_id: "my-uwc-experience"');
     expect(md).toContain('language_code: "en"');
@@ -254,7 +254,7 @@ describe("generateMarkdown", () => {
       { name: "Alice Smith", author_id: "alice-smith", order: 2 },
       { name: "Carol Lee", author_id: "carol-lee", order: 3 },
     ], "");
-    expect(result.markdown).toContain('author: "Bob Jones"');
+    expect(result.markdown).not.toContain('author: "Bob Jones"');
     expect(result.markdown).toContain('author_id: "bob-jones"');
     expect(result.markdown).toContain("coauthors:\n");
     expect(result.markdown).toContain('  - name: "Alice Smith"');

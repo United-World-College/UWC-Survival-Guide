@@ -190,10 +190,10 @@ describe("Guide file naming conventions", () => {
 // ══════════════════════════════════════
 
 describe("Guide content validation", () => {
-  // Guides with an author field are article guides (not category landing pages)
+  // Guides with an author_id field are article guides (not category landing pages)
   const articleGuides = guideFiles.filter((f) => {
     const fm = parseFrontMatter(f);
-    return fm && fm.author;
+    return fm && fm.author_id;
   });
 
   test("article guides have non-empty body content", () => {
@@ -204,10 +204,9 @@ describe("Guide content validation", () => {
     }
   });
 
-  test("article guides have both author and author_id fields", () => {
+  test("article guides have an author_id field", () => {
     for (const filePath of articleGuides) {
       const fm = parseFrontMatter(filePath);
-      expect(fm.author).toBeTruthy();
       expect(fm.author_id).toBeTruthy();
     }
   });
