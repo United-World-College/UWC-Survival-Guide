@@ -1127,13 +1127,14 @@ a.feature:hover {
 }
 
 .author-meta {
+  display: grid;
+  grid-template-columns: minmax(110px, auto) minmax(0, 1fr);
+  gap: 0.4rem 1rem;
+  align-items: baseline;
+  max-width: 620px;
   color: var(--text);
   font-size: 0.95rem;
   margin-bottom: 1rem;
-  display: inline-grid;
-  grid-template-columns: max-content auto;
-  column-gap: 0.5rem;
-  row-gap: 0.1rem;
   text-align: left;
 }
 
@@ -1142,11 +1143,11 @@ a.feature:hover {
 }
 
 .author-meta .person-meta-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--warm-gray);
-}
-
-.author-meta .person-meta-label::after {
-  content: ":";
 }
 
 .author-summary {
@@ -1387,6 +1388,7 @@ span.coauthor-name {
     line-height: 1.18;
   }
   .author-contact-item { grid-template-columns: 1fr; gap: 0.25rem; }
+  .author-meta { grid-template-columns: 1fr; gap: 0.25rem; }
   .author-article-head { display: block; }
   .author-article-count { margin-top: 0.75rem; padding-top: 0; }
 
