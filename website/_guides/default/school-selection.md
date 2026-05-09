@@ -89,7 +89,7 @@ Finally, I want to talk about combined degree programs between LACs and R1s, whi
 
 ## Schools Are Just Platforms; Growth Is On You
 
-That said, everything discussed above is about the structural features of the schools themselves. At the end of the day, schools are often more like providers of opportunities, resources, and platforms, while a person’s growth ultimately still comes back to themselves.
+Everything discussed above is about the structural features of the schools themselves. At the end of the day, schools are often more like providers of opportunities, resources, and platforms, while a person’s growth ultimately still comes back to themselves.
 
 I want to take the “growth is on you” idea one step further. Honestly, this kind of misreading the platform shows up in many domains, and I’d like to call it the “MBA illusion”: it’s well known that many successful entrepreneurs hold an MBA from a top business school, yet not every top-MBA graduate becomes a successful entrepreneur. In fact, for many of those entrepreneurs the top MBA was something they picked up after they were already successful, as a bit of credentialing polish—not a path that turns ordinary people into successful entrepreneurs. School selection follows the same logic: the standing of top schools is largely held up by the genius-tier outliers they attract, but that isn’t proof that those schools can elevate any arbitrary person who walks in. Going to a top business school does in fact give you more chances to meet those successful entrepreneurs—but if that’s your primary reason for getting an MBA, you’re more than likely going to end up disappointed.
 
