@@ -67,7 +67,7 @@ updated: 2026-04-27
 
 所以對一個想做 STEM research 的「普通優秀」UWC 學生而言，最優解既不是綜合排名最高的學校，也不是 reputation 最響的學校，而是 ceiling 已經足夠高、demand 端又沒那麼擠的學校——可能是 field-specific 頂尖的公立旗艦（比如 Penn State 的材料科學和 Texas A&M 的石油工程），可能是某些綜排靠前但不被 outlier 扎堆的私校（比如 Duke、JHU 和 Northwestern 的強勢學科），也可能是有著強勢領域的 mid-tier R1（比如 UIC 的資料探勘、UTK 的高效能運算和 University of Utah 的圖形學）。
 
-順帶提一句，「頂校 premium 沒有 reputation 暗示得那麼大」這個觀察其實在經濟學裡有過經典的 empirical 驗證。Dale 和 Krueger 在 [2002 年的 QJE 論文](https://www.jstor.org/stable/4132484)裡通過匹配那些申請了同一組學校並都被錄取的學生（即用申請清單作為 unobserved ability 的 proxy 來吸收 selection bias），發現進入頂校帶來的 earnings premium 對大部分學生而言基本不顯著，低收入家庭學生是例外。不過需要說明的是，Dale-Krueger 估計的是平均效應——也就是「平均而言，去頂校對 earnings 的邊際貢獻有多大」——而沒有直接討論校內的 access 是怎麼分配的。本文 demand-side outlier 的論證恰好補上了這一層：即便在頂校內部，research access 也是被 outlier 集中度調節的，所以一個「普通優秀」的學生在頂校實際能 access 到的邊際價值，還要再在 Dale-Krueger 測出的平均效應之上被 demand-side dynamics 折損一次。換句話說，他們在 earnings 這個 outcome 上發現平均 premium 已經很小，而本文在 research access 這個 outcome 上進一步指出：即便平均 premium 不為零，它在校內的分配也極不均勻，這就意味著「普通優秀」學生拿到的份額比平均還要更低。
+順帶提一句，「頂校 premium 沒有 reputation 暗示得那麼大」這個觀察其實在經濟學裡有過經典的 empirical 驗證。Dale 和 Krueger 在 [2002 年的 Quarterly Journal of Economics 論文](https://www.jstor.org/stable/4132484)裡通過匹配那些申請了同一組學校並都被錄取的學生（即用申請清單作為 unobserved ability 的 proxy 來吸收 selection bias），發現進入頂校帶來的 earnings premium 對大部分學生而言基本不顯著，低收入家庭學生是例外。不過需要說明的是，Dale-Krueger 估計的是平均效應——也就是「平均而言，去頂校對 earnings 的邊際貢獻有多大」——而沒有直接討論校內的 access 是怎麼分配的。本文 demand-side outlier 的論證恰好補上了這一層：即便在頂校內部，research access 也是被 outlier 集中度調節的，所以一個「普通優秀」的學生在頂校實際能 access 到的邊際價值，還要再在 Dale-Krueger 測出的平均效應之上被 demand-side dynamics 折損一次。換句話說，他們在 earnings 這個 outcome 上發現平均 premium 已經很小，而本文在 research access 這個 outcome 上進一步指出：即便平均 premium 不為零，它在校內的分配也極不均勻，這就意味著「普通優秀」學生拿到的份額比平均還要更低。
 
 ## 選校之於就業
 
