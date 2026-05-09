@@ -1,6 +1,6 @@
 ---
 title: "An Introduction to College Application Jargons"
-category: "College Application"
+category: "Life after UWC"
 description: "Decode the jargons of college applications to understand the roles, systems, and processes behind it."
 order: 0
 author_id: "william-huang"

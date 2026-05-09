@@ -1,6 +1,6 @@
 ---
 title: "关于选校"
-category: "大学申请"
+category: "UWC 之后的日子"
 description: "从资金流动到学术生态，重新认识美国大学选校。"
 order: 1
 author_id: "william-huang"
@@ -66,6 +66,7 @@ updated: 2026-04-27
 
 所以对一个想做 STEM research 的"普通优秀" UWC 学生而言，最优解既不是综合排名最高的学校，也不是 reputation 最响的学校，而是 ceiling 已经足够高、demand 端又没那么挤的学校——可能是 field-specific 顶尖的公立旗舰（比如 Penn State 的材料科学和 Texas A&M 的石油工程），可能是某些综排靠前但不被 outlier 扎堆的私校（比如 Duke、JHU 和 Northwestern 的强势学科），也可能是有着强势领域的 mid-tier R1（比如 UIC 的数据挖掘、UTK 的高性能计算和 University of Utah 的图形学）。
 
+顺带提一句，"顶校 premium 没有 reputation 暗示得那么大"这个观察其实在经济学里有过经典的 empirical 验证。Dale 和 Krueger 在 [2002 年的 QJE 论文](https://www.jstor.org/stable/4132484)里通过匹配那些申请了同一组学校并都被录取的学生（即用申请清单作为 unobserved ability 的 proxy 来吸收 selection bias），发现进入顶校带来的 earnings premium 对大部分学生而言基本不显著，低收入家庭学生是例外。不过需要说明的是，Dale-Krueger 估计的是平均效应——也就是"平均而言，去顶校对 earnings 的边际贡献有多大"——而没有直接讨论校内的 access 是怎么分配的。本文 demand-side outlier 的论证恰好补上了这一层：即便在顶校内部，research access 也是被 outlier 集中度调节的，所以一个"普通优秀"的学生在顶校实际能 access 到的边际价值，还要再在 Dale-Krueger 测出的平均效应之上被 demand-side dynamics 折损一次。换句话说，他们在 earnings 这个 outcome 上发现平均 premium 已经很小，而本文在 research access 这个 outcome 上进一步指出：即便平均 premium 不为零，它在校内的分配也极不均匀，这就意味着"普通优秀"学生拿到的份额比平均还要更低。
 
 ## 选校之于就业
 

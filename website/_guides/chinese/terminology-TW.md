@@ -1,6 +1,6 @@
 ---
 title: "大學申請術語介紹"
-category: "大學申請"
+category: "UWC 之後的日子"
 description: "透過專業術語理解大學申請中的角色、系統與流程。"
 order: 0
 author_id: "william-huang"

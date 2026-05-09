@@ -1,6 +1,6 @@
 ---
 title: "On Choosing Colleges"
-category: "College Application"
+category: "Life after UWC"
 description: "From the flow of money to the academic ecosystem, rethinking how to choose among American universities."
 order: 1
 author_id: "william-huang"
@@ -68,6 +68,8 @@ To wrap up, let me thread the lab-based-research strands together so you can aud
 The chain driving STEM frontier research roughly looks like this: federal funding follows top faculty → concentration of top faculty determines a program's research investment scale in a given field → research investment scale + faculty quality determine the PhD / postdoc quality the program can attract in that field → PhD / postdocs (not the faculty themselves) are the actual ceiling on an undergrad's daily mentorship, because professors spend most of their time fundraising rather than day-to-day mentoring → but whether you actually reach that ceiling depends on the demand-side outlier concentration on that campus (i.e., how strong the students sharing the same professor's and mentor's time are).
 
 So for an "ordinarily outstanding" UWC student who wants to do STEM research, the optimal choice is neither the highest-ranked school overall nor the most prestigious, but a school whose ceiling is already high enough while the demand side isn't too crowded—possibly a top field-specific public flagship (e.g., Penn State for materials science, Texas A&M for petroleum engineering), possibly some highly ranked private that doesn't get swarmed by outliers (like Duke, JHU, or Northwestern in their respective strong fields), or possibly a mid-tier R1 with a standout strong area (e.g., UIC for data mining, UTK for high-performance computing, University of Utah for computer graphics).
+
+As a side note, the observation that "the top-school premium is smaller than reputation suggests" actually has a classic empirical validation in economics. In their [2002 QJE paper](https://www.jstor.org/stable/4132484), Dale and Krueger match students who applied to and were admitted by the same set of schools (using the application set as a proxy for unobserved ability to absorb selection bias) and find that the earnings premium from attending a more selective college is essentially insignificant for most students, with low-income students being the exception. That said, Dale-Krueger estimate the average effect—i.e., "on average, what is the marginal contribution of going to a more selective college on earnings"—and don't directly address how within-school access is allocated. The demand-side outlier argument in this piece fills in exactly that layer: even within a top school, research access is regulated by outlier concentration, so the marginal value an "ordinarily outstanding" student can actually access at a top school takes a further haircut from demand-side dynamics on top of the average effect that Dale-Krueger measure. In other words, they show on the earnings outcome that the average premium is already small, and this piece extends that to the research-access outcome by pointing out that even when the average premium isn't zero, its within-school distribution is highly unequal—which means the share an "ordinarily outstanding" student receives is even lower than the average.
 
 ## Choosing a School for Industry
 

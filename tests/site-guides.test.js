@@ -20,12 +20,12 @@ const REQUIRED_FIELDS = [
 const VALID_LANGUAGES = ["en", "zh-CN", "zh-TW"];
 const VALID_FOLDERS = ["default", "chinese"];
 const VALID_CATEGORIES = [
-  "College Application",
+  "Life after UWC",
   "Musings",
   "Academics",
   // Chinese equivalents
-  "大学申请",
-  "大學申請",
+  "UWC 之后的日子",
+  "UWC 之後的日子",
   "随想",
   "隨想",
   "学业",
