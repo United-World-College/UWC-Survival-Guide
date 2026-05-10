@@ -55,7 +55,14 @@ LANGUAGE_CONFIG: dict[str, dict[str, Any]] = {
         "style_note": (
             "Use Traditional Chinese characters and Taiwan-preferred wording when it improves "
             "readability, but do not relocate the setting or alter mainland-specific facts, "
-            "institutions, apps, or cultural references."
+            "institutions, apps, or cultural references. "
+            "Follow the Taiwan typographic convention for title marks strictly: use 〈〉 (single "
+            "book title marks) for individual articles, essays, chapters, single poems, and "
+            "songs; reserve 《》 (double book title marks) for book-length or full-volume works "
+            "such as books, periodicals, and films. When translating from Simplified Chinese "
+            "where 《》 is used universally, convert 《X》 to 〈X〉 whenever X is an article, "
+            "essay, or guide rather than a full book — including cross-references to other "
+            "guides in this series."
         ),
         "sort": 3,
     },
