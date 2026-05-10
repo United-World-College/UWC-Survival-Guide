@@ -117,3 +117,25 @@ CS Education 研究的是 CS 應該怎麼教。具體研究的問題包括語言
 Interdisciplinary 這個 cluster 整體的選擇面非常廣，適合那些除了 CS 還對某個具體領域有興趣的人。它另外一個好處是：因為問題來源比較多樣，funding 也比較分散，所以受單一領域 hype 週期的影響相對小一些。
 
 回到文章開頭的問題：上了大學以後會發現 CS 是一門什麼樣的學科？對我自己來說最大的體會就是：CS 比高中階段接觸的 coding 和演算法競賽要廣得多。它既可以是一門極其數學的學科（看 theory 那部分），也可以是一門極其工程的學科（看 systems 那部分），還可以是一門和幾乎任何其他學科交叉的學科（甚至包括法律、哲學等等）。每個人都能在裡面找到一個適合自己背景和興趣的方向，這也是我開頭提到的 horizontal heterogeneity 的真正含義。
+
+## CS 選校
+
+在正式進入這章之前，我推薦讀者先行閱讀[〈關於選校〉]({{ '/guides/chinese/school-selection-TW/' | relative_url }})一篇，因為在這裡會使用到不少那一篇裡面已經介紹過的分析方法和結論。此外需要說明的一點是，這個 section 會延續之前 research 視角的領域分類方法，主要從做本科教學和學術研究的角度來分析各個學校。而就業導向的分析則會留到下一個 section。
+
+首先是我個人覺得對於本科生而言 CS program 比較好的學校大致可以放在一個 spectrum 上，一端是 math-heavy 的教學風格，另一端是 engineering-heavy 的教學風格。當然不同的教學風格其實某種程度上也反映了這個學校的 research 風格。
+
+Math-heavy 的項目最典型的特徵是 theory 類課程在本科必修裡佔比高、math prerequisite 厚。典型代表是 Princeton、Cornell、Caltech 等學校，必修課會要求學生有很強的讀和寫 proof 的能力。這一類學校比較適合想做 ML theory、cryptography、formal methods 這種 math-heavy 方向的人。
+
+Engineering-heavy 項目的特徵則是 systems 類課程在本科 curriculum 裡佔比高、必修課 project load 重、hands-on training 多。典型代表是 CMU、UIUC、Georgia Tech 等學校，畢業時學生一般會有大量系統程式設計的 hands-on 經驗。這些學校比較適合想做 systems、industry-bound SWE、applied ML 的人。
+
+中間地帶是像 MIT、Stanford、UC Berkeley 等這種 math 和 engineering 雙修的 culture，必修課同時包含 proof-heavy theory course 和 implementation-heavy systems course。但代價是必修 load 重，對於不少"普通優秀"的同學來說容易進退維谷。
+
+對於大部分文理學院來說這個情況又會有所不同，他們的風格一般不會有這麼大的差異。正如我在[〈關於選校〉]({{ '/guides/chinese/school-selection-TW/' | relative_url }})一文中所提到的，因為文理學院的 lab 資源有限，所以他們 default 重視理論；但 Harvey Mudd 是個例外，他們的整個 program 是出名的 engineering-heavy。
+
+對於看完之後開始糾結的學弟學妹而言，這個 spectrum 裡其實並沒有一個永遠正確的選項，我覺得它更像是一個 self-auditing tool：你需要誠實問自己 "我喜歡的是 proof 還是 implementation、是理論還是 applied science、是 mathematical clarity 還是 engineering elegance"，然後選 spectrum 上 fit 你的位置。當然對於比較好的 R1 CS program 而言，不論學校本身是 math-heavy 還是 engineering-heavy，在每個領域裡都會有世界級的教授，所以即使現在 commit 了一個教學重心沒那麼契合的學校，也可以多上一點自己感興趣的領域的選修課或者去找對應領域的專家一起做 research。這其實就是 faculty 數量多的一個非常大的好處。在這裡順帶說一下 CSRankings 的一個 known limitation——一個學校的排名很大程度上反映的是 institutional total output 而不是 per-faculty quality，所以 faculty 數量少但人均水平高的 department 在排名上會被顯著 understate。這一點在之前介紹 CSRankings 時就 promise 過會在選校部分展開。Caltech 是這個 limitation 最典型的受害者：這個學校本身就非常小，一屆大概就 200 多個本科生；CS department 也是很小的，faculty 數量很少，所以就導致了他們雖然有著不少很厲害的教授，但是在 CSRankings 上的排名卻非常低。實際操作上，CSRankings 網站點開每個學校名字就會展開該校所有 faculty 的 count 列表，大家可以把每個學校頭部 faculty 的水平和學校總體排名結合起來一起看而不只是看 institutional 總分。當然，faculty 少的學校開設課程的多樣性必然就低，這也是一個需要重要考慮的 tradeoff。這一點在文理學院最為明顯。前面提到 LAC default 重視理論一部分原因是 lab 資源有限，而另一部分原因正是 faculty 數量小限制了選修課的覆蓋面。
+
+接下來我想給對 research 感興趣的同學大概介紹一下每個學校的強勢領域。首先 Top 4 的 CMU、MIT、Stanford 和 UC Berkeley 在大部分主流方向都是 top tier，基本不需要 audit specific subarea。之後的學校粗略地講的話，AI 方向 University of Washington 的 visibility 特別高，systems 方向 UIUC 是特別好的，theory 方向 Princeton 特別強。當然這種 single-label 的描述其實是一個很不負責任的簡化。"在這個領域內某學校特別強"這句話的意思實際上更接近"這個學校在這個領域裡的 visibility 特別高 / historically 出名"，但絕不是"這個學校只在這個領域上強"，也不是"這個領域只有這一所強校"。所以假如各位讀者有一個自己具體感興趣的方向，建議直接上 CSRankings 選 specific subarea filter 來看這個領域內的生態究竟是什麼樣的，而不是只憑這種粗略 label。
+
+當然 CSRankings 也不絕對，它反映的是一個學校歷史上的發表資料，沒法體現一個 program 當前的 trajectory。比如最近新招進來的 rising star 潛力無限但無法在資料裡體現，而已經離開的 senior faculty 反而還在 count。所以一個比較 practical 的補充辦法是去看一個 program 裡的 faculty 這幾年有沒有持續拿到 [Sloan Research Fellowship](https://en.wikipedia.org/wiki/Sloan_Research_Fellowship)、[NSF CAREER Award](https://en.wikipedia.org/wiki/National_Science_Foundation_CAREER_Award) 這一類 early-career award；這些獎都是同行評審出來的，相對能反映出業內對這群人未來幾年潛力的判斷。具體操作上不需要自己一個一個去翻系裡的網站，直接讓 AI agent（比如 Claude 或 ChatGPT 的 deep research 模式）幫你列出來就行，這種查找類的任務 AI 往往比人快得多也準得多。
+
+此外，對於想做 research 的同學來說，[〈關於選校〉]({{ '/guides/chinese/school-selection-TW/' | relative_url }})一文裡的 ceiling × demand framework 在這裡直接適用。比如之前提到過的 UIC 的資料探勘、UTK 的 HPC 這些 field-specific 頂尖的 mid-tier program 就是 CS sweet spot 的典型樣例。當然這樣 sweet spot 的例子在 CS 裡還有很多，具體情況還請各位讀者結合自身情況具體分析。
