@@ -12,6 +12,7 @@ language_folder: "default"
 language_sort: 1
 published: 2026-05-10
 updated: 2026-05-10
+math: true
 ---
 
 

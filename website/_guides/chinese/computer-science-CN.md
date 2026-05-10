@@ -12,6 +12,7 @@ language_folder: "chinese"
 language_sort: 2
 published: 2026-05-10
 updated: 2026-05-10
+math: true
 ---
 
 
@@ -91,7 +92,7 @@ ML Theory 研究的是 ML 的数学性质：为什么深度网络能泛化、opt
 
 AI for Science 是这几年才崛起的一个交叉方向，主要把 ML 用在具体的科学问题上。最有名的例子是 DeepMind 的 AlphaFold，它基本解决了 protein structure prediction 这个生物学界悬而未决五十年的问题，并因此拿到了 2024 年的诺贝尔化学奖。除此之外 AI for math、AI for materials science 这些也都是越来越受关注的方向。顺带提一句，如何使用 AI 做前面在理论方向中提到的 formal verification 从而降低其成本其实就是现在 AI for math 这个领域内最重要的研究问题之一。
 
-说实话我觉得 AI 这个方向更像是 theory 和 systems 融合的产物，跨度非常之广。这个领域的研究既可以非常偏向理论又可以非常偏向系统。所以这也就对人的要求也特别高。最顶尖的 AI researcher 往往都是数学和工程两手都过硬的 full-stack researcher，既能推 scaling law 这些理论分析，又能在几千张 GPU 上把一整套训练流程稳定跑起来。这种 profile 的人在任何其他 CS 子领域里都不算多见，但在 AI 领域几乎已经成了顶级 lab 的标配。
+说实话我觉得 AI 这个方向更像是 theory 和 systems 融合的产物，跨度非常之广。这个领域的研究既可以非常偏向理论又可以非常偏向系统。所以这也就对人的要求特别高。最顶尖的 AI researcher 往往都是数学和工程两手都过硬的 full-stack researcher，既能推 scaling law 这些理论分析，又能在几千张 GPU 上把一整套训练流程稳定跑起来。这种 profile 在任何其他 CS 子领域里都不算多见，但在 AI 领域几乎已经成了顶级 lab 的标配。
 
 此外，从个人发展的角度来说，AI 大概是目前 CS 里钱最多、就业最好的方向之一，但与此同时也极度内卷、迭代极快，一篇 paper 挂到 arxiv 上，三个月之后可能就过时了。所以在这个方向待下去需要一种特别的心态：既要跟得上社区的节奏，又要在各种 hype 里保持判断力，不被裹挟。
 
