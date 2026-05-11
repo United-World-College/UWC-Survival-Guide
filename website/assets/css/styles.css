@@ -2867,4 +2867,20 @@ a.admin-coauthor-result-name:hover {
     border-left-color: var(--dark);
     font-weight: 500;
   }
+
+  .guide-toc-sublist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: none;
+  }
+
+  .guide-toc-list > li.expanded > .guide-toc-sublist {
+    display: block;
+  }
+
+  .guide-toc-sublist a {
+    padding-left: 2rem;
+    font-size: 0.8rem;
+  }
 }
