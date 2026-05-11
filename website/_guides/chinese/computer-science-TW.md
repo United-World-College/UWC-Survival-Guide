@@ -207,11 +207,11 @@ Engineering-heavy 項目的典型特徵則是 systems 類課程在本科 curricu
 
 ### Systems/Infrastructure Engineer
 
-然後偏向 systems 的是 Systems/Infrastructure Engineer。這一類 SWE 的工作更接近之前提到的 systems research 的範疇，但和 researcher 相比關心的問題不太一樣：researcher 關心怎麼把一個 idea 寫成一篇 paper，而 infra engineer 關心怎麼把這個論文裡的 idea 真正落實到生產環境裡穩定跑起來。具體工作包括自研資料庫（比如 Google 的 Spanner、Meta 的 MyRocks）、分散式儲存、CI/CD 流水線、自研編譯器和工具鏈，甚至包括 kernel patch。這類崗位在 [Databricks](https://en.wikipedia.org/wiki/Databricks)、Snowflake、Stripe 這種以底層基礎設施為核心業務的公司裡 headcount 佔比特別高，大廠裡也都有專門的 infra org。但這條線對 systems 底層理解的要求很高，所以對大部分本科生沒那麼友好。
+然後偏向 systems 的是 Systems/Infrastructure Engineer。這一類 SWE 的工作更接近之前提到的 systems research 的範疇，但和 researcher 相比關心的問題不太一樣：researcher 關心怎麼把一個 idea 寫成一篇 paper，而 infra engineer 關心怎麼把這個論文裡的 idea 真正落實到生產環境裡穩定跑起來。具體工作包括自研資料庫（比如 Google 的 Spanner、Meta 的 MyRocks）、分散式儲存、CI/CD 流水線、自研編譯器和工具鏈，甚至包括 kernel patch。這類崗位在 [Databricks](https://en.wikipedia.org/wiki/Databricks)、Snowflake 這種以底層基礎設施為核心業務的公司裡 headcount 佔比特別高，大廠裡也都有專門的 infra org。但這條線對 systems 底層理解的要求很高，所以對大部分本科生沒那麼友好。
 
 ### Machine Learning Engineer
 
-最後是偏向 AI 的 Machine Learning Engineer（MLE）。這個崗位和 systems engineer 一樣，本質上還是工程師，他們的工作不是推導公式，而是怎麼把 researcher 訓練出的模型真正部署到生產當中。每天要做的事情包括處理海量訓練資料、寫訓練 pipeline、把模型在手機端做低功耗運行、保證大規模推理的低延遲、做 model serving 的擴縮容等等。具體落地上，OpenAI、Anthropic、Google deepmind 這種 frontier lab 的 MLE 更多是和 researcher 一起把模型訓練跑起來；而 Meta、Google 內部業務驅動的團隊的 MLE 則主要是把 ranking model、recommendation system 這類東西做落地調優。這個崗位不僅需要對常用的 AI 模型有理論上的理解，更要能熟練使用 PyTorch、Triton、CUDA 這些技術棧。過去兩三年隨著 GenAI 的爆發，這條線也成了 SWE 裡對本科生而言增長最快、薪水也最高的方向之一，但與此同時它對 candidate 的要求也很高。
+最後是偏向 AI 的 Machine Learning Engineer（MLE）。這個崗位和 systems engineer 一樣，本質上還是工程師，他們的工作不是推導公式，而是怎麼把 researcher 訓練出的模型真正部署到生產當中。每天要做的事情包括處理海量訓練資料、寫訓練 pipeline、把模型在手機端做低功耗運行、保證大規模推理的低延遲、做 model serving 的擴縮容等等。具體落地上，OpenAI、Anthropic、Google deepmind 這種 frontier lab 的 MLE 更多是和 researcher 一起把模型訓練跑起來；而 Meta、Google 內部業務驅動的團隊的 MLE 則主要是把 ranking model、recommendation system 這類東西做落地調優。這個崗位不僅需要對常用的 AI 模型有理論上的理解，更要能熟練使用 PyTorch、CUDA 這些技術棧。過去兩三年隨著 GenAI 的爆發，這條線也成了 SWE 裡對本科生而言增長最快、薪水也最高的方向之一，但與此同時它對 candidate 的要求也很高。
 
 ### S&P 500 SWE
 
@@ -229,7 +229,7 @@ Engineering-heavy 項目的典型特徵則是 systems 類課程在本科 curricu
 
 其實傳統金融業裡一部分 SWE 崗位的工作內容其實已經很接近 quant 了，但對 candidate 的要求一般來說比 quant 要低一些。所以 quant 究竟是幹什麼的呢？在回答這個問題之前我覺得先要把 quant 分為兩類：一類是高頻做市商，另一類則是對沖基金。
 
-做市商就是一個在市場裡提供流動性的角色，簡單理解的話就是"二道販子"，負責在市場上同時報一個買價（bid）和一個賣價（ask），從中賺取這個差價（bid-ask spread）。當然現在股票已經全面進行電子交易了，所以做市商都會在線上進行高頻做市。這條線上最有名的幾家公司包括 [Jane Street](https://en.wikipedia.org/wiki/Jane_Street_Capital)、[Citadel Securities](https://en.wikipedia.org/wiki/Citadel_Securities)、[Hudson River Trading](https://en.wikipedia.org/wiki/Hudson_River_Trading)、[Jump Trading](https://en.wikipedia.org/wiki/Jump_Trading)、[Optiver](https://en.wikipedia.org/wiki/Optiver) 等等。做市商策略的核心 challenge 是低延遲——很多策略的盈虧就取決於微秒甚至納秒級別的延遲差距，所以這類公司內部對 systems 工程能力的要求其實極高，相當一部分 quant developer 幹的事情和頂級 infra engineer 沒什麼本質區別，只是 stack 是為了 ultra-low-latency 專門定製的（比如 kernel bypass、FPGA 加速、熱路徑上手寫組合語言等等）。一般來說這類公司裡的崗位可以分成三類：quant trader 負責即時決策和策略調參，quant researcher 負責設計新策略和挖新的 signal，quant developer 則負責搭建和優化整個 trading infra。三類崗位的 compensation 都非常高，最頂尖幾家公司的應屆生 base salary 通常能有 $300k。
+做市商就是一個在市場裡提供流動性的角色，簡單理解的話就是"二道販子"，負責在市場上同時報一個買價（bid）和一個賣價（ask），從中賺取這個差價（bid-ask spread）。當然現在股票已經全面進行電子交易了，所以做市商都會在線上進行高頻做市。這條線上最有名的幾家公司包括 [Jane Street](https://en.wikipedia.org/wiki/Jane_Street_Capital)、[Citadel Securities](https://en.wikipedia.org/wiki/Citadel_Securities)、[Hudson River Trading](https://en.wikipedia.org/wiki/Hudson_River_Trading)、[Jump Trading](https://en.wikipedia.org/wiki/Jump_Trading)、[Optiver](https://en.wikipedia.org/wiki/Optiver) 等等。做市商策略的核心 challenge 是低延遲——很多策略的盈虧就取決於微秒甚至納秒級別的延遲差距，所以這類公司內部對 systems 工程能力的要求其實極高，相當一部分 quant developer 幹的事情和頂級 infra engineer 沒什麼本質區別，只是 stack 是為了 ultra-low-latency 專門定製的（比如 kernel bypass、FPGA 加速、熱路徑上手寫組合語言等等）。一般來說這類公司裡的崗位可以分成三類：quant trader 負責即時決策和策略調參，quant researcher 負責設計新策略和挖新的 signal，quant developer 則負責搭建和優化整個 trading infra。三類崗位的 compensation 都非常高，最頂尖幾家公司的應屆生 base salary 一般在 $200-300k 區間，加上 sign-on 和 bonus，total compensation 通常能到 $400k 以上。
 
 不同於做市商那樣用自有資金做"二道販子"，對沖基金這條線的業務邏輯主要是幫客戶理財。從資金來源角度看這其實跟銀行理財差不多，只不過客戶群體更窄。他們的交易頻率相比做市商會慢很多，但策略空間也更大。最有名的幾家包括 [Citadel](https://en.wikipedia.org/wiki/Citadel_LLC)、[Two Sigma](https://en.wikipedia.org/wiki/Two_Sigma)、[D.E. Shaw](https://en.wikipedia.org/wiki/D._E._Shaw_%26_Co.)、[Renaissance Technologies](https://en.wikipedia.org/wiki/Renaissance_Technologies)、[Millennium](https://en.wikipedia.org/wiki/Millennium_Management,_LLC)、[Point72](https://en.wikipedia.org/wiki/Point72_Asset_Management) 等等，每家公司內部又會進一步分出不同的業務線，每個業務線都對應不同的策略思路和投資哲學。整體上他們的策略持倉週期可以從幾分鐘到幾個月不等，所以低延遲不像做市商那麼 critical，但對 statistical modeling、time-series analysis、machine learning 這些數學建模工具的要求會更高。
 
@@ -237,7 +237,7 @@ Engineering-heavy 項目的典型特徵則是 systems 類課程在本科 curricu
 
 近幾年另一個值得一提的趨勢是，無論是做市商還是對沖基金，對 ML 的依賴都在明顯加深——做市商主要用 ML 挖 short-horizon signal 和優化 execution，對沖基金則直接把 ML 當成系統化策略的核心引擎。從工程視角看，這其實和前面提到的大廠 MLE 在做的事情非常類似，只不過落地場景換成了 trading。
 
-整體來說，無論是做市商還是對沖基金，進 quant 這條線的門檻都是 CS career path 裡最高的之一，基本和 frontier lab 持平。做市商的 trading 崗位更看重數理直覺和反應速度，所以非常偏愛有數學、物理或者演算法競賽背景的本科生；對沖基金的大部分崗位都是 research，所以更看重獨立做研究的能力，本科直接拿 offer 難度更大。值得一提的是，這兩條線對應屆 CS 本科生最 accessible 的入口其實都是 quant developer，因為對純 trading 或 research 能力的要求相對低一些，但對工程能力的要求和頂級大廠 infra engineer 持平甚至更高，所以對 systems 方向很 hands-on 的同學反而是個不錯的目標。
+整體來說，無論是做市商還是對沖基金，進 quant 這條線的門檻都是 CS career path 裡最高的之一，基本和 frontier lab 持平。做市商的 trading 崗位更看重數理直覺和反應速度，所以非常偏愛有數學、物理或者演算法競賽背景的本科生；而 systematic fund 最核心、門檻最高的崗位是 quant researcher，所以更看重獨立做研究的能力，本科直接拿 offer 難度更大。因此這兩條線對應屆 CS 本科生最 accessible 的入口其實都是 quant developer，因為對純 trading 或 research 能力的要求相對低一些，但對工程能力的要求和頂級大廠 infra engineer 持平甚至更高，所以對 systems 方向很 hands-on 的同學反而是個不錯的目標。
 
 ## CS 產業分布
 
