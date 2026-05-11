@@ -201,15 +201,25 @@ Engineering-heavy 项目的典型特征则是 systems 类课程在本科 curricu
 
 我一直觉得不少公司的 SWE 就是一个筐，什么都可以往里装。所以这个岗位实际上囊括的工作范围远比听上去要大。根据公司业务和技术栈的不同，SWE 内部的生态非常多元，下面挑几个比较有代表性的分支简单聊聊。
 
+### Product Engineer
+
 首先最常见的是 Product Engineer，根据具体业务还会进一步分成 App、Web 和 Backend 几类。他们工作的重心是实现 product manager 设计的业务逻辑，比如给某个 App 加一个新的 feature、把网页加载速度从 800ms 压到 400ms 以下，或者为高并发业务设计能撑住峰值千万级 QPS 的后端架构。这一线更强调对业务的理解、对分布式系统的熟练度，以及在大型 monorepo 里能高效迭代的工程能力。大厂里 product 这条线的 headcount 是最大的，对应届毕业生也最友好——Meta、Google、[Amazon](https://en.wikipedia.org/wiki/Amazon_(company)) 这些公司每年招的应届 SWE 绝大多数都会先加入到 product 团队里。除了这些 [FAANG](https://en.wikipedia.org/wiki/Big_Tech) 传统大厂之外，[Stripe](https://en.wikipedia.org/wiki/Stripe,_Inc.)、[Notion](https://en.wikipedia.org/wiki/Notion_(productivity_software))、[Figma](https://en.wikipedia.org/wiki/Figma)、[Cloudflare](https://en.wikipedia.org/wiki/Cloudflare) 这种正在高速扩张的大公司招的 SWE 主力也是 product engineer，这些公司体量比大厂小、单人能 own 的业务范围反而更大，对工程独立性的要求往往不低，近几年也成了不少应届生很倾向的选择。
+
+### Systems/Infrastructure Engineer
 
 然后偏向 systems 的是 Systems/Infrastructure Engineer。这一类 SWE 的工作更接近之前提到的 systems research 的范畴，但和 researcher 相比关心的问题不太一样：researcher 关心怎么把一个 idea 写成一篇 paper，而 infra engineer 关心怎么把这个论文里的 idea 真正落实到生产环境里稳定跑起来。具体工作包括自研数据库（比如 Google 的 Spanner、Meta 的 MyRocks）、分布式存储、CI/CD 流水线、自研编译器和工具链，甚至包括 kernel patch。这类岗位在 [Databricks](https://en.wikipedia.org/wiki/Databricks)、Snowflake、Stripe 这种以底层基础设施为核心业务的公司里 headcount 占比特别高，大厂里也都有专门的 infra org。但这条线对 systems 底层理解的要求很高，所以对大部分本科生没那么友好。
 
+### Machine Learning Engineer
+
 最后是偏向 AI 的 Machine Learning Engineer（MLE）。这个岗位和 systems engineer 一样，本质上还是工程师，他们的工作不是推导公式，而是怎么把 researcher 训练出的模型真正部署到生产当中。每天要做的事情包括处理海量训练数据、写训练 pipeline、把模型在手机端做低功耗运行、保证大规模推理的低延迟、做 model serving 的扩缩容等等。具体落地上，OpenAI、Anthropic、Google deepmind 这种 frontier lab 的 MLE 更多是和 researcher 一起把模型训练跑起来；而 Meta、Google 内部业务驱动的团队的 MLE 则主要是把 ranking model、recommendation system 这类东西做落地调优。这个岗位不仅需要对常用的 AI 模型有理论上的理解，更要能熟练使用 PyTorch、Triton、CUDA 这些技术栈。过去两三年随着 GenAI 的爆发，这条线也成了 SWE 里对本科生而言增长最快、薪水也最高的方向之一，但与此同时它对 candidate 的要求也很高。
+
+### 传统行业 SWE
 
 以上三类都是科技行业内部的 SWE 分支，但 SWE 这个岗位的 footprint 其实远不止科技公司。[S&P 500](https://en.wikipedia.org/wiki/S%26P_500) 里相当一部分公司虽然不是纯科技公司，但内部都有规模可观的 engineering 团队，而且前面提到的 product、infra、MLE 三条支线在这些公司里基本都齐全：比如 [Walmart](https://en.wikipedia.org/wiki/Walmart)、[Target](https://en.wikipedia.org/wiki/Target_Corporation) 内部的电商业务线主要对应 product engineering、[Visa](https://en.wikipedia.org/wiki/Visa_Inc.) 和 [Mastercard](https://en.wikipedia.org/wiki/Mastercard) 的支付系统是典型的大规模 infra 工程、而 [Disney](https://en.wikipedia.org/wiki/The_Walt_Disney_Company) 的流媒体推荐系统和 [UnitedHealth](https://en.wikipedia.org/wiki/UnitedHealth_Group) 的 risk modeling 都越来越依赖 MLE。这些"传统行业"里的 SWE 岗位的特点是 compensation 比 FAANG 低一档、工作节奏相对温和、business 也更稳定，对想要 work-life balance 或者积累特定行业 domain knowledge 的同学是一个很不错的选择。
 
-另外一条比较特殊的线是投行体系内的 SWE。[Goldman Sachs](https://en.wikipedia.org/wiki/Goldman_Sachs)、[Morgan Stanley](https://en.wikipedia.org/wiki/Morgan_Stanley)、[JP Morgan](https://en.wikipedia.org/wiki/JPMorgan_Chase) 等这些大投行内部都有数千甚至上万人规模的 engineering org，前面那三条支线在投行里同样一应俱全：面向客户的 trading platform 和内部 portal 属于 product engineering、自研的低延迟撮合引擎和 market data 系统是典型的 infra engineering，而 fraud detection、credit risk、algorithmic execution 这些越来越依赖 MLE。这一类 SWE 在投行内部一般被叫做 strats 或者 tech，compensation 通常介于大厂和传统 S&P 500 之间。
+传统行业里一条比较特殊的线是投行体系内的 SWE。[Goldman Sachs](https://en.wikipedia.org/wiki/Goldman_Sachs)、[Morgan Stanley](https://en.wikipedia.org/wiki/Morgan_Stanley)、[JP Morgan](https://en.wikipedia.org/wiki/JPMorgan_Chase) 等这些大投行内部都有数千甚至上万人规模的 engineering org，前面那三条支线在投行里同样一应俱全：面向客户的 trading platform 和内部 portal 属于 product engineering、自研的低延迟撮合引擎和 market data 系统是典型的 infra engineering，而 fraud detection、credit risk、algorithmic execution 这些越来越依赖 MLE。这一类 SWE 在投行内部一般被叫做 strats 或者 tech，compensation 通常介于大厂和传统 S&P 500 之间。
+
+### Quant
 
 其实投行里一部分 SWE 岗位的工作内容其实已经很接近 quant 了，但对 candidate 的要求一般来说比 quant 要低一些。所以 quant 究竟是干什么的呢？在回答这个问题之前我觉得先要把 quant 分为两类：一类是高频做市商，另一类则是对冲基金。
 
