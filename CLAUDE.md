@@ -23,3 +23,4 @@
 - After changing `functions/`, deploy with `firebase deploy --only functions` — CI only builds Jekyll.
 - After changing `firebase/firestore.rules` or `firebase/storage.rules`, deploy with `firebase deploy --only firestore,storage`.
 - Jekyll dev server uses Homebrew Ruby: `/opt/homebrew/opt/ruby/bin/bundle exec jekyll serve` from `website/`.
+- **Dollar signs in guide markdown** — MathJax is enabled with `$...$` as inline math delimiters and `processEscapes: true` (see [website/_layouts/guide.html](website/_layouts/guide.html)). Kramdown strips a single backslash before `$`, so `\$` reaches the browser as `$` and any paired `$...$` (e.g. `$200-300k ... $400k`) gets rendered as italic math. To write a literal dollar sign, use `\\$` in markdown — kramdown outputs `\$`, and MathJax's `processEscapes` renders it as a plain `$`. Real math expressions (e.g. `$\Omega(n \log n)$`, `$f(x) = x^2$`) survive kramdown unchanged and should stay as `$...$`.
