@@ -2807,7 +2807,7 @@ a.admin-coauthor-result-name:hover {
   scroll-margin-top: 5rem;
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1100px) {
   .guide-layout {
     position: relative;
   }
@@ -2817,8 +2817,8 @@ a.admin-coauthor-result-name:hover {
     position: absolute;
     top: 4rem;
     bottom: 0;
-    right: calc(50% + 340px + 3rem);
-    width: 220px;
+    right: calc(50% + 340px + 2rem);
+    width: 180px;
   }
 
   .guide-toc {
@@ -2882,5 +2882,12 @@ a.admin-coauthor-result-name:hover {
   .guide-toc-sublist a {
     padding-left: 2rem;
     font-size: 0.8rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .guide-toc-wrap {
+    right: calc(50% + 340px + 3rem);
+    width: 220px;
   }
 }
