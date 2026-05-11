@@ -20,6 +20,8 @@ updated: 2026-05-09
 
 首先是本人一直认为私立大学除了学费贵，其他方面就 arbitrarily 好于公立大学。但其实真的不是这样的。而要弄清楚这个问题，那我们还是要从第一性原理出发，也就是从钱的流动开始讲起。
 
+### 联邦经费与 overhead
+
 很多人，包括之前的我自己在内，都认为私立大学都是有钱的主儿，毕竟学费那么贵呢，所以资源就一定多。但说实话，学费对一个 research-heavy 的[研究型大学](https://en.wikipedia.org/wiki/List_of_research_universities_in_the_United_States)而言只是庞大的收入结构里的一块。我们每个学生交的那点钱，分摊到学校的 research infrastructure、医院营运、新教授启动经费、行政与合规成本这些巨大开支里，其实对学校真正能提供什么资源影响很有限。
 
 那真正决定学校的学术水平和 research 实力的钱是从哪儿来的呢？其实很大一部分是来自于联邦政府。第一次接触到这个概念的人一定觉得很反常识，说实话，我在上大学前一直以为学校要么是私立的，要么是州立的，除了军校是联邦的，其他学校应该和联邦没多大关系才对。但事实上，美国的 [NSF](https://en.wikipedia.org/wiki/National_Science_Foundation)、[能源部](https://en.wikipedia.org/wiki/United_States_Department_of_Energy)、[NIH](https://en.wikipedia.org/wiki/National_Institutes_of_Health) 以及[国防部](https://en.wikipedia.org/wiki/United_States_Department_of_Defense)/[军队](https://en.wikipedia.org/wiki/United_States_Armed_Forces)承担了非常多的科研开支，尤其是对 STEM 专业。当然其他不同的部委也或多或少都有一些自己的 funding project 来资助研究。所以其实在美国的大学里面，STEM 教授的主要任务既不是做科研，也不是讲课，而是到处化缘。这也就导致大学的实验室本质上就和初创公司挺像的。教授就像是 founder/CEO，大概率不会管特别具体的事务，而是会把握大方向以及出去筹钱。那具体是怎么筹钱的呢，或者说 grant 是怎么申请的呢？这就是教授最重要的工作，也就是写 proposal 了，俗称写本子。
@@ -27,6 +29,8 @@ updated: 2026-05-09
 这其实有点像招标，但比招标灵活。在 NSF 和 NIH 的主流 program 里，联邦每年按固定周期开放申请，教授自己决定研究方向、把 proposal 交上去，由 panel 评审；[DARPA](https://en.wikipedia.org/wiki/DARPA) 和能源部某些项目则更接近招标式，联邦会先提出具体的 research priority 再收集 proposal。说了这么久，这整套流程好像参与方只有教授以及联邦，到底和学校有什么关系呢？嗯，没错，在教授兢兢业业写本子的时候，学校确实没有什么存在感，但是一旦 proposal 中了，资金快要到账了之后，学校就要跳出来收“买路财”了，也就是一个叫做 overhead 的东西。举个例子：某个教授拿到了能源部一笔100万美金的 grant，能源部就不仅需要支付这100万给教授，还需要根据 Overhead Rate 给学校额外再付一笔钱。一般来说，联邦资金的 Overhead Rate 会比较高，顶级研究型大学大多在 55-70% 之间。（其实严格来说，overhead 不是学校额外收的税，而是联邦本来就认可的 indirect cost。联邦知道 research 需要 building、IT、合规和行政人员的支持，所以把这笔钱通过 overhead 统一支付给学校。只是对教授个人而言，这笔钱本可以更多地流到自己的 lab 里，所以感觉上像是被学校收走了。）
 
 那这笔钱到底收得合不合理呢，我在这里无意讨论，因为学校有着庞大的后勤体系，没有他们的支持，教授和学生也没法全心全意投入科研当中，而且新教授往往也需要学校提供的启动资金，但学校的后勤体系很多时候也是臃肿的。虽然看起来 overhead 不是学校最显眼的收入（本科学费、住宿、食堂、endowment 投资收益都更 visible），但对研究型大学而言，[联邦资金是学校 research 投入的最大单一来源（2024 财年占全美高校 R&D 支出的 55%）](https://ncses.nsf.gov/pubs/nsf26305)，其中 overhead 部分更是维持 research infrastructure 的关键。而对 STEM 教授而言，联邦资金就是他们 research funding 的最主要来源，直接决定了他们的 lab 能不能运转、学生能不能招、研究能不能做下去，也直接决定了一个学校在某个领域的学术实力。其中 Johns Hopkins 是个特别极端的个例。JHU 靠 [Applied Physics Laboratory](https://en.wikipedia.org/wiki/Applied_Physics_Laboratory) 的国防 / 航天项目撑着，[2024 财年研究支出 \\$41.3 亿美元](https://ncses.nsf.gov/pubs/nsf26305)，接近排名第二学校（UPenn，\\$21.7 亿）的两倍，其中约 88% 来自联邦经费。它从 1979 年开始连续 40 多年蝉联全美 R&D 支出第一，甩开剩下的学校不是一点半点。很多人提到 JHU 只想到医学院，但真正让它站在今天这个位置的，是联邦国防和科研经费几十年持续的注入。总之结论就是，学校的很多钱其实都来自于联邦政府，学校更像是提供了一个平台，但真正阔绰与否其实还是要看教授自己的学术品牌，就像是多策略对冲基金一样。所以这也就是为什么美国的学术界百花齐放，而不是几所特别好的学校形成垄断。但这也只是对这一现象的一个简单介绍，更加具体的原因会放到后面再说。
+
+### Endowment 的现实
 
 我相信听到这儿有人就要问了，除此之外还有 endowment fund 呢？私立大学的富豪校友那么多，捐了那么多钱，难道还抵不上联邦的资金吗？说得没错，但其实这里面会有很多现实的问题。其中最主要的就是资金支配的自由度。首先是学校的 endowment fund 其实本质上相当于是一个家办/信托基金，一般来说是只能支配投资的收益而不是本金的。所以每年可供使用的部分只有大概 5% 左右。但是不要以为拿到了收益就可以高枕无忧发展学校了，因为其实大部分捐款人都会对自己的捐款用途有严格的限制。比如我们经常能看到的很多大学里面有叫做某某家族奖学金，或者是某栋楼是以某个人命名的，这些都大概率是捐款的时候就指定了要支持学校某一小部分的发展，而不是可以随意使用的资金。但这种限定用途的捐款其实也能在特定领域 enable 一些 federal funding 做不到的事情。比如它能让学校从零起步建立一个全新的 institute / department，而不是只能在现有 structure 上 incrementally 加 faculty 和 funding。就比如 Princeton 的 [Lewis-Sigler Institute for Integrative Genomics](https://lsi.princeton.edu/about/founding-donors) 就是 1998 年 [Peter B. Lewis](https://en.wikipedia.org/wiki/Peter_B._Lewis) 捐赠 \\$35 million 建立的，加上 [Carl Icahn](https://en.wikipedia.org/wiki/Carl_Icahn) 捐建的 Icahn Laboratory，整个 Princeton 的定量生物学 / QCB 生态基本就是这两笔私人捐赠 launch 起来的。联邦 grant 后续会持续注入来保障运行和科研支出（比如 [NIH-NHGRI training program](https://lsi.princeton.edu/education/nih-nhgri-training-program)），但启动资金来自私人 donor。
 
@@ -52,6 +56,8 @@ updated: 2026-05-09
 
 ## 好教授为什么不集中在顶校
 
+### Faculty hiring 的随机性
+
 好了，最后再来系统地说说美国的学术界为什么百花齐放，而不是只有几所一家独大。之前说的 federal funding 其实只是个间接原因，最直接的原因之一应该是现在美国找教职的难度已经堪比地狱了。基本上只有最顶尖学校的最顶尖博士才能找到一个相对来说还不错的学校的教职。就以我熟悉的 CS 举例，现在是越来越难不做 postdoc 就直接拿到 Tenure-track Assistant Professor（相当于是想走教职路线的博士生的第一站，简称 TTAP），甚至一些 IOI 国手都是做了两三年甚至三五年博后才终于找到了教职（其他学科的难度其实也不会差特别多）。那比较好的大学的教职呢？这就真的是神仙打架了。就拿我所在的学校 UIUC 的 CS 系举例子，这两年招的做 AI 这个方向的一些 TTAP 都在入职前就已经是一两万甚至两三万引用量的巨佬了。当然 AI 方向本来引用量就比 CS 其他方向以及其他学科高不少，而且近几年 GenAI 方向的爆发让一些博士期间赶上了 seminal work 的研究者毕业时就自带几万引用；再加上一部分人有 [Meta FAIR](https://en.wikipedia.org/wiki/Meta_AI)、[Google DeepMind](https://en.wikipedia.org/wiki/Google_DeepMind)、[OpenAI](https://en.wikipedia.org/wiki/OpenAI) 这类 industry lab 的背景作为跳板。即便如此，这个 citation 级别在整个学术界仍然是很夸张的存在。
 
 除此之外，在最顶尖的大学招 TTAP 还有一个很重要的标准，就是希望这个人现在的研究方向是下一个风口。也就是说，search committee 不仅仅是在找当下做得好的人，更是在找下一批定义学科未来的人。而且其实找教职的随机性比申请大学要高特别多。一般来说，要招一个教授的话，既要满足 research area fit、teaching need 等结构性条件，也要在 search committee 内没有人强烈反对，同时还要有一两个 strong advocate。上述任何一个环节出问题都可能导致一个非常优秀的候选人被刷掉。这也就导致了很多特别特别厉害的博士生只是去了一个一般一点的学校。所以对于我们而言，不用去顶校，只要去一个相对来说还不错的大学，都是会遇到很厉害的教授的。
@@ -59,6 +65,8 @@ updated: 2026-05-09
 那难道好学校就一点优势也没有了吗？其实也不是的。假如拿金庸的武侠小说里的人物举个例子的话，那每个学科最顶尖的五所或者十所学校里可能会有好几个东邪西毒这种宗师级别的教授，还有一批郭靖级别的教授。但就算是在大多数 [R1 大学](https://en.wikipedia.org/wiki/List_of_research_universities_in_the_United_States#)（即最强的将近200所研究型大学），也会起码有几个郭靖级别的教授，所以差距并没有很多人想象中的大。继续拿 CS 举例子，每年 top-10 CS Program 的 PhD 加起来产出好几百人，但这些学校自己一年只招二三十个 TTAP，剩下的想找教职的人必然去往其他学校，加上前面提到的 search committee 随机性，能不能进这些学校和实际水平之间的相关性其实远没有想象中那么强，所以这些去往其他学校的人水平不见得就更弱。因此一个 mid-tier R1 系里大量的 faculty 会是来自最顶尖的几所学校的博士，这是 hiring funnel 的必然，不是巧合。其他学科可能具体数字不同，但情况也都差不多。
 
 就以我相对熟悉的两个在很多人看来没有特别强的学校为例：University of Illinois Chicago（与 UIUC 同属 University of Illinois 系统）和 University of Tennessee, Knoxville（因为我之前暑假在橡树岭实习的缘故在他们宿舍住过一段时间），这两个学校都是有巨佬坐镇的，比如 UIC 的 [Philip S. Yu](https://cs.uic.edu/profiles/philip-yu/) 在 data mining 领域深耕四十余年，引用量和 h-index 在全球 CS 学者中都是最最顶尖的一批，而 UTK 的 [Jack Dongarra](https://www.eecs.utk.edu/people/jack-dongarra/) 更是2021年的图灵奖得主，在高性能计算领域堪称泰斗级人物，目前虽已 emeritus 但仍在持续指导学生。这两个学校在 US News 以及 [CSRankings](https://csrankings.org/#/index?all&us) 上的排名可能并不是特别显眼，但在各自的强势领域都有着世界级的研究者。这其实就是我想说的核心观点：在美国，由于找教职的竞争极其激烈，再加上科研经费是跟着教授走而不是跟着学校走的，所以优秀的研究者其实遍布在各个层次的大学里，而不是像很多人想象中的那样只集中在那几所最顶尖的学校。
+
+### Ceiling × Demand Framework
 
 这里需要重申的一个常见误区是可能有人会想"我去顶校就能接触更多大佬啊"。顶校的顶尖 faculty / PhD / postdoc 的 supply 确实更大，绝对数普遍比 mid-tier R1 多上几倍。但 demand 端的扩张比 supply 端要陡得多：supply 大致随学校规模和水平线性增长，而最强的那批本科生（如 IMO / IOI 金牌这种）在顶校的集中度是高度非线性的。这个 demand 端的结构其实比 supply 端更值得展开，因为它直接决定了一个包括我自己在内的绝大部分 UWC 普通毕业生在大学校园里实际能 access 到什么。
 
@@ -69,6 +77,8 @@ updated: 2026-05-09
 前面已经把围绕 faculty 的供需结构讲得差不多了，但本科 research experience 还有一个离日常更近的 supply 端的维度经常被忽视：PhD student 和 postdoc 的质量。因为教授大部分时间都在化缘，所以本科生在 lab 里日常接触的其实是 PhD student 和 postdoc，他们的水平才是本科生 research experience 真正的 ceiling。这里有一个关键的不对称：undergrad admission 很多时候是 prestige-driven 的，但 PhD admission 是 field-specific 的（看一个 program 在领域内的学术实力，绝大部分时候甚至是具体到 PhD advisor 的实力）。所以对于一个综排较弱但学科内顶尖的学校或者水平很高的教授，招生质量完全可以轻松碾压综排前五但 field 较弱的学校。当然大部分学校在面对 Stanford 这种全学科都很强的学校的时候就相形见绌了。但要注意这只是 supply-side 的 ceiling，结合前面 demand-side 的分析，"普通优秀"的 UWC 学生到底能不能真正 access 到这个 ceiling 又是另一回事。所以对大部分人而言，一个 sweet spot 其实是 field-specific 顶尖的非顶校：ceiling 已经足够高，竞争者 pool 又比顶校友好得多。
 
 > 这里要特别注意一下，上面的论证主要适用于依赖 lab / 大型 collaborator team / research infrastructure 的 lab-based research，包括实验物理、化学、生物、工程、实验 CS、医学 research 等等很多方向。但对于依赖 advisor 1-on-1 + reading group / seminar 这种 mentorship mode 的方向——包括 STEM 里的理论方向（纯数、理论 CS、理论物理）、humanities（哲学、文学、历史、古典学、艺术史）、social sciences（economics、political science、sociology、anthropology 等，不论 empirical 还是 theoretical）、business research（finance、accounting、marketing）等——它们的 ceiling driver 完全不一样：mentorship 主要靠跟 advisor 直接 1-on-1 讨论加上 reading group / seminar 的 peer effect，所以 advisor individual reputation 和 daily peer 浓度反而更重要。虽然做这些方向的研究同样会被 outlier 在 access 上碾压（每个教授的 bandwidth 依然有限），但由于在这些领域内 reading group 和 seminar 也是学习和研究中的重要一环，所以 daily peer effect 比在 lab-based research 里重要得多。因此，对于这类情况，上述供需框架的部分论证不直接适用，需要单独分析，我们会在后续篇章中专门讨论。
+
+### 如何 audit 一所学校
 
 在最后，我想把前面关于 lab-based research 的线索串起来，方便大家自行 audit 任何一所学校。
 
@@ -86,6 +96,8 @@ updated: 2026-05-09
 
 最后再聊一个很多同学都会纠结的问题：[文理学院（LAC）](https://en.wikipedia.org/wiki/Liberal_arts_college#In_North_America)和研究型大学到底怎么选？两者其实定位挺不一样的。研究型大学因为体量大、教授多，课程覆盖面天然就会广很多，基本上你想学什么方向都能找到对应的课。而文理学院走的是小而精的路线，更强调教学质量和师生之间的紧密互动，但相应地每个系的规模会小一些，能开的课可能主要集中在比较主流的方向。不过这也不是绝对的——像 Barnard 和 Wellesley 这样的文理学院就和附近的顶尖学府深度合作，比如 Wellesley 的同学可以直接去 MIT 选课，而 Barnard 作为 Columbia 的 affiliate college，虽然在招生、行政和财务上完全独立，但学生基本可以无障碍地选修 Columbia 的课程，这样课程覆盖面上的差距一下子就被拉平了。所以与其纠结哪种更好，不如想清楚自己更看重什么：是更丰富的课程和资源，还是更小的班级和更紧密的师生关系？这两种体验本身没有高下之分，关键在于哪个更适合你。
 
+### LAC 与 STEM 的错位
+
 但对于将来想要学习 STEM 专业的同学们来说一定要谨慎考虑文理学院，尤其是前文所说的 lab-based 方向（对于纯数、理论 CS、理论物理这些不依赖 lab 而是依赖 mentorship 的方向反而是文理学院的优势）。这里有一个常见的 myth："顶级文理学院的 placement 不输最好的研究型大学"。这个说法在 humanities 和 social sciences 里大致成立，但对 STEM 方向则要打一个问号。原因有两个：第一，LAC 的 STEM faculty 中确实有持续 active 做研究的教授，但比例和产出 throughput 都远低于 R1 同僚。这是因为 LAC 的 hire model 优先 teaching load，教授的教学压力都巨大，基本上是 R1 的两到三倍，而且没有博士生 / postdoc 帮忙干活。更别提经费和设备方面也无法跟 R1 比。LAC 拿不到大型的 federal grant（比如 [NSF ERC](https://en.wikipedia.org/wiki/Engineering_Research_Centers)、[NIH P01](https://en.wikipedia.org/wiki/NIH_grant#Program_project/center_grants)、[DoD MURI](https://en.wikipedia.org/wiki/MURI_(grant)) 这种几百万到上亿的 multi-PI 项目），也撑不起 frontier-level infrastructure，比如[超算 cluster](https://en.wikipedia.org/wiki/Supercomputer) 和 [cleanroom](https://en.wikipedia.org/wiki/Cleanroom)。这些设施单价几百万到几亿，对很多前沿方向都是必需品，但 LAC 的体量很难撑起 [ROI](https://en.wikipedia.org/wiki/Return_on_investment)。
 
 不过 LAC 的 endowment per capita 其实非常高。像是 Williams、Amherst、Swarthmore、Pomona 的 endowment per student 都在 \\$1.5M 以上，远超大多数 R1。但这笔钱主要用在 financial aid、small class size 和 teaching-heavy 的 faculty 薪水上，而不是投入科研。第二，STEM industry pipeline 弱。LAC 一届一共 500 人，学 STEM 方向的可能就 150-200 人，10 年累积的校友规模甚至远不如 R1 的一个系。这也就直接导致了在 tech/engineering industry 里的 LAC 校友绝对数量少，在很多公司里的 presence 不如 R1。当然，只要自己足够强，比如能自行找到校外的 research 资源，或是在 ICPC 这样级别的比赛中取得好成绩，那上面提到的一切都不是问题。
@@ -94,11 +106,15 @@ updated: 2026-05-09
 
 所以如果你明确要走 lab-based STEM 路线，研究型大学在大多数关键维度上都是更稳妥的选择，即便是顶级 LAC 也不例外。LAC 更适合想走 mentor-based STEM、humanities、social sciences、[pre-med](https://en.wikipedia.org/wiki/Pre-medical#In_the_United_States)、[pre-law](https://en.wikipedia.org/wiki/Pre-law) 路线的学生。这几个方向看的是 GPA、mentorship 质量、推荐信、clinical experience 和标化考试，正好是 LAC 的强项，而不是依赖 frontier research 和 STEM 校友网络。
 
+### R1 像社会，LAC 像 UWC
+
 上面讨论的都是 academic 和 career outcome，但忽略了一个对我们 UWC 的同学非常重要的维度，那就是 community 的体验。说实话，我自己在 R1 读本科，一直都很羡慕 LAC 更像 UWC，一届就几百人，大家在同一个 campus 里一起生活，community 浓度很高。R1 虽然资源很多，但很多时候都要靠自己去争取。反观 UWC / LAC 这种 high-density community，很多机会是 passive 地触达你的——教授知道你是谁、同学吃饭时会随口提某个机会、senior 会主动带你。你不用去 actively hunt。我直到现在都很感激我当年作为一个懵懵懂懂的小朋友刚进 UWC 的时候有两位高年级的室友主动带我，给了我很多帮助。但这两种 habit 对毕业之后的人生影响是完全不同的。毕业之后的世界其实更像 R1 而不像 UWC——没有人会自动关心你，没有教授会记得你的名字，没有 senior 会主动带你。R1 训练出来的主动争取的习惯，恰好是毕业之后的世界最需要的 default mode。当然 LAC 也不是乌托邦，真实的 LAC 体验比 UWC 已经冷了一些，只是相对于 R1 而言它仍然是一个 high-density 的社群。这个 trade-off 对不同的人 net effect 是不一样的。对一些还需要时间 figure out 自己的人，多四年 high-density community 的环境可能正是他们需要的。但对另一些已经大致知道自己要追求什么的人来说，LAC 的环境反而会推迟他们必须要发展出的那套主动 hunt 的习惯，让 transition 在毕业之后才发生，而那时的成本要高得多。所以不是说 R1 或者 LAC 中的某一个就 arbitrarily 好，而是要考虑清楚自己当下更需要什么。
+
+### LAC 和 R1 之间的 Combined Degree Program
 
 最后我想说说 LAC 和 R1 之间的 combined degree program，这其实是另一条部分绕过前面 STEM 短板的路径。最经典的是 Columbia Engineering 的 [3-2 plan](https://undergrad.admissions.columbia.edu/apply/combinedplan)：学生在 LAC 读 3 年完成 pre-engineering 的 core coursework 和 GPA 要求（overall GPA 门槛 3.3 或 3.5，取决于 affiliate 协议的签约时间，而且 pre-engineering 课程单科都要 B 以上），然后转到 Columbia 再读 2 年，最后拿到两个学位（LAC 的 BA 加上 Columbia 的 BS in engineering）。[Dartmouth Thayer](https://engineering.dartmouth.edu/undergraduate/dual)、[WashU McKelvey](https://engineering.washu.edu/academics/dual-degree-program/index.html)、[Case Western](https://case.edu/engineering/academics/undergraduate/32-program) 等学校也都有类似的 dual-degree partnership。我们 UWC 的知名校友 [Mira Murati](https://en.wikipedia.org/wiki/Mira_Murati)（OpenAI 前 CTO，现 [Thinking Machines Lab](https://en.wikipedia.org/wiki/Thinking_Machines_Lab) 创始人）走的就是这条路：从 [Pearson College UWC](https://en.wikipedia.org/wiki/Pearson_College_UWC) 毕业后先在 Colby 读 3 年拿到 math BA，再到 Dartmouth 读 2 年拿到 mechanical engineering 的 BE。
 
-这听起来像是两全其美的方案：既保留了 LAC 的 liberal arts 体验和相对宽松的 GPA 环境，又能拿到工程学院的文凭和 alumni network。但实际情况比想象中复杂。第一，整个项目要 5 年，多一年的学费和机会成本都不小，而且 Davis Scholarship 一般只 cover 前 4 年。（对于这一点请详细咨询你的 counselor。）第二，GPA 门槛看起来不高，但在 LAC 一路维持 3.3+ 修完 calculus、physics、programming、linear algebra 这些 pre-engineering 课并不是躺平就行，每年都有不少人中途放弃转到 LAC 自己的 BA 轨。第三也是最容易被忽略的，是 5 年下来你会有一半时间在一个完全陌生的 campus 里，UWC-style 的 community 早就没有了，但你又没有 4 年都在 Columbia 的同学那种从第一天就积累起来的 peer group。所以这种项目更适合作为一个 optional hedge——如果你到了 junior year 才确定要走 engineering 又不想完全放弃 LAC 的体验，可以考虑；但如果你从一开始就知道自己要做 STEM，一开始就去 R1 仍然是更简单直接的路径。
+这听起来像是两全其美的方案：既保留了 LAC 的 liberal arts 体验和相对宽松的 GPA 环境，又能拿到工程学院的文凭和 alumni network。但实际情况比想象中复杂。第一，整个项目要 5 年，多一年的学费和机会成本都不小，而且 [Davis Scholarship](https://en.wikipedia.org/wiki/Davis_United_World_College_Scholars_Program) 一般只 cover 前 4 年。（对于这一点请详细咨询你的 counselor。）第二，GPA 门槛看起来不高，但在 LAC 一路维持 3.3+ 修完 calculus、physics、programming、linear algebra 这些 pre-engineering 课并不是躺平就行，每年都有不少人中途放弃转到 LAC 自己的 BA 轨。第三也是最容易被忽略的，是 5 年下来你会有一半时间在一个完全陌生的 campus 里，UWC-style 的 community 早就没有了，但你又没有 4 年都在 Columbia 的同学那种从第一天就积累起来的 peer group。所以这种项目更适合作为一个 optional hedge——如果你到了 junior year 才确定要走 engineering 又不想完全放弃 LAC 的体验，可以考虑；但如果你从一开始就知道自己要做 STEM，一开始就去 R1 仍然是更简单直接的路径。
 
 ## 学校只是平台，成长靠自己
 
@@ -110,6 +126,10 @@ updated: 2026-05-09
 
 ## 地理位置和学费的事儿
 
+### 地理位置
+
 以上就从学术角度把美国学校介绍得差不多了。但 college life 肯定是不只有学术的，还有其他很多一样重要甚至更重要的事情。首当其冲的就是学校的地理位置。甚至有些时候我觉得地理位置会是一个比学术更加重要的考虑因素。因为这会直接影响 traveling 的便利程度，这对于出去玩 / 回家 / 找工作（也就是 onsite interview） / conference travel 都会有特别大的影响。比如我上次去纽约参加一个活动，人家哪怕不是在纽约上大学的人，哪怕是在临州新泽西的学生，那其实也就是打车一个小时就到了。但是对于我这种在 Illinois 中部乡村里上学的人来说，我得坐大巴（三个多小时）/ 先打车（两个多小时）/ 坐飞机（一个小时）去芝加哥的机场，然后再从芝加哥飞去纽约，这样基本上在航班不延误的情况下大半天也没了，真的非常不方便。假如是面试的话，其实舟车劳顿也会很影响状态，一般都要提前一天到才行，所以就意味着要在目的地住两晚。综上所述，我觉得起码是要找一个有大机场的城市才会比较方便。比如 Duke/UNC/NC State 那个地方就非常好，这三个学校基本上互相开车十五分钟就可以到其中任意一点，去机场也就二十分钟。而且那一片也不会有大城市的喧嚣。之后我们应该会再开一个介绍美国城市的系列，敬请期待！
+
+### Davis Scholarship 与 on-campus job
 
 除此之外还有一个很重要的事情就是学费。不过好在我们 UWC 的同学们都有资格申请 Davis Scholarship。但对此我并不是很了解具体流程，之后可以请了解的同学单独开一篇详细聊聊。除了 Davis Scholarship 之外，有需要的同学应该也可以找一些 on-campus job 来补贴日常开销。常见的 on-campus job 包括 dining hall、图书馆、健身房 front desk、IT help desk 这种 student worker 岗位，工资一般是本州的最低时薪，一些比较发达的州通常都在 15 到 20 美元一小时这个区间内。不过每周可以工作的小时数不能超过联邦政府规定的上限（F-1 学生通常是上课期间每周最多 20 小时，假期可以 full-time，也就是每周最多 40 小时）。这种工作的好处是不需要 [OPT](https://en.wikipedia.org/wiki/Optional_Practical_Training) / [CPT](https://en.wikipedia.org/wiki/Curricular_Practical_Training)，学校会直接帮你 sponsor 工作许可，而且 schedule 也比较灵活，不会和上课冲突。除了纯粹补贴生活费之外，有些岗位本身也是不错的经历，比如做 Teaching Assistant 或者 Research Assistant。具体到每个学校的政策、时薪、招聘流程都不太一样，这一块儿还需要各位同学自己去上网检索一下。
