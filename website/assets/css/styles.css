@@ -718,6 +718,14 @@ body {
   font-size: 0.95rem;
 }
 
+.guide-content h1 {
+  font-family: var(--serif);
+  font-size: 1.95rem;
+  font-weight: 500;
+  color: var(--dark);
+  margin: 3rem 0 1.1rem;
+}
+
 .guide-content h2 {
   font-family: var(--serif);
   font-size: 1.8rem;
@@ -732,6 +740,32 @@ body {
   font-weight: 500;
   color: var(--dark);
   margin: 2rem 0 0.8rem;
+}
+
+.guide-content h4 {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--dark);
+  margin: 1.6rem 0 0.7rem;
+}
+
+.guide-content h5 {
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  font-weight: 500;
+  color: var(--dark);
+  margin: 1.4rem 0 0.6rem;
+}
+
+.guide-content h6 {
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  font-weight: 500;
+  color: var(--dark);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 1.3rem 0 0.55rem;
 }
 
 .guide-content p {
@@ -2801,8 +2835,12 @@ a.admin-coauthor-result-name:hover {
   display: none;
 }
 
+.guide-content h1,
 .guide-content h2,
-.guide-content h3 {
+.guide-content h3,
+.guide-content h4,
+.guide-content h5,
+.guide-content h6 {
   scroll-margin-top: 5rem;
 }
 
