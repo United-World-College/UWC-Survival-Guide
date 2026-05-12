@@ -1,7 +1,7 @@
 ---
 title: "On Computer Science"
 category: "Life after UWC"
-description: "From internal subfields to career paths, rethinking what CS is as a discipline."
+description: "From subfields to career paths, a survey of the CS discipline."
 order: 2
 author_id: "william-huang"
 original_language: "zh-CN"

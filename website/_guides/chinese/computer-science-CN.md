@@ -1,7 +1,7 @@
 ---
 title: "关于 Computer Science"
 category: "UWC 之后的日子"
-description: "从内部分支到职业路径，重新理解 CS 这个学科。"
+description: "从学科分支到 career path，一份关于 CS 的学科综述。"
 order: 2
 author_id: "william-huang"
 original_language: "zh-CN"
