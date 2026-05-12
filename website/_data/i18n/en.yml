@@ -254,6 +254,40 @@ admin:
   description_placeholder: A brief summary of the article
   content_label: Content (Markdown)
   content_placeholder: Write your article content here using Markdown...
+  toolbar_label: Markdown formatting
+  tb_h2: Heading 2
+  tb_h3: Heading 3
+  tb_h4: Heading 4
+  tb_bold: Bold
+  tb_italic: Italic
+  tb_strike: Strikethrough
+  tb_code: Inline code
+  tb_codeblock: Code block
+  tb_quote: Quote
+  tb_ul: Bullet list
+  tb_ol: Numbered list
+  tb_link: Insert link
+  tb_image: Insert image
+  tb_hr: Horizontal rule
+  tb_table: Insert table
+  tb_hint: "Paste, drag-drop, or click the image button. Max 5 MB per image. Allowed: JPG, PNG, GIF, WEBP, HEIC."
+  tb_link_prompt: "Enter the URL:"
+  tb_ph_bold: bold text
+  tb_ph_italic: italic text
+  tb_ph_strike: text
+  tb_ph_code: code
+  tb_ph_link: link text
+  tb_table_h1: Header 1
+  tb_table_h2: Header 2
+  tb_table_c1: Cell
+  tb_table_c2: Cell
+  tb_uploading_n: "Uploading image {n} of {total}…"
+  tb_image_too_large: Image must be under 5 MB.
+  tb_image_unsupported: Unsupported image format. Use JPG, PNG, GIF, or WEBP.
+  tb_image_failed: Image processing failed.
+  tb_upload_failed: Upload failed.
+  tb_remove_image: Remove image
+  tb_image_count_max: Maximum 20 images per submission.
   preview_btn: Preview ↗
   show_review_thread: Show review history
   submit_btn: Submit for Review
@@ -297,7 +331,7 @@ admin:
   passwords_no_match: Passwords do not match.
   reset_email_sent: Reset email sent. Please check your inbox.
   image_file_only: Please select an image file.
-  image_too_large: Image must be under 2 MB.
+  image_too_large: Image must be under 5 MB.
   uploading_photo: Uploading photo...
   photo_failed: Failed to upload photo. Please try again.
   link_label_ph: e.g. GitHub, personal website

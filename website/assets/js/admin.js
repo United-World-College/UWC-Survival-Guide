@@ -16,6 +16,12 @@
   var storage = firebase.storage();
   var functions = firebase.functions();
 
+  // ── Markdown editor state ──
+  // pendingImages: { uuid: { file, fileName, contentType, dataUrl, status, url?, key?, imageDocId?, error? } }
+  // Buffered locally until submit; uploaded then placeholders are swapped for R2 URLs.
+  var pendingImages = Object.create(null);
+  var inflightSubmissionDocId = null;
+
   function makeSlug(text) {
     return text.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/(^-|-$)/g, '');
   }
@@ -370,50 +376,8 @@
     document.getElementById('avatar-input').click();
   });
 
-  function convertToJpeg(file) {
-    var isHeic = /^image\/(heic|heif)$/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
-    var needsConversion = isHeic || /^image\/(webp|bmp|tiff)$/i.test(file.type);
-    if (!needsConversion) return Promise.resolve(file);
-
-    function toJpegViaCanvas(bitmap) {
-      var canvas = document.createElement('canvas');
-      canvas.width = bitmap.width;
-      canvas.height = bitmap.height;
-      canvas.getContext('2d').drawImage(bitmap, 0, 0);
-      return new Promise(function (resolve, reject) {
-        canvas.toBlob(function (blob) {
-          if (blob) resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
-          else reject(new Error('Conversion failed'));
-        }, 'image/jpeg', 0.9);
-      });
-    }
-
-    var HEIC_ERR = 'HEIC/HEIF format is not supported by your browser. Please convert to JPG or PNG before uploading.';
-
-    // Try createImageBitmap first (works for HEIC in Safari and recent Chrome)
-    if (typeof createImageBitmap !== 'undefined') {
-      return createImageBitmap(file).then(toJpegViaCanvas).catch(function () {
-        // Fallback to heic2any if bitmap decode fails
-        if (isHeic && typeof heic2any !== 'undefined') {
-          return heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 }).then(function (result) {
-            var blob = Array.isArray(result) ? result[0] : result;
-            return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
-          }).catch(function () { return Promise.reject(new Error(HEIC_ERR)); });
-        }
-        return Promise.reject(new Error(isHeic ? HEIC_ERR : 'Cannot convert this image format. Please convert to JPG or PNG before uploading.'));
-      });
-    }
-
-    // No createImageBitmap — try heic2any directly
-    if (isHeic && typeof heic2any !== 'undefined') {
-      return heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 }).then(function (result) {
-        var blob = Array.isArray(result) ? result[0] : result;
-        return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
-      }).catch(function () { return Promise.reject(new Error(HEIC_ERR)); });
-    }
-
-    return Promise.reject(new Error(isHeic ? HEIC_ERR : 'Cannot convert this image format. Please convert to JPG or PNG before uploading.'));
-  }
+  // convertToJpeg now lives in window.AdminEditor (assets/js/admin-editor.js)
+  // so the resubmit popup (a separately-built window) can use the same logic.
 
   document.getElementById('avatar-input').addEventListener('change', function (e) {
     var file = e.target.files[0];
@@ -431,7 +395,7 @@
     clearErrors();
     showSuccess('profile-success', ADMIN_I18N.uploading_photo);
 
-    convertToJpeg(file).then(function (readyFile) {
+    AdminEditor.convertToJpeg(file).then(function (readyFile) {
       var ref = storage.ref('avatars/' + user.uid);
       return ref.put(readyFile).then(function (snapshot) {
         return snapshot.ref.getDownloadURL();
@@ -905,7 +869,27 @@
     return (authors || []).map(function (author) { return author.name; }).join(', ');
   }
 
+  // ── Markdown editor bindings ──
+  // Wires toolbar buttons, hidden file input, paste, and drag-drop on the
+  // article-content textarea. The pendingImages map is shared with the
+  // submit handler below.
+  if (window.AdminEditor) {
+    window.AdminEditor.attachEditorBindings({
+      toolbarId: 'article-toolbar',
+      textareaId: 'article-content',
+      fileInputId: 'article-image-input',
+      galleryId: 'article-image-gallery',
+      pendingImages: pendingImages,
+      i18n: ADMIN_I18N
+    });
+  }
+
   // ── Submit Article ──
+  // Three-step flow when there are buffered images:
+  //   1. submitArticle  → returns docId (placeholders still in content)
+  //   2. uploadArticleImage (per image, sequential) → R2 URL
+  //   3. updateSubmissionContent → persist final markdown with R2 URLs
+  // When there are no images, only step 1 runs (matches the original path).
   document.getElementById('article-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var user = auth.currentUser;
@@ -925,17 +909,91 @@
       return;
     }
 
-    setLoading('submit-article-btn', true);
+    // Only upload images that are still referenced in the textarea (user
+    // may have deleted some placeholder lines) and not already uploaded.
+    var referencedUuids = AdminEditor.findReferencedUuids(content).filter(function (u) {
+      var entry = pendingImages[u];
+      return entry && entry.status !== 'uploaded';
+    });
 
-    var submitFn = functions.httpsCallable('submitArticle');
-    submitFn({
-      title: title,
-      category: category,
-      language: language,
-      description: description,
-      content: content,
-      authorName: authorName,
-      coAuthors: coAuthors
+    setLoading('submit-article-btn', true);
+    var uploadFn = functions.httpsCallable('uploadArticleImage');
+    var updateFn = functions.httpsCallable('updateSubmissionContent');
+
+    function startSubmit() {
+      if (inflightSubmissionDocId) {
+        return Promise.resolve({ data: { docId: inflightSubmissionDocId, guideId: null } });
+      }
+      var submitFn = functions.httpsCallable('submitArticle');
+      return submitFn({
+        title: title, category: category, language: language,
+        description: description, content: content,
+        authorName: authorName, coAuthors: coAuthors
+      });
+    }
+
+    startSubmit().then(function (res) {
+      var docId = res && res.data && res.data.docId;
+      if (!docId) throw new Error('missing docId');
+      inflightSubmissionDocId = docId;
+
+      if (!referencedUuids.length) {
+        return { docId: docId, content: content };
+      }
+
+      var finalContent = content;
+      var idx = 0;
+      function next() {
+        if (idx >= referencedUuids.length) {
+          return Promise.resolve({ docId: docId, content: finalContent });
+        }
+        var uuid = referencedUuids[idx++];
+        var entry = pendingImages[uuid];
+        if (!entry || entry.status === 'uploaded') return next();
+        entry.status = 'uploading';
+        AdminEditor.refreshGallery(
+          document.getElementById('article-image-gallery'),
+          pendingImages, ADMIN_I18N,
+          function (u) { AdminEditor.removePendingImage(u, document.getElementById('article-content'), pendingImages); }
+        );
+        var msg = (ADMIN_I18N.tb_uploading_n || 'Uploading {n} of {total}')
+          .replace('{n}', idx).replace('{total}', referencedUuids.length);
+        showSuccess('article-success', msg);
+        return uploadFn({
+          docId: docId,
+          imageData: AdminEditor.dataUrlToBase64(entry.dataUrl),
+          fileName: entry.fileName,
+          contentType: entry.contentType
+        }).then(function (r) {
+          entry.status = 'uploaded';
+          entry.url = r.data.url;
+          entry.key = r.data.key;
+          entry.imageDocId = r.data.imageDocId;
+          finalContent = finalContent.split('image:' + uuid).join(r.data.url);
+          AdminEditor.refreshGallery(
+            document.getElementById('article-image-gallery'),
+            pendingImages, ADMIN_I18N,
+            function (u) { AdminEditor.removePendingImage(u, document.getElementById('article-content'), pendingImages); }
+          );
+          return next();
+        }).catch(function (err) {
+          entry.status = 'failed';
+          entry.error = (err && err.message) || ADMIN_I18N.tb_upload_failed;
+          AdminEditor.refreshGallery(
+            document.getElementById('article-image-gallery'),
+            pendingImages, ADMIN_I18N,
+            function (u) { AdminEditor.removePendingImage(u, document.getElementById('article-content'), pendingImages); }
+          );
+          throw err;
+        });
+      }
+      return next();
+    }).then(function (result) {
+      if (!referencedUuids.length) return result;
+      // Persist substituted content. If this step fails the submission
+      // already exists in pending state with placeholders — admin can
+      // requestRevision and the user can retry.
+      return updateFn({ docId: result.docId, content: result.content }).then(function () { return result; });
     }).then(function () {
       setLoading('submit-article-btn', false);
       showSuccess('article-success', ADMIN_I18N.article_submitted);
@@ -948,13 +1006,23 @@
       document.getElementById('coauthor-section-toggle').style.display = '';
       addSelfAsCoauthor();
       updateLimitNote();
+      // Reset pending images and reflow the now-empty gallery.
+      Object.keys(pendingImages).forEach(function (k) { delete pendingImages[k]; });
+      AdminEditor.refreshGallery(
+        document.getElementById('article-image-gallery'),
+        pendingImages, ADMIN_I18N,
+        function (u) { AdminEditor.removePendingImage(u, document.getElementById('article-content'), pendingImages); }
+      );
+      inflightSubmissionDocId = null;
       loadSubmissions(user.uid);
       setTimeout(function () {
         document.getElementById('article-success').style.display = 'none';
       }, 5000);
-    }).catch(function () {
+    }).catch(function (err) {
       setLoading('submit-article-btn', false);
-      showError('article-error', ADMIN_I18N.article_failed);
+      var msg = ADMIN_I18N.article_failed;
+      if (err && err.message) msg += ' (' + err.message + ')';
+      showError('article-error', msg);
     });
   });
 
@@ -969,7 +1037,8 @@
       category: document.getElementById('article-category').value || '',
       author: getAuthorNames(authors),
       description: document.getElementById('article-description').value.trim() || '',
-      content: document.getElementById('article-content').value || ''
+      content: AdminEditor.substituteImagePlaceholders(
+        document.getElementById('article-content').value || '', pendingImages)
     };
   }
 
@@ -1159,6 +1228,16 @@
     var win = window.open('', '_blank');
     if (!win) return;
     var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
+    // Resolve asset URLs so the popup can load the same admin-editor.js
+    // and heic2any bundle as the parent page.
+    var editorJsHref = '';
+    var heic2anyHref = '';
+    Array.prototype.forEach.call(document.scripts || [], function (s) {
+      if (s && s.src) {
+        if (/admin-editor\.js/.test(s.src)) editorJsHref = s.src;
+        if (/heic2any/.test(s.src)) heic2anyHref = s.src;
+      }
+    });
     var labels = {
       resubmit_btn:            ADMIN_I18N.resubmit_btn,
       resubmitting:            ADMIN_I18N.resubmitting,
@@ -1174,7 +1253,28 @@
       preview_by:              ADMIN_I18N.preview_by,
       close_tab:               ADMIN_I18N.close_tab,
       round_label:             'Round',
-      coauthors_label:         ADMIN_I18N.coauthors_label
+      coauthors_label:         ADMIN_I18N.coauthors_label,
+      // Editor toolbar i18n (so the popup toolbar matches the current locale).
+      toolbar_label:        ADMIN_I18N.toolbar_label,
+      tb_h2: ADMIN_I18N.tb_h2, tb_h3: ADMIN_I18N.tb_h3, tb_h4: ADMIN_I18N.tb_h4,
+      tb_bold: ADMIN_I18N.tb_bold, tb_italic: ADMIN_I18N.tb_italic, tb_strike: ADMIN_I18N.tb_strike,
+      tb_code: ADMIN_I18N.tb_code, tb_codeblock: ADMIN_I18N.tb_codeblock, tb_quote: ADMIN_I18N.tb_quote,
+      tb_ul: ADMIN_I18N.tb_ul, tb_ol: ADMIN_I18N.tb_ol,
+      tb_link: ADMIN_I18N.tb_link, tb_image: ADMIN_I18N.tb_image,
+      tb_hr: ADMIN_I18N.tb_hr, tb_table: ADMIN_I18N.tb_table,
+      tb_hint: ADMIN_I18N.tb_hint, tb_link_prompt: ADMIN_I18N.tb_link_prompt,
+      tb_ph_bold: ADMIN_I18N.tb_ph_bold, tb_ph_italic: ADMIN_I18N.tb_ph_italic,
+      tb_ph_strike: ADMIN_I18N.tb_ph_strike, tb_ph_code: ADMIN_I18N.tb_ph_code,
+      tb_ph_link: ADMIN_I18N.tb_ph_link,
+      tb_table_h1: ADMIN_I18N.tb_table_h1, tb_table_h2: ADMIN_I18N.tb_table_h2,
+      tb_table_c1: ADMIN_I18N.tb_table_c1, tb_table_c2: ADMIN_I18N.tb_table_c2,
+      tb_uploading_n: ADMIN_I18N.tb_uploading_n,
+      tb_image_too_large: ADMIN_I18N.tb_image_too_large,
+      tb_image_unsupported: ADMIN_I18N.tb_image_unsupported,
+      tb_image_failed: ADMIN_I18N.tb_image_failed,
+      tb_upload_failed: ADMIN_I18N.tb_upload_failed,
+      tb_remove_image: ADMIN_I18N.tb_remove_image,
+      tb_image_count_max: ADMIN_I18N.tb_image_count_max
     };
     win.document.write('<!DOCTYPE html><html lang="en"><head>' +
       '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
@@ -1194,6 +1294,8 @@
       '<\/div><\/div><\/div>' +
       '<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"><\/script>' +
       '<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"><\/script>' +
+      (heic2anyHref ? '<script src="' + heic2anyHref + '"><\/script>' : '') +
+      (editorJsHref ? '<script src="' + editorJsHref + '"><\/script>' : '') +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"><\/script>' +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"><\/script>' +
       '<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"><\/script>' +
@@ -1203,6 +1305,7 @@
       'var DOC_ID=' + JSON.stringify(docId) + ';' +
       'var L=' + JSON.stringify(labels) + ';' +
       'var STYLESHEET=' + JSON.stringify(stylesheetHref) + ';' +
+      'var pendingImages=Object.create(null);' +
       'firebase.initializeApp({apiKey:"AIzaSyC2PkxnmMwJiD73ouo8Jxmk536_A2RkNy8",authDomain:"uwc-survival-guide.firebaseapp.com",' +
         'projectId:"uwc-survival-guide",storageBucket:"uwc-survival-guide.firebasestorage.app",' +
         'messagingSenderId:"239920982978",appId:"1:239920982978:web:5ddd10c09ba0153956045b"});' +
@@ -1292,7 +1395,36 @@
         'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">Description<\/label><input id=\\"rs-desc\\" class=\\"admin-input\\" required><\/div>";' +
         'h+="<div class=\\"admin-field\\"><div class=\\"admin-editor-header\\"><label class=\\"admin-label\\">Content<\/label>";' +
         'h+="<button type=\\"button\\" class=\\"admin-editor-tab admin-editor-tab-newtab\\" id=\\"rs-preview\\">"+esc(L.preview_btn)+"<\/button><\/div>";' +
-        'h+="<textarea id=\\"rs-content\\" class=\\"admin-input admin-textarea\\" rows=\\"14\\" required><\/textarea><\/div>";' +
+        'h+="<div class=\\"admin-md-toolbar\\" id=\\"rs-toolbar\\" role=\\"toolbar\\" aria-label=\\""+esc(L.toolbar_label)+"\\">";' +
+        'h+="<div class=\\"admin-md-toolbar-group\\">";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"heading\\" data-level=\\"2\\" title=\\""+esc(L.tb_h2)+"\\"><strong>H2<\/strong><\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"heading\\" data-level=\\"3\\" title=\\""+esc(L.tb_h3)+"\\"><strong>H3<\/strong><\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"heading\\" data-level=\\"4\\" title=\\""+esc(L.tb_h4)+"\\"><strong>H4<\/strong><\/button>";' +
+        'h+="<\/div><span class=\\"admin-md-toolbar-sep\\" aria-hidden=\\"true\\"><\/span>";' +
+        'h+="<div class=\\"admin-md-toolbar-group\\">";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"bold\\" title=\\""+esc(L.tb_bold)+"\\"><strong>B<\/strong><\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"italic\\" title=\\""+esc(L.tb_italic)+"\\"><em>I<\/em><\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"strike\\" title=\\""+esc(L.tb_strike)+"\\"><s>S<\/s><\/button>";' +
+        'h+="<\/div><span class=\\"admin-md-toolbar-sep\\" aria-hidden=\\"true\\"><\/span>";' +
+        'h+="<div class=\\"admin-md-toolbar-group\\">";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn admin-md-btn-mono\\" data-md=\\"code\\" title=\\""+esc(L.tb_code)+"\\">&lt;\\/&gt;<\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn admin-md-btn-mono\\" data-md=\\"codeblock\\" title=\\""+esc(L.tb_codeblock)+"\\">{ }<\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"quote\\" title=\\""+esc(L.tb_quote)+"\\">&ldquo;&rdquo;<\/button>";' +
+        'h+="<\/div><span class=\\"admin-md-toolbar-sep\\" aria-hidden=\\"true\\"><\/span>";' +
+        'h+="<div class=\\"admin-md-toolbar-group\\">";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"ul\\" title=\\""+esc(L.tb_ul)+"\\">&bull; &mdash;<\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"ol\\" title=\\""+esc(L.tb_ol)+"\\">1.<\/button>";' +
+        'h+="<\/div><span class=\\"admin-md-toolbar-sep\\" aria-hidden=\\"true\\"><\/span>";' +
+        'h+="<div class=\\"admin-md-toolbar-group\\">";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"link\\" title=\\""+esc(L.tb_link)+"\\">&#128279;<\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"image\\" title=\\""+esc(L.tb_image)+"\\">&#128247;<\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"hr\\" title=\\""+esc(L.tb_hr)+"\\">&mdash;<\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"table\\" title=\\""+esc(L.tb_table)+"\\">&#8866;<\/button>";' +
+        'h+="<\/div><\/div>";' +
+        'h+="<textarea id=\\"rs-content\\" class=\\"admin-input admin-textarea admin-textarea-editor\\" rows=\\"14\\" required><\/textarea>";' +
+        'h+="<input type=\\"file\\" id=\\"rs-image-input\\" accept=\\"image\\/*,.heic,.heif\\" multiple style=\\"display:none;\\">";' +
+        'h+="<div class=\\"admin-md-gallery\\" id=\\"rs-image-gallery\\" aria-live=\\"polite\\" style=\\"display:none;\\"><\/div>";' +
+        'h+="<p class=\\"admin-md-hint\\">"+esc(L.tb_hint)+"<\/p><\/div>";' +
         'h+="<div class=\\"admin-field\\"><label class=\\"admin-label\\">"+esc(L.author_message_label)+"<\/label>";' +
         'h+="<textarea id=\\"rs-msg\\" class=\\"admin-input admin-textarea\\" rows=\\"3\\" placeholder=\\""+esc(L.author_message_placeholder)+"\\" maxlength=\\"500\\"><\/textarea>";' +
         'h+="<p class=\\"admin-char-counter\\" id=\\"rs-counter\\">0 / 500<\/p><\/div>";' +
@@ -1307,14 +1439,23 @@
         'document.getElementById("rs-lang").value=d.language||"";' +
         'document.getElementById("rs-desc").value=d.description||"";' +
         'document.getElementById("rs-content").value=d.content||"";' +
+        /* attach toolbar bindings (no-op if admin-editor.js failed to load) */
+        'if(window.AdminEditor){' +
+          'window.AdminEditor.attachEditorBindings({' +
+            'toolbarId:"rs-toolbar",textareaId:"rs-content",' +
+            'fileInputId:"rs-image-input",galleryId:"rs-image-gallery",' +
+            'pendingImages:pendingImages,i18n:L});' +
+        '}' +
         /* preview button */
         'var rsAuthorStr=authorNames(d);' +
         'document.getElementById("rs-preview").addEventListener("click",function(){' +
+          'var rawContent=document.getElementById("rs-content").value;' +
+          'var previewContent=window.AdminEditor?window.AdminEditor.substituteImagePlaceholders(rawContent,pendingImages):rawContent;' +
           'openPreview(document.getElementById("rs-title").value.trim()||"Untitled",' +
             'document.getElementById("rs-cat").value,' +
             'rsAuthorStr,' +
             'document.getElementById("rs-desc").value.trim(),' +
-            'document.getElementById("rs-content").value);' +
+            'previewContent);' +
         '});' +
         /* view version buttons */
         'document.querySelectorAll(".rs-view-ver").forEach(function(btn){' +
@@ -1328,7 +1469,11 @@
         'var msgTa=document.getElementById("rs-msg");' +
         'var ctr=document.getElementById("rs-counter");' +
         'msgTa.addEventListener("input",function(){counter(msgTa,ctr,500);});' +
-        /* submit handler */
+        /* submit handler — three-step flow:
+           1) resubmitArticle (status revise_resubmit -> pending),
+           2) uploadArticleImage per buffered image,
+           3) updateSubmissionContent with placeholder->URL substitution. */
+        'var resubmitted=false;' +
         'document.getElementById("rs-form").addEventListener("submit",function(ev){' +
           'ev.preventDefault();' +
           'var title=tTitle.value.trim();' +
@@ -1342,8 +1487,41 @@
             'err.textContent=L.err_fill_all;err.style.display="block";return;}' +
           'var btn=document.getElementById("rs-submit");' +
           'btn.textContent=L.resubmitting;btn.disabled=true;' +
-          'var resubmit=firebase.functions().httpsCallable("resubmitArticle");' +
-          'resubmit({docId:DOC_ID,title:title,category:cat,language:lang,description:desc,content:content,authorMessage:msg||""}).then(function(){' +
+          'var fns=firebase.functions();' +
+          'var resubmit=fns.httpsCallable("resubmitArticle");' +
+          'var uploadFn=fns.httpsCallable("uploadArticleImage");' +
+          'var updateFn=fns.httpsCallable("updateSubmissionContent");' +
+          'var refs=window.AdminEditor?window.AdminEditor.findReferencedUuids(content).filter(function(u){var e=pendingImages[u];return e&&e.status!=="uploaded";}):[];' +
+          'function startResubmit(){' +
+            'if(resubmitted)return Promise.resolve();' +
+            'return resubmit({docId:DOC_ID,title:title,category:cat,language:lang,description:desc,content:content,authorMessage:msg||""}).then(function(){resubmitted=true;});' +
+          '}' +
+          'function uploadAll(){' +
+            'if(!refs.length)return Promise.resolve(content);' +
+            'var finalContent=content;var i=0;' +
+            'function nx(){' +
+              'if(i>=refs.length)return Promise.resolve(finalContent);' +
+              'var u=refs[i++];var entry=pendingImages[u];' +
+              'if(!entry||entry.status==="uploaded")return nx();' +
+              'entry.status="uploading";' +
+              'if(window.AdminEditor){window.AdminEditor.refreshGallery(document.getElementById("rs-image-gallery"),pendingImages,L,function(x){window.AdminEditor.removePendingImage(x,document.getElementById("rs-content"),pendingImages);});}' +
+              'return uploadFn({docId:DOC_ID,imageData:window.AdminEditor.dataUrlToBase64(entry.dataUrl),fileName:entry.fileName,contentType:entry.contentType}).then(function(r){' +
+                'entry.status="uploaded";entry.url=r.data.url;entry.key=r.data.key;entry.imageDocId=r.data.imageDocId;' +
+                'finalContent=finalContent.split("image:"+u).join(r.data.url);' +
+                'window.AdminEditor.refreshGallery(document.getElementById("rs-image-gallery"),pendingImages,L,function(x){window.AdminEditor.removePendingImage(x,document.getElementById("rs-content"),pendingImages);});' +
+                'return nx();' +
+              '}).catch(function(err){' +
+                'entry.status="failed";entry.error=(err&&err.message)||L.tb_upload_failed;' +
+                'window.AdminEditor.refreshGallery(document.getElementById("rs-image-gallery"),pendingImages,L,function(x){window.AdminEditor.removePendingImage(x,document.getElementById("rs-content"),pendingImages);});' +
+                'throw err;' +
+              '});' +
+            '}' +
+            'return nx();' +
+          '}' +
+          'startResubmit().then(uploadAll).then(function(finalContent){' +
+            'if(!refs.length)return;' +
+            'return updateFn({docId:DOC_ID,content:finalContent});' +
+          '}).then(function(){' +
             'document.getElementById("rs-form").style.display="none";' +
             'document.getElementById("rs-error").style.display="none";' +
             'var sc=document.createElement("div");sc.className="admin-success";sc.style.cssText="margin-top:1.5rem;padding:1.2rem;text-align:center;";' +
@@ -1356,7 +1534,7 @@
             '}' +
           '}).catch(function(e){' +
             'console.error(e);btn.textContent=L.resubmit_btn;btn.disabled=false;' +
-            'var err=document.getElementById("rs-error");err.textContent=L.article_failed;err.style.display="block";' +
+            'var err=document.getElementById("rs-error");err.textContent=L.article_failed+(e&&e.message?" ("+e.message+")":"");err.style.display="block";' +
           '});' +
         '});' +
       '}' +

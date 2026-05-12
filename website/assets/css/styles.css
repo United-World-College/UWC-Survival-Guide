@@ -2671,6 +2671,182 @@ a.admin-coauthor-result-name:hover {
   color: var(--dark);
 }
 
+/* ── Markdown Toolbar ── */
+.admin-md-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem 0.55rem;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  font-family: var(--sans);
+}
+
+.admin-md-toolbar-group {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.admin-md-toolbar-sep {
+  display: inline-block;
+  width: 1px;
+  height: 1.1rem;
+  background: var(--border);
+  margin: 0 0.25rem;
+}
+
+.admin-md-btn {
+  min-width: 2.2rem;
+  padding: 0.35rem 0.55rem;
+  background: var(--ivory);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--dark);
+  font-size: 0.85rem;
+  font-family: inherit;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.admin-md-btn-mono {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+}
+
+.admin-md-btn:hover {
+  background: var(--dark);
+  color: var(--ivory);
+  border-color: var(--dark);
+}
+
+.admin-md-btn:active {
+  transform: translateY(1px);
+}
+
+.admin-md-btn:focus-visible {
+  outline: 2px solid var(--dark);
+  outline-offset: 1px;
+}
+
+.admin-textarea-editor {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+
+.admin-md-toolbar + .admin-textarea {
+  border-top: none;
+}
+
+.admin-textarea-drop {
+  outline: 2px dashed var(--dark);
+  outline-offset: -4px;
+  background: var(--cream);
+}
+
+.admin-md-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.65rem;
+}
+
+.admin-md-thumb {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--cream);
+}
+
+.admin-md-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.admin-md-thumb-uploading::before,
+.admin-md-thumb-failed::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(44, 42, 38, 0.45);
+}
+
+.admin-md-thumb-spin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid rgba(246, 244, 240, 0.4);
+  border-top-color: #f6f4f0;
+  border-radius: 50%;
+  animation: admin-md-spin 0.7s linear infinite;
+}
+
+@keyframes admin-md-spin {
+  to { transform: rotate(360deg); }
+}
+
+.admin-md-thumb-err {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffd4cc;
+  font-weight: 700;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.admin-md-thumb-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(44, 42, 38, 0.85);
+  color: #fff;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+}
+
+.admin-md-thumb-remove:hover {
+  background: rgba(44, 42, 38, 1);
+}
+
+.admin-md-hint {
+  margin-top: 0.55rem;
+  font-size: 0.78rem;
+  color: var(--warm-gray);
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .admin-md-btn {
+    min-width: 1.9rem;
+    padding: 0.32rem 0.45rem;
+    font-size: 0.8rem;
+  }
+  .admin-md-toolbar-sep {
+    display: none;
+  }
+  .admin-md-thumb {
+    width: 60px;
+    height: 60px;
+  }
+}
+
 /* ── Author Featured & Latest ── */
 .author-section-cards {
   max-width: 860px;

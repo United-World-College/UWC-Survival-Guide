@@ -126,6 +126,18 @@ describe("Admin page HTML structure", () => {
     expect(adminHtml).toContain('id="article-content"');
   });
 
+  test("has markdown toolbar wired to the article textarea", () => {
+    expect(adminHtml).toContain('id="article-toolbar"');
+    expect(adminHtml).toContain('id="article-image-input"');
+    expect(adminHtml).toContain('id="article-image-gallery"');
+    expect(adminHtml).toContain('data-md="heading"');
+    expect(adminHtml).toContain('data-md="image"');
+  });
+
+  test("loads admin-editor.js asset alongside admin.js", () => {
+    expect(adminHtml).toContain("admin-editor.js");
+  });
+
   test("has co-authors section", () => {
     expect(adminHtml).toContain('id="coauthors-list"');
     expect(adminHtml).toContain('id="coauthor-search-input"');
@@ -509,6 +521,9 @@ describe("Admin page JS — getElementById calls reference existing HTML IDs", (
       "rs-error",
       "rs-submit",
       "rs-close-tab",
+      "rs-toolbar",
+      "rs-image-input",
+      "rs-image-gallery",
     ]);
     const missing = [];
     for (const id of jsIds) {

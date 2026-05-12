@@ -254,6 +254,40 @@ admin:
   description_placeholder: 文章简短摘要
   content_label: 正文（Markdown）
   content_placeholder: 在此使用 Markdown 撰写文章正文……
+  toolbar_label: Markdown 格式工具
+  tb_h2: 二级标题
+  tb_h3: 三级标题
+  tb_h4: 四级标题
+  tb_bold: 粗体
+  tb_italic: 斜体
+  tb_strike: 删除线
+  tb_code: 行内代码
+  tb_codeblock: 代码块
+  tb_quote: 引用
+  tb_ul: 项目符号
+  tb_ol: 编号列表
+  tb_link: 插入链接
+  tb_image: 插入图片
+  tb_hr: 分隔线
+  tb_table: 插入表格
+  tb_hint: 可粘贴、拖入或点击图片按钮。单张上限 5 MB，支持 JPG、PNG、GIF、WEBP、HEIC。
+  tb_link_prompt: "请输入链接地址："
+  tb_ph_bold: 粗体文字
+  tb_ph_italic: 斜体文字
+  tb_ph_strike: 文字
+  tb_ph_code: 代码
+  tb_ph_link: 链接文字
+  tb_table_h1: 表头 1
+  tb_table_h2: 表头 2
+  tb_table_c1: 单元格
+  tb_table_c2: 单元格
+  tb_uploading_n: "正在上传第 {n} / {total} 张图片……"
+  tb_image_too_large: 图片大小不能超过 5 MB。
+  tb_image_unsupported: 不支持的图片格式，请使用 JPG、PNG、GIF 或 WEBP。
+  tb_image_failed: 图片处理失败。
+  tb_upload_failed: 上传失败。
+  tb_remove_image: 移除图片
+  tb_image_count_max: 每篇文章最多 20 张图片。
   preview_btn: 预览 ↗
   show_review_thread: 显示审核记录
   submit_btn: 提交审核
@@ -297,7 +331,7 @@ admin:
   passwords_no_match: 两次密码不一致。
   reset_email_sent: 重置邮件已发送，请查收。
   image_file_only: 请选择图片文件。
-  image_too_large: 图片大小不能超过 2 MB。
+  image_too_large: 图片大小不能超过 5 MB。
   uploading_photo: 正在上传头像……
   photo_failed: 头像上传失败，请重试。
   link_label_ph: 例：GitHub、个人网站

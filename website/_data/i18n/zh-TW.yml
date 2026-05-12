@@ -254,6 +254,40 @@ admin:
   description_placeholder: 文章簡短摘要
   content_label: 正文（Markdown）
   content_placeholder: 在此使用 Markdown 撰寫文章正文……
+  toolbar_label: Markdown 格式工具
+  tb_h2: 二級標題
+  tb_h3: 三級標題
+  tb_h4: 四級標題
+  tb_bold: 粗體
+  tb_italic: 斜體
+  tb_strike: 刪除線
+  tb_code: 行內程式碼
+  tb_codeblock: 程式碼區塊
+  tb_quote: 引用
+  tb_ul: 項目符號
+  tb_ol: 編號清單
+  tb_link: 插入連結
+  tb_image: 插入圖片
+  tb_hr: 分隔線
+  tb_table: 插入表格
+  tb_hint: 可貼上、拖入或點擊圖片按鈕。單張上限 5 MB，支援 JPG、PNG、GIF、WEBP、HEIC。
+  tb_link_prompt: "請輸入連結網址："
+  tb_ph_bold: 粗體文字
+  tb_ph_italic: 斜體文字
+  tb_ph_strike: 文字
+  tb_ph_code: 程式碼
+  tb_ph_link: 連結文字
+  tb_table_h1: 表頭 1
+  tb_table_h2: 表頭 2
+  tb_table_c1: 儲存格
+  tb_table_c2: 儲存格
+  tb_uploading_n: "正在上傳第 {n} / {total} 張圖片……"
+  tb_image_too_large: 圖片大小不能超過 5 MB。
+  tb_image_unsupported: 不支援的圖片格式，請使用 JPG、PNG、GIF 或 WEBP。
+  tb_image_failed: 圖片處理失敗。
+  tb_upload_failed: 上傳失敗。
+  tb_remove_image: 移除圖片
+  tb_image_count_max: 每篇文章最多 20 張圖片。
   preview_btn: 預覽 ↗
   show_review_thread: 顯示審核記錄
   submit_btn: 提交審核
@@ -297,7 +331,7 @@ admin:
   passwords_no_match: 兩次密碼不一致。
   reset_email_sent: 重設郵件已傳送，請查收。
   image_file_only: 請選擇圖片檔案。
-  image_too_large: 圖片大小不能超過 2 MB。
+  image_too_large: 圖片大小不能超過 5 MB。
   uploading_photo: 正在上傳大頭貼……
   photo_failed: 大頭貼上傳失敗，請重試。
   link_label_ph: 例：GitHub、個人網站

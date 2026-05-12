@@ -489,6 +489,48 @@ exports.uploadArticleImage = onCall(async (request) => {
 });
 
 // ══════════════════════════════════════
+// 7b. updateSubmissionContent
+// ══════════════════════════════════════
+//
+// Persists the final markdown content for a submission after image
+// placeholders have been swapped for R2 URLs. Restricted to the owner
+// or a co-author and only while the submission is in 'pending' or
+// 'revise_resubmit' (i.e. before review has finalized it).
+exports.updateSubmissionContent = onCall(async (request) => {
+  assertAuth(request.auth);
+  const { docId, content } = request.data;
+  if (!docId || typeof content !== "string") {
+    throw new HttpsError("invalid-argument", "docId and content are required.");
+  }
+  if (content.length > 200000) {
+    throw new HttpsError("invalid-argument", "Content exceeds maximum length.");
+  }
+
+  const ref = db.collection("submissions").doc(docId);
+  const snap = await ref.get();
+  if (!snap.exists) throw new HttpsError("not-found", "Submission not found.");
+  const d = snap.data();
+
+  const isOwner = d.uid === request.auth.uid;
+  const isCoauthor = d.coauthorUids && d.coauthorUids.includes(request.auth.uid);
+  if (!isOwner && !isCoauthor) {
+    throw new HttpsError("permission-denied", "You can only update your own submissions.");
+  }
+  if (d.status !== "pending" && d.status !== "revise_resubmit") {
+    throw new HttpsError("failed-precondition", "Cannot edit submission in current state.");
+  }
+
+  await ref.update({
+    content,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+  await appendSubmissionAuditEvent(docId, "content_image_swap", request.auth, {
+    contentLength: content.length,
+  });
+  return { success: true };
+});
+
+// ══════════════════════════════════════
 // 8. deleteArticleImage
 // ══════════════════════════════════════
 

@@ -178,7 +178,41 @@ var ADMIN_I18N = {
   usage_col_audit:      {{ t.usage_col_audit | jsonify }},
   usage_col_config:     {{ t.usage_col_config | jsonify }},
   usage_of:             {{ t.usage_of | jsonify }},
-  usage_invocations:    {{ t.usage_invocations | jsonify }}
+  usage_invocations:    {{ t.usage_invocations | jsonify }},
+  toolbar_label:        {{ t.toolbar_label | jsonify }},
+  tb_h2:                {{ t.tb_h2 | jsonify }},
+  tb_h3:                {{ t.tb_h3 | jsonify }},
+  tb_h4:                {{ t.tb_h4 | jsonify }},
+  tb_bold:              {{ t.tb_bold | jsonify }},
+  tb_italic:            {{ t.tb_italic | jsonify }},
+  tb_strike:            {{ t.tb_strike | jsonify }},
+  tb_code:              {{ t.tb_code | jsonify }},
+  tb_codeblock:         {{ t.tb_codeblock | jsonify }},
+  tb_quote:             {{ t.tb_quote | jsonify }},
+  tb_ul:                {{ t.tb_ul | jsonify }},
+  tb_ol:                {{ t.tb_ol | jsonify }},
+  tb_link:              {{ t.tb_link | jsonify }},
+  tb_image:             {{ t.tb_image | jsonify }},
+  tb_hr:                {{ t.tb_hr | jsonify }},
+  tb_table:             {{ t.tb_table | jsonify }},
+  tb_hint:              {{ t.tb_hint | jsonify }},
+  tb_link_prompt:       {{ t.tb_link_prompt | jsonify }},
+  tb_ph_bold:           {{ t.tb_ph_bold | jsonify }},
+  tb_ph_italic:         {{ t.tb_ph_italic | jsonify }},
+  tb_ph_strike:         {{ t.tb_ph_strike | jsonify }},
+  tb_ph_code:           {{ t.tb_ph_code | jsonify }},
+  tb_ph_link:           {{ t.tb_ph_link | jsonify }},
+  tb_table_h1:          {{ t.tb_table_h1 | jsonify }},
+  tb_table_h2:          {{ t.tb_table_h2 | jsonify }},
+  tb_table_c1:          {{ t.tb_table_c1 | jsonify }},
+  tb_table_c2:          {{ t.tb_table_c2 | jsonify }},
+  tb_uploading_n:       {{ t.tb_uploading_n | jsonify }},
+  tb_image_too_large:   {{ t.tb_image_too_large | jsonify }},
+  tb_image_unsupported: {{ t.tb_image_unsupported | jsonify }},
+  tb_image_failed:      {{ t.tb_image_failed | jsonify }},
+  tb_upload_failed:     {{ t.tb_upload_failed | jsonify }},
+  tb_remove_image:      {{ t.tb_remove_image | jsonify }},
+  tb_image_count_max:   {{ t.tb_image_count_max | jsonify }}
 };
 </script>
 
@@ -402,7 +436,41 @@ var ADMIN_I18N = {
                 <label class="admin-label" for="article-content">{{ t.content_label }}</label>
                 <button type="button" class="admin-editor-tab admin-editor-tab-newtab" id="tab-open-newtab" title="{{ t.preview_btn }}">{{ t.preview_btn }}</button>
               </div>
-              <textarea id="article-content" class="admin-input admin-textarea" rows="14" placeholder="{{ t.content_placeholder }}" required></textarea>
+              <div class="admin-md-toolbar" id="article-toolbar" role="toolbar" aria-label="{{ t.toolbar_label }}">
+                <div class="admin-md-toolbar-group">
+                  <button type="button" class="admin-md-btn" data-md="heading" data-level="2" title="{{ t.tb_h2 }}" aria-label="{{ t.tb_h2 }}"><strong>H2</strong></button>
+                  <button type="button" class="admin-md-btn" data-md="heading" data-level="3" title="{{ t.tb_h3 }}" aria-label="{{ t.tb_h3 }}"><strong>H3</strong></button>
+                  <button type="button" class="admin-md-btn" data-md="heading" data-level="4" title="{{ t.tb_h4 }}" aria-label="{{ t.tb_h4 }}"><strong>H4</strong></button>
+                </div>
+                <span class="admin-md-toolbar-sep" aria-hidden="true"></span>
+                <div class="admin-md-toolbar-group">
+                  <button type="button" class="admin-md-btn" data-md="bold" title="{{ t.tb_bold }}" aria-label="{{ t.tb_bold }}"><strong>B</strong></button>
+                  <button type="button" class="admin-md-btn" data-md="italic" title="{{ t.tb_italic }}" aria-label="{{ t.tb_italic }}"><em>I</em></button>
+                  <button type="button" class="admin-md-btn" data-md="strike" title="{{ t.tb_strike }}" aria-label="{{ t.tb_strike }}"><s>S</s></button>
+                </div>
+                <span class="admin-md-toolbar-sep" aria-hidden="true"></span>
+                <div class="admin-md-toolbar-group">
+                  <button type="button" class="admin-md-btn admin-md-btn-mono" data-md="code" title="{{ t.tb_code }}" aria-label="{{ t.tb_code }}">&lt;/&gt;</button>
+                  <button type="button" class="admin-md-btn admin-md-btn-mono" data-md="codeblock" title="{{ t.tb_codeblock }}" aria-label="{{ t.tb_codeblock }}">{ }</button>
+                  <button type="button" class="admin-md-btn" data-md="quote" title="{{ t.tb_quote }}" aria-label="{{ t.tb_quote }}">&ldquo;&rdquo;</button>
+                </div>
+                <span class="admin-md-toolbar-sep" aria-hidden="true"></span>
+                <div class="admin-md-toolbar-group">
+                  <button type="button" class="admin-md-btn" data-md="ul" title="{{ t.tb_ul }}" aria-label="{{ t.tb_ul }}">&bull; &mdash;</button>
+                  <button type="button" class="admin-md-btn" data-md="ol" title="{{ t.tb_ol }}" aria-label="{{ t.tb_ol }}">1.</button>
+                </div>
+                <span class="admin-md-toolbar-sep" aria-hidden="true"></span>
+                <div class="admin-md-toolbar-group">
+                  <button type="button" class="admin-md-btn" data-md="link" title="{{ t.tb_link }}" aria-label="{{ t.tb_link }}">&#128279;</button>
+                  <button type="button" class="admin-md-btn" data-md="image" title="{{ t.tb_image }}" aria-label="{{ t.tb_image }}">&#128247;</button>
+                  <button type="button" class="admin-md-btn" data-md="hr" title="{{ t.tb_hr }}" aria-label="{{ t.tb_hr }}">&mdash;</button>
+                  <button type="button" class="admin-md-btn" data-md="table" title="{{ t.tb_table }}" aria-label="{{ t.tb_table }}">&#8866;</button>
+                </div>
+              </div>
+              <textarea id="article-content" class="admin-input admin-textarea admin-textarea-editor" rows="14" placeholder="{{ t.content_placeholder }}" required></textarea>
+              <input type="file" id="article-image-input" accept="image/*,.heic,.heif" multiple style="display:none;" />
+              <div class="admin-md-gallery" id="article-image-gallery" aria-live="polite" style="display:none;"></div>
+              <p class="admin-md-hint">{{ t.tb_hint }}</p>
             </div>
 
             <button type="submit" class="admin-btn" id="submit-article-btn">{{ t.submit_btn }}</button>
@@ -560,6 +628,7 @@ var ADMIN_I18N = {
 
 </div>
 
+<script src="{{ '/assets/js/admin-editor.js' | relative_url }}"></script>
 <script src="{{ '/assets/js/admin.js' | relative_url }}"></script>
 
   {% include footer.html %}
