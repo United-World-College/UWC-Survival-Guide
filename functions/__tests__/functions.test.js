@@ -193,7 +193,10 @@ class MockHttpsError extends Error {
 }
 
 jest.mock("firebase-functions/v2/https", () => ({
-  onCall: (fn) => fn,
+  // onCall has two signatures in v2: onCall(handler) and onCall(options, handler).
+  // Identity-unwrap both so tests can invoke the handler directly.
+  onCall: (optsOrFn, maybeFn) =>
+    (typeof optsOrFn === "function" ? optsOrFn : maybeFn),
   HttpsError: MockHttpsError,
 }));
 
@@ -249,6 +252,13 @@ function mockGitHubSuccess() {
     return { ok: true, status: 200, json: async () => ({}) };
   });
 }
+
+// Mock the admin-notification helper so tests don't try to send real email
+// and can assert on its invocation.
+jest.mock("../lib/notify", () => ({
+  notifyAdminsOfSubmission: jest.fn(() => Promise.resolve()),
+}));
+const { notifyAdminsOfSubmission: mockNotify } = require("../lib/notify");
 
 // ── Require the module under test ──
 const funcs = require("../index");
@@ -331,11 +341,84 @@ describe("checkAdminStatus", () => {
 });
 
 // ══════════════════════════════════════
+// submitArticle
+// ══════════════════════════════════════
+
+describe("submitArticle", () => {
+  beforeEach(() => {
+    resetMockDb();
+    mockNotify.mockClear();
+  });
+
+  const validData = {
+    title: "My First Article",
+    category: "Academics",
+    language: "en",
+    description: "An intro",
+    content: "Body content",
+    authorName: "Alice",
+    coAuthors: [{ name: "Alice", order: 1 }],
+  };
+
+  test("creates a pending submission and notifies admins", async () => {
+    const result = await funcs.submitArticle({
+      auth: userAuth("user-1", "alice@test.com"),
+      data: validData,
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.docId).toBeDefined();
+    expect(result.guideId).toBe("my-first-article");
+
+    // Submission doc was written with status=pending
+    const created = getMockDocData("submissions", result.docId);
+    expect(created).toBeDefined();
+    expect(created.status).toBe("pending");
+    expect(created.uid).toBe("user-1");
+    expect(created.title).toBe("My First Article");
+
+    // Notify was invoked with kind='new' and the submitter's email
+    expect(mockNotify).toHaveBeenCalledTimes(1);
+    expect(mockNotify).toHaveBeenCalledWith(
+        result.docId,
+        expect.objectContaining({
+          title: "My First Article",
+          category: "Academics",
+          language: "en",
+          authorName: "Alice",
+        }),
+        "new",
+        "alice@test.com",
+    );
+  });
+
+  test("throws unauthenticated when not signed in", async () => {
+    await expect(
+        funcs.submitArticle({ auth: null, data: validData }),
+    ).rejects.toThrow("Sign in required.");
+    expect(mockNotify).not.toHaveBeenCalled();
+  });
+
+  test("throws invalid-argument when required fields are missing", async () => {
+    await expect(
+        funcs.submitArticle({
+          auth: userAuth("user-1"),
+          data: { title: "x" },
+        }),
+    ).rejects.toThrow("All content fields are required.");
+    expect(mockNotify).not.toHaveBeenCalled();
+  });
+});
+
+// ══════════════════════════════════════
 // resubmitArticle
 // ══════════════════════════════════════
 
 describe("resubmitArticle", () => {
-  beforeEach(() => resetMockDb());
+  beforeEach(() => {
+    resetMockDb();
+    mockNotify.mockClear();
+  });
 
   const validData = {
     docId: "sub-1",
@@ -350,6 +433,8 @@ describe("resubmitArticle", () => {
   test("succeeds for owner with revise_resubmit status", async () => {
     setMockDoc("submissions", "sub-1", {
       uid: "user-1",
+      authorName: "Alice",
+      coAuthors: [{ name: "Alice", order: 1 }],
       status: "revise_resubmit",
       revisionHistory: [
         { round: 1, reviewerComments: "Fix this" },
@@ -362,6 +447,18 @@ describe("resubmitArticle", () => {
     });
 
     expect(result.success).toBe(true);
+    expect(mockNotify).toHaveBeenCalledTimes(1);
+    expect(mockNotify).toHaveBeenCalledWith(
+        "sub-1",
+        expect.objectContaining({
+          title: "Updated Title",
+          category: "Academics",
+          language: "en",
+          description: "Updated desc",
+        }),
+        "resubmit",
+        "user@test.com",
+    );
   });
 
   test("throws unauthenticated when not signed in", async () => {

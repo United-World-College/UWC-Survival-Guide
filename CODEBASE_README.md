@@ -24,6 +24,7 @@
   - [getServiceUsage](#getserviceusage)
 - [Internal Library Functions](#internal-library-functions)
   - [Auth](#auth)
+  - [Notify](#notify)
   - [Config](#config)
   - [GitHub](#github)
   - [R2 (Cloudflare)](#r2-cloudflare)
@@ -111,6 +112,9 @@ All callable functions are defined in `functions/index.js` and invoked via Fireb
 **Side Effects:**
 - Creates Firestore document in `submissions` collection
 - Appends audit event (`type: "submitted"`) to `submissionAudit/{docId}`
+- Fires `notifyAdminsOfSubmission(docId, data, "new", submitterEmail)` (fire-and-forget); sends an email to all admins except the submitter, with a deep-link `?submission={docId}` to the admin panel
+
+**Secrets:** Declares `GMAIL_APP_PASSWORD` (used by `notifyAdminsOfSubmission` for SMTP auth)
 
 ---
 
@@ -146,6 +150,9 @@ All callable functions are defined in `functions/index.js` and invoked via Fireb
 **Side Effects:**
 - Updates `submissions/{docId}` document
 - Appends audit event (`type: "resubmitted"`) to `submissionAudit/{docId}`
+- Fires `notifyAdminsOfSubmission(docId, data, "resubmit", submitterEmail)` (fire-and-forget); same email path as `submitArticle` but with a "Resubmission:" subject prefix
+
+**Secrets:** Declares `GMAIL_APP_PASSWORD`
 
 ---
 
@@ -422,6 +429,36 @@ All callable functions are defined in `functions/index.js` and invoked via Fireb
 | **Output** | *(none)* | — | Throws if not admin or email not verified |
 
 **Logic:** Calls `assertAuth()`, checks `email_verified === true`, then checks email is in admin list.
+
+---
+
+### Notify
+
+**Location:** `functions/lib/notify.js`
+
+#### notifyAdminsOfSubmission(docId, data, kind, submitterEmail)
+
+| Direction | Field | Type | Description |
+|-----------|-------|------|-------------|
+| **Input** | `docId` | `string` | Submission document ID |
+| **Input** | `data` | `object` | `{ title, category, language, description, authorName, coAuthors }` |
+| **Input** | `kind` | `"new" \| "resubmit"` | Affects subject line and intro copy |
+| **Input** | `submitterEmail` | `string` | Excluded from recipients to avoid self-notification |
+| **Output** | *(none)* | — | Resolves to `undefined`; never throws |
+
+**Logic:**
+1. Reads admin emails via `getAdminEmails()` (cached)
+2. Filters out the submitter from recipient list
+3. If no recipients remain, logs and returns (no email)
+4. Lazily builds a `nodemailer` transporter for Gmail SMTP using `process.env.GMAIL_APP_PASSWORD`
+5. Sends one email with `to: mclemore880@gmail.com` (self) and `bcc:` set to remaining admins (hides recipients from each other)
+6. Subject: `[UWC Survival Guide] New submission: <title>` or `[UWC Survival Guide] Resubmission: <title>`
+7. Body includes title, author, category, language, truncated description (≤300 chars), and a deep-link button to `https://uwc-survival-guide.pages.dev/admin/?submission={docId}` — the admin panel parses this query param and auto-opens the review modal (see `website/assets/js/admin.js`).
+8. All errors are caught and logged with `[notify] failed:` prefix — must never throw because callers fire-and-forget.
+
+**Secret:** Requires `GMAIL_APP_PASSWORD` (set via `firebase functions:secrets:set GMAIL_APP_PASSWORD`). Callable functions that use this helper must declare `{ secrets: ["GMAIL_APP_PASSWORD"] }` in their `onCall` options.
+
+**Callers:** `submitArticle`, `resubmitArticle` (both fire-and-forget after audit event)
 
 ---
 

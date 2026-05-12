@@ -19,6 +19,7 @@ const {
   uploadToR2, deleteFromR2, deleteMultipleFromR2,
   R2_ALLOWED_TYPES, R2_MAX_SIZE,
 } = require("./lib/r2");
+const { notifyAdminsOfSubmission } = require("./lib/notify");
 
 // ══════════════════════════════════════
 // 0. checkAdminStatus
@@ -37,7 +38,7 @@ exports.checkAdminStatus = onCall(async (request) => {
 // 1. submitArticle
 // ══════════════════════════════════════
 
-exports.submitArticle = onCall(async (request) => {
+exports.submitArticle = onCall({ secrets: ["GMAIL_APP_PASSWORD"] }, async (request) => {
   assertAuth(request.auth);
   const { title, category, language, description, content, authorName, coAuthors } = request.data;
   if (!title || !category || !language || !description || !content || !authorName) {
@@ -67,6 +68,13 @@ exports.submitArticle = onCall(async (request) => {
     guideId,
   });
 
+  notifyAdminsOfSubmission(
+      ref.id,
+      { title, category, language, description, authorName, coAuthors: coAuthorList },
+      "new",
+      request.auth.token.email,
+  ).catch((e) => console.error("notify failed:", e));
+
   return { success: true, docId: ref.id, guideId };
 });
 
@@ -74,7 +82,7 @@ exports.submitArticle = onCall(async (request) => {
 // 2. resubmitArticle
 // ══════════════════════════════════════
 
-exports.resubmitArticle = onCall(async (request) => {
+exports.resubmitArticle = onCall({ secrets: ["GMAIL_APP_PASSWORD"] }, async (request) => {
   assertAuth(request.auth);
   const { docId, title, category, language, description, content, authorMessage } = request.data;
   if (!docId || !title || !category || !language || !description || !content) {
@@ -119,6 +127,17 @@ exports.resubmitArticle = onCall(async (request) => {
     authorMessage: authorMessage || null,
     round: history.length ? history[history.length - 1].round : null,
   });
+
+  notifyAdminsOfSubmission(
+      docId,
+      {
+        title, category, language, description,
+        authorName: data.authorName,
+        coAuthors: data.coAuthors,
+      },
+      "resubmit",
+      request.auth.token.email,
+  ).catch((e) => console.error("notify failed:", e));
 
   return { success: true };
 });

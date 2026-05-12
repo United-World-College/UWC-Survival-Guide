@@ -1617,6 +1617,16 @@
   var currentFilter = 'pending';
   var currentModalDocId = null;
   var currentModalData = null;
+  var pendingDeepLinkDocId = (function () {
+    try {
+      var id = new URLSearchParams(window.location.search).get('submission');
+      if (id) {
+        // Strip the query param so a refresh will not keep re-opening the modal.
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+      return id || null;
+    } catch (_) { return null; }
+  })();
 
   function checkAdmin() {
     var user = auth.currentUser;
@@ -1634,6 +1644,11 @@
         document.getElementById('admin-usage-panel').style.display = 'block';
         loadUsageStats(false);
         initUsageRefresh();
+        if (pendingDeepLinkDocId) {
+          var docId = pendingDeepLinkDocId;
+          pendingDeepLinkDocId = null;
+          openReviewModal(docId);
+        }
       }
     }).catch(function () {
       isAdmin = false;
