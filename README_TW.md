@@ -12,7 +12,7 @@
 
 - William Huang 黃靖然 (University of Illinois Urbana-Champaign, UWC Changshu China 24')
 - Tom Li 李東源 (University of Florida, UWC Changshu China 24')
-- E_P_silon (UWC Changshu China 24')
+- E_P_silon (Columbia University, UWC Changshu China 24')
 
 ## 目錄
 
@@ -91,7 +91,7 @@ firebase.json   ← Firebase CLI 設定（模擬器埠號、規則路徑）
 .firebaserc     ← Firebase 專案別名（uwc-survival-guide）
 ```
 
-`auto-translator/` 是一個小型 CLI 工具，掃描 `default/` 和 `chinese/` 目錄，使用 Anthropic API 自動建立缺少的英文、簡體中文或台灣繁體翻譯。預設使用 `claude-sonnet-4-6` 模型，搭配專用翻譯提示檔，並優先以簡體中文原文作為翻譯來源。
+`auto-translator/` 是一個小型 CLI 工具，掃描 `default/` 和 `chinese/` 目錄，呼叫 Google Gemini API 自動建立缺少的英文、簡體中文或台灣繁體翻譯。預設使用 `gemini-2.5-flash` 模型（可透過 `GEMINI_MODEL` 或 `--model` 覆寫），搭配專用翻譯提示檔，並優先以簡體中文原文作為翻譯來源。`GEMINI_API_KEY` 從倉庫根目錄的 `.env` 讀取。
 
 從倉庫根目錄執行：
 
@@ -102,7 +102,7 @@ firebase.json   ← Firebase CLI 設定（模擬器埠號、規則路徑）
 
 該腳本透過 `uv run python` 在 `auto-translator/` 目錄下執行翻譯器。
 
-當編輯在管理後台審批通過一篇文章時，系統也會自動呼叫 Google Gemini 將該文章翻譯為其餘兩種語言並推送到 GitHub。要啟用此功能，需要在 Firestore 的 `config/gemini` 文件中設定 `apiKey` 欄位為你的 Gemini API 金鑰。
+當編輯在管理後台審批通過一篇文章時，Cloud Functions 也會自動呼叫 Gemini 將該文章翻譯為其餘兩種語言並推送到 GitHub。要啟用此功能，需要在 Firestore 的 `config/gemini` 文件中設定 `apiKey` 欄位為你的 Gemini API 金鑰。
 
 ## 測試
 
@@ -133,8 +133,9 @@ cd tests && npm install
 | 檔案 | 測試內容 |
 |------|---------|
 | `helpers.test.js` | 純輔助函式：`makeSlug`、`makeAuthorSlug`、`toBase64`、`generateMarkdown`、`getAuthorKey`、`getOrderedSubmissionAuthors`、`sanitizeRevisionHistory` |
-| `functions.test.js` | 可呼叫 Cloud Functions（模擬 Firestore、Auth 和 GitHub API）：`approveSubmission`、`rejectSubmission`、`requestRevision`、`resubmitArticle`、`deleteSubmission`、`checkAdminStatus` |
-| `translation.test.js` | 自動翻譯輔助函式：`TRANSLATE_TOOL` schema 驗證、`STYLE_NOTES`/`PROMPT_NAMES` 語言涵蓋、`buildTranslationPrompt` 所有語言對測試、`buildTranslatedMarkdown` 三種語言輸出 |
+| `functions.test.js` | 可呼叫 Cloud Functions（模擬 Firestore、Auth、GitHub 和 R2）：`checkAdminStatus`、`submitArticle`、`resubmitArticle`、`approveSubmission`、`rejectSubmission`、`requestRevision`、`deleteSubmission`（含 R2 圖片清理）、`uploadArticleImage`、`deleteArticleImage`、`getServiceUsage`、`onUserDisplayNameChange` |
+| `translation.test.js` | 自動翻譯輔助函式：Gemini `RESPONSE_SCHEMA` 驗證、`STYLE_NOTES`/`PROMPT_NAMES` 語言涵蓋、`buildTranslationPrompt` 所有語言對測試、`buildTranslatedMarkdown` 三種語言輸出 |
+| `notify.test.js` | 新投稿與重新投稿觸發的管理員郵件通知 `notifyAdminsOfSubmission`（模擬 nodemailer 與管理員白名單），涵蓋郵件主旨和後台 deep-link |
 
 ### 網站驗證測試 (`tests/`)
 

@@ -12,7 +12,7 @@ Starting at UWC Changshu China can be overwhelming — new country, new culture,
 
 - William Huang 黄靖然 (University of Illinois Urbana-Champaign, UWC Changshu China 24')
 - Tom Li 李东源 (University of Florida, UWC Changshu China 24')
-- E_P_silon (UWC Changshu China 24')
+- E_P_silon (Columbia University, UWC Changshu China 24')
 
 ## Contents
 
@@ -102,7 +102,7 @@ firebase.json   ← Firebase CLI configuration (emulator ports, rule paths)
 .firebaserc     ← Firebase project alias (uwc-survival-guide)
 ```
 
-`auto-translator/` contains a small CLI that scans `default/` and `chinese/` and creates any missing English, Simplified Chinese, or Taiwan Traditional variants with the Anthropic API. It defaults to `claude-sonnet-4-6`, uses a dedicated translation prompt file, and prefers the Simplified Chinese source when regenerating English or Taiwan Traditional guides.
+`auto-translator/` contains a small CLI that scans `default/` and `chinese/` and creates any missing English, Simplified Chinese, or Taiwan Traditional variants with the Google Gemini API. It defaults to `gemini-2.5-flash` (override with `GEMINI_MODEL` or `--model`), uses a dedicated translation prompt file, and prefers the Simplified Chinese source when regenerating English or Taiwan Traditional guides. It reads `GEMINI_API_KEY` from the repository root `.env`.
 
 Run it from the repository root with:
 
@@ -113,7 +113,7 @@ Run it from the repository root with:
 
 The helper script executes the translator with `uv run python` inside `auto-translator/`.
 
-When an editor approves an article in the admin panel, the system also automatically calls Google Gemini to translate it into the other two languages and pushes the translations to GitHub. To enable this, store your Gemini API key in Firestore at `config/gemini` with field `apiKey`.
+When an editor approves an article in the admin panel, Cloud Functions also call Gemini to translate it into the other two languages and push the translations to GitHub. To enable this, store your Gemini API key in Firestore at `config/gemini` with field `apiKey`.
 
 ## Tests
 
@@ -144,8 +144,9 @@ Tests also run automatically in CI on every push to `main` (see `.github/workflo
 | File | What it covers |
 |------|---------------|
 | `helpers.test.js` | Pure helper functions: `makeSlug`, `makeAuthorSlug`, `toBase64`, `generateMarkdown`, `getAuthorKey`, `getOrderedSubmissionAuthors`, `sanitizeRevisionHistory` |
-| `functions.test.js` | Callable Cloud Functions with mocked Firestore, Auth, and GitHub API: `approveSubmission`, `rejectSubmission`, `requestRevision`, `resubmitArticle`, `deleteSubmission`, `checkAdminStatus` |
-| `translation.test.js` | Auto-translation helpers: `TRANSLATE_TOOL` schema validation, `STYLE_NOTES`/`PROMPT_NAMES` coverage, `buildTranslationPrompt` for all language pairs, `buildTranslatedMarkdown` output for all three languages |
+| `functions.test.js` | Callable Cloud Functions with mocked Firestore, Auth, GitHub, and R2: `checkAdminStatus`, `submitArticle`, `resubmitArticle`, `approveSubmission`, `rejectSubmission`, `requestRevision`, `deleteSubmission` (incl. R2 image cleanup), `uploadArticleImage`, `deleteArticleImage`, `getServiceUsage`, `onUserDisplayNameChange` |
+| `translation.test.js` | Auto-translation helpers: Gemini `RESPONSE_SCHEMA` validation, `STYLE_NOTES`/`PROMPT_NAMES` coverage, `buildTranslationPrompt` for all language pairs, `buildTranslatedMarkdown` output for all three languages |
+| `notify.test.js` | Admin email notifications for new submissions and resubmissions via `notifyAdminsOfSubmission` (mocked nodemailer + admin allowlist), including subject lines and admin-panel deep links |
 
 ### Site validation tests (`tests/`)
 
