@@ -779,7 +779,6 @@ body {
   padding-left: 1.5rem;
   margin: 1.5rem 0;
   color: var(--muted);
-  font-style: italic;
 }
 
 .guide-content code {
