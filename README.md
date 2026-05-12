@@ -2,7 +2,7 @@
 
 [English](./README.md) | [简体中文](./README_CN.md) | [繁體中文](./README_TW.md)
 
-A community-driven survival guide for students at **UWC Changshu China** — covering everything you need to know to thrive on campus and beyond.
+A community-driven survival guide for students at **[UWC Changshu China](https://en.wikipedia.org/wiki/United_World_College_Changshu_China)** — covering everything you need to know to thrive on campus and beyond.
 
 ## About
 

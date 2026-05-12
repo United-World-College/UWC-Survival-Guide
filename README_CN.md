@@ -2,7 +2,7 @@
 
 [English](./README.md) | [简体中文](./README_CN.md) | [繁體中文](./README_TW.md)
 
-一份由学生社区共同编写的**世界联合学院常熟校区 (UWC Changshu China)** 生存指南——涵盖你在校园内外所需的一切信息。
+一份由学生社区共同编写的**[世界联合学院常熟校区 (UWC Changshu China)](https://en.wikipedia.org/wiki/United_World_College_Changshu_China)** 生存指南——涵盖你在校园内外所需的一切信息。
 
 ## 关于本指南
 
