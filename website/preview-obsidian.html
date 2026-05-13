@@ -1,0 +1,288 @@
+---
+layout: null
+permalink: /preview-obsidian.html
+sitemap: false
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Obsidian-style preview · local only</title>
+<!-- Load the live site stylesheet so the .guide-content side is faithful to production -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
+<style>
+  /* ── Preview chrome ── */
+  body { background: #efece6; padding: 0; margin: 0; }
+  .preview-banner {
+    position: sticky; top: 0; z-index: 100;
+    background: #2c2a26; color: #f6f4f0;
+    padding: 0.6rem 1rem;
+    font: 500 0.78rem/1.4 "Inter", -apple-system, sans-serif;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .preview-banner b { letter-spacing: 0.02em; text-transform: none; font-size: 0.95rem; }
+  .preview-banner a { color: #f6f4f0; text-decoration: underline; }
+  .preview-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  .preview-col {
+    padding: 2rem 2.5rem 4rem;
+    background: var(--ivory);
+    border-left: 1px solid var(--border);
+    min-height: 100vh;
+  }
+  .preview-col:first-child { border-left: none; }
+  .preview-tag {
+    display: inline-block;
+    font: 600 0.7rem/1 "Inter", sans-serif;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8a847b;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid #d8d4cd;
+    border-radius: 99px;
+    margin-bottom: 1.5rem;
+  }
+  .preview-col h1.preview-title {
+    font: 500 2.4rem/1.2 "Cormorant Garamond", "Noto Serif SC", serif;
+    margin: 0 0 2rem;
+    color: #2c2a26;
+  }
+
+  /* ── Right column: pure Obsidian defaults ──
+     Font stack uses the OS system font (San Francisco on macOS, Segoe UI on
+     Windows) followed by PingFang SC / Microsoft YaHei for CJK — this is
+     exactly what Obsidian's `--font-text-theme` resolves to out of the box.
+     Body 16px / line-height 1.5, heading weight 600 with a single 1.25
+     line-height across all levels, em-based margins matching app.css. */
+  .obsidian-content {
+    --o-font-text:  -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    --o-font-mono:  ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --o-text:       #1f1f1f;
+    --o-muted:      #5e5a52;
+    --o-border:     #d8d4cd;
+    --o-accent:     #6c5ce7;
+    --o-code-bg:    #ece9e3;
+
+    font-family: var(--o-font-text);
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.55;
+    letter-spacing: 0;
+    color: var(--o-text);
+    max-width: 720px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .obsidian-content p,
+  .obsidian-content li {
+    font-weight: 500;
+  }
+  .obsidian-content h1, .obsidian-content h2, .obsidian-content h3,
+  .obsidian-content h4, .obsidian-content h5, .obsidian-content h6 {
+    font-family: var(--o-font-text);
+    font-weight: 800;
+    color: var(--o-text);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+  .obsidian-content strong { font-weight: 800; }
+  .obsidian-content h1 { font-size: 2em;    margin: 1.5em 0 0.6em; }
+  .obsidian-content h2 { font-size: 1.6em;  margin: 1.4em 0 0.55em; }
+  .obsidian-content h3 { font-size: 1.37em; margin: 1.3em 0 0.5em; }
+  .obsidian-content h4 { font-size: 1.25em; margin: 1.2em 0 0.45em; }
+  .obsidian-content h5 { font-size: 1.12em; margin: 1.1em 0 0.4em; }
+  .obsidian-content h6 { font-size: 1.12em; margin: 1.1em 0 0.4em; color: var(--o-muted); }
+  .obsidian-content h1:first-child, .obsidian-content h2:first-child { margin-top: 0; }
+  .obsidian-content p { margin: 0 0 1em; }
+  .obsidian-content ul, .obsidian-content ol { margin: 0 0 1em 1.5em; padding: 0; }
+  .obsidian-content li { margin: 0.15em 0; }
+  .obsidian-content a { color: var(--o-accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  .obsidian-content blockquote {
+    border-left: 3px solid var(--o-border);
+    padding: 0.1em 1em;
+    margin: 1em 0;
+    color: var(--o-muted);
+    background: transparent;
+  }
+  .obsidian-content code {
+    font-family: var(--o-font-mono);
+    background: var(--o-code-bg);
+    padding: 0.12em 0.35em;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  .obsidian-content pre {
+    background: var(--o-code-bg);
+    padding: 0.85em 1em;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1em 0;
+    font-size: 0.88em;
+    line-height: 1.45;
+  }
+  .obsidian-content pre code { background: none; padding: 0; font-size: 1em; }
+  .obsidian-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+    font-size: 0.95em;
+  }
+  .obsidian-content th, .obsidian-content td {
+    border: 1px solid var(--o-border);
+    padding: 0.5em 0.75em;
+    text-align: left;
+  }
+  .obsidian-content th { background: #ece9e3; font-weight: 600; }
+  .obsidian-content hr { border: none; border-top: 1px solid var(--o-border); margin: 2em 0; }
+  .obsidian-content img { max-width: 100%; height: auto; border-radius: 4px; }
+  .obsidian-content strong { font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="preview-banner">
+    <span><b>Obsidian-style preview</b> — local only, not committed</span>
+    <span><a href="/guides/default/school-selection/">View a real guide ↗</a></span>
+  </div>
+
+  <div class="preview-wrap">
+    <!-- ════════════ LEFT: CURRENT SITE STYLE ════════════ -->
+    <div class="preview-col">
+      <span class="preview-tag">Current · .guide-content</span>
+      <h1 class="preview-title">IB 物理指南</h1>
+
+      <article class="guide-content">
+        <h1>这里是 H1（# 一级标题）</h1>
+        <p>The body text uses Inter at 1.05rem with line-height 1.7 and is justified. 此处可以看到中文与英文混排时的视觉效果。 The justify alignment can spread out spaces awkwardly with CJK content because there are very few break opportunities.</p>
+
+        <h2>这里是 H2（## 二级标题）</h2>
+        <p>简介 / 适合人群。在正式开始之前，我想先简单介绍一下自己的背景和这篇指南的定位。我的 FP 物理老师是 Ariel Li，DP1 &amp; DP2 的物理老师是 Yang Liu。</p>
+
+        <h3>这里是 H3（### 三级标题）</h3>
+        <p>而我写这篇指南的目的，是希望我的学习经历、复习方式和考试技巧能够给大家提供一些参考。This sentence has <strong>bold text</strong>, <em>italic text</em>, and an <a href="#">inline link</a>.</p>
+
+        <h4>这里是 H4（#### 四级标题）</h4>
+        <p>同时，我感觉我的文字风格相对来说比较冗长或者 technical。如果不适应我的行文风格的话，欢迎大家将全文放进 AI 让它 rephrase 后输出整篇文章。</p>
+
+        <h5>这里是 H5（##### 五级标题）</h5>
+        <p>我有一个学习的理论，不同的学习媒介或者方式，所耗费的时间是显著不同的。</p>
+
+        <h6>这里是 H6（###### 六级标题）</h6>
+        <p>This is a tail-level subsection note.</p>
+
+        <ul>
+          <li>跟随顶尖研究者学习</li>
+          <li>学术论文 / textbooks</li>
+          <li>YouTube 视频</li>
+        </ul>
+
+        <ol>
+          <li>定义关键概念</li>
+          <li>建立物理直觉</li>
+          <li>反复刷题验证</li>
+        </ol>
+
+        <blockquote>
+          <p>这是一个引用块的样例。Citation goes here, often longer than the surrounding text.</p>
+        </blockquote>
+
+        <p>And inline <code>code</code> looks like this, while a block of code:</p>
+
+        <pre><code>function makeSlug(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}</code></pre>
+
+        <table>
+          <thead>
+            <tr><th>学习方式</th><th>效率</th><th>信息密度</th><th>所需精力</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>跟随顶尖研究者</td><td>6</td><td>极高且抽象</td><td>极高</td></tr>
+            <tr><td>学术论文</td><td>5</td><td>高</td><td>高</td></tr>
+            <tr><td>YouTube</td><td>3</td><td>中</td><td>低</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+
+    <!-- ════════════ RIGHT: OBSIDIAN-SPEC STYLE ════════════ -->
+    <div class="preview-col">
+      <span class="preview-tag">Obsidian-tuned · 19px body weight 500, headings weight 800</span>
+      <h1 class="preview-title" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;font-weight:700;font-size:2.4rem;letter-spacing:-0.01em;">IB 物理指南</h1>
+
+      <article class="obsidian-content">
+        <h1>这里是 H1（# 一级标题）</h1>
+        <p>The body text uses Inter at 16px with line-height 1.5 and is left-aligned (no justify). 此处可以看到中文与英文混排时的视觉效果。 Notice how the line spacing is tighter and word-spacing stays even.</p>
+
+        <h2>这里是 H2（## 二级标题）</h2>
+        <p>简介 / 适合人群。在正式开始之前，我想先简单介绍一下自己的背景和这篇指南的定位。我的 FP 物理老师是 Ariel Li，DP1 &amp; DP2 的物理老师是 Yang Liu。</p>
+
+        <h3>这里是 H3（### 三级标题）</h3>
+        <p>而我写这篇指南的目的，是希望我的学习经历、复习方式和考试技巧能够给大家提供一些参考。This sentence has <strong>bold text</strong>, <em>italic text</em>, and an <a href="#">inline link</a>.</p>
+
+        <h4>这里是 H4（#### 四级标题）</h4>
+        <p>同时，我感觉我的文字风格相对来说比较冗长或者 technical。如果不适应我的行文风格的话，欢迎大家将全文放进 AI 让它 rephrase 后输出整篇文章。</p>
+
+        <h5>这里是 H5（##### 五级标题）</h5>
+        <p>我有一个学习的理论，不同的学习媒介或者方式，所耗费的时间是显著不同的。</p>
+
+        <h6>这里是 H6（###### 六级标题）</h6>
+        <p>This is a tail-level subsection note.</p>
+
+        <ul>
+          <li>跟随顶尖研究者学习</li>
+          <li>学术论文 / textbooks</li>
+          <li>YouTube 视频</li>
+        </ul>
+
+        <ol>
+          <li>定义关键概念</li>
+          <li>建立物理直觉</li>
+          <li>反复刷题验证</li>
+        </ol>
+
+        <blockquote>
+          <p>这是一个引用块的样例。Citation goes here, often longer than the surrounding text.</p>
+        </blockquote>
+
+        <p>And inline <code>code</code> looks like this, while a block of code:</p>
+
+        <pre><code>function makeSlug(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}</code></pre>
+
+        <table>
+          <thead>
+            <tr><th>学习方式</th><th>效率</th><th>信息密度</th><th>所需精力</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>跟随顶尖研究者</td><td>6</td><td>极高且抽象</td><td>极高</td></tr>
+            <tr><td>学术论文</td><td>5</td><td>高</td><td>高</td></tr>
+            <tr><td>YouTube</td><td>3</td><td>中</td><td>低</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </div>
+
+  <div style="max-width:1100px;margin:2rem auto;padding:1.5rem 2rem;background:#fff;border:1px solid #d8d4cd;border-radius:6px;font:400 0.92rem/1.65 'Inter',sans-serif;color:#3d3a35;">
+    <p style="font-weight:600;margin-bottom:0.6rem;">Reference — Obsidian's documented defaults (from <code>app.css</code>):</p>
+    <ul style="margin-left:1.4rem;">
+      <li><code>--h1-size: 2em</code> (32px) · <code>--h2-size: 1.6em</code> (25.6px) · <code>--h3-size: 1.37em</code> (21.9px)</li>
+      <li><code>--h4-size: 1.25em</code> (20px) · <code>--h5-size: 1.12em</code> (17.9px) · <code>--h6-size: 1.12em</code> (17.9px)</li>
+      <li><code>--font-text-size: 16px</code> · <code>--line-height-normal: 1.5</code> · <code>--line-height-tight: 1.3</code></li>
+      <li>Heading weight ≈ 600, same font-family as body (sans-serif), no italic</li>
+    </ul>
+    <p style="margin-top:0.8rem;color:#5e5a52;">The right-hand column is now <strong>pure Obsidian defaults</strong>: OS system font (San Francisco on macOS, Segoe UI on Windows), with PingFang SC / Microsoft YaHei for Chinese — exactly what Obsidian's <code>--font-text-theme</code> resolves to. Body 16px / line-height 1.5, uniform heading line-height 1.25, em-based heading margins as in <code>app.css</code>. The site's currently-applied style (in the left column comparison terms: more like body 1.05rem / 1.6) is a slightly more generous variant — tell me which direction to push toward.</p>
+  </div>
+</body>
+</html>
