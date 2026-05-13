@@ -255,9 +255,11 @@ admin:
   content_label: Content (Markdown)
   content_placeholder: Write your article content here using Markdown...
   toolbar_label: Markdown formatting
+  tb_h1: Heading 1
   tb_h2: Heading 2
   tb_h3: Heading 3
   tb_h4: Heading 4
+  tb_h5: Heading 5
   tb_bold: Bold
   tb_italic: Italic
   tb_strike: Strikethrough

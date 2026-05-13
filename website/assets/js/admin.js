@@ -1256,7 +1256,8 @@
       coauthors_label:         ADMIN_I18N.coauthors_label,
       // Editor toolbar i18n (so the popup toolbar matches the current locale).
       toolbar_label:        ADMIN_I18N.toolbar_label,
-      tb_h2: ADMIN_I18N.tb_h2, tb_h3: ADMIN_I18N.tb_h3, tb_h4: ADMIN_I18N.tb_h4,
+      tb_h1: ADMIN_I18N.tb_h1, tb_h2: ADMIN_I18N.tb_h2, tb_h3: ADMIN_I18N.tb_h3,
+      tb_h4: ADMIN_I18N.tb_h4, tb_h5: ADMIN_I18N.tb_h5,
       tb_bold: ADMIN_I18N.tb_bold, tb_italic: ADMIN_I18N.tb_italic, tb_strike: ADMIN_I18N.tb_strike,
       tb_code: ADMIN_I18N.tb_code, tb_codeblock: ADMIN_I18N.tb_codeblock, tb_quote: ADMIN_I18N.tb_quote,
       tb_ul: ADMIN_I18N.tb_ul, tb_ol: ADMIN_I18N.tb_ol,
@@ -1397,9 +1398,11 @@
         'h+="<button type=\\"button\\" class=\\"admin-editor-tab admin-editor-tab-newtab\\" id=\\"rs-preview\\">"+esc(L.preview_btn)+"<\/button><\/div>";' +
         'h+="<div class=\\"admin-md-toolbar\\" id=\\"rs-toolbar\\" role=\\"toolbar\\" aria-label=\\""+esc(L.toolbar_label)+"\\">";' +
         'h+="<div class=\\"admin-md-toolbar-group\\">";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"heading\\" data-level=\\"1\\" title=\\""+esc(L.tb_h1)+"\\"><strong>H1<\/strong><\/button>";' +
         'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"heading\\" data-level=\\"2\\" title=\\""+esc(L.tb_h2)+"\\"><strong>H2<\/strong><\/button>";' +
         'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"heading\\" data-level=\\"3\\" title=\\""+esc(L.tb_h3)+"\\"><strong>H3<\/strong><\/button>";' +
         'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"heading\\" data-level=\\"4\\" title=\\""+esc(L.tb_h4)+"\\"><strong>H4<\/strong><\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"heading\\" data-level=\\"5\\" title=\\""+esc(L.tb_h5)+"\\"><strong>H5<\/strong><\/button>";' +
         'h+="<\/div><span class=\\"admin-md-toolbar-sep\\" aria-hidden=\\"true\\"><\/span>";' +
         'h+="<div class=\\"admin-md-toolbar-group\\">";' +
         'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"bold\\" title=\\""+esc(L.tb_bold)+"\\"><strong>B<\/strong><\/button>";' +
@@ -1417,9 +1420,9 @@
         'h+="<\/div><span class=\\"admin-md-toolbar-sep\\" aria-hidden=\\"true\\"><\/span>";' +
         'h+="<div class=\\"admin-md-toolbar-group\\">";' +
         'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"link\\" title=\\""+esc(L.tb_link)+"\\">&#128279;<\/button>";' +
-        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"image\\" title=\\""+esc(L.tb_image)+"\\">&#128247;<\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"image\\" title=\\""+esc(L.tb_image)+"\\">&#x1F5BC;&#xFE0F;<\/button>";' +
         'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"hr\\" title=\\""+esc(L.tb_hr)+"\\">&mdash;<\/button>";' +
-        'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"table\\" title=\\""+esc(L.tb_table)+"\\">&#8866;<\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn admin-md-btn-icon\\" data-md=\\"table\\" title=\\""+esc(L.tb_table)+"\\"><svg viewBox=\\"0 0 14 14\\" width=\\"14\\" height=\\"14\\" fill=\\"none\\" stroke=\\"currentColor\\" stroke-width=\\"1.3\\" aria-hidden=\\"true\\"><rect x=\\"1\\" y=\\"1\\" width=\\"12\\" height=\\"12\\" rx=\\"0.5\\"\\/><line x1=\\"1\\" y1=\\"5.5\\" x2=\\"13\\" y2=\\"5.5\\"\\/><line x1=\\"1\\" y1=\\"9.5\\" x2=\\"13\\" y2=\\"9.5\\"\\/><line x1=\\"5.5\\" y1=\\"1\\" x2=\\"5.5\\" y2=\\"13\\"\\/><line x1=\\"9.5\\" y1=\\"1\\" x2=\\"9.5\\" y2=\\"13\\"\\/><\/svg><\/button>";' +
         'h+="<\/div><\/div>";' +
         'h+="<textarea id=\\"rs-content\\" class=\\"admin-input admin-textarea admin-textarea-editor\\" rows=\\"14\\" required><\/textarea>";' +
         'h+="<input type=\\"file\\" id=\\"rs-image-input\\" accept=\\"image\\/*,.heic,.heif\\" multiple style=\\"display:none;\\">";' +

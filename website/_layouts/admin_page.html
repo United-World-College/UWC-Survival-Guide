@@ -180,9 +180,11 @@ var ADMIN_I18N = {
   usage_of:             {{ t.usage_of | jsonify }},
   usage_invocations:    {{ t.usage_invocations | jsonify }},
   toolbar_label:        {{ t.toolbar_label | jsonify }},
+  tb_h1:                {{ t.tb_h1 | jsonify }},
   tb_h2:                {{ t.tb_h2 | jsonify }},
   tb_h3:                {{ t.tb_h3 | jsonify }},
   tb_h4:                {{ t.tb_h4 | jsonify }},
+  tb_h5:                {{ t.tb_h5 | jsonify }},
   tb_bold:              {{ t.tb_bold | jsonify }},
   tb_italic:            {{ t.tb_italic | jsonify }},
   tb_strike:            {{ t.tb_strike | jsonify }},
@@ -438,9 +440,11 @@ var ADMIN_I18N = {
               </div>
               <div class="admin-md-toolbar" id="article-toolbar" role="toolbar" aria-label="{{ t.toolbar_label }}">
                 <div class="admin-md-toolbar-group">
+                  <button type="button" class="admin-md-btn" data-md="heading" data-level="1" title="{{ t.tb_h1 }}" aria-label="{{ t.tb_h1 }}"><strong>H1</strong></button>
                   <button type="button" class="admin-md-btn" data-md="heading" data-level="2" title="{{ t.tb_h2 }}" aria-label="{{ t.tb_h2 }}"><strong>H2</strong></button>
                   <button type="button" class="admin-md-btn" data-md="heading" data-level="3" title="{{ t.tb_h3 }}" aria-label="{{ t.tb_h3 }}"><strong>H3</strong></button>
                   <button type="button" class="admin-md-btn" data-md="heading" data-level="4" title="{{ t.tb_h4 }}" aria-label="{{ t.tb_h4 }}"><strong>H4</strong></button>
+                  <button type="button" class="admin-md-btn" data-md="heading" data-level="5" title="{{ t.tb_h5 }}" aria-label="{{ t.tb_h5 }}"><strong>H5</strong></button>
                 </div>
                 <span class="admin-md-toolbar-sep" aria-hidden="true"></span>
                 <div class="admin-md-toolbar-group">
@@ -462,9 +466,9 @@ var ADMIN_I18N = {
                 <span class="admin-md-toolbar-sep" aria-hidden="true"></span>
                 <div class="admin-md-toolbar-group">
                   <button type="button" class="admin-md-btn" data-md="link" title="{{ t.tb_link }}" aria-label="{{ t.tb_link }}">&#128279;</button>
-                  <button type="button" class="admin-md-btn" data-md="image" title="{{ t.tb_image }}" aria-label="{{ t.tb_image }}">&#128247;</button>
+                  <button type="button" class="admin-md-btn" data-md="image" title="{{ t.tb_image }}" aria-label="{{ t.tb_image }}">&#x1F5BC;&#xFE0F;</button>
                   <button type="button" class="admin-md-btn" data-md="hr" title="{{ t.tb_hr }}" aria-label="{{ t.tb_hr }}">&mdash;</button>
-                  <button type="button" class="admin-md-btn" data-md="table" title="{{ t.tb_table }}" aria-label="{{ t.tb_table }}">&#8866;</button>
+                  <button type="button" class="admin-md-btn admin-md-btn-icon" data-md="table" title="{{ t.tb_table }}" aria-label="{{ t.tb_table }}"><svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1" y="1" width="12" height="12" rx="0.5"/><line x1="1" y1="5.5" x2="13" y2="5.5"/><line x1="1" y1="9.5" x2="13" y2="9.5"/><line x1="5.5" y1="1" x2="5.5" y2="13"/><line x1="9.5" y1="1" x2="9.5" y2="13"/></svg></button>
                 </div>
               </div>
               <textarea id="article-content" class="admin-input admin-textarea admin-textarea-editor" rows="14" placeholder="{{ t.content_placeholder }}" required></textarea>

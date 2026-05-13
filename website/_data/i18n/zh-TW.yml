@@ -255,9 +255,11 @@ admin:
   content_label: 正文（Markdown）
   content_placeholder: 在此使用 Markdown 撰寫文章正文……
   toolbar_label: Markdown 格式工具
+  tb_h1: 一級標題
   tb_h2: 二級標題
   tb_h3: 三級標題
   tb_h4: 四級標題
+  tb_h5: 五級標題
   tb_bold: 粗體
   tb_italic: 斜體
   tb_strike: 刪除線
