@@ -11,7 +11,7 @@ language_name: "English"
 language_folder: "default"
 language_sort: 1
 published: 2026-03-25
-updated: 2026-04-17
+updated: 2026-05-12
 ---
 
 
@@ -19,7 +19,7 @@ I want to start here by laying out a few terms and using them to introduce some 
 
 ---
 
-## **Admission Officer**
+## Admission Officer
 
 <p><small>Abbreviation: AO</small></p>
 
@@ -39,7 +39,7 @@ One more thing worth knowing: most AOs don't get applications assigned to them a
 
 ---
 
-## **College Counselor**
+## College Counselor
 
 <p><small>Abbreviation: counselor</small></p>
 
@@ -51,7 +51,7 @@ Their core responsibilities mainly include:
 - **Serving as your primary contact for college applications**: throughout the application season, your counselor is your first point of contact for everything college-application-related — from school-selection strategy, recommendation coordination, and essay direction discussions, to official document submissions and deadline tracking, they stay involved throughout the entire process.
 - **Relationship management**: they stay in touch year after year with the AOs at various universities. Sometimes an AO will pick up the phone and directly ask your counselor: "This student's grades are only so-so, but what's their actual impact in the community like?" (Of course, when this happens it means they're willing to spend time on you, which is a pretty clear sign they're interested.)
 
-### **How to Work with Your Counselor**
+### How to Work with Your Counselor
 
 I've noticed that people tend to swing to one of two extremes when dealing with counselors: either they over-ingratiate themselves, thinking that winning over the counselor is the key to everything; or they stay completely transparent and only show up at the last minute to get forms filled out. A few things worth keeping in mind:
 
@@ -63,13 +63,13 @@ Let me use my own college counselor, Alison, as an example. I've always thought 
 
 The most important thing about the relationship with your counselor, I think, is building a kind of mutual understanding. This isn't something you can deliberately engineer — or more accurately, the moment you try to engineer it, it's guaranteed not to happen. You have to fully trust her and open up, laying out all your thoughts, questions, and doubts (in a professional manner), so she can understand you as completely as possible and then actually help you in a targeted way. The whole thing is a fairly spontaneous process.
 
-### **An Important Nuance About Recommendation Letters**
+### An Important Nuance About Recommendation Letters
 
 Among the three required recommendations, the counselor's letter is the single most important one, bar none. (I'll go into detail about which three letters those are in the Letters of Recommendation section below.) The reason is that counselors tend to have much more philosophical conversations with you than your subject teachers do. Compared with the other two teacher recommendations, the counselor understands best who you are as a person, how you think about high-level questions, and where you are in terms of maturity — which happen to be exactly the things U.S. universities care about the most.
 
 ---
 
-## **Common Application**
+## Common Application
 
 <p><small>Abbreviation: CA</small></p>
 
@@ -79,7 +79,7 @@ Still, Common App is more like a unified entry point than something that turns e
 
 ---
 
-## **Essays**
+## Essays
 
 Essays are the part of the application that best captures the human side of you. Unlike grades and standardized tests, they aren't a hard metric; and unlike recommendation letters, they aren't written by someone else.
 
@@ -96,7 +96,7 @@ Essays deserve an entire guide of their own. Here I just want to flag a few of t
 
 ---
 
-## **Letters of Recommendation**
+## Letters of Recommendation
 
 <p><small>Abbreviation: rec letter or LoR</small></p>
 
@@ -112,14 +112,14 @@ A few pieces of advice about choosing which teachers to ask:
 
 ---
 
-## **Early Decision / Early Action / Regular Decision**
+## Early Decision / Early Action / Regular Decision
 
 <p><small>Abbreviation: ED / EA / RD</small></p>
 
 These three are the three application timelines in U.S. college admissions:
 
 - **Early Decision (ED)**: a binding early round. Applications are usually due on November 1st or 15th, with results in mid-December. If you're admitted, you must enroll — which means you can only pick one school as your ED target. Some schools also offer ED II (January deadline, February results), which gives you a second shot at another school if your first ED doesn't work out.
-- **Early Action (EA)**: a non-binding early round. The timeline is similar to ED's, but if you're admitted, you don't have to enroll, and you can apply EA to multiple schools at once. For most people, an early batch looks like one ED school plus a few EA schools. One thing to note is that EA also has a special variant — Restrictive / Single-Choice EA (REA / SCEA) — used by schools like Harvard, Yale, Princeton, and Stanford. It isn't binding, but it doesn't let you apply ED/EA to other private schools at the same time (the specific restrictions vary slightly by school, so check the official admissions page).
+- **Early Action (EA)**: a non-binding early round. The timeline is similar to ED's, but if you're admitted, you don't have to enroll, and you can apply EA to multiple schools at once. For most people, an early batch looks like one ED school plus a few EA schools. One thing to note is that EA also has a special variant — Restrictive / Single-Choice EA (REA / SCEA) — used by schools like [Harvard](https://en.wikipedia.org/wiki/Harvard_University), [Yale](https://en.wikipedia.org/wiki/Yale_University), [Princeton](https://en.wikipedia.org/wiki/Princeton_University), and [Stanford](https://en.wikipedia.org/wiki/Stanford_University). It isn't binding, but it doesn't let you apply ED/EA to other private schools at the same time (the specific restrictions vary slightly by school, so check the official admissions page).
 - **Regular Decision (RD)**: the regular round. Typically due on January 1st, with results from late March to early April.
 
 ED admit rates are usually noticeably higher than RD, but there are a lot of confounding factors: the ED pool often includes recruited athletes, legacy applicants, and some very strong students who've long since made up their minds about where they want to go, so the surface-level number doesn't mean ED is that much "safer." I think the question actually worth asking is: is there a school you'd 100% want to attend if admitted, one that's truly a good fit for you? And on how to pick a school that's a good fit, you're welcome to read [*On Choosing Colleges*]({{ '/guides/default/school-selection/' | relative_url }}).
@@ -128,7 +128,7 @@ One more UWC-internal rule worth mentioning here: UWC Changshu China caps the nu
 
 ---
 
-## **Liberal Arts Colleges / Research Universities**
+## Liberal Arts Colleges / Research Universities
 
 <p><small>Abbreviation: LAC</small></p>
 
@@ -147,7 +147,7 @@ Which side you pick ultimately comes down to what you want: if you want deep fac
 
 ---
 
-## **IB Grade**
+## IB Grade
 
 <p><small>Related term: Predicted Grade (PG)</small></p>
 
@@ -166,7 +166,7 @@ Under UWC Changshu's grading system, anything above 40 counts as a strong score,
 
 ---
 
-## **Standardized Tests**
+## Standardized Tests
 
 For international students, the common standardized tests fall into two categories:
 
@@ -183,7 +183,7 @@ Concrete advice for UWC students:
 
 ---
 
-## **Financial Aid**
+## Financial Aid
 
 U.S. financial aid mainly falls into two categories:
 
@@ -199,7 +199,7 @@ Applying for financial aid requires submitting additional forms like the CSS Pro
 
 ---
 
-## **UWC Davis Scholars Program**
+## UWC Davis Scholars Program
 
 This is a program exclusively for UWC students, founded by American philanthropist [Shelby M.C. Davis](https://en.wikipedia.org/wiki/Shelby_M._C._Davis). The Davis Foundation provides funding to many U.S. partner schools specifically to support UWC students who are admitted. For us, that means:
 
@@ -209,7 +209,7 @@ This is a program exclusively for UWC students, founded by American philanthropi
 
 ---
 
-## **Holistic Review**
+## Holistic Review
 
 Holistic review is a phrase top U.S. universities have on the tip of their tongues. Put simply, AOs don't just look at your scores — they evaluate you as a whole person. That means your academic grades, extracurricular activities, personal qualities, essays, recommendation letters, and background all get considered together.
 
@@ -222,7 +222,7 @@ Holistic review tends to work in UWC students' favor. The way UWC develops stude
 
 ---
 
-## **Activity List / Honors**
+## Activity List / Honors
 
 Common App has two related sections:
 
@@ -238,19 +238,20 @@ These two sections are where the AO reads, in a very short window, who you are. 
 
 ---
 
-## **Interview**
+## Interview
 
 U.S. college application interviews are overwhelmingly conducted by alumni, not by AOs. They usually happen after you submit your application but before decisions come out, in the form of a Zoom call or a local coffee meeting, and typically last 30–60 minutes.
 
 A few things that might not match what you'd expect:
 
 - **Interviews usually aren't decisive**: for the vast majority of schools, alumni interviews are informational only. Even if the interviewer sings your praises, it's very hard to turn a reject into an admit just based on the interview. Conversely, interviews really only hurt you when you do something clearly bad (for example, coming off as obviously arrogant, or showing you know nothing about the school).
+- **LAC interviews are worth taking more seriously than research-university ones**: while alumni interviews at research universities are usually informational only, many LACs run evaluative interviews that go directly into the application file; interviewers are also more likely to be AOs themselves or admissions-trained senior students (senior interviewer / ambassador) rather than alumni. That said, policies vary widely across LACs, so it's worth checking each target school's specifics before applying.
 - **Not everyone offered an interview gets in, and not everyone who gets in was offered an interview**: the availability of alumni interviews depends on whether there are active alumni in your region. Not being offered an interview doesn't mean you're done for.
 - **What actually matters is what you observe**: while they're interviewing you, you're also observing them. You'll likely find that alumni from these halo-wrapped schools are, for the most part, ordinary people themselves — they get nervous, show up late, ramble, get stuck on a question — just like the alumni interviewer you met back when you were applying to UWC.
 
 ---
 
-## **Waitlist / Deferral**
+## Waitlist / Deferral
 
 In addition to Admit and Reject/Deny, there are two intermediate outcomes you might receive:
 
@@ -263,7 +264,7 @@ Closely tied to the waitlist is a less-talked-about phenomenon called Yield Prot
 
 ---
 
-## **A Closing Note: Demystifying the Mindset**
+## A Closing Note: Demystifying the Mindset
 
 Having walked through all of these terms, the one thing I most want to flag is: don't mythologize AOs, and don't mythologize the application system. At the end of the day, even the most complex systems are made up of people, and admissions officers are, at their core, just ordinary workers standing at a particular post. Like HR at a big company, they're filters running themselves ragged through an enormous amount of information — which means they have their own aesthetic fatigue, their own cognitive limits, and, yes, their own mood swings too.
 
