@@ -11,7 +11,7 @@
   --cream: #edeae4;
   --warm-gray: #b5b0a8;
   --muted: #8a847b;
-  --dark: #2c2a26;
+  --dark: #1a1a1a;
   --text: #3d3a35;
   --border: #d8d4cd;
   --serif: "Cormorant Garamond", "Noto Serif SC", "Songti SC", "STSong", "SimSun", Georgia, serif;
@@ -30,6 +30,11 @@ body {
   font-size: 16px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(0, 0, 0, 0.15);
+  color: inherit;
 }
 
 /* ── Navigation ── */
