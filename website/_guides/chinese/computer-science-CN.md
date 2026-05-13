@@ -183,7 +183,7 @@ Engineering-heavy 项目的典型特征则是 systems 类课程在本科 curricu
 
 中间地带是像 [MIT](https://en.wikipedia.org/wiki/Massachusetts_Institute_of_Technology)、[Stanford](https://en.wikipedia.org/wiki/Stanford_University)、[UC Berkeley](https://en.wikipedia.org/wiki/University_of_California,_Berkeley) 等 math 和 engineering 双修的 culture，必修课同时包含 proof-heavy theory course 和 implementation-heavy systems course。但代价是必修 load 重，对于不少"普通优秀"的同学来说容易进退维谷。
 
-对于大部分文理学院来说这个情况又会有所不同，他们的风格一般不会有这么大的差异。正如我在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})一文中所提到的，因为文理学院的 lab 资源有限，所以他们 default 重视理论；但 [Harvey Mudd](https://en.wikipedia.org/wiki/Harvey_Mudd_College) 是个例外，他们的整个 program 是出名的 engineering-heavy。
+对于大部分文理学院来说这个情况又会有所不同，他们的风格一般不会有这么大的差异。正如我在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})一文中所提到的，因为[文理学院的 lab 资源有限]({{ '/guides/chinese/school-selection-CN/#lac-与-stem-的错位' | relative_url }})，所以他们 default 重视理论；但 [Harvey Mudd](https://en.wikipedia.org/wiki/Harvey_Mudd_College) 是个例外，他们的整个 program 是出名的 engineering-heavy。
 
 对于看完之后开始纠结的学弟学妹而言，这个 spectrum 里其实并没有一个永远正确的选项，我觉得它更像是一个 self-auditing tool：你需要诚实问自己 "我喜欢的是 proof 还是 implementation、是理论还是 applied science、是 mathematical clarity 还是 engineering elegance"，然后选 spectrum 上 fit 你的位置。当然对于比较好的 R1 CS program 而言，不论学校本身是 math-heavy 还是 engineering-heavy，在每个领域里都会有世界级的教授，所以即使现在 commit 了一个教学重心没那么契合的学校，也可以多上一点自己感兴趣的领域的选修课或者去找对应领域的专家一起做 research。这其实就是 faculty 数量多的一个非常大的好处。
 
@@ -197,11 +197,11 @@ Engineering-heavy 项目的典型特征则是 systems 类课程在本科 curricu
 
 这些荣誉往往会比任何排名都更能反应出一个学校的真实水平，但调研起来也会麻烦得多。好在随着现在各类 AI 工具的普及，在具体操作上同学们其实不需要自己一个一个去翻系里的网站，直接让 AI agent（比如 Claude 或 ChatGPT 的 deep research 模式）帮你列出来就行，这种查找类的任务 AI 往往比人快得多也准得多。
 
-但是在这里我也希望各位同学能认识到，这些荣誉的选拔和任何排名一样都不是完美的。在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})中我大概提了一下 faculty hiring 的随机性，但其实这些荣誉选拔过程中的随机性一点也不比 faculty hiring 少。所以我希望同学们在不唯排名论的同时也尽量做到不唯荣誉论。我在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})里提到的"爱马仕还是帆布袋"理论在这里同样适用。因为荣誉应该被看作是 capacity 的间接 signal 之一，而不是 capacity 本身。我觉得在大学里做 research 更多的是享受这个 problem-solving 和 knowledge discovery 的过程而不是一定要取得什么具体的荣誉。
+但是在这里我也希望各位同学能认识到，这些荣誉的选拔和任何排名一样都不是完美的。在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})中我大概提了一下 [faculty hiring 的随机性]({{ '/guides/chinese/school-selection-CN/#faculty-hiring-的随机性' | relative_url }})，但其实这些荣誉选拔过程中的随机性一点也不比 faculty hiring 少。所以我希望同学们在不唯排名论的同时也尽量做到不唯荣誉论。我在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})里提到的["爱马仕还是帆布袋"理论]({{ '/guides/chinese/school-selection-CN/#爱马仕还是帆布袋' | relative_url }})在这里同样适用。因为荣誉应该被看作是 capacity 的间接 signal 之一，而不是 capacity 本身。我觉得在大学里做 research 更多的是享受这个 problem-solving 和 knowledge discovery 的过程而不是一定要取得什么具体的荣誉。
 
 ### Sweet spot framework
 
-此外，对于想做 research 的同学来说，[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})一文里的 ceiling × demand framework 在这里直接适用。比如 [UIC](https://en.wikipedia.org/wiki/University_of_Illinois_Chicago) 的数据挖掘、[犹他大学](https://en.wikipedia.org/wiki/University_of_Utah)的图形学这些 field-specific 顶尖的 mid-tier R1 就是 CS sweet spot 的典型样例。这样 sweet spot 的例子在 CS 里还有很多；而且每个人的实力不同，因此 sweet spot 自然也就不同，所以在这里就不一一列举了。需要注意的是好学校里 Sloan Research Fellowship 等颇有含金量的奖项的得主可能会多一些，但这并不意味着这些人在 mid-tier R1 就不存在。所以就像我在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})中提到的，只要去一个还不错的学校一样可以有很好的发展。
+此外，对于想做 research 的同学来说，[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})一文里的 [ceiling × demand framework]({{ '/guides/chinese/school-selection-CN/#ceiling--demand-framework' | relative_url }}) 在这里直接适用。比如 [UIC](https://en.wikipedia.org/wiki/University_of_Illinois_Chicago) 的数据挖掘、[犹他大学](https://en.wikipedia.org/wiki/University_of_Utah)的图形学这些 field-specific 顶尖的 mid-tier R1 就是 CS sweet spot 的典型样例。这样 sweet spot 的例子在 CS 里还有很多；而且每个人的实力不同，因此 sweet spot 自然也就不同，所以在这里就不一一列举了。需要注意的是好学校里 Sloan Research Fellowship 等颇有含金量的奖项的得主可能会多一些，但这并不意味着这些人在 mid-tier R1 就不存在。所以就像我在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})中提到的，只要去一个还不错的学校一样可以有很好的发展。
 
 ### National lab 与算力优势
 
