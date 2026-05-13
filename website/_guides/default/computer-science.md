@@ -63,7 +63,7 @@ Computer Architecture is the part of systems closest to hardware, studying how t
 
 ### Operating Systems
 
-Operating Systems mostly studies how the OS kernel should be designed: how to schedule processes, how to manage memory, how to handle I/O, how to implement file systems, and so on. Active directions in recent years include unikernels (merging an application with the kernel into a single-purpose binary to squeeze out performance), verified microkernels (using formal methods to prove the correctness of the kernel core on top of the microkernel split architecture — seL4 mentioned earlier is the canonical example), and OS redesigns for new hardware (persistent memory, SmartNICs, disaggregated memory, and so on).
+Operating Systems mostly studies how the OS kernel should be designed: how to schedule processes, how to manage memory, how to handle I/O, how to implement file systems, and so on. Active directions in recent years include unikernels (merging an application with the kernel into a single-purpose binary to squeeze out performance), verified microkernels (using formal methods to prove the correctness of the kernel core on top of the microkernel split architecture), and OS redesigns for new hardware (persistent memory, SmartNICs, disaggregated memory, and so on).
 
 ### Networking
 

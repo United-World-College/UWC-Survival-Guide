@@ -63,7 +63,7 @@ Computer Architecture 是 systems 裡最貼近硬體的方向，研究的是 CPU
 
 ### Operating Systems
 
-Operating Systems 主要研究 OS kernel 應該怎麼設計：怎麼調度行程、怎麼管理記憶體、怎麼處理 I/O、怎麼實現檔案系統等等。這個領域近些年比較活躍的幾個方向包括 unikernel（把應用和核心合併成一個單一目的的二進位檔來榨乾性能）、verified microkernel（在 microkernel 拆分架構的基礎上用 formal method 證明 kernel 核心實現的正確性，前面提到的 seL4 就是這條線上的代表），以及針對新硬體（比如 persistent memory、SmartNIC、disaggregated memory）做的 OS 改造。
+Operating Systems 主要研究 OS kernel 應該怎麼設計：怎麼調度行程、怎麼管理記憶體、怎麼處理 I/O、怎麼實現檔案系統等等。這個領域近些年比較活躍的幾個方向包括 unikernel（把應用和核心合併成一個單一目的的二進位檔來榨乾性能）、verified microkernel（在 microkernel 拆分架構的基礎上用 formal method 證明 kernel 核心實現的正確性），以及針對新硬體（比如 persistent memory、SmartNIC、disaggregated memory）做的 OS 改造。
 
 ### Networking
 
