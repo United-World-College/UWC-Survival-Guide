@@ -87,7 +87,7 @@ Common App 是美國大學本科申請中最廣泛使用的線上申請系統。
 從組成部分上來說，文書主要分兩類：
 
 - **Personal Statement**（也叫 Common App Essay）：650 字以內，所有透過 Common App 申請的學校共用一篇。Common App 每年會給出 7 個 prompt，其中最後一個永遠是 "topic of your choice"。實際上多數人都會選最後一個，因為 prompt 更像是寫作方向的引導，而不是真正的限制。
-- **Supplemental Essays**（補充文書）：每所學校自己出題，長度從 100 字到 650 字不等。經典題目包括 "Why us?"（為什麼選我們學校）、"Why major?"（為什麼選這個專業）、"Community essay"（你所在的社區）等。有些學校一口氣會甩給你四五道題，對於這樣的學校補充文書的工作量遠超 Personal Statement。
+- **Supplemental Essays**（補充文書）：每所學校自己出題，長度從 100 字到 650 字不等。經典題目包括 "Why us?"（為什麼選我們學校）、 "Why major?"（為什麼選這個專業）、 "Community essay"（你所在的社區）等。有些學校一口氣會甩給你四五道題，對於這樣的學校補充文書的工作量遠超 Personal Statement。
 
 文書值得單獨寫一整篇 guide，這裡只想點出幾個最常見的誤區：
 
@@ -241,7 +241,7 @@ Common App 上有兩個相關的欄目：
 這兩個欄目是 AO 在極短時間內快速讀懂你是誰的地方。因為字元限制非常緊，每一個字都要精打細算。幾個常見做法：
 
 - **用動詞開頭**：比如 "Led", "Founded", "Designed", "Researched"。避免 "I was responsible for..."（主語就在浪費字元）。
-- **量化 impact**：能用數字就用數字。"Organized 3 workshops for 120+ students" 比 "Organized workshops for students" 強得多。
+- **量化 impact**：能用數字就用數字。 "Organized 3 workshops for 120+ students" 比 "Organized workshops for students" 強得多。
 - **按重要性排序**：第一項 AO 一定會看，最後一項可能只是掃一眼。把最能代表你的放在前面。
 - **Honors 只放有明確選拔機制的**：比如 IMO 國家隊、RSI、Coca-Cola Scholar 這種有正式 selection process 的。CAS 裡的參與型榮譽不適合放這裡。
 
