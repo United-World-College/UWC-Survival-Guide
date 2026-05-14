@@ -1,7 +1,7 @@
 ---
 title: "Victims of the System"
 category: "Musings"
-description: "On becoming victims of the system in a metric-obsessed world."
+description: "Reflections on a metric-obsessed world, and the founding intent behind this guide."
 order: 3
 author_id: "william-huang"
 original_language: "zh-CN"

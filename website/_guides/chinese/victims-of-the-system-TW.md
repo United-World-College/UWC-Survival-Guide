@@ -1,7 +1,7 @@
 ---
 title: "體制的犧牲者"
 category: "隨想"
-description: "Metric 至上世界裡的體制犧牲品。"
+description: "關於 metric 至上的一些反思，以及這份生存指南的初心。"
 order: 3
 author_id: "william-huang"
 original_language: "zh-CN"
