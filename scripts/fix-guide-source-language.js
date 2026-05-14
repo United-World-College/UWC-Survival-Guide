@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 /**
- * One-off fix: align Firestore submission `language` (source language) with
- * the Markdown frontmatter `original_language` for the CS guide.
+ * Align Firestore submission `language` (source language) with the Markdown
+ * frontmatter `original_language` for a given guide.
  *
  * The author page reads source language from Firestore, so a drift causes
  * the wrong "原文 / Original" pill to show. The Markdown is the intended
- * source of truth (original_language: "zh-CN") so we patch Firestore here.
+ * source of truth, so we patch Firestore here.
  *
  * Usage:
- *   node scripts/fix-cs-guide-source-language.js          # dry-run
- *   node scripts/fix-cs-guide-source-language.js --write  # apply
+ *   node scripts/fix-guide-source-language.js --guide-id=<id> --language=<code>
+ *   node scripts/fix-guide-source-language.js --guide-id=<id> --language=<code> --write
+ *
+ * Example:
+ *   node scripts/fix-guide-source-language.js --guide-id=victims-of-the-system --language=zh-CN
  */
 
 const admin = require("../functions/node_modules/firebase-admin");
@@ -22,8 +25,21 @@ admin.initializeApp({
 const db = admin.firestore();
 const WRITE = process.argv.includes("--write");
 
-const GUIDE_ID = "computer-science";
-const TARGET_LANGUAGE = "zh-CN";
+function parseArg(name) {
+  const prefix = `--${name}=`;
+  const hit = process.argv.find((a) => a.startsWith(prefix));
+  return hit ? hit.slice(prefix.length) : null;
+}
+
+const GUIDE_ID = parseArg("guide-id");
+const TARGET_LANGUAGE = parseArg("language");
+
+if (!GUIDE_ID || !TARGET_LANGUAGE) {
+  console.error(
+    "Usage: node scripts/fix-guide-source-language.js --guide-id=<id> --language=<code> [--write]",
+  );
+  process.exit(1);
+}
 
 async function main() {
   const snap = await db
