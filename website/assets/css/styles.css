@@ -645,6 +645,12 @@ body {
   margin-bottom: 1rem;
 }
 
+/* Chinese (zh-CN / zh-TW) guide titles: Song/serif, unbolded */
+html[lang^="zh"] .guide-hero h1 {
+  font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  font-weight: 400;
+}
+
 .guide-byline {
   margin-bottom: 1rem;
   font-size: 0.82rem;
@@ -818,6 +824,17 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin: 1.3rem 0 0.55rem;
+}
+
+/* Chinese (zh-CN / zh-TW) article headings: Song/serif, unbolded */
+html[lang^="zh"] .guide-content h1,
+html[lang^="zh"] .guide-content h2,
+html[lang^="zh"] .guide-content h3,
+html[lang^="zh"] .guide-content h4,
+html[lang^="zh"] .guide-content h5,
+html[lang^="zh"] .guide-content h6 {
+  font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  font-weight: 400;
 }
 
 .guide-content p {

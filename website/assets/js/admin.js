@@ -1066,7 +1066,7 @@
       '<title>PREVIEW \u2014 ' + escapeHtml(f.title) + '</title>' +
       '<link rel="preconnect" href="https://fonts.googleapis.com">' +
       '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">' +
+      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">' +
       (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
       '<style>body{font-family:"Inter",-apple-system,Helvetica,Arial,sans-serif;}' +
       '.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;' +
@@ -1346,7 +1346,7 @@
         'pw.document.write("<!DOCTYPE html><html lang=\\""+plang+"\\"><head><meta charset=UTF-8><meta name=viewport content=\\"width=device-width,initial-scale=1\\">' +
           '<title>PREVIEW \\u2014 "+esc(title)+"<\\/title>' +
           '<link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin>' +
-          '<link href=\\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap\\" rel=stylesheet>"' +
+          '<link href=\\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap\\" rel=stylesheet>"' +
           '+(STYLESHEET?"<link rel=stylesheet href=\\""+STYLESHEET+"\\">":"")' +
           '+"<style>body{font-family:Inter,-apple-system,Helvetica,Arial,sans-serif;}.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;padding:0.55rem 1rem;font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;}<\\/style>' +
           '<\\/head><body><div class=preview-banner>"+esc(L.preview_banner)+"<\\/div>' +
@@ -2105,7 +2105,7 @@
       '<title>PREVIEW \u2014 ' + escapeHtml(title) + '</title>' +
       '<link rel="preconnect" href="https://fonts.googleapis.com">' +
       '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">' +
+      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Serif+SC:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">' +
       (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
       '<style>body{font-family:"Inter",-apple-system,Helvetica,Arial,sans-serif;}' +
       '.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;' +
