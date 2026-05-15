@@ -372,14 +372,39 @@
     }
 
     if (toolbar) {
+      // Collapse any open heading dropdown within this toolbar.
+      var closeDropdowns = function () {
+        var open = toolbar.querySelectorAll('.admin-md-dropdown-open');
+        for (var i = 0; i < open.length; i++) {
+          open[i].classList.remove('admin-md-dropdown-open');
+          var tg = open[i].querySelector('[data-md-dropdown]');
+          if (tg) tg.setAttribute('aria-expanded', 'false');
+        }
+      };
+
       // Preserve textarea selection on mousedown (Safari otherwise blurs first).
       toolbar.addEventListener('mousedown', function (e) {
-        var btn = e.target.closest ? e.target.closest('.admin-md-btn') : null;
-        if (btn) e.preventDefault();
+        if (e.target.closest && e.target.closest('[data-md], [data-md-dropdown]')) {
+          e.preventDefault();
+        }
       });
       toolbar.addEventListener('click', function (e) {
-        var btn = e.target.closest ? e.target.closest('.admin-md-btn') : null;
+        if (!e.target.closest) return;
+        // Heading dropdown toggle: expand/collapse the menu, apply nothing.
+        var toggle = e.target.closest('[data-md-dropdown]');
+        if (toggle) {
+          var dd = toggle.closest('.admin-md-dropdown');
+          var wasOpen = dd && dd.classList.contains('admin-md-dropdown-open');
+          closeDropdowns();
+          if (dd && !wasOpen) {
+            dd.classList.add('admin-md-dropdown-open');
+            toggle.setAttribute('aria-expanded', 'true');
+          }
+          return;
+        }
+        var btn = e.target.closest('[data-md]');
         if (!btn) return;
+        closeDropdowns();
         var op = btn.getAttribute('data-md');
         if (op === 'image') {
           if (fileInput) fileInput.click();
@@ -388,6 +413,14 @@
         var level = parseInt(btn.getAttribute('data-level') || '0', 10);
         var dir = btn.getAttribute('data-dir') || '';
         applyMd(ta, op, { level: level, dir: dir }, i18n);
+      });
+      // Collapse the dropdown on outside click or Escape.
+      document.addEventListener('click', function (e) {
+        if (e.target.closest && e.target.closest('#' + opts.toolbarId)) return;
+        closeDropdowns();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeDropdowns();
       });
     }
 

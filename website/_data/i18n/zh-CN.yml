@@ -260,6 +260,7 @@ admin:
   tb_h3: 三级标题
   tb_h4: 四级标题
   tb_h5: 五级标题
+  tb_heading: 标题
   tb_bold: 粗体
   tb_italic: 斜体
   tb_strike: 删除线
