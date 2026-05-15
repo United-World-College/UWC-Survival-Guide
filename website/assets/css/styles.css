@@ -771,11 +771,6 @@ html[lang^="zh"] .guide-hero h1 {
   isolation: isolate;
 }
 
-.guide-content > p:first-child > em:only-child {
-  color: var(--text);
-  font-size: 0.95rem;
-}
-
 .guide-content h1 {
   font-family: var(--reading-serif);
   font-size: 1.95rem;
