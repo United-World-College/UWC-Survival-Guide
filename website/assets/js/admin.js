@@ -1042,6 +1042,17 @@
     };
   }
 
+  // Whitelist the article language so guide-preview tabs apply the correct
+  // language-specific guide-content styling (en = NYT serif, zh = CJK sans).
+  function previewLang(v) {
+    return (v === 'zh-CN' || v === 'zh-TW') ? v : 'en';
+  }
+
+  function getArticleFieldValue(id) {
+    var el = document.getElementById(id);
+    return el ? el.value : '';
+  }
+
   function openPreviewTab() {
     var f = getArticleFields();
     var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
@@ -1049,13 +1060,13 @@
     var renderedContent = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : escapeHtml(f.content);
     var win = window.open('', '_blank');
     if (!win) return;
-    win.document.write('<!DOCTYPE html><html lang="en"><head>' +
+    win.document.write('<!DOCTYPE html><html lang="' + previewLang(getArticleFieldValue('article-language')) + '"><head>' +
       '<meta charset="UTF-8">' +
       '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
       '<title>PREVIEW \u2014 ' + escapeHtml(f.title) + '</title>' +
       '<link rel="preconnect" href="https://fonts.googleapis.com">' +
       '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">' +
+      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">' +
       (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
       '<style>body{font-family:"Inter",-apple-system,Helvetica,Arial,sans-serif;}' +
       '.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;' +
@@ -1327,14 +1338,15 @@
       'function authorKey(a){if(!a)return"";if(a.uid)return"uid:"+a.uid;if(a.author_id)return"author:"+a.author_id;var name=(a.name||"").trim().toLowerCase();return name?"name:"+name:"";}' +
       'function orderedAuthors(d){var seen={};var authors=(d&&d.coAuthors?d.coAuthors:[]).slice().sort(function(a,b){return(a.order||0)-(b.order||0);});return authors.filter(function(a){if(!a||!a.name)return false;var key=authorKey(a);if(!key||seen[key])return false;seen[key]=true;return true;});}' +
       'function authorNames(d){return orderedAuthors(d).map(function(a){return a.name;}).join(", ");}' +
-      'function openPreview(title,category,author,desc,content){' +
+      'function openPreview(title,category,author,desc,content,language){' +
+        'var plang=(language==="zh-CN"||language==="zh-TW")?language:"en";' +
         'var rawHtml=typeof marked!=="undefined"?marked.parse(content):esc(content);' +
         'var rendered=typeof DOMPurify!=="undefined"?DOMPurify.sanitize(rawHtml):esc(content);' +
         'var pw=window.open("","_blank");if(!pw)return;' +
-        'pw.document.write("<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content=\\"width=device-width,initial-scale=1\\">' +
+        'pw.document.write("<!DOCTYPE html><html lang=\\""+plang+"\\"><head><meta charset=UTF-8><meta name=viewport content=\\"width=device-width,initial-scale=1\\">' +
           '<title>PREVIEW \\u2014 "+esc(title)+"<\\/title>' +
           '<link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin>' +
-          '<link href=\\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap\\" rel=stylesheet>"' +
+          '<link href=\\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap\\" rel=stylesheet>"' +
           '+(STYLESHEET?"<link rel=stylesheet href=\\""+STYLESHEET+"\\">":"")' +
           '+"<style>body{font-family:Inter,-apple-system,Helvetica,Arial,sans-serif;}.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;padding:0.55rem 1rem;font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;}<\\/style>' +
           '<\\/head><body><div class=preview-banner>"+esc(L.preview_banner)+"<\\/div>' +
@@ -1465,14 +1477,14 @@
             'document.getElementById("rs-cat").value,' +
             'rsAuthorStr,' +
             'document.getElementById("rs-desc").value.trim(),' +
-            'previewContent);' +
+            'previewContent,document.getElementById("rs-lang").value);' +
         '});' +
         /* view version buttons */
         'document.querySelectorAll(".rs-view-ver").forEach(function(btn){' +
           'btn.addEventListener("click",function(){' +
             'var idx=parseInt(this.getAttribute("data-round"));' +
             'var snap=history[idx].contentSnapshot;' +
-            'if(snap)openPreview(snap.title||d.title,snap.category||d.category,authorNames(d),snap.description||d.description,snap.content||"");' +
+            'if(snap)openPreview(snap.title||d.title,snap.category||d.category,authorNames(d),snap.description||d.description,snap.content||"",d.language);' +
           '});' +
         '});' +
         /* char counter */
@@ -1559,7 +1571,7 @@
     db.collection('submissions').doc(docId).get().then(function (doc) {
       if (!doc.exists) return;
       var d = doc.data();
-      openContentPreview(d.title, d.category, getAuthorNames(getSubmissionAuthors(d)), d.description, d.content);
+      openContentPreview(d.title, d.category, getAuthorNames(getSubmissionAuthors(d)), d.description, d.content, d.language);
     });
   }
 
@@ -2082,18 +2094,18 @@
     });
   }
 
-  function openContentPreview(title, category, author, description, content) {
+  function openContentPreview(title, category, author, description, content, language) {
     var rawHtml = typeof marked !== 'undefined' ? marked.parse(content || '') : escapeHtml(content || '');
     var renderedContent = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : escapeHtml(content || '');
     var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
     var win = window.open('', '_blank');
     if (!win) return;
-    win.document.write('<!DOCTYPE html><html lang="en"><head>' +
+    win.document.write('<!DOCTYPE html><html lang="' + previewLang(language) + '"><head>' +
       '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<title>PREVIEW \u2014 ' + escapeHtml(title) + '</title>' +
       '<link rel="preconnect" href="https://fonts.googleapis.com">' +
       '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">' +
+      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">' +
       (stylesheetHref ? '<link rel="stylesheet" href="' + stylesheetHref + '">' : '') +
       '<style>body{font-family:"Inter",-apple-system,Helvetica,Arial,sans-serif;}' +
       '.preview-banner{position:sticky;top:0;z-index:999;background:#2c2a26;color:#f6f4f0;text-align:center;' +
@@ -2158,7 +2170,7 @@
         var idx = parseInt(this.getAttribute('data-ver-idx'));
         var snap = history[idx].contentSnapshot;
         if (snap) {
-          openContentPreview(snap.title || d.title, snap.category || d.category, getAuthorNames(getSubmissionAuthors(d)), snap.description || d.description, snap.content || '');
+          openContentPreview(snap.title || d.title, snap.category || d.category, getAuthorNames(getSubmissionAuthors(d)), snap.description || d.description, snap.content || '', d.language);
         }
       });
     });

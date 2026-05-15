@@ -5,6 +5,43 @@
   box-sizing: border-box;
 }
 
+/* ── NYT Imperial — guide article serif (English) ── */
+@font-face {
+  font-family: "nyt-imperial";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/imperial-normal-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "nyt-imperial";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/imperial-normal-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "nyt-imperial";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/imperial-normal-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "nyt-imperial";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/imperial-italic-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "nyt-imperial";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/imperial-italic-700.woff2") format("woff2");
+}
+
 /* ── Base ── */
 :root {
   --ivory: #f6f4f0;
@@ -16,6 +53,15 @@
   --border: #d8d4cd;
   --serif: "Cormorant Garamond", "Noto Serif SC", "Songti SC", "STSong", "SimSun", Georgia, serif;
   --sans: "Inter", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, Helvetica, Arial, sans-serif;
+  /* English guide articles: the original New York Times text face, Imperial
+     (body + headings share it). Georgia is the swap-in fallback. */
+  --reading-serif: "nyt-imperial", Georgia, "Times New Roman", Times, serif;
+}
+
+/* Chinese guides keep the site's original sans-serif CJK typeface */
+html[lang="zh-CN"],
+html[lang="zh-TW"] {
+  --reading-serif: var(--sans);
 }
 
 html {
@@ -591,9 +637,9 @@ body {
 }
 
 .guide-hero h1 {
-  font-family: var(--serif);
+  font-family: var(--reading-serif);
   font-size: 3.2rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--dark);
   line-height: 1.2;
   margin-bottom: 1rem;
@@ -644,6 +690,7 @@ body {
 }
 
 .guide-hero .hero-subtitle {
+  font-family: var(--reading-serif);
   font-size: 1.1rem;
   color: var(--dark);
 }
@@ -724,49 +771,49 @@ body {
 }
 
 .guide-content h1 {
-  font-family: var(--serif);
+  font-family: var(--reading-serif);
   font-size: 1.95rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--dark);
   margin: 3rem 0 1.1rem;
 }
 
 .guide-content h2 {
-  font-family: var(--serif);
+  font-family: var(--reading-serif);
   font-size: 1.8rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--dark);
   margin: 3rem 0 1rem;
 }
 
 .guide-content h3 {
-  font-family: var(--serif);
+  font-family: var(--reading-serif);
   font-size: 1.3rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--dark);
   margin: 2rem 0 0.8rem;
 }
 
 .guide-content h4 {
-  font-family: var(--serif);
+  font-family: var(--reading-serif);
   font-size: 1.15rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--dark);
   margin: 1.6rem 0 0.7rem;
 }
 
 .guide-content h5 {
-  font-family: var(--serif);
+  font-family: var(--reading-serif);
   font-size: 1.08rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--dark);
   margin: 1.4rem 0 0.6rem;
 }
 
 .guide-content h6 {
-  font-family: var(--serif);
+  font-family: var(--reading-serif);
   font-size: 1.02rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--dark);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -774,24 +821,49 @@ body {
 }
 
 .guide-content p {
-  font-size: 1.05rem;
+  font-family: var(--reading-serif);
+  font-size: 1.125rem;
+  font-weight: 500;
   color: var(--dark);
-  line-height: 1.7;
-  margin-bottom: 1.6rem;
-  text-align: justify;
+  line-height: 1.55;
+  margin-bottom: 1.4rem;
+  text-align: left;
   word-break: break-word;
   hyphens: auto;
 }
 
 .guide-content ul, .guide-content ol {
-  margin: 1rem 0 1.5rem 1.2rem;
+  margin: 1rem 0 1.2rem 1.2rem;
 }
 
 .guide-content li {
-  font-size: 1.05rem;
+  font-family: var(--reading-serif);
+  font-size: 1.125rem;
+  font-weight: 500;
   color: var(--dark);
+  line-height: 1.55;
+  margin-bottom: 0.3rem;
+}
+
+.guide-content li::marker {
+  color: var(--muted);
+}
+
+/* Chinese guides: body text keeps the site's original pre-redesign styling.
+   Headings and the Obsidian-style tables/lists are intentionally unaffected. */
+html[lang="zh-CN"] .guide-content p,
+html[lang="zh-CN"] .guide-content li,
+html[lang="zh-TW"] .guide-content p,
+html[lang="zh-TW"] .guide-content li {
+  font-size: 1.05rem;
+  font-weight: 400;
   line-height: 1.7;
-  margin-bottom: 0.7rem;
+}
+
+html[lang="zh-CN"] .guide-content p,
+html[lang="zh-TW"] .guide-content p {
+  margin-bottom: 1.6rem;
+  text-align: justify;
 }
 
 .guide-content a {
@@ -832,6 +904,43 @@ body {
   height: 1px;
   background: var(--border);
   margin: 3rem 0;
+}
+
+/* ── Obsidian-style tables ── */
+.guide-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.6rem 0;
+  font-size: 0.95rem;
+}
+
+.guide-content th,
+.guide-content td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.guide-content th {
+  background: var(--cream);
+  font-weight: 600;
+}
+
+/* ── Obsidian-style fenced code block ── */
+.guide-content pre {
+  background: var(--cream);
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1.6rem 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.guide-content pre code {
+  background: none;
+  padding: 0;
+  font-size: 1em;
 }
 
 /* ── Guide link cards ── */
@@ -1401,6 +1510,10 @@ span.coauthor-name {
 
   .hero h1 { font-size: 2.6rem; }
   .hero-subtitle br { display: none; }
+
+  .guide-content p,
+  .guide-content li { font-size: 1.0625rem; }
+  .guide-content table { display: block; overflow-x: auto; }
 
   .grid-two { grid-template-columns: 1fr; gap: 2.5rem; }
   .grid-three { grid-template-columns: 1fr; gap: 2rem; }
