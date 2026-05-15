@@ -272,6 +272,10 @@ admin:
   tb_image: Insert image
   tb_hr: Horizontal rule
   tb_table: Insert table
+  tb_align_left: Align left
+  tb_align_center: Align center
+  tb_align_right: Align right
+  tb_ph_align: aligned text
   tb_hint: "Paste, drag-drop, or click the image button. Max 5 MB per image. Allowed: JPG, PNG, GIF, WEBP, HEIC."
   tb_link_prompt: "Enter the URL:"
   tb_ph_bold: bold text

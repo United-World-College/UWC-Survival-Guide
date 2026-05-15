@@ -272,6 +272,10 @@ admin:
   tb_image: 插入图片
   tb_hr: 分隔线
   tb_table: 插入表格
+  tb_align_left: 左对齐
+  tb_align_center: 居中对齐
+  tb_align_right: 右对齐
+  tb_ph_align: 对齐的文字
   tb_hint: 可粘贴、拖入或点击图片按钮。单张上限 5 MB，支持 JPG、PNG、GIF、WEBP、HEIC。
   tb_link_prompt: "请输入链接地址："
   tb_ph_bold: 粗体文字

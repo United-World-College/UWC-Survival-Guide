@@ -199,6 +199,26 @@
         caretEnd = caretStart;
         break;
       }
+      case 'align': {
+        // Markdown has no alignment syntax. Wrap the selected lines in a
+        // div: kramdown reads markdown="1" + the blank lines to parse the
+        // inner content as markdown; marked.js (CommonMark type-6 HTML
+        // block) closes the <div> at the blank line and re-parses the
+        // inner content too — so alignment renders in both the live build
+        // and the preview tab.
+        var dir = opts.dir || 'center';
+        var aLineStart = before.lastIndexOf('\n') + 1;
+        var aHead = value.slice(aLineStart, start);
+        before = value.slice(0, aLineStart);
+        var aInner = (aHead + sel) || (i18n.tb_ph_align || 'aligned text');
+        var aLead = (before === '' || /\n\n$/.test(before)) ? '' : '\n';
+        var aTrail = (after === '' || /^\n\n/.test(after)) ? '' : '\n';
+        var openTag = '<div style="text-align: ' + dir + '" markdown="1">';
+        insert = aLead + openTag + '\n\n' + aInner + '\n\n</div>' + aTrail;
+        caretStart = before.length + aLead.length + openTag.length + 2;
+        caretEnd = caretStart + aInner.length;
+        break;
+      }
       default:
         return;
     }
@@ -366,7 +386,8 @@
           return;
         }
         var level = parseInt(btn.getAttribute('data-level') || '0', 10);
-        applyMd(ta, op, { level: level }, i18n);
+        var dir = btn.getAttribute('data-dir') || '';
+        applyMd(ta, op, { level: level, dir: dir }, i18n);
       });
     }
 

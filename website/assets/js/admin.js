@@ -1263,10 +1263,12 @@
       tb_ul: ADMIN_I18N.tb_ul, tb_ol: ADMIN_I18N.tb_ol,
       tb_link: ADMIN_I18N.tb_link, tb_image: ADMIN_I18N.tb_image,
       tb_hr: ADMIN_I18N.tb_hr, tb_table: ADMIN_I18N.tb_table,
+      tb_align_left: ADMIN_I18N.tb_align_left, tb_align_center: ADMIN_I18N.tb_align_center,
+      tb_align_right: ADMIN_I18N.tb_align_right,
       tb_hint: ADMIN_I18N.tb_hint, tb_link_prompt: ADMIN_I18N.tb_link_prompt,
       tb_ph_bold: ADMIN_I18N.tb_ph_bold, tb_ph_italic: ADMIN_I18N.tb_ph_italic,
       tb_ph_strike: ADMIN_I18N.tb_ph_strike, tb_ph_code: ADMIN_I18N.tb_ph_code,
-      tb_ph_link: ADMIN_I18N.tb_ph_link,
+      tb_ph_link: ADMIN_I18N.tb_ph_link, tb_ph_align: ADMIN_I18N.tb_ph_align,
       tb_table_h1: ADMIN_I18N.tb_table_h1, tb_table_h2: ADMIN_I18N.tb_table_h2,
       tb_table_c1: ADMIN_I18N.tb_table_c1, tb_table_c2: ADMIN_I18N.tb_table_c2,
       tb_uploading_n: ADMIN_I18N.tb_uploading_n,
@@ -1417,6 +1419,11 @@
         'h+="<div class=\\"admin-md-toolbar-group\\">";' +
         'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"ul\\" title=\\""+esc(L.tb_ul)+"\\">&bull; &mdash;<\/button>";' +
         'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"ol\\" title=\\""+esc(L.tb_ol)+"\\">1.<\/button>";' +
+        'h+="<\/div><span class=\\"admin-md-toolbar-sep\\" aria-hidden=\\"true\\"><\/span>";' +
+        'h+="<div class=\\"admin-md-toolbar-group\\">";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn admin-md-btn-icon\\" data-md=\\"align\\" data-dir=\\"left\\" title=\\""+esc(L.tb_align_left)+"\\"><svg viewBox=\\"0 0 14 14\\" width=\\"14\\" height=\\"14\\" stroke=\\"currentColor\\" stroke-width=\\"1.4\\" stroke-linecap=\\"round\\" fill=\\"none\\" aria-hidden=\\"true\\"><line x1=\\"1.5\\" y1=\\"3\\" x2=\\"12.5\\" y2=\\"3\\"\\/><line x1=\\"1.5\\" y1=\\"7\\" x2=\\"8.5\\" y2=\\"7\\"\\/><line x1=\\"1.5\\" y1=\\"11\\" x2=\\"10.5\\" y2=\\"11\\"\\/><\/svg><\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn admin-md-btn-icon\\" data-md=\\"align\\" data-dir=\\"center\\" title=\\""+esc(L.tb_align_center)+"\\"><svg viewBox=\\"0 0 14 14\\" width=\\"14\\" height=\\"14\\" stroke=\\"currentColor\\" stroke-width=\\"1.4\\" stroke-linecap=\\"round\\" fill=\\"none\\" aria-hidden=\\"true\\"><line x1=\\"1.5\\" y1=\\"3\\" x2=\\"12.5\\" y2=\\"3\\"\\/><line x1=\\"3.5\\" y1=\\"7\\" x2=\\"10.5\\" y2=\\"7\\"\\/><line x1=\\"2.5\\" y1=\\"11\\" x2=\\"11.5\\" y2=\\"11\\"\\/><\/svg><\/button>";' +
+        'h+="<button type=\\"button\\" class=\\"admin-md-btn admin-md-btn-icon\\" data-md=\\"align\\" data-dir=\\"right\\" title=\\""+esc(L.tb_align_right)+"\\"><svg viewBox=\\"0 0 14 14\\" width=\\"14\\" height=\\"14\\" stroke=\\"currentColor\\" stroke-width=\\"1.4\\" stroke-linecap=\\"round\\" fill=\\"none\\" aria-hidden=\\"true\\"><line x1=\\"1.5\\" y1=\\"3\\" x2=\\"12.5\\" y2=\\"3\\"\\/><line x1=\\"5.5\\" y1=\\"7\\" x2=\\"12.5\\" y2=\\"7\\"\\/><line x1=\\"3.5\\" y1=\\"11\\" x2=\\"12.5\\" y2=\\"11\\"\\/><\/svg><\/button>";' +
         'h+="<\/div><span class=\\"admin-md-toolbar-sep\\" aria-hidden=\\"true\\"><\/span>";' +
         'h+="<div class=\\"admin-md-toolbar-group\\">";' +
         'h+="<button type=\\"button\\" class=\\"admin-md-btn\\" data-md=\\"link\\" title=\\""+esc(L.tb_link)+"\\">&#128279;<\/button>";' +
