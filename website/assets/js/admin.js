@@ -2265,7 +2265,7 @@
   document.getElementById('modal-preview-btn').addEventListener('click', function () {
     if (!currentModalData) return;
     var d = currentModalData;
-    openContentPreview(d.title, d.category, getAuthorNames(getSubmissionAuthors(d)), d.description, d.content);
+    openContentPreview(d.title, d.category, getAuthorNames(getSubmissionAuthors(d)), d.description, d.content, d.language);
   });
 
   document.getElementById('modal-close').addEventListener('click', closeReviewModal);
