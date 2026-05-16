@@ -101,30 +101,14 @@
       <h2>{{ current_locale.home.full_guide_title }}</h2>
       <p class="section-desc">{{ current_locale.home.full_guide_desc }}</p>
     </div>
-    {% if current_language_code == "zh-CN" %}
-      {% assign lang_order = "zh-CN,zh-TW,en" | split: "," %}
-    {% elsif current_language_code == "zh-TW" %}
-      {% assign lang_order = "zh-TW,zh-CN,en" | split: "," %}
-    {% else %}
-      {% assign lang_order = "en,zh-CN,zh-TW" | split: "," %}
-    {% endif %}
-    
-    {% assign sorted_guide_languages = "" | split: "" %}
-    {% for code in lang_order %}
-      {% assign lang = site.data.guide_languages | where: "code", code | first %}
-      {% if lang %}
-        {% assign sorted_guide_languages = sorted_guide_languages | push: lang %}
-      {% endif %}
-    {% endfor %}
-    
-    {% for language in sorted_guide_languages %}
-    {% assign localized_guides = site.guides | where: "language_code", language.code | sort: "order" %}
+    {% assign current_language = site.data.guide_languages | where: "code", current_language_code | first %}
+    {% assign localized_guides = site.guides | where: "language_code", current_language_code | sort: "order" %}
     {% if localized_guides.size > 0 %}
     <div class="guides-language-group">
       <div class="guides-language-header">
         <div>
-          <p class="guides-language-label">{{ language.label }}</p>
-          <p class="guides-language-desc">{{ language.description }}</p>
+          <p class="guides-language-label">{{ current_language.label }}</p>
+          <p class="guides-language-desc">{{ current_language.description }}</p>
         </div>
       </div>
       <div class="grid-three">
@@ -138,7 +122,6 @@
       </div>
     </div>
     {% endif %}
-    {% endfor %}
   </section>
 
   <div class="divider"></div>
