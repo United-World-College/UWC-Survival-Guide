@@ -130,11 +130,17 @@
   <div class="guide-layout">
     <aside class="guide-toc-wrap">
       <nav class="guide-toc" aria-label="{{ current_locale.guide.toc_label | default: 'On this page' }}">
-        <p class="guide-toc-label">{{ current_locale.guide.toc_label | default: 'On this page' }}</p>
+        <p class="guide-toc-label"><a href="#guide-toc-top">{{ current_locale.guide.toc_label | default: 'On this page' }}</a></p>
         <ul class="guide-toc-list"></ul>
       </nav>
     </aside>
     <article class="guide-content">
+      <nav class="guide-inline-toc" id="guide-toc-top" aria-label="{{ current_locale.guide.toc_label | default: 'On this page' }}">
+        <p class="guide-inline-toc-label">{{ current_locale.guide.toc_label | default: 'On this page' }}</p>
+        <div class="guide-inline-toc-cols">
+          <ul class="guide-inline-toc-list"></ul>
+        </div>
+      </nav>
       {{ content }}
     </article>
   </div>
