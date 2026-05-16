@@ -876,6 +876,31 @@ html[lang^="zh"] .guide-content h6 {
   color: var(--muted);
 }
 
+/* ── Foldable blocks: <details>/<summary> written as raw HTML in guides ──
+   Without these rules <summary> falls back to the browser default font and
+   size, so it renders smaller than — and visually out of step with — the
+   surrounding body text. Match it to the body. */
+.guide-content details {
+  margin: 1rem 0 1.2rem;
+}
+
+.guide-content summary {
+  font-family: var(--reading-serif);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--dark);
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.guide-content summary::marker {
+  color: var(--muted);
+}
+
+.guide-content summary:hover {
+  color: var(--muted);
+}
+
 /* Chinese guides: body text keeps the site's original pre-redesign styling.
    Headings and the Obsidian-style tables/lists are intentionally unaffected. */
 html[lang="zh-CN"] .guide-content p,
@@ -892,6 +917,13 @@ html[lang="zh-TW"] .guide-content li {
 html[lang="zh-CN"] .guide-content li,
 html[lang="zh-TW"] .guide-content li {
   line-height: 1.5;
+}
+
+/* Chinese <summary> matches the Chinese body text weight and size. */
+html[lang="zh-CN"] .guide-content summary,
+html[lang="zh-TW"] .guide-content summary {
+  font-size: 1.05rem;
+  font-weight: 400;
 }
 
 html[lang="zh-CN"] .guide-content p,
