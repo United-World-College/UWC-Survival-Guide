@@ -3412,10 +3412,6 @@ html[lang^="zh"] .guide-content .guide-inline-toc-label {
   color: inherit;
 }
 
-.guide-content .guide-inline-toc-list > li:last-child {
-  margin-bottom: 0;
-}
-
 .guide-content .guide-inline-toc-list > li > a {
   display: block;
   font-family: var(--display-serif);
