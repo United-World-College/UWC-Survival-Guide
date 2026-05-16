@@ -798,7 +798,7 @@ html[lang^="zh"] .guide-hero h1 {
 .guide-content h4 {
   font-family: var(--reading-serif);
   font-size: 1.15rem;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--dark);
   margin: 1.6rem 0 0.7rem;
 }
@@ -806,7 +806,7 @@ html[lang^="zh"] .guide-hero h1 {
 .guide-content h5 {
   font-family: var(--reading-serif);
   font-size: 1.08rem;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--dark);
   margin: 1.4rem 0 0.6rem;
 }
@@ -814,7 +814,7 @@ html[lang^="zh"] .guide-hero h1 {
 .guide-content h6 {
   font-family: var(--reading-serif);
   font-size: 1.02rem;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--dark);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -830,6 +830,14 @@ html[lang^="zh"] .guide-content h5,
 html[lang^="zh"] .guide-content h6 {
   font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
   font-weight: 400;
+}
+
+/* The smaller subheadings carry a little extra weight so they stay legible
+   against the body text, which sits at weight 400 in Chinese guides. */
+html[lang^="zh"] .guide-content h4,
+html[lang^="zh"] .guide-content h5,
+html[lang^="zh"] .guide-content h6 {
+  font-weight: 500;
 }
 
 .guide-content p {
