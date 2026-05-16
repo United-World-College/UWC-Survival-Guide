@@ -856,13 +856,20 @@ html[lang^="zh"] .guide-content h6 {
   margin: 1rem 0 1.2rem 1.2rem;
 }
 
+/* Nested sub-bullet lists hug their parent item instead of taking the full
+   block gap above/below, so multi-level bullets stay compact. */
+.guide-content li > ul,
+.guide-content li > ol {
+  margin: 0.12rem 0 0.3rem 1.2rem;
+}
+
 .guide-content li {
   font-family: var(--reading-serif);
   font-size: 1.125rem;
   font-weight: 500;
   color: var(--dark);
   line-height: 1.55;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.15rem;
 }
 
 .guide-content li::marker {
@@ -878,6 +885,13 @@ html[lang="zh-TW"] .guide-content li {
   font-size: 1.05rem;
   font-weight: 400;
   line-height: 1.7;
+}
+
+/* List items run tighter than body paragraphs so bullets read as a compact
+   group rather than as widely-spaced standalone lines. */
+html[lang="zh-CN"] .guide-content li,
+html[lang="zh-TW"] .guide-content li {
+  line-height: 1.5;
 }
 
 html[lang="zh-CN"] .guide-content p,
