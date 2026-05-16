@@ -121,6 +121,7 @@ var ADMIN_I18N = {
   author_message_placeholder: {{ t.author_message_placeholder | jsonify }},
   author_message_to_reviewer: {{ t.author_message_to_reviewer | jsonify }},
   preview_btn:          {{ t.preview_btn | jsonify }},
+  preview_select_language: {{ t.preview_select_language | jsonify }},
   show_review_thread:   {{ t.show_review_thread | jsonify }},
   close_tab:            {{ t.close_tab | jsonify }},
   reject_comments_label: {{ t.reject_comments_label | jsonify }},
@@ -405,6 +406,7 @@ var ADMIN_I18N = {
                 <option value="zh-CN">简体中文</option>
                 <option value="zh-TW">台灣繁體</option>
               </select>
+              <p id="article-language-error" class="admin-error" style="display:none;"></p>
             </div>
 
             <div class="admin-field">

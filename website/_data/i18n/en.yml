@@ -344,6 +344,7 @@ admin:
   link_label_ph: e.g. GitHub, personal website
   profile_saved: Profile saved successfully.
   err_fill_all: Please fill out all fields.
+  preview_select_language: Please select your article's language before previewing, so the preview uses the correct formatting.
   article_submitted: Article submitted successfully! It will be reviewed before publishing.
   article_failed: Failed to submit article. Please try again.
   featured_max: You can feature up to 3 articles at a time.

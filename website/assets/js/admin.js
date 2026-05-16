@@ -1054,6 +1054,22 @@
   }
 
   function openPreviewTab() {
+    // The preview tab styles guide-content by its <html lang>; without a
+    // selected language it would fall back to English formatting and
+    // mis-render a Chinese draft. Require the language to be chosen first.
+    var articleLang = getArticleFieldValue('article-language');
+    if (!articleLang) {
+      clearErrors();
+      // Surface the error next to the Language field (not the bottom-of-form
+      // article-error) so it is visible right where focus lands.
+      showError('article-language-error', ADMIN_I18N.preview_select_language);
+      var langSelect = document.getElementById('article-language');
+      if (langSelect) {
+        langSelect.focus();
+        langSelect.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+      return;
+    }
     var f = getArticleFields();
     var stylesheetHref = (document.querySelector('link[rel="stylesheet"]') || {}).href || '';
     var rawHtml = typeof marked !== 'undefined' ? marked.parse(f.content) : escapeHtml(f.content);

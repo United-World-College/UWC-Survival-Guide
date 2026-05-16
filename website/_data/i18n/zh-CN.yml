@@ -344,6 +344,7 @@ admin:
   link_label_ph: 例：GitHub、个人网站
   profile_saved: 资料保存成功。
   err_fill_all: 请填写所有字段。
+  preview_select_language: 预览前请先选择文章的语言，以便预览使用正确的排版格式。
   article_submitted: 文章提交成功！将在审核后发布。
   article_failed: 文章提交失败，请重试。
   featured_max: 最多精选 3 篇文章。

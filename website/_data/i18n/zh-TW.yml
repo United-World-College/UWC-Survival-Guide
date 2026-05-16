@@ -344,6 +344,7 @@ admin:
   link_label_ph: 例：GitHub、個人網站
   profile_saved: 資料儲存成功。
   err_fill_all: 請填寫所有欄位。
+  preview_select_language: 預覽前請先選擇文章的語言，以便預覽使用正確的排版格式。
   article_submitted: 文章提交成功！將在審核後發布。
   article_failed: 文章提交失敗，請重試。
   featured_max: 最多精選 3 篇文章。
