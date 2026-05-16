@@ -5,43 +5,6 @@
   box-sizing: border-box;
 }
 
-/* ── NYT Imperial — guide article serif (English) ── */
-@font-face {
-  font-family: "nyt-imperial";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../fonts/imperial-normal-500.woff2") format("woff2");
-}
-@font-face {
-  font-family: "nyt-imperial";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("../fonts/imperial-normal-600.woff2") format("woff2");
-}
-@font-face {
-  font-family: "nyt-imperial";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("../fonts/imperial-normal-700.woff2") format("woff2");
-}
-@font-face {
-  font-family: "nyt-imperial";
-  font-style: italic;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../fonts/imperial-italic-500.woff2") format("woff2");
-}
-@font-face {
-  font-family: "nyt-imperial";
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-  src: url("../fonts/imperial-italic-700.woff2") format("woff2");
-}
-
 /* ── Base ── */
 :root {
   --ivory: #f6f4f0;
@@ -51,17 +14,29 @@
   --dark: #1a1a1a;
   --text: #3d3a35;
   --border: #d8d4cd;
-  --serif: "Cormorant Garamond", "Noto Serif SC", "Songti SC", "STSong", "SimSun", Georgia, serif;
+  /* Display serif used for site chrome (logo, home hero, section / feature
+     headers, footer brand) — same Playfair Display as guide article headings,
+     pairing the OFL "Cheltenham-equivalent" with Noto Serif SC for CJK. */
+  --serif: "Playfair Display", "Noto Serif SC", "Songti SC", "STSong", "SimSun", Georgia, serif;
   --sans: "Inter", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, Helvetica, Arial, sans-serif;
-  /* English guide articles: the original New York Times text face, Imperial
-     (body + headings share it). Georgia is the swap-in fallback. */
-  --reading-serif: "nyt-imperial", Georgia, "Times New Roman", Times, serif;
+  /* English guide articles use open-source serif typefaces (SIL OFL):
+     - body / figcaption use Source Serif Pro (visually close to NYT Imperial)
+     - headings use Playfair Display (visually close to NYT Cheltenham)
+     Georgia is the swap-in system fallback. */
+  --reading-serif: "Source Serif Pro", Georgia, "Times New Roman", Times, serif;
+  --display-serif: "Playfair Display", Georgia, "Times New Roman", Times, serif;
 }
 
-/* Chinese guides keep the site's original sans-serif CJK typeface */
+/* Chinese pages: only the article reading area (.guide-content) follows NYT
+   中文 typography (Georgia for Latin + PingFang SC for CJK). The rest of the
+   site keeps the default --sans and --serif stacks, which already carry CJK
+   fallbacks (Noto Sans SC / Noto Serif SC from Google Fonts) — this gives
+   chrome elements like the nav logo, section headers, and cards an
+   editorial Song-serif feel rather than a plain Hei sans. */
 html[lang="zh-CN"],
 html[lang="zh-TW"] {
-  --reading-serif: var(--sans);
+  --reading-serif: Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
+  --display-serif: Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
 }
 
 html {
@@ -75,7 +50,6 @@ body {
   font-weight: 400;
   font-size: 16px;
   line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
@@ -637,18 +611,12 @@ body {
 }
 
 .guide-hero h1 {
-  font-family: var(--reading-serif);
-  font-size: 3.2rem;
+  font-family: var(--display-serif);
+  font-size: 2.5rem;
   font-weight: 400;
-  color: var(--dark);
-  line-height: 1.2;
+  color: #121212;
+  line-height: 1.15;
   margin-bottom: 1rem;
-}
-
-/* Chinese (zh-CN / zh-TW) guide titles: Song/serif, unbolded */
-html[lang^="zh"] .guide-hero h1 {
-  font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
-  font-weight: 400;
 }
 
 .guide-byline {
@@ -772,81 +740,115 @@ html[lang^="zh"] .guide-hero h1 {
 }
 
 .guide-content h1 {
-  font-family: var(--reading-serif);
-  font-size: 1.95rem;
-  font-weight: 400;
-  color: var(--dark);
-  margin: 3rem 0 1.1rem;
+  font-family: var(--display-serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: #121212;
+  line-height: 1.2;
+  margin: 2.5rem 0 1rem;
 }
 
 .guide-content h2 {
-  font-family: var(--reading-serif);
-  font-size: 1.8rem;
-  font-weight: 400;
-  color: var(--dark);
-  margin: 3rem 0 1rem;
+  font-family: var(--display-serif);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #121212;
+  line-height: 1.21;
+  margin: 35px 0 20px;
 }
 
 .guide-content h3 {
-  font-family: var(--reading-serif);
+  font-family: var(--display-serif);
   font-size: 1.3rem;
-  font-weight: 400;
-  color: var(--dark);
+  font-weight: 600;
+  color: #121212;
+  line-height: 1.25;
   margin: 2rem 0 0.8rem;
 }
 
 .guide-content h4 {
-  font-family: var(--reading-serif);
+  font-family: var(--display-serif);
   font-size: 1.15rem;
-  font-weight: 400;
-  color: var(--dark);
+  font-weight: 600;
+  color: #121212;
   margin: 1.6rem 0 0.7rem;
 }
 
 .guide-content h5 {
-  font-family: var(--reading-serif);
+  font-family: var(--display-serif);
   font-size: 1.08rem;
-  font-weight: 400;
-  color: var(--dark);
+  font-weight: 600;
+  color: #121212;
   margin: 1.4rem 0 0.6rem;
 }
 
 .guide-content h6 {
-  font-family: var(--reading-serif);
+  font-family: var(--display-serif);
   font-size: 1.02rem;
-  font-weight: 400;
-  color: var(--dark);
+  font-weight: 600;
+  color: #121212;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin: 1.3rem 0 0.55rem;
 }
 
-/* Chinese (zh-CN / zh-TW) article headings: Song/serif, unbolded */
+/* Within the guide article reading area, CJK glyphs render in PingFang SC
+   (Hei sans, dense at any weight). Dropping bold weights one step keeps the
+   bold/regular contrast visually balanced with the Latin Playfair Display:
+   - headings: 700 / 600 → 400
+   - inline strong / b: 700 → 500
+   Home page chrome (which renders CJK in Noto Serif SC — a Song serif with
+   lighter strokes than PingFang) intentionally keeps the EN weights, since
+   Noto Serif SC needs a heavier numeric weight to match Playfair Display
+   visually. */
 html[lang^="zh"] .guide-content h1,
 html[lang^="zh"] .guide-content h2,
 html[lang^="zh"] .guide-content h3,
 html[lang^="zh"] .guide-content h4,
 html[lang^="zh"] .guide-content h5,
 html[lang^="zh"] .guide-content h6 {
-  font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
   font-weight: 400;
 }
 
-/* The smaller subheadings carry a little extra weight so they stay legible
-   against the body text, which sits at weight 400 in Chinese guides. */
-html[lang^="zh"] .guide-content h4,
-html[lang^="zh"] .guide-content h5,
-html[lang^="zh"] .guide-content h6 {
+html[lang^="zh"] .guide-content strong,
+html[lang^="zh"] .guide-content b {
   font-weight: 500;
+}
+
+/* NYT 中文 caps the article headline at 2.5rem and uses the browser's
+   default ("normal") line-height for CJK headings — tighter line-heights
+   crop the PingFang SC glyphs visually compared with NYT's render. */
+html[lang^="zh"] .guide-hero h1 {
+  font-size: 2.5rem;
+  line-height: normal;
+  color: #000;
+}
+
+/* NYT EN figcaptions: Imperial body face, smaller size, muted gray. */
+.guide-content figcaption {
+  font-family: var(--reading-serif);
+  font-size: 15px;
+  line-height: 20px;
+  color: #727272;
+  margin-top: 10px;
+}
+
+/* NYT 中文 figcaptions: Helvetica/Arial first (Latin sans), then CJK Hei.
+   Larger and black, distinct from NYT EN's gray Imperial. */
+html[lang^="zh"] .guide-content figcaption {
+  font-family: Helvetica, Arial, Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
+  font-size: 1rem;
+  line-height: 1.25;
+  color: #000;
 }
 
 .guide-content p {
   font-family: var(--reading-serif);
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: var(--dark);
-  line-height: 1.55;
-  margin-bottom: 1.4rem;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: #363636;
+  line-height: 1.5;
+  margin-bottom: 15px;
   text-align: left;
   word-break: break-word;
   hyphens: auto;
@@ -901,35 +903,28 @@ html[lang^="zh"] .guide-content h6 {
   color: var(--muted);
 }
 
-/* Chinese guides: body text keeps the site's original pre-redesign styling.
-   Headings and the Obsidian-style tables/lists are intentionally unaffected. */
+/* Chinese guides follow NYT 中文 typography: body and lists share one size,
+   one weight, and one line-height; paragraphs are left-aligned (NYT does not
+   justify CJK body text). */
 html[lang="zh-CN"] .guide-content p,
 html[lang="zh-CN"] .guide-content li,
 html[lang="zh-TW"] .guide-content p,
 html[lang="zh-TW"] .guide-content li {
-  font-size: 1.05rem;
+  font-size: 1.125rem;
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.875;
+  color: #333;
 }
 
-/* List items run tighter than body paragraphs so bullets read as a compact
-   group rather than as widely-spaced standalone lines. */
-html[lang="zh-CN"] .guide-content li,
-html[lang="zh-TW"] .guide-content li {
-  line-height: 1.5;
-}
-
-/* Chinese <summary> matches the Chinese body text weight and size. */
 html[lang="zh-CN"] .guide-content summary,
 html[lang="zh-TW"] .guide-content summary {
-  font-size: 1.05rem;
+  font-size: 1.125rem;
   font-weight: 400;
 }
 
 html[lang="zh-CN"] .guide-content p,
 html[lang="zh-TW"] .guide-content p {
-  margin-bottom: 1.6rem;
-  text-align: justify;
+  margin-bottom: 1.75rem;
 }
 
 /* A caption line written directly above an image (single newline = soft
