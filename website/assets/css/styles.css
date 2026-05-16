@@ -1636,6 +1636,10 @@ span.coauthor-name {
 
   .guide-content p,
   .guide-content li { font-size: 1.0625rem; }
+  html[lang="zh-CN"] .guide-content p,
+  html[lang="zh-CN"] .guide-content li,
+  html[lang="zh-TW"] .guide-content p,
+  html[lang="zh-TW"] .guide-content li { font-size: 1.0625rem; }
   .guide-content table { display: block; overflow-x: auto; }
 
   .grid-two { grid-template-columns: 1fr; gap: 2.5rem; }
