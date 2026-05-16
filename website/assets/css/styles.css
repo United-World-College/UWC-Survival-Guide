@@ -938,6 +938,43 @@ html[lang="zh-TW"] .guide-content p {
   font-weight: 600;
 }
 
+/* ── Legacy `align` attribute support ──
+   `align` is a presentational HTML attribute carrying zero specificity, so
+   every rule above silently overrides it. Guides that hand-write raw HTML
+   tables depend on it — and so does the editor preview, where marked.js
+   renders markdown `:--:` column alignment as `align="..."` attributes
+   (kramdown emits inline `style` instead, which is why published tables
+   already align but the preview did not). Honor it explicitly here. */
+.guide-content [align="center"]  { text-align: center; }
+.guide-content [align="right"]   { text-align: right; }
+.guide-content [align="left"]    { text-align: left; }
+.guide-content [align="justify"] { text-align: justify; }
+
+/* Block text inside an aligned container (e.g. a caption/title placed under
+   a <div align="center"> wrapping a table) should follow the container's
+   alignment instead of the default paragraph/heading/list alignment. */
+.guide-content [align="center"] p,
+.guide-content [align="center"] h1, .guide-content [align="center"] h2,
+.guide-content [align="center"] h3, .guide-content [align="center"] h4,
+.guide-content [align="center"] h5, .guide-content [align="center"] h6,
+.guide-content [align="center"] li, .guide-content [align="center"] figcaption,
+.guide-content [align="right"] p,
+.guide-content [align="right"] h1, .guide-content [align="right"] h2,
+.guide-content [align="right"] h3, .guide-content [align="right"] h4,
+.guide-content [align="right"] h5, .guide-content [align="right"] h6,
+.guide-content [align="right"] li, .guide-content [align="right"] figcaption,
+.guide-content [align="left"] p,
+.guide-content [align="left"] h1, .guide-content [align="left"] h2,
+.guide-content [align="left"] h3, .guide-content [align="left"] h4,
+.guide-content [align="left"] h5, .guide-content [align="left"] h6,
+.guide-content [align="left"] li, .guide-content [align="left"] figcaption {
+  text-align: inherit;
+}
+
+/* A table carrying align="center" centers itself when it is not full-width. */
+.guide-content table[align="center"] { margin-left: auto; margin-right: auto; }
+.guide-content table[align="right"]  { margin-left: auto; margin-right: 0; }
+
 /* ── Obsidian-style fenced code block ── */
 .guide-content pre {
   background: var(--cream);
