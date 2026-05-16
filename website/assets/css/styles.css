@@ -947,8 +947,15 @@ html[lang="zh-TW"] .guide-content p {
 .guide-content img {
   max-width: 100%;
   height: auto;
-  margin: 2rem 0;
+  margin: 1rem 0;
   border-radius: 4px;
+}
+
+/* An image on its own line is wrapped in a <p>; drop that paragraph's block
+   margin so it does not stack on top of the image's own vertical margin and
+   leave an oversized gap above/below the image. */
+.guide-content p:has(> img:only-child) {
+  margin: 0;
 }
 
 .guide-content blockquote {
