@@ -932,6 +932,16 @@ html[lang="zh-TW"] .guide-content p {
   text-align: justify;
 }
 
+/* A caption line written directly above an image (single newline = soft
+   line break) lands in the same paragraph as that image. Justified text
+   stretches every line except the last, so the caption above the image
+   was being spread edge-to-edge. Left-align any paragraph holding an image. */
+.guide-content p:has(img),
+html[lang="zh-CN"] .guide-content p:has(img),
+html[lang="zh-TW"] .guide-content p:has(img) {
+  text-align: left;
+}
+
 .guide-content a {
   color: var(--dark);
   text-decoration: underline;
