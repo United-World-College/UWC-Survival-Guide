@@ -27,16 +27,24 @@
   --display-serif: "Playfair Display", Georgia, "Times New Roman", Times, serif;
 }
 
-/* Chinese pages: only the article reading area (.guide-content) follows NYT
-   中文 typography (Georgia for Latin + PingFang SC for CJK). The rest of the
-   site keeps the default --sans and --serif stacks, which already carry CJK
-   fallbacks (Noto Sans SC / Noto Serif SC from Google Fonts) — this gives
-   chrome elements like the nav logo, section headers, and cards an
-   editorial Song-serif feel rather than a plain Hei sans. */
-html[lang="zh-CN"],
-html[lang="zh-TW"] {
+/* Simplified Chinese: article reading area uses Georgia + PingFang SC. SC
+   fonts position punctuation at the bottom-left of each character box
+   (mainland convention, GB/T 15834). Site chrome keeps the default
+   --sans / --serif (Noto Sans SC / Noto Serif SC). */
+html[lang="zh-CN"] {
   --reading-serif: Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
   --display-serif: Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
+}
+
+/* Traditional Chinese: same approach as zh-CN but every CJK font swapped to
+   the TC variant. TC fonts center punctuation (Taiwan convention,《重訂標
+   點符號手冊》); using SC fonts on TW pages leaves punctuation glyphs in
+   the wrong position. */
+html[lang="zh-TW"] {
+  --serif: "Playfair Display", "Noto Serif TC", "PMingLiU", "Songti TC", Georgia, serif;
+  --sans: "Inter", "Noto Sans TC", "PingFang TC", "Heiti TC", "Microsoft JhengHei", -apple-system, Helvetica, Arial, sans-serif;
+  --reading-serif: Georgia, "PingFang TC", "Heiti TC", "Microsoft JhengHei", PMingLiU, sans-serif;
+  --display-serif: Georgia, "PingFang TC", "Heiti TC", "Microsoft JhengHei", PMingLiU, sans-serif;
 }
 
 html {
