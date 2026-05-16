@@ -815,7 +815,7 @@ html[lang^="zh"] .guide-content h3,
 html[lang^="zh"] .guide-content h4,
 html[lang^="zh"] .guide-content h5,
 html[lang^="zh"] .guide-content h6 {
-  font-weight: 400;
+  font-weight: 500;
 }
 
 html[lang^="zh"] .guide-content strong,
@@ -3425,7 +3425,7 @@ html[lang^="zh"] .guide-content .guide-inline-toc-label {
 html[lang^="zh"] .guide-content .guide-inline-toc-list > li > a {
   font-family: var(--reading-serif);
   font-size: 1.02rem;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .guide-content .guide-inline-toc-list > li > a:hover {
