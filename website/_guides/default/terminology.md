@@ -65,7 +65,7 @@ The most important thing about the relationship with your counselor, I think, is
 
 ### An Important Nuance About Recommendation Letters
 
-Among the three required recommendations, the counselor's letter is the single most important one, bar none. (I'll go into detail about which three letters those are in the [Letters of Recommendation section below](#letters-of-recommendation).) The reason is that counselors tend to have much more philosophical conversations with you than your subject teachers do. Compared with the other two teacher recommendations, the counselor understands best who you are as a person, how you think about high-level questions, and where you are in terms of maturity — which happen to be exactly the things U.S. universities care about the most.
+Among the three required recommendations, the counselor's letter is the single most important one, bar none. (I'll go into detail about which three letters those are in the [*Letters of Recommendation*](#letters-of-recommendation) section below.) The reason is that counselors tend to have much more philosophical conversations with you than your subject teachers do. Compared with the other two teacher recommendations, the counselor understands best who you are as a person, how you think about high-level questions, and where you are in terms of maturity — which happen to be exactly the things U.S. universities care about the most.
 
 ---
 

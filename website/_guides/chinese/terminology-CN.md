@@ -64,7 +64,7 @@ updated: 2026-05-17
 
 ### 关于推荐信的一个重要的 nuance
 
-counselor 的推荐信是三封 required recommendations 里最重要的，没有之一。（[后面](#letters-of-recommendation)会在 Letters of Recommendation 一节里详细讲这三封分别是哪三封。）因为 counselor 会和你聊很多 philosophical 的东西，相比于其他两封任课老师的推荐信，是最了解你这个人是什么样的、你会如何思考 high-level 的问题，以及你的 maturity，而这些恰恰是美国大学最看中的部分。
+counselor 的推荐信是三封 required recommendations 里最重要的，没有之一。（[后面](#letters-of-recommendation)会在 *Letters of Recommendation* 一节里详细讲这三封分别是哪三封。）因为 counselor 会和你聊很多 philosophical 的东西，相比于其他两封任课老师的推荐信，是最了解你这个人是什么样的、你会如何思考 high-level 的问题，以及你的 maturity，而这些恰恰是美国大学最看中的部分。
 
 ---
 

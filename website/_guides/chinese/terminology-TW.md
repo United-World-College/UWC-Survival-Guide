@@ -64,7 +64,7 @@ updated: 2026-05-17
 
 ### 關於推薦信的一個重要的 nuance
 
-counselor 的推薦信是三封 required recommendations 裡最重要的，沒有之一。（[後面](#letters-of-recommendation)會在 Letters of Recommendation 一節裡詳細講這三封分別是哪三封。）因為 counselor 會和你聊很多 philosophical 的東西，相比於其他兩封任課老師的推薦信，是最了解你這個人是什麼樣的、你會如何思考 high-level 的問題，以及你的 maturity，而這些恰恰是美國大學最看中的部分。
+counselor 的推薦信是三封 required recommendations 裡最重要的，沒有之一。（[後面](#letters-of-recommendation)會在 *Letters of Recommendation* 一節裡詳細講這三封分別是哪三封。）因為 counselor 會和你聊很多 philosophical 的東西，相比於其他兩封任課老師的推薦信，是最了解你這個人是什麼樣的、你會如何思考 high-level 的問題，以及你的 maturity，而這些恰恰是美國大學最看中的部分。
 
 ---
 
