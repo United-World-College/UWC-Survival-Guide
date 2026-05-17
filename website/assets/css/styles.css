@@ -27,13 +27,17 @@
   --display-serif: "Playfair Display", Georgia, "Times New Roman", Times, serif;
 }
 
-/* Simplified Chinese: article reading area uses Georgia + PingFang SC. SC
-   fonts position punctuation at the bottom-left of each character box
-   (mainland convention, GB/T 15834). Site chrome keeps the default
-   --sans / --serif (Noto Sans SC / Noto Serif SC). */
+/* Simplified Chinese: guide articles (body + headings) use Source Serif Pro
+   + PingFang SC. Source Serif Pro (the EN guide's Latin face) renders Latin
+   text and digits with lining figures — uniform height, so numbers align
+   with the CJK baseline instead of the bouncy old-style figures Georgia
+   produces; Georgia stays as the Latin fallback. PingFang SC handles CJK and
+   positions punctuation at the bottom-left of each character box (mainland
+   convention, GB/T 15834). Site chrome keeps the default --sans / --serif
+   (Noto Sans SC / Noto Serif SC). */
 html[lang="zh-CN"] {
-  --reading-serif: Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
-  --display-serif: Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
+  --reading-serif: "Source Serif Pro", Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
+  --display-serif: "Source Serif Pro", Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
 }
 
 /* Traditional Chinese: same approach as zh-CN but every CJK font swapped to
@@ -43,8 +47,8 @@ html[lang="zh-CN"] {
 html[lang="zh-TW"] {
   --serif: "Playfair Display", "Noto Serif TC", "PMingLiU", "Songti TC", Georgia, serif;
   --sans: "Inter", "Noto Sans TC", "PingFang TC", "Heiti TC", "Microsoft JhengHei", -apple-system, Helvetica, Arial, sans-serif;
-  --reading-serif: Georgia, "PingFang TC", "Heiti TC", "Microsoft JhengHei", PMingLiU, sans-serif;
-  --display-serif: Georgia, "PingFang TC", "Heiti TC", "Microsoft JhengHei", PMingLiU, sans-serif;
+  --reading-serif: "Source Serif Pro", Georgia, "PingFang TC", "Heiti TC", "Microsoft JhengHei", PMingLiU, sans-serif;
+  --display-serif: "Source Serif Pro", Georgia, "PingFang TC", "Heiti TC", "Microsoft JhengHei", PMingLiU, sans-serif;
 }
 
 html {
@@ -611,6 +615,12 @@ body {
 .guide-hero {
   padding: 10rem 2.5rem 4rem;
   text-align: center;
+  /* Force lining figures: Playfair Display (headings) defaults to old-style
+     figures, so digits like the "1" in "R1" drop below the baseline and
+     read as subscripts. lining-nums triggers the OpenType `lnum` feature —
+     Playfair Display and Source Serif Pro both carry it; Georgia has no
+     lining alternates and ignores it harmlessly. Inherits to descendants. */
+  font-variant-numeric: lining-nums;
 }
 
 .guide-hero-content {
@@ -726,6 +736,8 @@ body {
   max-width: 680px;
   margin: 0 auto;
   padding: 4rem 2.5rem;
+  /* Lining figures throughout the article body — see .guide-hero above. */
+  font-variant-numeric: lining-nums;
 }
 
 /* Safari selection-highlight containment: constrain selection paint to the centered content column rather than the full-viewport ancestor block. */
