@@ -11,7 +11,7 @@ language_name: "简体中文"
 language_folder: "chinese"
 language_sort: 2
 published: 2026-05-13
-updated: 2026-05-13
+updated: 2026-05-15
 ---
 
 这份生存指南的前三篇文章花了不少笔墨来讲如何选学校、找工作、game the system。但在这篇文章里我想聊一点不一样的，就从《UWC 生存指南》诞生之初的一个小故事开始讲起吧。

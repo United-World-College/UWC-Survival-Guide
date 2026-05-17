@@ -11,7 +11,7 @@ language_name: "English"
 language_folder: "default"
 language_sort: 1
 published: 2026-05-13
-updated: 2026-05-13
+updated: 2026-05-15
 ---
 
 The first three articles in this guide spent a lot of ink on how to pick schools, find jobs, and game the system. But in this article I want to talk about something different — let me start with a small story from when the *UWC Survival Guide* was first conceived.
