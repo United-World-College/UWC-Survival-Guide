@@ -11,7 +11,7 @@ language_name: "English"
 language_folder: "default"
 language_sort: 1
 published: 2026-03-25
-updated: 2026-05-12
+updated: 2026-05-17
 ---
 
 
@@ -65,7 +65,7 @@ The most important thing about the relationship with your counselor, I think, is
 
 ### An Important Nuance About Recommendation Letters
 
-Among the three required recommendations, the counselor's letter is the single most important one, bar none. (I'll go into detail about which three letters those are in the Letters of Recommendation section below.) The reason is that counselors tend to have much more philosophical conversations with you than your subject teachers do. Compared with the other two teacher recommendations, the counselor understands best who you are as a person, how you think about high-level questions, and where you are in terms of maturity — which happen to be exactly the things U.S. universities care about the most.
+Among the three required recommendations, the counselor's letter is the single most important one, bar none. (I'll go into detail about which three letters those are in the [Letters of Recommendation section below](#letters-of-recommendation).) The reason is that counselors tend to have much more philosophical conversations with you than your subject teachers do. Compared with the other two teacher recommendations, the counselor understands best who you are as a person, how you think about high-level questions, and where you are in terms of maturity — which happen to be exactly the things U.S. universities care about the most.
 
 ---
 
@@ -102,7 +102,7 @@ Essays deserve an entire guide of their own. Here I just want to flag a few of t
 
 Common App requires three recommendations total: one from your counselor and two from subject teachers (usually two of your DP1 or DP2 teachers). On top of that, many schools allow — and sometimes encourage — an optional additional letter (for example, from your EE supervisor, a CAS mentor, or a research mentor).
 
-Of the three, the counselor's letter is the most distinctive one, and I've already gone into it above. The two teacher recommendations are more about endorsing you academically: what you're like in class, how you think through problems, and whether you have curiosity that goes beyond the textbook in your subject.
+Of the three, the counselor's letter is the most distinctive one, and I've already gone into it [above](#college-counselor). The two teacher recommendations are more about endorsing you academically: what you're like in class, how you think through problems, and whether you have curiosity that goes beyond the textbook in your subject.
 
 A few pieces of advice about choosing which teachers to ask:
 
@@ -141,7 +141,7 @@ For UWC students, there are a few things about these two categories worth noting
 
 - **Don't let the word "college" in the name fool you**: many research universities also call their undergraduate divisions "colleges" — for example, [Harvard College](https://en.wikipedia.org/wiki/Harvard_College) and [Columbia College](https://en.wikipedia.org/wiki/Columbia_College,_Columbia_University). The "college" here just refers to the undergraduate school inside that university, and is a completely different thing from a standalone Liberal Arts College. Beyond that, there are also research universities whose entire institutional name happens to include "college" — like [Boston College](https://en.wikipedia.org/wiki/Boston_College) and [Dartmouth College](https://en.wikipedia.org/wiki/Dartmouth_College). Those aren't liberal arts colleges either.
 - **LACs feel closer to UWC in atmosphere**: small, tight-knit, residential, emphasizing whole-person education, with close relationships between classmates. These are all things you've already gotten used to during your two or three years at UWC. Many UWC students find that arriving at a LAC feels like an upgraded version of UWC, and the transition is very natural.
-- **The Davis network is heavy on LACs**: the Davis Partner network (discussed later) includes a disproportionate number of LACs. If you need financial aid, LACs are well worth serious consideration.
+- **The Davis network is heavy on LACs**: the Davis Partner network ([discussed later](#uwc-davis-scholars-program)) includes a disproportionate number of LACs. If you need financial aid, LACs are well worth serious consideration.
 
 Which side you pick ultimately comes down to what you want: if you want deep faculty-student interaction, a tight-knit community, and undergrad-centric resources, a LAC will suit you better; if you want richer research opportunities, a wider range of courses, and a more diverse campus environment, a research university has the advantage. There's no better or worse — just whether it fits.
 

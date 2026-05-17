@@ -11,7 +11,7 @@ language_name: "简体中文"
 language_folder: "chinese"
 language_sort: 2
 published: 2026-03-25
-updated: 2026-05-09
+updated: 2026-05-17
 ---
 
 本篇是想借着聊选校这个话题讲一讲在上了大学之后才了解到的美国大学，可能是因为本人之前比较孤陋寡闻吧，来了美国之后才发现大学和想象中的模样天差地别。
@@ -70,7 +70,7 @@ updated: 2026-05-09
 
 这里需要重申的一个常见误区是可能有人会想 "我去顶校就能接触更多大佬啊"。顶校的顶尖 faculty / PhD / postdoc 的 supply 确实更大，绝对数普遍比 mid-tier R1 多上几倍。但 demand 端的扩张比 supply 端要陡得多：supply 大致随学校规模和水平线性增长，而最强的那批本科生（如 IMO / IOI 金牌这种）在顶校的集中度是高度非线性的。这个 demand 端的结构其实比 supply 端更值得展开，因为它直接决定了一个包括我自己在内的绝大部分 UWC 普通毕业生在大学校园里实际能 access 到什么。
 
-比方说一个进了 [MIT](https://en.wikipedia.org/wiki/Massachusetts_Institute_of_Technology) 的 "普通优秀" UWC 学生想做 research，理想 advisor 是像前面提到的 Prof. Dongarra 这样的顶级 researcher。然后这位同学就会发现身边的人才结构是一个完整的金字塔——塔尖是 IMO / IOI 金牌、[Putnam fellow](https://en.wikipedia.org/wiki/Putnam_Competition) 这些已经没法用百分比描述的 outliers；下一档会是国际竞赛的国家队成员；再下一档是类似 [ICPC 北美 Championship](https://en.wikipedia.org/wiki/International_Collegiate_Programming_Contest) finalist 水平的 college-stage 强者（虽然这一档已经远比前文说的 "常青藤前 5%" 窄很多了）；然后底下还有一大批同样是 "普通优秀" 的 MIT 本科生。但反过来说，这反而衬出非顶校的好处。在非顶校，这个金字塔的塔尖两档基本是缺失的，一个 ICPC 北美 finalist 在这里很可能就已经是塔尖了。顶尖教授的 bandwidth 虽然有限（一个 department 可能只有几个），但相应的 outlier peer 基本不存在，所以 access 更容易，而且 access 之后的 relative position 也更友好。当然，等到毕业时上了 market 大家终究还是会被放在一起看的。但本科四年更多 access 的意义是让我们在 "存量优秀" 不变的情况下积累更多 "增量优秀"，而不是让我们完全置身事外。
+比方说一个进了 [MIT](https://en.wikipedia.org/wiki/Massachusetts_Institute_of_Technology) 的 "普通优秀" UWC 学生想做 research，理想 advisor 是像前面提到的 Prof. Dongarra 这样的顶级 researcher。然后这位同学就会发现身边的人才结构是一个完整的金字塔——塔尖是 IMO / IOI 金牌、[Putnam fellow](https://en.wikipedia.org/wiki/Putnam_Competition) 这些已经没法用百分比描述的 outliers；下一档会是国际竞赛的国家队成员；再下一档是类似 [ICPC 北美 Championship](https://en.wikipedia.org/wiki/International_Collegiate_Programming_Contest) finalist 水平的 college-stage 强者（虽然这一档已经远比[前文](#州立大学为什么那么大)说的 "常青藤前 5%" 窄很多了）；然后底下还有一大批同样是 "普通优秀" 的 MIT 本科生。但反过来说，这反而衬出非顶校的好处。在非顶校，这个金字塔的塔尖两档基本是缺失的，一个 ICPC 北美 finalist 在这里很可能就已经是塔尖了。顶尖教授的 bandwidth 虽然有限（一个 department 可能只有几个），但相应的 outlier peer 基本不存在，所以 access 更容易，而且 access 之后的 relative position 也更友好。当然，等到毕业时上了 market 大家终究还是会被放在一起看的。但本科四年更多 access 的意义是让我们在 "存量优秀" 不变的情况下积累更多 "增量优秀"，而不是让我们完全置身事外。
 
 需要补充的两点是：一，这里用 IMO / IOI 举例只是因为 CS 和数学方向的 outlier marker 最 well-known，但同样的金字塔结构对所有学科都成立；二，实际上不论是在顶校还是非顶校都有相当大比例的同学参与 undergrad research，但是这样的数据是没有意义的，因为 "参与 undergrad research" 把 wash dishes 跑 script 和获得 substantive guidance 完全混为一谈了。而且顶校 supply 端真正的优势是在 top-tier faculty 这一档，但他们的 bandwidth 大概率会被 outlier 吸走。不过值得一提的是顶校的 institutional design，比如 MIT 的 [UROP](https://urop.mit.edu/) 会让即使是 bottom 10% 的同学也会有机会参与到 research 当中。但这种 "参与" 实际获得的关注和产出跟他们在非顶校能接触到的水平是 comparable 的，因为他们的 absolute ability 已经不低了。所以 institutional design 提供的 floor 是真实的，但它给很多学生提供的 access advantage 没有看起来那么大。
 
@@ -98,7 +98,7 @@ updated: 2026-05-09
 
 ### LAC 与 STEM 的错位
 
-但对于将来想要学习 STEM 专业的同学们来说一定要谨慎考虑文理学院，尤其是前文所说的 lab-based 方向（对于纯数、理论 CS、理论物理这些不依赖 lab 而是依赖 mentorship 的方向反而是文理学院的优势）。这里有一个常见的 myth： "顶级文理学院的 placement 不输最好的研究型大学"。这个说法在 humanities 和 social sciences 里大致成立，但对 STEM 方向则要打一个问号。原因有两个：第一，LAC 的 STEM faculty 中确实有持续 active 做研究的教授，但比例和产出 throughput 都远低于 R1 同僚。这是因为 LAC 的 hire model 优先 teaching load，教授的教学压力都巨大，基本上是 R1 的两到三倍，而且没有博士生 / postdoc 帮忙干活。更别提经费和设备方面也无法跟 R1 比。LAC 拿不到大型的 federal grant（比如 [NSF ERC](https://en.wikipedia.org/wiki/Engineering_Research_Centers)、[NIH P01](https://en.wikipedia.org/wiki/NIH_grant#Program_project/center_grants)、[DoD MURI](https://en.wikipedia.org/wiki/MURI_(grant)) 这种几百万到上亿的 multi-PI 项目），也撑不起 frontier-level infrastructure，比如[超算 cluster](https://en.wikipedia.org/wiki/Supercomputer) 和 [cleanroom](https://en.wikipedia.org/wiki/Cleanroom)。这些设施单价几百万到几亿，对很多前沿方向都是必需品，但 LAC 的体量很难撑起 [ROI](https://en.wikipedia.org/wiki/Return_on_investment)。
+但对于将来想要学习 STEM 专业的同学们来说一定要谨慎考虑文理学院，尤其是[前文](#ceiling--demand-framework)所说的 lab-based 方向（对于纯数、理论 CS、理论物理这些不依赖 lab 而是依赖 mentorship 的方向反而是文理学院的优势）。这里有一个常见的 myth： "顶级文理学院的 placement 不输最好的研究型大学"。这个说法在 humanities 和 social sciences 里大致成立，但对 STEM 方向则要打一个问号。原因有两个：第一，LAC 的 STEM faculty 中确实有持续 active 做研究的教授，但比例和产出 throughput 都远低于 R1 同僚。这是因为 LAC 的 hire model 优先 teaching load，教授的教学压力都巨大，基本上是 R1 的两到三倍，而且没有博士生 / postdoc 帮忙干活。更别提经费和设备方面也无法跟 R1 比。LAC 拿不到大型的 federal grant（比如 [NSF ERC](https://en.wikipedia.org/wiki/Engineering_Research_Centers)、[NIH P01](https://en.wikipedia.org/wiki/NIH_grant#Program_project/center_grants)、[DoD MURI](https://en.wikipedia.org/wiki/MURI_(grant)) 这种几百万到上亿的 multi-PI 项目），也撑不起 frontier-level infrastructure，比如[超算 cluster](https://en.wikipedia.org/wiki/Supercomputer) 和 [cleanroom](https://en.wikipedia.org/wiki/Cleanroom)。这些设施单价几百万到几亿，对很多前沿方向都是必需品，但 LAC 的体量很难撑起 [ROI](https://en.wikipedia.org/wiki/Return_on_investment)。
 
 不过 LAC 的 endowment per capita 其实非常高。像是 [Williams](https://en.wikipedia.org/wiki/Williams_College)、[Amherst](https://en.wikipedia.org/wiki/Amherst_College)、[Swarthmore](https://en.wikipedia.org/wiki/Swarthmore_College)、[Pomona](https://en.wikipedia.org/wiki/Pomona_College) 的 endowment per student 都在 \\$1.5M 以上，远超大多数 R1。但这笔钱主要用在 financial aid、small class size 和 teaching-heavy 的 faculty 薪水上，而不是投入科研。第二，STEM industry pipeline 弱。LAC 一届一共 500 人，学 STEM 方向的可能就 150-200 人，10 年累积的校友规模甚至远不如 R1 的一个系。这也就直接导致了在 tech/engineering industry 里的 LAC 校友绝对数量少，在很多公司里的 presence 不如 R1。当然，只要自己足够强，比如能自行找到校外的 research 资源，或是在 ICPC 这样级别的比赛中取得好成绩，那上面提到的一切都不是问题。
 
