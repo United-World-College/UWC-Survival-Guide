@@ -27,6 +27,28 @@
   --display-serif: "Playfair Display", Georgia, "Times New Roman", Times, serif;
 }
 
+/* PingFang's CJK glyphs fill ~100% of the em box while Source Serif Pro's
+   Latin lowercase only fills ~52% (x-height); at the same font-size the
+   Chinese characters appear visibly larger than the inline English. We
+   declare aliased PingFang faces scoped to CJK unicode ranges and shrunk
+   via size-adjust, so only CJK glyphs are rescaled — Latin glyphs keep
+   using Source Serif Pro at full size. local() lets us reuse the system
+   PingFang install without downloading a webfont; on systems without
+   PingFang (e.g. most Android devices), the @font-face becomes inactive
+   and the cascade falls through to the unadjusted CJK fallbacks. */
+@font-face {
+  font-family: "PingFang SC Sized";
+  src: local("PingFang SC");
+  unicode-range: U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+FF00-FFEF;
+  size-adjust: 90%;
+}
+@font-face {
+  font-family: "PingFang TC Sized";
+  src: local("PingFang TC");
+  unicode-range: U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+FF00-FFEF;
+  size-adjust: 90%;
+}
+
 /* Simplified Chinese: guide articles (body + headings) use Source Serif Pro
    + PingFang SC. Source Serif Pro (the EN guide's Latin face) renders Latin
    text and digits with lining figures — uniform height, so numbers align
@@ -36,8 +58,8 @@
    convention, GB/T 15834). Site chrome keeps the default --sans / --serif
    (Noto Sans SC / Noto Serif SC). */
 html[lang="zh-CN"] {
-  --reading-serif: "Source Serif Pro", Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
-  --display-serif: "Source Serif Pro", Georgia, "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
+  --reading-serif: "Source Serif Pro", Georgia, "PingFang SC Sized", "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
+  --display-serif: "Source Serif Pro", Georgia, "PingFang SC Sized", "PingFang SC", "Heiti SC", "Microsoft YaHei", simsun, sans-serif;
 }
 
 /* Traditional Chinese: same approach as zh-CN but every CJK font swapped to
@@ -47,8 +69,8 @@ html[lang="zh-CN"] {
 html[lang="zh-TW"] {
   --serif: "Playfair Display", "Noto Serif TC", "PMingLiU", "Songti TC", Georgia, serif;
   --sans: "Inter", "Noto Sans TC", "PingFang TC", "Heiti TC", "Microsoft JhengHei", -apple-system, Helvetica, Arial, sans-serif;
-  --reading-serif: "Source Serif Pro", Georgia, "PingFang TC", "Heiti TC", "Microsoft JhengHei", PMingLiU, sans-serif;
-  --display-serif: "Source Serif Pro", Georgia, "PingFang TC", "Heiti TC", "Microsoft JhengHei", PMingLiU, sans-serif;
+  --reading-serif: "Source Serif Pro", Georgia, "PingFang TC Sized", "PingFang TC", "Heiti TC", "Microsoft JhengHei", PMingLiU, sans-serif;
+  --display-serif: "Source Serif Pro", Georgia, "PingFang TC Sized", "PingFang TC", "Heiti TC", "Microsoft JhengHei", PMingLiU, sans-serif;
 }
 
 html {
@@ -833,17 +855,6 @@ html[lang^="zh"] .guide-content h6 {
 html[lang^="zh"] .guide-content strong,
 html[lang^="zh"] .guide-content b {
   font-weight: 500;
-}
-
-/* Mixed CN/EN paragraphs render Latin glyphs in Source Serif Pro and CJK
-   glyphs in PingFang SC/TC (fallback in the font stack). The two faces
-   have different intrinsic x-heights at the same em size, so CJK chars
-   look visibly larger than the Latin ones — especially on mobile. Anchor
-   the fallback's x-height to the primary font's via `from-font`, with a
-   numeric value as a fallback for older browsers. */
-html[lang^="zh"] .guide-content {
-  font-size-adjust: 0.52;
-  font-size-adjust: from-font;
 }
 
 /* NYT 中文 caps the article headline at 2.5rem and uses the browser's
