@@ -189,7 +189,7 @@ Engineering-heavy 項目的典型特徵則是 systems 類課程在本科 curricu
 
 對於大部分文理學院來說這個情況又會有所不同，他們的風格一般不會有這麼大的差異。正如我在[〈關於選校〉]({{ '/guides/chinese/school-selection-TW/' | relative_url }})一文中所提到的，因為[文理學院的 lab 資源有限]({{ '/guides/chinese/school-selection-TW/#lac-與-stem-的錯位' | relative_url }})，所以他們 default 重視理論；但 [Harvey Mudd](https://en.wikipedia.org/wiki/Harvey_Mudd_College) 是個例外，他們的整個 program 是出名的 engineering-heavy。
 
-一般來說 math-heavy 的訓練理論基礎更扎實、更接近 computation 的本質；而 engineering-heavy 的訓練所適配的工作崗位對本科生來說更多，對本科畢業直接就業也更友好。具體情況會放在後面的 [career path 部分](#cs-career-path)具體分析。
+從就業的角度來看，math-heavy 的訓練理論基礎更扎實、更接近 computation 的本質；而 engineering-heavy 的訓練所適配的工作崗位對本科生來說更多，對本科畢業直接就業也更友好。具體情況會放在後面的 [career path 部分](#cs-career-path)具體分析。
 
 從學習知識的角度來看，我個人覺得 math-heavy 和 engineering-heavy 這兩端本身並沒有高下之分，關鍵始終是在於你能不能在所選的方向上發展出真正的泛化能力（詳見前文的 [*The Bitter Lesson*](#the-bitter-lesson)）。Math-heavy 的訓練不等於只是在紙上推公式、做毫無意義的抽象，engineering-heavy 的訓練也不等於只是在刷題、調 bug、做機械的重複；對一個只會按部就班努力的人來說，無論在 spectrum 的哪一端都不會真的變強，而對一個真正具備泛化能力的人來說，在這兩端都可以走出自己的路。所以這個 spectrum 裡其實並沒有一個永遠正確的選項，我覺得它更像是一個 self-auditing tool，你需要問自己: "我喜歡的是 proof 還是 implementation？是理論還是 applied science？是 mathematical clarity 還是 engineering elegance？" 然後選 spectrum 上適合你的位置。當然對於比較好的 R1 CS program 而言，不論學校本身是 math-heavy 還是 engineering-heavy，在每個領域裡都會有世界級的教授，所以即使現在 commit 了一個教學重心沒那麼契合的學校，在之後也可以多上一點自己感興趣方向的選修課或者去找對應領域的專家一起做 research。這其實就是 faculty 數量多的學校的一個非常大的好處。
 
