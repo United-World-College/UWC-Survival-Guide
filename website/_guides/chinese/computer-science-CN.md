@@ -203,7 +203,7 @@ Engineering-heavy 项目的典型特征则是 systems 类课程在本科 curricu
 
 一般来说，上面提到的这些荣誉会比任何排名都更能反应出一个学校的真实学术水平，但调研起来也会很麻烦。好在随着现在各类 AI 工具的普及，在具体操作上同学们其实不需要自己一个一个去翻系里的网站，直接让 AI agent（比如 Claude 或 ChatGPT 的 deep research 模式）帮你列出来就行，这种查找类的任务 AI 往往比人快得多也准得多。
 
-不过归根结底，这些荣誉的评审过程和任何排名的评分过程一样，都不是完美的。在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})中我大概提了一下 [faculty hiring 的随机性]({{ '/guides/chinese/school-selection-CN/#faculty-hiring-的随机性' | relative_url }})，但其实这些荣誉评审过程中的随机性一点也不比 faculty hiring 少。所以我希望同学们在不唯排名论的同时也尽量做到不唯荣誉论。我在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})里提到的["爱马仕还是帆布袋" 理论]({{ '/guides/chinese/school-selection-CN/#爱马仕还是帆布袋' | relative_url }})在这里同样适用。因为荣誉本就应该被看作是 capacity 的间接 signal 之一，而不是 capacity 本身。
+不过归根结底，这些荣誉的评审过程和任何排名的评分过程一样，都不是完美的。在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})中我大概提了一下 [faculty hiring 的随机性]({{ '/guides/chinese/school-selection-CN/#faculty-hiring-的随机性' | relative_url }})，但其实这些荣誉评审过程中的随机性一点也不比 faculty hiring 少。所以我希望同学们在不唯排名论的同时也尽量做到不唯荣誉论。我在[《关于选校》]({{ '/guides/chinese/school-selection-CN/' | relative_url }})里提到的["爱马仕还是帆布袋" 理论]({{ '/guides/chinese/school-selection-CN/#爱马仕还是帆布袋' | relative_url }})在这里同样适用。因为荣誉本就应该被看作是 capacity 的间接 signal 之一，而不是 capacity 本身；任何 metric 的本质其实就是把一个活生生的人压缩成了一个低维向量。（详情请见本文最后一章：[《从 feature engineering 到 representation learning》](#从-feature-engineering-到-representation-learning)）
 
 ### Sweet spot framework
 
