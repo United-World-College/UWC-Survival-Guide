@@ -60,7 +60,7 @@ updated: 2026-05-19
 
 对一个公司而言当然是录取率越低、越 selective 越好。因为公司本来就是盈利性机构，存在的目的是给股东创造价值，所以对员工万里挑一其实是一个相当合理的商业决策。
 
-不过对于大学而言这个逻辑却不怎么适用。绝大部分美国的高等教育机构在法律层面都是非营利组织，享有免税的待遇；而且更重要的是几乎每一所学校都会在自己的 mission statement 里写上诸如 "advancing knowledge" 和 "serving humanity" 一类的表述。这套语言其实和我们 UWC 一直在传递的价值观是相通的。"Make education a force to unite people, nations and cultures for peace and a sustainable future" 作为 [UWC mission](https://uwc.org/what-is-uwc/)，强调的从来都不是教育筛走了多少人，而是教育让多少不同背景的人能走到一起、彼此看见、相互改变。
+不过对于大学而言这个逻辑却不怎么适用。绝大部分美国的高等教育机构在法律层面都是非营利组织，享有免税的待遇；而且更重要的是几乎每一所学校都会在自己的 mission statement 里写上诸如 "advancing knowledge" 和 "serving humanity" 一类的表述。这套语言其实和我们 UWC 一直在传递的价值观是相通的。 "Make education a force to unite people, nations and cultures for peace and a sustainable future" 作为 [UWC mission](https://uwc.org/what-is-uwc/)，强调的从来都不是教育筛走了多少人，而是教育让多少不同背景的人能走到一起、彼此看见、相互改变。
 
 但为 selectivity 感到骄傲的逻辑却恰好是反过来的：它把 "我们筛掉了多少人" 当成自己价值的证明。一所学校越是以 selectivity 为荣，就越是在 endorse 一套 "物以稀为贵" 的商业逻辑。这套商业逻辑在奢侈品营销语境里没什么问题，但在一个以 "serving humanity" 为使命的非营利高等教育机构里就显得有些错位了。
 
