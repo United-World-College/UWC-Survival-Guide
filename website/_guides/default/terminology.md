@@ -11,7 +11,7 @@ language_name: "English"
 language_folder: "default"
 language_sort: 1
 published: 2026-03-25
-updated: 2026-05-17
+updated: 2026-05-19
 ---
 
 
@@ -35,7 +35,7 @@ The work of an admissions officer sounds very formal and professional, but as ap
 
 I've always felt that the role admissions officers play in a university is pretty similar to the role HR plays in a company — both are just workers sifting through stacks of material doing screening. That said, when it comes to professional judgment, AOs and HR are actually a bit different. A lot of company HR or recruiters may in fact be more familiar with a relatively specialized field, because they look at resumes in that area every day and deal constantly with hiring managers in that area. Over time, they at least develop an experience-based sense of the common backgrounds, common projects, and rough level within that field. By contrast, AOs have to deal with applicants from every discipline and every type, from humanities to STEM to the arts, so it's hard for them to have especially deep expertise in any one specific area. Precisely because of that, unless you have one of those top-tier awards that even an outsider can recognize at a glance, what gets you admitted often isn't just technical depth. It's whether you can communicate your story, motivation, and potential in a way that's compelling enough. I've heard that quite a few schools ask professors to help review applications, but logically speaking, many professors are already overwhelmed with their own work, so they may not have that much energy to invest in this kind of thing over the long term. Still, I don't know that side particularly well, so readers who do are very welcome to correct me. Looking ahead, as AI-assisted tools gradually enter the admissions process, this may slowly change as well.
 
-One more thing worth knowing: most AOs don't get applications assigned to them at random; they're divided up by geographic region. A university will often have someone specifically responsible for applications from China, and many universities even have an AO dedicated to UWC students. That means while they may not be able to make deep judgments on specific subjects like CS, physics, or economics, they tend to be very familiar with the UWC curriculum (IB), its grading standards, and the weight of different activities. This also helps explain why UWC students enjoy a kind of insider advantage when applying — the environment you come from is already recognized, understood, and to a large extent trusted by AOs. For applicants, this is something you can actively take advantage of. You don't need to keep explaining in your essays what IB is, what the EE is, or what CAS means; you can save that limited space for content that better reflects who you are as a person. At the same time, keep in mind that AOs know UWC better than you might think, so any exaggeration or spin can be seen through at a glance.
+One more thing worth knowing: most AOs don't get applications assigned to them at random; they're divided up by geographic region. A university will often have someone specifically responsible for applications from China, and many universities even have an AO dedicated to UWC students. That means while they may not be able to make deep judgments on specific subjects like CS, physics, or economics, they tend to be very familiar with the UWC curriculum (IB), its grading standards, and the weight of different activities. This also helps explain why we as UWC students enjoy a kind of insider advantage when applying — this environment is already recognized, understood, and to a large extent trusted by AOs. So for applicants, you don't need to keep explaining in your essays what IB is, what the EE is, or what CAS means, which means you can save that limited space for content that better reflects who you are as a person.
 
 ---
 
@@ -49,7 +49,7 @@ Their core responsibilities mainly include:
 
 - **Writing the School Profile**: explaining to universities what kind of school UWC is — for example, how strict our grading is and what a 40 in the IB system actually represents.
 - **Serving as your primary contact for college applications**: throughout the application season, your counselor is your first point of contact for everything college-application-related — from school-selection strategy, recommendation coordination, and essay direction discussions, to official document submissions and deadline tracking, they stay involved throughout the entire process.
-- **Relationship management**: they stay in touch year after year with the AOs at various universities. Sometimes an AO will pick up the phone and directly ask your counselor: "This student's grades are only so-so, but what's their actual impact in the community like?" (Of course, when this happens it means they're willing to spend time on you, which is a pretty clear sign they're interested.)
+- **Relationship management**: they stay in touch year after year with the AOs at various universities. Sometimes an AO will pick up the phone and directly ask your counselor: "This student's grades are only so-so, but what's their actual impact in the community like?" (Of course, when this happens it means the AO is willing to spend time on you, which is a pretty clear sign they're interested.)
 
 ### How to Work with Your Counselor
 
@@ -91,7 +91,7 @@ In terms of composition, essays fall into two main categories:
 Essays deserve an entire guide of their own. Here I just want to flag a few of the most common pitfalls:
 
 - **Don't turn your essay into a narrated version of your resume**: the AO can already see what you've done in your Activity List. What essays need to answer is why you are who you are, not what you've done.
-- **Don't chase grand narratives**: a 650-word essay about small moments at home can easily be more moving than one about an overseas volunteer trip. Small subjects are fine. What matters is that it's real and specific.
+- **Don't chase grand narratives**: a 650-word essay about small moments at home can easily be more moving than one about your grand ambitions. Small subjects are fine. What matters is that it's real and specific.
 - **Don't repeat your Personal Statement in your supplements**: the AO reads all of your materials as a single whole, and every essay should reveal a new side of you.
 
 ---
@@ -162,7 +162,6 @@ The threshold for earning the IB Diploma is a total of at least 24 points, plus 
 
 **Predicted Grade (PG)**: what U.S. universities see when reviewing your application isn't your final IB grade (at the time of application, you're still in DP2, and the actual exams don't happen until May). What they see is UWC's predicted grade. Your PG is set by your subject teachers based on your DP1 results and your performance in the first month of DP2, and it gets submitted together with the rest of your application through Common App. For UWC students, the PG is the single most important academic metric in your application season.
 
-Under UWC Changshu's grading system, anything above 40 counts as a strong score, fully competitive for any U.S. school; 38–40 is still solid; anything below 36 will start to look thin in applications to top U.S. universities. One reassurance, though: UWC Changshu's grading is considered strict among IB schools globally, and your counselor will note this specifically in the School Profile, so you don't have to worry about being lumped together with "IB grade-inflation schools."
 
 ---
 
@@ -179,7 +178,6 @@ Concrete advice for UWC students:
 
 - **IB predicted grades matter more**: for UWC students, standardized tests are just a basic threshold. What actually decides your academic competitiveness is your IB predicted grades and DP1 results.
 - **Test-Optional doesn't mean "don't submit"**: even if a school is Test-Optional, if your score is above the school's middle 50%, submitting it can only help. Where it actually makes sense not to submit is when your score is clearly below that school's admitted average. But check with your counselor for your specific situation.
-- **Don't over-invest your time in standardized tests**: a lot of students spend half a year grinding from a 1520 to a 1560. That's time that could have gone into writing better essays or doing more meaningful projects.
 
 ---
 
@@ -260,7 +258,7 @@ In addition to Admit and Reject/Deny, there are two intermediate outcomes you mi
 
 Both outcomes can easily drag you into long-term mental anguish. A healthier mindset is that once you've submitted your LOCI or update, turn your attention back to the other schools still pending, or to doing DP2 well — not to refreshing your inbox every day.
 
-Closely tied to the waitlist is a less-talked-about phenomenon called Yield Protection (sometimes half-jokingly referred to as Tufts Syndrome): some schools will waitlist — or even outright reject — applicants they judge to be too strong to actually enroll there, in order to protect their yield rate. This helps explain the occasionally counterintuitive pattern where a student gets waitlisted by a supposed match / safety school while being admitted to a more reach-y one.
+Closely tied to the waitlist is a less-talked-about phenomenon called [Yield Protection](https://en.wikipedia.org/wiki/Yield_protection) (sometimes half-jokingly referred to as Tufts Syndrome): some schools will waitlist — or even outright reject — applicants they judge to be too strong to actually enroll there, in order to protect their yield rate. This helps explain the occasionally counterintuitive pattern where a student gets waitlisted by a supposed match / safety school while being admitted to a more reach-y one.
 
 ---
 
