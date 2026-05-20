@@ -1,293 +1,285 @@
 ---
 title: "The IB Physics Guide"
 category: "Academics"
-description: "Study methods, resources, and exam techniques for scoring a 7 in IB Physics."
+description: "Tom's study methods, resources, exam techniques, and general learning frameworks for scoring a 7 in IB Physics."
 order: 4
 author_id: "tom-li"
-original_language: "zh-CN"
 guide_id: "ib-physics"
+original_language: "zh-CN"
 language_code: "en"
 language_name: "English"
 language_folder: "default"
 language_sort: 1
-published: 2026-05-18
-updated: 2026-05-18
+submitted: 2026-05-16
+published: 2026-05-19
+updated: 2026-05-20
 ---
 
-## Introduction / Who This Is For
+# Introduction / Who This Is For
 
-Before we get started, I want to briefly introduce my background and how this guide is meant to be used.
+Before getting into the actual guide, I want to briefly introduce my own background and what this guide is meant to be.
 
-My FP physics teacher was Ariel Li, and my DP1 & DP2 physics teacher was Yang Liu. My physics grade has always been a 7 — the actual transcripts are in the appendix at the end.
+My FP physics teacher was Ariel Li, and my DP1 & DP2 physics teacher was Yang Liu. My physics grade has always been a 7 — you can see the specific scores in the appendix at the end.
 
-The reason I'm writing this guide is to share my own learning journey, revision approach, and exam techniques so that they can serve as a reference for others, and hopefully help you score well and breeze through IB Physics. But beyond just scoring well, I think there are some general study skills and ways of thinking that matter too, so I'm sharing those alongside the physics-specific stuff.
+My goal in writing this guide is to share my **learning experience, revision methods, and exam techniques** so they can serve as a reference, and so that everyone can **comfortably raise their grade and pass IB Physics**. Beyond just raising grades, though, I think some of the **general study techniques and ways of thinking** are also important, so I've folded those in as well.
 
-I should also say upfront that my writing style is on the verbose and technical side. If that doesn't sit well with you, feel free to drop the whole thing into an AI and ask it to rephrase the entire article — it'll likely read much more smoothly that way.
+I should also say that my writing style is on the verbose / technical side. If my prose doesn't sit well with you, feel free to drop the whole article into an AI and have it rephrase the entire thing for you — it'll probably read a lot more smoothly.
 
-## How to Study
+# How to Study
 
-I have a theory about learning: different mediums and methods of learning consume drastically different amounts of time. Personally, what I want to do is to pick the most efficient and practically feasible method. So in the table below I lay out a comparison across the common modes of learning:
+I have a theory about learning: **different learning mediums and methods cost dramatically different amounts of time**. What I personally try to do is pick **the most efficient and feasible method** from the available options. So I've laid out a comparison of the common learning methods in the table below:
 
-
-<div style="text-align: center">
+<div align="center">
   <table>
     <tr>
-      <th style="text-align: center"></th>
-      <th style="text-align: center"></th>
-      <th style="text-align: center">Because</th>
-      <th style="text-align: center">The tradeoff is</th>
+      <th align="center"></th>
+      <th align="center"></th>
+      <th align="center">Reason</th>
+      <th align="center">Tradeoff</th>
     </tr>
     <tr>
-      <th style="text-align: center">Method</th>
-      <th style="text-align: center">Efficiency</th>
-      <th style="text-align: center">Information density</th>
-      <th style="text-align: center">Energy / ability required</th>
+      <th align="center">Learning method</th>
+      <th align="center">Efficiency</th>
+      <th align="center">Information density</th>
+      <th align="center">Effort / ability required</th>
     </tr>
     <tr>
-      <td style="text-align: center">Learning directly from top researchers</td>
-      <td style="text-align: center">6</td>
-      <td style="text-align: center">Extremely high and highly abstract</td>
-      <td style="text-align: center">Extremely high</td>
+      <td align="center">Learning from top researchers</td>
+      <td align="center">6</td>
+      <td align="center">Extremely high, highly abstract</td>
+      <td align="center">Extremely high</td>
     </tr>
     <tr>
-      <td style="text-align: center">Academic papers</td>
-      <td style="text-align: center">5</td>
-      <td style="text-align: center">High</td>
-      <td style="text-align: center">High</td>
+      <td align="center">Academic papers</td>
+      <td align="center">5</td>
+      <td align="center">High</td>
+      <td align="center">High</td>
     </tr>
     <tr>
-      <td style="text-align: center">Textbooks</td>
-      <td style="text-align: center">4</td>
-      <td style="text-align: center">Medium-high</td>
-      <td style="text-align: center">Medium</td>
+      <td align="center">Textbooks</td>
+      <td align="center">4</td>
+      <td align="center">Medium-high</td>
+      <td align="center">Medium</td>
     </tr>
     <tr>
-      <td style="text-align: center">Online videos</td>
-      <td style="text-align: center">3</td>
-      <td style="text-align: center">Medium</td>
-      <td style="text-align: center">Low</td>
+      <td align="center">Online videos</td>
+      <td align="center">3</td>
+      <td align="center">Medium</td>
+      <td align="center">Low</td>
     </tr>
     <tr>
-      <td style="text-align: center">Classroom learning</td>
-      <td style="text-align: center">2</td>
-      <td style="text-align: center">Low</td>
-      <td style="text-align: center">Low</td>
+      <td align="center">Classroom learning</td>
+      <td align="center">2</td>
+      <td align="center">Low</td>
+      <td align="center">Low</td>
     </tr>
     <tr>
-      <td style="text-align: center">Sleep / mindfulness / rest</td>
-      <td style="text-align: center">1</td>
-      <td style="text-align: center">None</td>
-      <td style="text-align: center">Recovering</td>
+      <td align="center">Sleep / mindfulness / rest</td>
+      <td align="center">1</td>
+      <td align="center">None</td>
+      <td align="center">Recovering</td>
     </tr>
     <tr>
-      <td style="text-align: center">Slacking off</td>
-      <td style="text-align: center">0</td>
-      <td style="text-align: center">Lowest</td>
-      <td style="text-align: center">Medium-high</td>
+      <td align="center">Slacking off</td>
+      <td align="center">0</td>
+      <td align="center">Lowest</td>
+      <td align="center">Medium-high</td>
     </tr>
   </table>
-  <p style="text-align: center"><strong>Table 1.</strong> Comparison of different study methods across efficiency, information density, and required energy / ability</p>
+
+  <p style="text-align: center;"><strong>Table 1.</strong> Comparison of different learning methods by efficiency, information density, and effort / ability required</p>
 </div>
 
-As you can see, classroom learning is not particularly efficient, because teachers usually have to accommodate students of varying levels, inject some entertainment value, and speak at 1x speed. In contrast, for the average high school student, carefully curated videos or textbooks are a more efficient choice. (Note: this generalizes to your future life in college, graduate school, and even as a PhD student — you'll progressively learn in ways that look more and more like the top of the table, and innovate on top of that.)
+As you can see, **classroom learning is not particularly efficient**, because teachers have to accommodate students at different levels, keep things engaging, and speak at 1x speed. In contrast, for the average high school student, **carefully produced videos or textbooks** are a more efficient option. (Note: this is also true throughout university, grad school, and PhD — the way we learn shifts steadily up the table, and on top of that we start to innovate.)
 
-So I focus my own learning on Bilibili videos and reading textbooks.
+For that reason, I lean heavily on **Bilibili videos and textbook reading** as my main study methods.
 
-What follows are my notes and resource recommendations from my own learning journey.
+What follows is what I've learned from my own study journey, along with the resources I've used.
 
-### In the Classroom
+## In Class
 
-Even though classroom learning has relatively low information density, it isn't useless. On the contrary, a lot of subtle problem-solving nuances, course-corrections in thinking, and creative ideas come from class — they're just buried in a lot of noise.
+Even though the information density of classroom learning is low, that doesn't mean it's worthless. On the contrary, **a lot of the subtle nuances in problem solving, the corrections in your thinking, and creative ideas** all come out of class — they're just buried in a lot of noise.
 
-So if we listen selectively and pick our knowledge selectively, we can turn mandatory attendance into de facto self-study time.
+So if we **listen selectively and pick which knowledge to absorb**, we can effectively turn mandatory-attendance class time into self-study time.
 
-In class, I direct my attention to two main things, and the leftover energy can go toward self-study.
+In class, I mostly direct my attention to two things, and the rest of my focus goes to self-study.
 
-First, I pay close attention to the definition and introduction of any concept, and I try to understand why this piece of knowledge needs to exist at all. I find this helps build some of the most basic intuitions, which is useful both for solving problems and for understanding the world.
+First, I pay particular attention to **the definition and introduction of any new concept**, and try to understand **why this piece of knowledge needs to exist at all**. I think this helps build up some of the most basic intuitions, which are very useful both for solving problems and for understanding the world.
 
-Second, whenever there's a worked example or a practice problem in class, I'll either do it mentally or actually pick up a pen and work through it. If I get it wrong, I summarize which specific concept / formula / calculation / line of reasoning was the issue. At the same time, **the most important thing** is to find a way to abstract a specific problem into a general problem type, and to make sure I can verbalize the full solution approach for that type in detail. More concrete techniques around problem-solving and summarizing come later in this guide.
+Second, whenever there's an example problem or practice question in class, I'll either do it mentally or write it out. If I get it wrong, I figure out which specific concept / formula / calculation / line of reasoning was the issue. At the same time, **the most important** thing is to figure out how to turn a single concrete problem into a **general problem type**, and to make sure I can re-articulate **the reasoning approach** for that problem type in detail. More specific problem-solving and summarizing techniques are covered later in the guide.
 
-### Studying Outside of Class
+## Outside the Classroom: How to Study
 
-#### Resources and How to Use Them
+### Resources and How to Use Them
 
-##### 1. Textbooks
+#### 1. Textbooks
 
-First, the textbook is the most fundamental study and revision resource, because it maps most directly onto our IB syllabus. Generally speaking, if you can get through the textbook once before an exam and work through the problems inside (**summarizing solution approaches and problem types as you go**), you can already score quite well.
+First and foremost, the textbook is **the most fundamental study and revision resource**, because it's the most directly tied to our IB syllabus. Typically, if you can read through the textbook once before the exam and work through the problems in it (**and summarize the reasoning and problem types**), you can already score quite well.
 
-But as **Table 1** points out, the **reading time** and **energy** the textbook demands is usually too much for most students (especially those of us who care about making learning more efficient). So I'll share various resources and methods I've personally tested, to help us learn more efficiently.
+But as **Table 1** shows, the **reading time** and **effort** that a textbook demands is usually too high for most students — especially for those of us trying to optimize our learning efficiency. So I'll provide below **a set of resources and methods I've personally tested** to help us study more efficiently.
 
-##### 2. Bilibili Videos
+#### 2. Bilibili videos
 
-China, being a country built around the Gaokao, has produced teachers and students who have invented and shared a wide variety of study methods, as well as videos of every possible information density and length. As the internet has matured, high-quality videos on video platforms have grown more and more abundant, which makes Bilibili an indispensable part of my self-study journey.
+Because China is a country built around gaokao, all sorts of teachers and students have invented and shared a wide range of study methods, along with videos of every possible length and information density. And as the internet has grown, **the quality of videos on video platforms has only gotten better**, which makes Bilibili **an indispensable part** of my self-study workflow.
 
-###### - Da Kuan Physics (the one I use most)
+- **Da Kuan Physics (most-used)**  
+  Link: [Da Kuan | Five-Minute Physics Series playlist](https://space.bilibili.com/13407784/favlist?fid=241719084&ftype=create)  
+  Why it's great: structurally complete; covers introduction, definitions, formulas, example problems, and practice in a short period of time. Very efficient.
 
-https://space.bilibili.com/13407784/favlist?fid=241719084&ftype=create
+The first one I want to recommend is from the creator **Da Kuan**. His *Five-Minute Physics Series* has no filler, the structure is very complete, and in just a few minutes you get the introduction, definitions, formulas, example problems, practice questions, etc. — extremely efficient.
 
-First, the one I most want to recommend is the channel by the Bilibili creator **Da Kuan**. The *Five-Minute Physics Series* has zero filler, while still being structurally complete — within just a few minutes, you get the introduction, definitions, formulas, worked examples, practice problems, etc. The efficiency is excellent.
+At the same time, to make **the knowledge really stick in your brain**, you can't just watch the video and call it done — you have to do **active learning**. Since each video's knowledge structure is already clear and easy to follow, while watching each video, we can slot the relevant pieces of knowledge into the framework below, and try to memorize them:
 
-That said, in order to lock knowledge into your brain, you can't just stop after watching the video — you have to practice **active learning**. Because the knowledge structure of each video is so clean and easy to follow, while watching each one, you can slot the corresponding content into the following knowledge framework and try to memorize it:
+- **Definition**
+	- Includes the conceptual definition, abbreviations, units, why it's defined this way, etc.
+- **Properties (optional)**
+- **Formulas**
+	- Where the formula comes from, derivation, units, implications, etc.
+- **Basic example problems or problem-type templates**
+	- What information is given, what's being asked
+	- Which formula is used
+	- What's the line of reasoning
+	- etc.
+- **Examples**
+- **Supplements / special cases / etc.**
 
-- Definition
-    - Including conceptual definition, abbreviation, units, why we define it this way, etc.
-- Properties (optional)
-- Formulas
-    - Origin of the formula, derivation, units, implications, etc.
-- A basic worked example or problem template
-    - What information is given, what information is asked for
-    - Which formula is used
-    - What's the reasoning
-    - Etc.
-- Examples
-- Supplementary notes / edge cases / etc.
+Of course, the framework for each video might differ slightly, but on the whole this creator's slides are very logical, so all you really need to do is end up with something **structured and content-filled** like the above in your head.
 
-Of course, each video might have a slightly different structure, but overall this creator's lecture notes are quite logical, so you really just need to end up with something like the framework above in your head.
+- **18 Days to Finish High School Physics**  
+  Link: [18 Days to Finish High School Physics | Bilibili video series](https://www.bilibili.com/video/BV1fu4y117Vb/?share_source=copy_web&vd_source=d720262fbff151d429c5838d6b0166ce)  
+  Characteristics: highly systematic, high information density, more in-depth — not suitable for last-minute cramming.
 
-###### - Finish High School Physics in 18 Days
+This video series has 18 lessons in total, each about 1–2 hours long. Because of that, the information density is quite high, so it's not the right choice for the night before an exam.
 
-https://www.bilibili.com/video/BV1fu4y117Vb/?share_source=copy_web&vd_source=d720262fbff151d429c5838d6b0166ce
+It was originally produced for physics competition students, but I personally think both the content and the explanations are very accessible while still being deep. It's a great fit for students who want to do competitions, and I'd also recommend it to anyone with spare time who wants to take their physics knowledge further.
 
-This video series consists of 18 lessons total, each roughly 1–2 hours. As a result, the information density is fairly high — it's not suitable for last-minute cramming the night before an exam.
+- **Mrs. Huang Physics**  
+  Link: [Mrs. Huang Physics | Bilibili video collection](https://space.bilibili.com/23630128/lists/2045?type=season)  
+  Characteristics: moderate length, comprehensive coverage of knowledge points, plenty of examples; suitable for daily study and patching gaps.
 
-This series was originally aimed at physics olympiad students. Personally, I think the content and the way it's explained are both very lucid, so it works well for students who want to do olympiad prep, and I'd also recommend it for anyone who has spare time outside of class and wants to push their physics knowledge further.
+Compared with the two resources above, this video series sits more in the middle. Each video averages about 15 minutes. The creator is also well-known in the high school physics space — every video gets at least 2 million views — so the channel is widely loved and trusted by students.
 
-###### - Mrs. Huang Physics
+Unlike the first resource's minimalist style, this series covers the vast majority of knowledge points and comes with rich examples and explanations. It's not necessarily ideal for last-minute cramming, but it's great as a study companion while learning, or when there's a concept you don't understand and you want to hear this teacher explain it.
 
-https://space.bilibili.com/23630128/lists/2045?type=season
+##### - Other Bilibili resources and how to search for them
 
-Compared to the two resources above, this video series sits in a more balanced middle ground. The average video length is about 15 minutes. The creator is also widely respected in the high school physics space — every video has at least 2 million views — so she's broadly popular and well-regarded among students.
+It's worth noting that every video series and every different teacher (including teachers at school) represents a different explanation style, knowledge system, information density, and so on.
 
-Unlike the minimalist style of the first resource, this series covers the vast majority of the knowledge points, with plenty of examples and explanations. It's not necessarily ideal for last-minute exam cramming, but it works very well alongside your regular learning, or whenever you hit a concept you don't understand and want to hear another teacher's take.
+So **finding the videos and teachers that suit you is what matters most.**
 
-###### - Other Bilibili Resources and How to Search
+Before looking for resources, you need to figure out **what your own preferences are**: do you prefer an intuition-driven teacher or a logic-driven one, do you prefer high information density or very detailed explanations, and so on.
 
-One thing to keep in mind: every video series, and every individual teacher (including your own teachers at school), represents a different explanation style, knowledge framework, and information density.
+When searching for video resources there are also some tricks. **Common keywords** include "高中物理up主推荐" (high school physics creator recommendations), "高中物理精讲" (high school physics in-depth lectures), and so on.
 
-So **finding the videos and the teachers that fit you best is what matters most**.
+#### 3. Past Papers
 
-Before searching for materials, figure out your own preferences first — do you prefer an intuition-driven teacher or a logic-heavy one, high information density or very detailed explanations, and so on.
+When revising for physics, one of the most important parts of the process is **grinding past papers**. The core reason is that the entire point of our IB study and exams is the **final IB exam**, so for teachers, **setting past-paper questions or questions similar to past papers** is usually the easiest way to assess us. (And in practice that's exactly what happens — teachers will typically include a decent amount of past-paper questions or just tweak the numbers.) Here are some past-paper resources and methods:
 
-There are also tricks to searching. Common keywords include "高中物理 up 主推荐" (recommended high school physics creators) and "高中物理精讲" (in-depth high school physics), etc.
+##### **- Exammate (most-used)**
 
-##### 3. Past Papers
+In my opinion, the single best site, period. Its strengths:
+- **All of it is past-paper questions**, with mark schemes
+- **Sorted by topic**, which makes revision easy
 
-The single most important step when revising for physics is doing past papers. The core reason is that the entire purpose of IB study and exams is to prepare for the final IB exam, so for teachers, the easiest way to assess us is to reuse past-paper questions or close variants of them. (And in practice, that's what they do — teachers usually include a decent amount of past-paper questions, sometimes with the numbers tweaked.)
+Since you usually only need it right before exams, I'd recommend going to **Taobao** or **Xianyu (Goofish)** to search for exammate and buy a one-day or one-week membership — that's the best value.
+##### **- [PirateIB](https://dl.pirateib.sh/)**
 
-Below are some past-paper resources and how to use them:
+![image](https://pub-bb0f6d21281243738b170b9aefc6e0cd.r2.dev/guides/ib/1778894924660-d3f2851b-image.png)
 
-###### - Exammate (the one I use most)
+**Disclaimer:**  
+This guide is purely a sharing of personal study experience. **It does not encourage or endorse the use of pirated, infringing, or otherwise unauthorized study resources**. The legality, safety, and accuracy of online resources are for **the reader to judge independently, and the reader bears the consequences of using them**. We recommend prioritizing your school library, official textbooks, legal databases, and openly available educational resources.
 
-In my opinion, the best site, no contest. Its strengths:
+The site contains an extremely broad range of resources, including but not limited to past papers across many years, sample IAs / EEs, and various paid online resources.
 
-- Everything is a past-paper question, and mark schemes are included
-- Organized by topic, which makes it easy to revise
+Regardless of how you find these resources, this kind of past-paper material is typically used for the **End of Year Exam, IB Mock Exam, and the IB exam itself**, because those three are the most comprehensive exams, and teachers more often refer to past papers as a blueprint when writing them.
 
-Because I usually only need it right before an exam, I'd recommend searching for "exammate" on **Taobao** or **Xianyu (Goofish)** and just buying a one-day or one-week membership — best value for money.
+#### 3.1 How to Grind Past Papers
 
-###### - PirateIB
+First, you have to recognize that the total volume of knowledge we learn in high school is quite limited, so the kinds of problem types we'll encounter is also quite limited (especially compared to competitions or research).
 
-![Screenshot of the PirateIB website](https://pub-bb0f6d21281243738b170b9aefc6e0cd.r2.dev/guides/ib/1778894924660-d3f2851b-image.png)
+The point of grinding past papers is to use brute-force coverage to **master every problem type**, so as to compensate for the problems we can't quite solve through raw cleverness — see the diagram below:
 
-https://dl.pirateib.sh/
+![image](https://pub-bb0f6d21281243738b170b9aefc6e0cd.r2.dev/guides/ib/1778894927140-b988aeeb-image.png)
 
-**Disclaimer:**
-This guide is shared purely as a record of personal study experience. It does not encourage or endorse the use of pirated, infringing, or unauthorized study materials. Readers should evaluate the legality, safety, and accuracy of any online resource themselves, and accept the consequences of their use. Prefer your school library, official textbooks, legitimate databases, and openly available educational resources first.
+In other words, exam questions can roughly be split into two kinds:
 
-This site contains a very wide range of resources, including but not limited to past papers from previous years, sample IAs / EEs, and various paid online resources.
+One kind is solved on the fly via **derivation and understanding**;
+The other is solved by drawing on **problem types and patterns accumulated from past practice**.
 
-Regardless of where you find them, this kind of past-paper resource is usually best deployed for End of Year exams, IB Mock exams, and the actual IB final exam, because those three exams are comprehensive and teachers are more likely to use past papers as the basis for their question design.
+The more problems you do, the more complete your mental **library of problem types** becomes, and the less on-the-spot derivation you'll need during the exam. Conversely, the fewer problems you do, the more you'll have to rely on real-time analytical ability.
 
-##### 3.1 How to Do Past Papers
+So the quantity, speed, depth, and whether-or-not-to-redo-mistakes of your problem grinding all depend on how confident you are in your own learning ability and ability to perform under pressure. Adjust to your own preferences.
 
-First, you have to recognize that the total amount of knowledge we cover in high school is quite limited, so the variety of problem types we'll encounter is also quite limited (especially compared to olympiad work or research).
-
-The purpose of doing past papers is to systematically traverse all the problem types so we master them, compensating for what our raw cleverness alone can't solve, as illustrated below:
-
-![Diagram of exam question types](https://pub-bb0f6d21281243738b170b9aefc6e0cd.r2.dev/guides/ib/1778894927140-b988aeeb-image.png)
-
-In other words, exam questions roughly fall into two categories:
-
-One kind is solved on the spot through reasoning and understanding.
-The other kind is solved by recognizing a problem type and pattern you've built up from past practice.
-
-The more past papers you do, the more complete your mental library of problem types becomes, and the less on-the-spot reasoning the exam demands of you. Conversely, if you do few past papers, you'll have to lean more heavily on real-time analytical ability.
-
-So how many problems you do, how fast, how deep, and whether to redo your wrong ones all depend on your confidence in your own learning ability and your on-the-spot performance — adjust as needed.
-
-Let me share how I personally do past papers. Once I'm in exam-mate, I pick the topics that fall within this exam's scope, and then I select past papers from roughly the past three or four years.
-
-For each question, I first try to solve it mentally, then with pen and paper, then check my answer.
-
-Regardless of whether I got it right, after finishing I summarize what the problem type is (mentally is fine — write it down if you can't remember), including:
-
-- What variables are given
-- What variable is being asked for
+Here I'll share how I personally grind problems. After logging into exam-mate, I'll pick the topic that falls within the exam's scope, and then I'll pick **roughly the past three or four years' worth of past-paper questions**. For each question, I first try to solve it mentally; if that doesn't work, I'll try with pen and paper, then check the answer. **Whether I get it right or wrong**, after finishing I need to **summarize what type of problem it is** (mental summarization is fine; if you can't hold it in your head, write it down), including:
+- Which variables are given
+- Which variable is being asked for
 - Which formulas are used
-- The reasoning (see the dedicated section on reasoning below)
-- Where I tend to make mistakes
-    - e.g. arithmetic, unfamiliarity with a definition / formula, etc.
+- The line of reasoning (refer to the reasoning section below)
+- Where I tend to slip up
+	- e.g. calculation, unfamiliar definitions / formulas …
 
-Here's the key part. After a number of problems, our knowledge base will have accumulated quite a few problem types. So when we run into a new problem, we should first ask whether one of our existing types applies, or whether it's a small variation on something we've already seen.
+Here's the key point: after doing a few problems, your mental knowledge base will already contain quite a few problem types. So when you run into a new problem, you should **first ask whether you can apply a problem type you've already summarized**, or whether you can apply one with a small tweak.
 
-For me personally, I only need to do one problem of each type and its variants — that's why my pace is very fast. You can observe how many problems you need to internalize a given type, and improving that number can dramatically speed up your learning. Specific techniques for speeding this up are in the study-techniques section below.
+Personally, for a given problem type and its variants, I only need to do one problem. So my pace through past papers is quite fast. You can observe for yourself how many problems it takes you to master a type, and **improving on that dimension can dramatically speed up your learning**. Specific techniques for speeding up are covered in the study techniques section.
 
-##### 4. Teaching Others Is Also a Form of Learning
+#### 4. Teaching Others Is Also a Way to Learn
 
-Whether it's the Feynman technique, or just my own experience, teaching others is a great way to consolidate your own understanding.
+Whether you call it the Feynman technique or you draw on personal experience, **teaching others is a very effective way to consolidate your own knowledge system**.
 
-Specifically, when teaching a classmate who possibly hasn't paid attention for an entire unit, you're forced to logically connect every scattered piece of knowledge, technique, and example. You also have to simultaneously balance accessibility, the various details, entertainment value, and pacing (because you usually have to cover a full chapter in a short time and make sure everyone can move on to the problem-solving stage).
+Specifically, when you're teaching a classmate who possibly hasn't paid attention for an entire unit, it forces us to **stitch all the scattered pieces of knowledge, techniques, and example problems together with logic**, while also balancing accessibility, attention to detail, fun, and pace (because you usually have to cover an entire chapter in a short window of time and make sure everyone can move on to actually doing problems).
 
-At the same time, getting exposure to how different people think and where their logical bottlenecks are will dramatically improve your own ability to teach, understand, and reason. So try to help the people around you as much as you can.
+At the same time, understanding **how other people think and where their logic gets stuck** can hugely improve your own teaching, comprehension, and metacognitive abilities. So I'd encourage everyone to try **helping the classmates around you** more often.
 
-#### Techniques and Mental Models
+### Techniques and Mindsets
 
-Now that we've covered the macro workflow and resources, let's look at the techniques that can make us learn faster and retain knowledge more firmly during the actual learning process.
+Having covered the macro-level study process and resources, let's look at, within **the actual studying itself**, what techniques can help us **learn faster and remember more solidly**.
 
-###### Analogical Thinking
+##### Analogical Thinking
 
-When you encounter new knowledge, you can map an existing framework or piece of knowledge onto it to understand and remember it better.
+When encountering new knowledge, we can apply **a known system or piece of knowledge** to better understand and remember the new thing.
 
-To give a very simple example: when learning about electric fields, you can keep drawing analogies to gravitational fields. Mass experiences gravity; charge experiences the electric force. Gravitational potential energy and electric potential energy share a similar structure. The two aren't identical in every detail, but the analogy keeps you from having to understand a brand-new concept from scratch.
+For a very simple example, when learning about electric fields, you can constantly draw analogies to gravitational fields. Mass experiences gravity; charge experiences an electric force. Gravitational potential energy and electric potential energy have a similar structure. The two are not identical in every detail, but this kind of analogy means that when you first encounter a new concept, you're not **starting from zero**.
 
-The example above is fairly obvious and your teacher will introduce it in class. In real study, when you run into something that feels hard to remember, you can **actively** invoke this kind of thinking by asking yourself what this concept is like, or what it can be compared to.
+The example above is fairly obvious, and your teacher will introduce it in class. In practice, when you encounter a piece of knowledge that feels especially hard to memorize, you can **deliberately** apply this kind of thinking by asking yourself, **what does this knowledge resemble / what can it be compared to?**
 
-Note that you can analogize to anything. The more familiar or everyday the analogy is, the better it usually works.
+Note: you can use anything as the basis for the analogy. The more familiar or everyday the analogy, the better the effect tends to be.
 
-###### Variables vs. Constants
+##### Variable vs. Constant
 
-You've all learned the difference between a variable and a constant, so I won't belabor the standard usage.
+I trust everyone has learned the difference between variables and constants, so I'll skip the standard usage.
 
-In physics, you'll notice that an equation typically involves several variables — for instance, F=ma or PV=nRT. At the high school level, you have to clearly recognize that a problem will usually focus on just one or two of those variables and either test how a single variable changes, or how two of them interact.
+In physics, you'll notice that a formula is usually made up of several variables, e.g. F=mv/t or PV=nRT. At the high school level, you have to recognize clearly that a problem will usually pick only one or two of those variables and ask either how one variable changes, or how two variables change relative to each other.
 
-So we need to focus our attention on the variables that change, and properly ignore the ones that are constant.
+So we need to focus our attention on **the quantities that change**, and appropriately **ignore the constants**.
 
-This way of thinking fits two scenarios. The first is when a problem is complex and involves many concepts — you have to identify which elements are constant and which ones are being asked about or changing. The second use case is analytical questions like "When variable A increases, how will variable B change?"
+This mindset suits two situations. One is when a problem is complex and involves a lot of concepts. At that point we have to identify exactly **which elements stay fixed and which elements are being varied or solved for**.
 
-###### Connect to Reality
+The other use case is in analysis-type problems like "When variable A increases, how will variable B change?"
 
-Physics is the study of the laws of the real world, so no piece of knowledge should be divorced from real-world phenomena. When any concept feels too abstract or obscure, you can think of real-world examples or applications, and it'll become a lot easier to understand.
+##### Connecting to Reality
 
-###### Systematizing Knowledge
+Physics is a subject about the laws of the real world, so no piece of knowledge should be divorced from real-world phenomena. When a concept feels abstract or obscure, you can think about what **real-world examples or applications** exist, and that usually makes it much easier to understand.
 
-This is the technique I consider most important and use most often.
+##### Knowledge as a System
 
-When studying a unit, I care not only about the knowledge itself but also about the structure through which it's carried out.
+This is the **most important and most-used technique** in my toolkit.
 
-For example, the definitions a teacher introduces at the very beginning might look strangely arbitrary at first glance, but they very often exist precisely to make later knowledge easier to explain.
+When learning a unit, I don't just pay attention to the knowledge itself — I also pay attention to **how the knowledge is being carried out**.
 
-Or, when physics gets into more abstract topics later on, the teaching usually starts with the experiment itself and then carries out the corresponding knowledge. So when you learn, you can also commit it to memory in that order.
+For example, a lot of the time, the definition the teacher introduces at the very beginning might seem abrupt, but it likely exists to make the later explanations easier.
 
-This kind of ordering information is usually very useful when learning, because the person teaching you has arranged the knowledge in a way that aligns with the cognitive flow of how people learn. If your memorization follows the same structure and you're aware of how each piece of knowledge connects to the next, your learning efficiency goes up dramatically.
+Or, in later physics where we're learning more abstract topics, we usually go through the experiment first and then carry out the corresponding piece of knowledge. So when studying, you can memorize things in the same order.
 
-For each unit or piece of knowledge, I usually preload a basic framework in my head, which looks like this:
+This kind of **ordering information** is usually very useful while studying, because the person teaching has arranged this knowledge in a way that conforms to how cognition works. So if we also memorize things in that structure, and stay aware of the connections between pieces of knowledge, our study efficiency will go up dramatically.
+
+For each unit or piece of knowledge, my brain usually presets a **base framework** that looks like this:
 
 <details open>
 <summary>Introduction</summary>
 <ul>
   <li>Real-world phenomenon</li>
   <li>Physics experiment</li>
-  <li>An interesting historical story</li>
+  <li>Interesting historical story</li>
 </ul>
 </details>
 <details>
@@ -295,9 +287,9 @@ For each unit or piece of knowledge, I usually preload a basic framework in my h
 <ul>
   <li>Conceptual definition</li>
   <li>Abbreviation</li>
-  <li>Units</li>
-  <li>Subtle nuances</li>
-  <li>Why we define it this way</li>
+  <li>Unit</li>
+  <li>Subtle distinctions</li>
+  <li>Why it's defined this way</li>
 </ul>
 </details>
 <details>
@@ -305,19 +297,19 @@ For each unit or piece of knowledge, I usually preload a basic framework in my h
 <ul>
   <li>Vector / Scalar
     <ul>
-      <li>If it's a vector, how to determine its direction and magnitude</li>
+      <li>If it's a vector, how are the direction and magnitude determined</li>
     </ul>
   </li>
-  <li>Direct proportionality, inverse proportionality, square relationships, etc.</li>
+  <li>Direct proportion, inverse proportion, square relationships, etc.</li>
 </ul>
 </details>
 <details>
 <summary>Formula</summary>
 <ul>
-  <li>Origin of the formula</li>
+  <li>Where the formula comes from</li>
   <li>Derivation</li>
-  <li>Units within the formula</li>
-  <li>The various meanings it carries</li>
+  <li>The units inside the formula</li>
+  <li>Various meanings</li>
 </ul>
 </details>
 <details>
@@ -325,187 +317,180 @@ For each unit or piece of knowledge, I usually preload a basic framework in my h
 <ul>
   <li>Experiment
     <ul>
-      <li>Which variable's relationship with which other variable is being studied</li>
-      <li>Experimental observations</li>
-      <li>Graphs and tables</li>
-      <li>Conclusions</li>
+      <li>Which variable's relationship with which variable is being studied</li>
+      <li>Experimental phenomenon</li>
+      <li>Graphs / tables</li>
+      <li>Conclusion</li>
     </ul>
   </li>
-  <li>Everyday phenomena</li>
+  <li>Everyday phenomenon</li>
 </ul>
 </details>
 <details>
-<summary>Basic worked example or problem template</summary>
+<summary>Basic example problem or problem-type template</summary>
 <ul>
   <li>What information is given</li>
-  <li>What information is asked for</li>
+  <li>What's being asked</li>
   <li>Which formula is used</li>
-  <li>What the reasoning is</li>
-  <li>How to convert the problem's information into our structure</li>
+  <li>What the line of reasoning is</li>
+  <li>How to translate the problem's information into our structure</li>
   <li>Whether the framework can be extended</li>
-  <li>And so on</li>
+  <li>etc.</li>
 </ul>
 </details>
 <details>
-<summary>Supplementary / edge cases</summary>
+<summary>Supplements / special cases</summary>
 <ul>
-  <li>Things that don't follow the usual cognitive pattern</li>
-  <li>And so on</li>
+  <li>Things that don't fit common patterns of cognition</li>
+  <li>etc.</li>
 </ul>
 </details>
 
-One thing to keep in mind: in actual use, you have to apply this framework flexibly.
+It's worth noting that in actual use, this framework should be applied flexibly.
 
-For instance, you can apply it to a specific piece of knowledge, or to an entire unit. Some pieces of knowledge only have a definition and a formula, while others have a much more complete structure. The order can also change — some pieces of knowledge might unfold as definition → example → new definition → example → combined formula → … .
+For example, we can use this framework on a specific piece of knowledge, or on an entire unit. Some pieces of knowledge only have a definition and a formula; others have a much more complete structure. The ordering can change too — sometimes the structure of a piece of knowledge goes definition → example → new definition → example → combined formula → ….
 
-For anything the framework doesn't cover, feel free to add your own section, or build your own basic framework — your own knowledge tree.
+Likewise, for content not covered by the framework, you can add your own section, or build your own base framework entirely — forming **your own knowledge tree**.
 
-###### Re-understanding Equations
+##### Re-Understanding Equations
 
-Every formula is carried out in the form of an equation, but I've noticed most students only memorize the formula itself. In reality, a single formula carries a huge amount of information.
+All formulas are carried out in the form of equations, but personally I've noticed that most students just memorize the equation itself. In reality, a single formula contains enormously rich information.
 
-You can think of the equals sign as a bridge linking two quantities, so you can read the equation left to right, or right to left.
+We can think of **the equals sign as a bridge connecting two quantities**, which means we can either **read it from left to right**, or **read it from right to left**.
 
 Take the simplest example, F=ma:
+- Read left to right, this is the most common interpretation: force equals the product of mass and acceleration. The product means that when acceleration is constant, the bigger the mass the bigger the force; when mass is constant, the bigger the acceleration the bigger the force. Vice versa.
+- Read right to left, ma=F, we get a new angle: when we know there's a mass undergoing some acceleration, we can derive the force acting on it.
+If we rearrange to m=F/a:
+- Read left to right, this on its own doesn't carry much meaning — it's purely a relative relationship: m is inversely proportional to a, and directly proportional to F.
+- Read right to left, we know that if an object has a force of magnitude F applied to it, and is moving with acceleration a, we can derive its mass.
+And if we rearrange again to a=F/m:
+- By the same logic, we get two more interpretations.
 
-- Left to right is the most common reading: force is the product of mass and acceleration. The product means that when acceleration is held fixed, a larger mass means a larger force; when mass is held fixed, a larger acceleration means a larger force. And vice versa.
-- Right to left, ma=F, gives a new perspective: when we know a mass is undergoing some acceleration, we can derive the force acting on it.
+So you can see that a single simple equation already has **six distinct interpretations**. This is why, when we say a problem uses a particular formula, we should specify which **of the six interpretations** is the one being used. With that kind of differentiation, distinguishing between different problem types becomes much easier.
 
-Rearrange it to m=F/a:
+On top of those six interpretations, we can also substitute in the definitions of different variables, creating yet more interpretations and equations.
 
-- Left to right doesn't have a clear meaning in itself — only a relative relationship: m is inversely proportional to a and directly proportional to F.
-- Right to left tells us that if an object is subjected to a force F and is moving with acceleration a, we can derive its mass.
+For instance, F is fundamentally F_net, which can be gravity minus air resistance, the centripetal force in circular motion, etc. m doesn't have that many extensions. And a can be written as delta v / delta t, which when substituted back gives us F=mv/t, generating a whole new family of interpretations.
 
-Rearrange once more to a=F/m:
+If we can fully understand every formula in the **formula booklet** this way, along with their substituted variants, then **picking and applying the right formula** during problems is no longer something to worry about.
 
-- By the same logic, you get two more readings.
+##### Anchoring
 
-You can see that the simplest formula already has six different readings. So when we say a problem uses a particular formula, we should be precise about which of these readings is being applied. Once you draw this distinction, separating different problem types gets much easier.
+Whether it's interpreting equations or the earlier variable-vs-constant idea, what we're really doing is allocating our attention to the more important things or variables, and ignoring the unimportant ones.
 
-On top of these six readings, you can also substitute the definitions of the variables themselves, generating even more interpretations and equations.
+In other words, we're choosing some object as our **anchor** and building outward from there.
 
-For example, F is fundamentally F_net, which could be gravity minus air resistance, the centripetal force in circular motion, and so on. m doesn't have quite as many extensions. a can be written as delta v / delta t, and if you substitute that back in, you get F=mv/t — a whole new set of readings opens up.
+This mindset is extremely important and very generalizable. We can use a variable, an individual entity, or a particle as our anchor; we can equally well use a relationship, a structure, or a constraint as our anchor. When solving problems, we can also first identify the most critical conflict, goal, or invariant, and then organize our reasoning around it.
 
-If you can fully understand every formula in the formula booklet this way, along with all the substituted variants, you won't have to worry about formula selection and application when solving problems.
+The same is true in studying. Beginners are often drowned by a flood of details, because they have no anchor: every formula, definition, and example problem looks equally important. Truly effective learning, on the other hand, usually starts by building a stable knowledge framework and then placing new knowledge within that framework. Details are no longer isolated bits of information — they become nodes attached to a structure.
 
-###### Anchoring
+In short, an anchor helps us **lower the system's complexity and the cost of understanding**, reorganizing what was originally chaotic information. You can also dig deeper into how different anchors, and changes between anchors, affect understanding.
 
-Whether it's reinterpreting equations or the variables-vs-constants idea earlier, what we're really doing is allocating our attention to the more important things or variables, and ignoring the unimportant ones.
+##### Generalization
 
-In other words, we choose to anchor on something and build out from there.
+I personally like to think of this as a kind of "leveling up in dimension". If we treat the daily knowledge and the example problems themselves as the first layer, then their knowledge framework is what we get after generalizing them.
 
-This way of thinking is extremely important and generalizes far. You can anchor on a particular variable, individual, or particle; you can also anchor on a relationship, structure, or constraint. When solving a problem, you can locate the key tension, goal, or invariant first, and then organize your reasoning around it.
+Likewise, anchoring is itself a generalization of the two techniques of equation interpretation and variables.
 
-The same goes for learning. Beginners are often overwhelmed by detail because they have no anchor — every formula, definition, and example looks equally important. Effective learning, by contrast, usually means first establishing a stable knowledge framework, and then placing new knowledge into that framework to find its position. That way, details stop being isolated bits of information and become nodes attached to a structure.
+By generalization, I mean not stopping at a specific example, but instead going further and asking whether there's a more general structure, or a more universal rule or way of thinking. Once you find that rule, you apply it to all sorts of things — that's generalization.
 
-In short, anchors help us reduce the complexity and the cost of understanding a system, reorganizing what would otherwise be chaotic information. You can dig further into how different anchors, and shifts between them, affect understanding.
+What we need to do in studying physics is precisely this: **go from "I can solve one problem" to "I can solve a class of problems", and then to "I understand a way of thinking"**.
 
-###### Generalization
+(Similarly, the various study methods in this article can be extended to any science subject, or honestly any kind of knowledge. I've personally found this to be quite effective.)
 
-Personally I like to think of this as moving up a dimension. If we treat the concrete pieces of knowledge and worked examples of daily learning as the first layer, then the knowledge framework above is the result of generalizing across them.
+##### Meta-cognition
 
-Likewise, anchoring is itself the generalization of the equation and variables techniques.
+The last technique I want to introduce is meta-cognition, which is **awareness of your own thinking process**.
 
-By generalization I mean not stopping at a specific example, but asking whether there's a more general structure, a more universal law, or a more general way of thinking. Once you find such a pattern, you apply it across different situations — that's generalization.
+If the earlier techniques — analogy, variable vs. constant, knowledge as a system, anchoring, generalization — are concrete learning tools, then meta-cognition is the ability that manages all of those tools. It lets us do more than just bury our heads in studying; it lets us step outside and observe ourselves: Do I actually understand this right now? Where am I stuck? Is the method I'm using effective? Is there a better angle?
 
-What you have to achieve in your physics study is the progression from "I can solve this problem" to "I can solve this whole class of problems" to "I understand this way of thinking".
+Often, low study efficiency isn't a matter of not working hard enough — it's that we haven't realized where exactly the problem is. For example, after getting a problem wrong, just reading the answer and remembering the solution gives the problem very limited value. But if we can go further and analyze whether our mistake was in the concept, the formula, the variable relationships, the problem's structure, or our reasoning path, then that one problem can help us correct a whole class of issues.
 
-(Relatedly, the various study methods in this article generalize to any STEM subject and arguably to any kind of knowledge — I've tested it, and it's worked pretty well for me.)
+So during studying, we can constantly do three things: **set a clear goal before studying, monitor our own thinking during studying, and review afterward whether our method was effective and how to improve it**. That way, we're not passively absorbing knowledge; we're actively tuning our own learning system.
 
-###### Meta-cognition
+From this perspective, meta-cognition is **a layer of ability that sits above all the other learning techniques**. It determines whether we can identify problems, pick methods, correct mistakes, and ultimately let our own way of learning continuously evolve.
 
-The last technique I want to introduce is meta-cognition — that is, **awareness of your own thinking process**.
+### (Optional) AI Study Tips
 
-If the previous techniques (analogy, variables vs. constants, systematizing knowledge, anchoring, generalization) are concrete study tools, then meta-cognition is the ability to manage those tools. It lets us not just be heads-down learning, but also step back and observe ourselves: Do I really understand this? Where am I stuck? Is the method I'm using working? Is there a better angle?
+When I was in school, AI was just beginning to take off, but the landscape today is completely different.
 
-Often, low learning efficiency isn't a result of insufficient effort but of not realizing where the actual problem is. For instance, if after getting a problem wrong you just look at the answer and memorize the steps, the problem's value to you is quite limited. But if you can further analyze whether you went wrong on the concept, the formula, the variable relationships, the problem structure, or the line of reasoning, then this one problem helps you fix a whole class of issues.
+I once watched an interview with someone who dropped out of high school but became a research scientist at OpenAI five years later through self-study. He said that in the past, people had to go through primary school, middle school, high school, college, and even grad school in order to learn AI, but his 13-year-old brother today can learn any topic within the AI field in three days.
 
-So during study, we can continually do three things: clarify the goal before studying, monitor our thinking during study, and review afterward whether the method worked and how to improve it. That way, we aren't passively absorbing knowledge — we're actively tuning our own learning system.
+Physics is the same. With the mindsets we've covered above, we can also better **guide the AI to give us knowledge that fits a clear structure and is easy to understand**.
 
-From that angle, meta-cognition is a layer of capability that sits above all the study techniques. It determines whether we can spot problems, choose methods, correct mistakes, and ultimately let our way of learning keep evolving.
+Here are some **prompts or keywords** I commonly use when learning via AI:
 
-#### (Optional) AI Study Tips
+- "Explain ... **intuitively**": the word intuitively gets the AI to explain things informally, and the answers are typically very easy to follow. I've also noticed that AIs tend to like adverbs.
+- "Explain ... step by step" / "Explain ... using logic chain": very useful when you need a detailed logical chain.
+- "Explain ... **with a real-life example**": when a physics concept feels too abstract, you can have the AI come up with real-life examples.
+- "You can use tables, analogies etc to help explain this concept": you can specify any way of thinking or any technique, and have the AI transmit knowledge in that style.
 
-When I was in school, AI was just emerging. Now it's a completely different era.
+# How to Take the Exam
 
-I once watched an interview with a high school dropout who later spent five years self-studying and ended up joining OpenAI as a research scientist. He said that in the past, learning AI required going through elementary, middle, high school, college, and even graduate school, but now his 13-year-old brother can master any single piece of knowledge in AI within three days.
+Having covered how to study, let's now look at **how to prepare for and how to take the exam**.
 
-Physics is the same. Once you have the mental models above, you can also guide an AI to give you knowledge that fits a clean structure and is easy to understand.
+## How to Revise
 
-Here are some prompts and keywords I often use when learning through AI:
+For me, **revision is essentially about permuting and combining the resources and techniques mentioned above**. I'll walk through my most-used revision modes.
 
-- "Explain ... **intuitively**": the word "intuitively" gets the AI to introduce the knowledge in a non-formal way, and the answers are usually very easy to follow. I've also noticed AI tends to respond well to adverbs.
-- "Explain ... step by step" / "Explain ... using logic chain": useful when you need a detailed logical walkthrough.
-- "Explain ... **with a real-life example**": when a physics concept feels too abstract, ask the AI to give a real-world example.
-- "You can use tables, analogies etc to help explain this concept": you can specify any mental model or technique you want the AI to use to convey the knowledge.
+**If time is plentiful**, I'll read the textbook or PPT slides to revise everything, or slowly work through the various Bilibili videos to solidify the knowledge system, and then grind exam-mate past papers. That's it.
 
-## How to Take Exams
+**If time is short** — say I only have one evening or even just one morning, which (thanks to procrastination and the like) is extremely common — at that point we need extreme speed:
+- First, **check what's in scope for this exam**
+- Watch all the corresponding Da Kuan Physics videos at **2x speed**
+- If there's still time, eye-scan through the **past-paper questions and answers** on exam-mate. There's usually no time to actually do the problems, so we just learn the reasoning behind the answers and how to handle some basic problem types.
+- Definitely check whether you're relatively familiar with the formulas in this unit's **formula booklet** — at the very least, know what each quantity represents and its corresponding **unit**. That way even if you've never done a question on it, you have something to work with.
+- Tell yourself not to panic, absolutely don't make calculation mistakes, relax, and then go take the exam.
 
-Now that we've covered how to study, let's look at how to prepare for and sit the exam.
+## Problem-Solving / Exam Techniques
 
-### How to Revise
+When you're first encountering various problems, **figuring out the reasoning is usually the step that traps people the most**. At the same time, even with thorough preparation and revision, you'll always run into surprise questions or questions you don't know how to solve on exam day. So we need the following problem-solving / exam techniques to help us **handle the unknown and generate lines of reasoning**.
 
-For me, revising is essentially a permutation-and-combination over the resources and techniques above. I'll share the revision modes I use most.
+(Note: these techniques aren't a particularly clean system — they're a bunch of small tricks. You can solidify them as you do problems.)
 
-If I have plenty of time, I'll work through the textbook or the slides to revise everything, or slowly go through the various Bilibili videos to consolidate the knowledge framework, and then drill exam-mate past papers — that's it.
+### General Techniques
+#### The Units Trick
 
-If I don't have enough time — only an evening or even just one morning, which, due to procrastination and other reasons, is very common — then we need extreme speed:
+When facing a past-paper question, we often don't know exactly which formulas we should use to get to the desired result. At that point, trying to recall every relevant definition, property, relationship, etc. can easily tie you up. So instead, let's start from **units**.
 
-- First, check the scope of this exam
-- Watch all the relevant Da Kuan physics videos at 2x speed
-- If there's time, eyeball the past papers and answers on exam-mate. There usually isn't time to actually work problems, so just study the reasoning in the answers and the basic problem types.
-- Definitely check whether you're at least relatively comfortable with all the formulas in this unit's formula booklet — at minimum, know what each quantity represents and its **units**. That gives you something to work with even on problems you haven't seen before.
-- Tell yourself not to panic, absolutely don't make arithmetic mistakes, stay relaxed — and then head into the exam.
+Specifically, first observe which physical quantities the problem gives, and what units they each correspond to. Then look at what physical quantity the problem is ultimately asking for, and what its unit is.
 
-### Problem-Solving / Exam Techniques
+Next, we think about how to multiply, divide, or combine the known units to produce **the target unit**.
 
-The first time you encounter a problem, the line of reasoning is usually the step that traps people the most. Even if pre-exam study and revision go well, you'll always run into surprises or problems you don't know how to solve. So we need the problem-solving / exam techniques below to help us cope with the unknown and generate solution ideas.
+Once we've found some operation that links the target quantity to the known quantities, we can go to the **formula booklet** to see whether a matching formula exists to verify our hypothesis. If there is one, then chances are this is the formula the problem wants you to use.
 
-(Note: the techniques below aren't a tightly unified system — they're a grab bag of individual tricks, and you can consolidate them as you work through problems.)
+#### Enumeration
 
-#### General Techniques
+We know that **the knowledge we've learned and the formulas we can use are finite**, and teachers can't (and almost certainly won't) write out-of-syllabus questions. So we can enumerate one by one the knowledge we've learned and figure out which formula or definition is in play.
 
-##### Units Method
+This technique is especially useful once you have your own knowledge tree, because you can quickly traverse all your knowledge and formulas, and judge for yourself how likely a given knowledge point is to be relevant. If the relevance is high, spend more energy thinking about whether it connects to the problem — this usually gives you a decent line of reasoning.
 
-When facing past-paper questions, you often don't know which formulas to use to get the result you want. At that point, trying to recall all the definitions, properties, and relationships can tangle you up — so instead, start from units.
+#### Working Backwards (and Working Forwards)
 
-Specifically, observe what physical quantities the problem gives you and the units of each, then look at what physical quantity the problem ultimately asks for, and what its units are.
+As the name suggests, it's like finding the path out of a maze: we can **work forwards from the conditions in the problem** for a bit, and also work backwards from what the problem is asking for, identifying which quantities might be used or needed. As long as the two paths can be connected, the reasoning for the problem is complete.
 
-Then think about how to combine the known units through multiplication, division, or addition to produce the target units.
+#### Minimal Example
 
-Once you've identified a possible operational relationship between the target quantity and the given quantities, you can go check the formula booklet to see if there's a formula that matches. If there is, then most likely this is the formula the problem wants you to use.
+As the name suggests, when faced with a very complex problem that's hard to understand, we can think about **what the simplest case looks like**, and then build up more complicated cases from there. For example, first think about what happens when n=0 and n=1, and then generalize to arbitrary n.
 
-##### Enumeration
+This technique can come up more often in IB HL physics or in math paper 3, so don't get too attached to it.
 
-Since the knowledge and formulas we've learned are finite, and the teacher can't (or almost certainly won't) set questions outside the syllabus, we can simply enumerate through everything we've learned to see which formula or definition the problem uses.
+### Multiple Choice Techniques
 
-This technique is especially useful once you have your own knowledge tree, because you can quickly traverse all the knowledge and formulas, judging for yourself how likely each concept is to be related to the problem. If something seems highly relevant, put more thought into the connection — it'll usually surface a decent line of reasoning.
+#### Estimation
 
-##### Working Backward (and Forward)
+This is usually used in multiple choice (it can also be used to check work on free-response questions). Rather than calculating an exact value, we can **estimate the approximate range of the magnitude**, and then compare it against the answer choices.
 
-As the name suggests — much like finding a path through a maze — you can work forward from the given conditions in the problem, and at the same time work backward from the structure of what the problem asks, identifying the quantities you might need or use. As soon as the two chains of reasoning meet, the solution is figured out.
+We can also use this to **eliminate options that are obviously wrong**.
 
-##### Smallest-Case Technique
+### Game-Theoretic Selection (when we can't solve a problem or need to guess)
 
-As the name suggests, when faced with a very complex problem you can't get a grip on, think about what the simplest version of the case looks like, and then gradually build up to more cases. For instance, first think about n=0 and n=1, and then generalize to arbitrary n.
+This one is extremely useful and very commonly applicable. The underlying principle: for multiple choice, especially questions where each option spans multiple columns, the teacher will usually set up correct entries and distractor entries. To prevent students from just picking the answer based on a single column, teachers will typically make the number of distractor entries smaller than the number of correct entries, producing a 3-correct-1-distractor distribution, or a 2-correct-2-different-distractors distribution. So we can use this distribution alone to reverse-engineer the correct answer.
 
-This technique is more commonly useful in physics HL or in Math Paper 3, so don't obsess over it for standard work.
+That sounds a bit complex, so let's use a fun example to understand the technique:
 
-#### Multiple-Choice Techniques
-
-##### Estimation
-
-Usually used on multiple-choice questions (and also during the checking phase on short-answer questions). Rather than computing the exact value, you can estimate the rough order of magnitude and just compare it against the options.
-
-You can also use this to rule out options that are obviously wrong.
-
-#### Game-Theoretic Selection (When You Can't Solve the Problem or Have to Guess)
-
-This one is extremely useful and I use it often. The underlying principle is this: on multiple-choice questions, especially ones where each option spans multiple columns, the teacher usually plants a mix of correct entries and distractor entries. To prevent students from picking the right answer based on just one column, the teacher usually sets the number of distractor entries to be less than the number of correct entries, producing distributions like three correct entries and one distractor, or two correct entries and two different distractors. So you can reverse-engineer the correct answer purely from that distribution.
-
-It sounds a bit complicated, so let's use a fun example to make sense of it.
-
-Suppose our teacher forgot to print the question. From the options below, pick the correct answer:
+Suppose our teacher forgot to print the problem. Please pick the correct answer from the options below:
 
 |     | displacement | velocity | acceleration |
 | --- | ------------ | -------- | ------------ |
@@ -514,15 +499,15 @@ Suppose our teacher forgot to print the question. From the options below, pick t
 | C   | zero         | zero     | maximum      |
 | D   | zero         | maximum  | maximum      |
 
-Look at the options. In the first column, "zero" appears three times while "maximum" appears only once. If we assumed this rarely-occurring "maximum" were the correct answer, we could directly pick B and ignore the information in the remaining two columns. From the teacher's perspective, that design would mean the knowledge in columns two and three goes untested, and the completeness of the assessment suffers.
+Now we look at the options. For the first column, zero appears three times and maximum appears only once. If we assume the rarer one (maximum) is actually correct, then we'd just pick B and could ignore the information from the other two columns. From the teacher's perspective, that design would mean the knowledge points in the second and third columns get skipped — the knowledge coverage isn't fully tested.
 
-So the teacher will set the answer in the first column to "zero" rather than "maximum". We can eliminate option B.
+So the teacher would set the first column's answer as zero rather than maximum. We can eliminate option B.
 
-By the same logic, looking at the second and third columns, we have one "zero" and three "maximum", so we can eliminate options A and C.
+By the same logic, looking at the second and third columns, we have one zero and three maximums, so we can eliminate options A and C.
 
-The final answer is D.
+So the final answer is D.
 
-That problem is fairly obvious of course, but you can extend this method to the two different examples below:
+Of course, this particular question is pretty obvious, but we can extend the method and apply it to the following two different examples:
 
 |     | displacement | velocity | acceleration |
 | --- | ------------ | -------- | ------------ |
@@ -531,10 +516,10 @@ That problem is fairly obvious of course, but you can extend this method to the 
 | C   | zero         | zero     | maximum      |
 | D   | zero         | maximum  | constant     |
 
-In this example, in the first column "zero" appears three times, so eliminate the lone "maximum": B.
-In the second column, "maximum" and "zero" each appear twice — no information, skip for now.
-In the third column, "maximum" appears twice, the most of any value, so favor "maximum".
-This gives displacement = zero, acceleration = maximum.
+In this example, zero appears three times in the first column, so we eliminate the lone maximum: B.  
+The second column has two maximums and two zeros — no information, skip for now.  
+The third column has maximum appearing twice, which is the most-appearing one, so we prioritize maximum.  
+That gives us displacement = zero, acceleration = maximum.  
 The only option that satisfies both is **C**.
 
 |     | Q        | R        | S        |
@@ -544,76 +529,73 @@ The only option that satisfies both is **C**.
 | C   | neutron  | neutron  | alpha    |
 | D   | electron | alpha    | electron |
 
-By the same logic, in this example "proton" appears most often in column Q.
-"neutron" appears most often in column R.
-In column S, "electron" and "alpha" each appear twice — no information, skip.
-This gives Q = proton, R = neutron.
+Similarly, for this example, proton appears the most times in column Q.  
+neutron appears the most times in column R.  
+In column S, electron and alpha each appear twice — no information, skip.  
+So we get Q = proton, R = neutron.  
 The only option that satisfies both is **A**.
 
-After these examples, you can see that the essence of this technique is to find the unbalanced entry and reverse-engineer the answer by eliminating the minority.
+After working through these examples, you can see that the essence of this technique is finding **the unbalanced option** and reverse-engineering the answer by **eliminating the minority entries**.
 
-It doesn't always immediately yield the final answer, of course, but even eliminating one or two options bumps your accuracy from 25% up to 33% or 50%.
+Of course, it doesn't always directly point to the final answer, but even if it only eliminates one or two options, that can push our accuracy from 25% up to 33% or 50%.
 
-One caveat: this technique has a limitation in that you only encounter this kind of problem in smaller assessments — quizzes or regular school exams. At the IB-final-exam scale, the question-setters are usually aware of this and deliberately design the options to be very balanced.
+One caveat: this technique has a limitation — you'll only run into questions like these in **small exams** like quizzes and regular tests. For **IB exam-scale exams**, the question writers are usually aware of this and will deliberately design the options to be very balanced.
 
-#### Last Resort
+### Last Resorts
 
-Sometimes, no matter how hard we try, there are problems we genuinely can't solve. Even then, we shouldn't give up — the two techniques below can boost the probability that we'll guess our way to the correct answer.
+Sometimes no matter how hard we try, there will be problems we just can't crack. Even so, don't give up — we can try the two techniques below to boost our chances of guessing the right answer.
 
-##### Guess, Try, Patch
+#### Guessing and Trial-and-Error
 
-As the name suggests, you make reasonable guesses based on the numbers you have. What I usually do:
+As the name suggests, we make **reasonable guesses** based on the numbers we already have. What I usually do is:
+- Plug numbers into formulas at random, or mash existing values into the calculator to see what comes out that matches an option or looks reasonable
+- Guess special values like 0, 1, -1
+- Imagine the logical relationships between variables and pick the most reasonable one
+- Use intuition to pick the answer that feels most likely
 
-- Plug values randomly into formulas, or mash existing numbers into the calculator and see which result matches an option or at least looks plausible
-- Try special values like 0, 1, -1
-- Imagine the logical relationship between the variables and pick whichever option looks most reasonable
-- Use intuition to pick the option you feel has the highest probability of being right
+#### Farming Method Marks
 
-##### Earn Process Marks
+For free-response questions you can't do, you also shouldn't leave them blank. Most physics teachers at our school are quite generous with marks, so we should work to grab some method marks.
 
-Don't leave short-answer questions blank just because you don't know how to solve them. The physics teachers at our school are usually quite generous with marking, so it's worth fighting for some process marks.
+That said, we shouldn't write anything blindly. If it's a calculation question, the main mark points are **the formula and the calculation process**, so just pick one or two relevant formulas, write them down verbatim, try substituting in the values, and ballpark a calculation.
 
-That said, you can't just write everything down blindly. For a calculation problem, the main mark-scoring points are the formula and the working, so just grab one or two relevant formulas, copy them down verbatim, and try plugging in some numbers and crunching through.
+If it's an explanation question, we should write out the definitions of the concepts that appear in the problem, or **write out the definition of a relevant law from memory**. From what I remember, the common concepts for picking up method marks are Newton's second law and the definition of temperature.
 
-For an explanation problem, write down the definitions of the concepts that appear in the question, or write out the definition of some related law from memory. From what I remember, common process-mark scoring opportunities include the definitions of Newton's second law and of temperature.
+# Lab report
 
-## Lab Report
+Due to length constraints, I'll start a separate article specifically on how to understand and template-ify writing a high-scoring lab report.
 
-Due to length constraints, I'll write a separate piece dedicated to how to understand lab reports and how to write a high-scoring one in a templated way.
+# Closing Thoughts
 
-## Closing Thoughts
+Thank you for reading all the way through. As you can probably tell, I'm not a conventional, by-the-book learner — I tend to look for the most efficient study methods and techniques.
 
-Thank you for reading all the way through. You can probably tell that I'm not a by-the-book learner — I'm someone who tries to find the most efficient methods and techniques.
+I'm personally someone who leans on visual / pictorial memory, but as the many techniques in this guide suggest, I'm not purely intuition-driven either — I learn through a **combination of intuition and logic**. At the same time, because I went to primary school in mainland China, my calculation foundation and speed lean fast.
 
-Personally I'm a visual / image-based learner, but as you can see from the many techniques I shared, I'm not pure intuition either — I learn through a combination of intuition and logic. At the same time, because I went to a Chinese elementary school, my mental arithmetic foundation and speed are on the faster side.
+I mention these things because I believe **there are many different types of learners in the world**, and techniques shared by someone with similar traits tend to be more useful to you.
 
-I mention this because I believe there are many different types of learners out there, and techniques shared by people with similar attributes to you tend to be more useful.
+So you **don't need to copy my study style wholesale** — rather, **based on your own foundation, goals, and study habits**, pick the parts that suit you and use them.
 
-So you don't need to copy my way of studying wholesale — pick the parts that fit you based on your own foundation, goals, and study habits.
+Finally, I want to mention some foundations for studying physics, and the sciences in general.
 
-Finally, let me mention some foundations for studying physics, and for studying STEM in general.
+### Calculation Fundamentals
 
-#### Arithmetic Foundation
+Since Paper 1 doesn't allow calculators, **mental math and pen-and-paper calculation ability** matter a lot.
 
-Since Paper 1 doesn't allow a calculator, mental and pen-and-paper arithmetic still matter a lot.
+I'd suggest that students with a weaker foundation read up on some **mental-math techniques** day-to-day, and try doing some primary-school mental arithmetic problems and equation-manipulation practice. Ideally, beyond pure numerical calculation, **most arithmetic and substitution should be doable mentally** (e.g. some simple physics-formula derivations can be done verbally rather than on paper).
 
-For students with a weaker foundation, I'd suggest learning some mental arithmetic tricks in daily life, doing some elementary-school mental math problems, and practicing equation rearrangement. The goal is to be able to do most operations and substitutions mentally — beyond pure numerical calculation. (For instance, you should be able to verbally walk through the derivation of simple physics formulas, without having to write it out.)
+### Interest
 
-#### Interest
+Last of all: this entire guide has been about techniques, but **interest** — interest in physics, in the truths of the world, in the laws themselves — is the most fundamental driver of all of this.
 
-And finally, even though this whole article is about technique, your interest in physics, in the truth of the world, and in the laws themselves is the original driver behind all of it.
-
-So I'd recommend watching physics videos in your daily life, including but not limited to creators like 3Blue1Brown, Veritasium, and 萌萌战队.
+So I'd recommend regularly watching all kinds of physics videos in your day-to-day life, including but not limited to creators like [3B1B](https://www.youtube.com/c/3blue1brown), [Veritasium](https://www.youtube.com/@veritasium), and [MoeMoe Squad](https://space.bilibili.com/357669580/).
 
 
-I hope you stay curious about knowledge, and I hope you cleanly clear IB Physics.
+I hope you can **always keep your interest in knowledge alive**, and that you can **pass IB Physics with flying colors**.
 
-## Appendix
+# Appendix
 
-FP physics transcript:
+FP physics grade screenshot:
+![image](https://pub-bb0f6d21281243738b170b9aefc6e0cd.r2.dev/guides/ib/1778894928885-cf697b73-image.png)
 
-![FP physics transcript](https://pub-bb0f6d21281243738b170b9aefc6e0cd.r2.dev/guides/ib/1778894928885-cf697b73-image.png)
-
-DP1 physics transcript (I forgot to screenshot DP2 — apart from one exam where I got a 6, the rest were all 7s):
-
-![DP1 physics transcript](https://pub-bb0f6d21281243738b170b9aefc6e0cd.r2.dev/guides/ib/1778894930281-720a5818-image.png)
+DP1 physics grade screenshot (I forgot to screenshot DP2 — apart from one exam where I got a 6, the rest were all 7s):
+![image](https://pub-bb0f6d21281243738b170b9aefc6e0cd.r2.dev/guides/ib/1778894930281-720a5818-image.png)
