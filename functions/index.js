@@ -3,7 +3,7 @@ const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const { db, FieldValue, getBucket, LANG_MAP } = require("./lib/config");
 const { assertAuth, assertAdmin } = require("./lib/auth");
 const {
-  makeSlug, getOrderedSubmissionAuthors, sanitizeRevisionHistory,
+  getOrderedSubmissionAuthors, sanitizeRevisionHistory,
   withoutPublicActorFields, generateMarkdown,
 } = require("./lib/helpers");
 const {
@@ -14,7 +14,9 @@ const {
   appendSubmissionAuditEvent, resolveSubmissionAuthors,
   ensureUniqueGuideSlug, ensureAuthorId, maybeBumpRoleForUid,
 } = require("./lib/firestore");
-const { getGeminiKey, translateMissingVariants } = require("./lib/translation");
+const {
+  getGeminiKey, translateMissingVariants, generateGuideSlugFromTitle,
+} = require("./lib/translation");
 const {
   uploadToR2, deleteFromR2, deleteMultipleFromR2,
   R2_ALLOWED_TYPES, R2_MAX_SIZE,
@@ -45,7 +47,9 @@ exports.submitArticle = onCall({ secrets: ["GMAIL_APP_PASSWORD"] }, async (reque
     throw new HttpsError("invalid-argument", "All content fields are required.");
   }
 
-  const guideId = await ensureUniqueGuideSlug(makeSlug(title));
+  const apiKey = await getGeminiKey();
+  const baseSlug = await generateGuideSlugFromTitle({ apiKey, title, language });
+  const guideId = await ensureUniqueGuideSlug(baseSlug);
   const coAuthorList = Array.isArray(coAuthors) ? coAuthors : [];
   const uids = coAuthorList.map((c) => c.uid).filter(Boolean);
 
@@ -167,7 +171,14 @@ exports.approveSubmission = onCall(async (request) => {
   const adminDoc = await db.collection("users").doc(request.auth.uid).get();
   const editorName = adminDoc.exists ? adminDoc.data().displayName || "" : "";
 
-  const uniqueSlug = d.guide_id || await ensureUniqueGuideSlug(makeSlug(d.title), docId);
+  const geminiKey = await getGeminiKey();
+  let uniqueSlug = d.guide_id;
+  if (!uniqueSlug) {
+    const baseSlug = await generateGuideSlugFromTitle({
+      apiKey: geminiKey, title: d.title, language: d.language,
+    });
+    uniqueSlug = await ensureUniqueGuideSlug(baseSlug, docId);
+  }
   const { markdown, slug, fileName, folder, filePath } = generateMarkdown(d, authors, editorName, uniqueSlug);
 
   const token = await getGitHubToken();
@@ -180,7 +191,6 @@ exports.approveSubmission = onCall(async (request) => {
 
   // Auto-translate into missing language variants
   let translationResults = null;
-  const geminiKey = await getGeminiKey();
   if (geminiKey) {
     try {
       translationResults = await translateMissingVariants(

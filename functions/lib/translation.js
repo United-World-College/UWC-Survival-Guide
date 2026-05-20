@@ -20,6 +20,12 @@ const RESPONSE_SCHEMA = {
   required: ["title", "category", "description", "body"],
 };
 
+const TITLE_SCHEMA = {
+  type: "OBJECT",
+  properties: { title: { type: "STRING" } },
+  required: ["title"],
+};
+
 const STYLE_NOTES = {
   "en": "Write natural, idiomatic English for internationally minded high school students " +
     "and recent graduates. Avoid calques from Chinese. The result should feel like a " +
@@ -75,6 +81,69 @@ ${JSON.stringify(payload, null, 2)}`;
 async function getGeminiKey() {
   const doc = await db.collection("config").doc("gemini").get();
   return doc.exists && doc.data().apiKey ? doc.data().apiKey : null;
+}
+
+// Translate an article title from a non-English source language into English.
+// Used by generateGuideSlugFromTitle to produce readable guide_ids for CJK
+// titles instead of falling back to "untitled".
+async function translateTitleToEnglish(apiKey, title, sourceLang) {
+  const { GoogleGenerativeAI } = require("@google/generative-ai");
+  const genAI = new GoogleGenerativeAI(apiKey);
+
+  const sourceName = PROMPT_NAMES[sourceLang] || sourceLang;
+  const prompt = `Translate the following article title from ${sourceName} into English.
+Produce a concise, natural English title suitable for use as a URL slug.
+Preserve any English acronyms or proper nouns already present in the original.
+Do not add quotation marks, prefixes, or explanations.
+
+Title: ${title}
+
+Return the English title in the schema's "title" field.`;
+
+  const model = genAI.getGenerativeModel({
+    model: TRANSLATE_MODEL,
+    generationConfig: {
+      maxOutputTokens: 200,
+      responseMimeType: "application/json",
+      responseSchema: TITLE_SCHEMA,
+    },
+  });
+
+  const result = await model.generateContent(prompt);
+  const parsed = JSON.parse(result.response.text());
+  if (typeof parsed.title !== "string" || !parsed.title.trim()) {
+    throw new Error("Gemini response missing title field");
+  }
+
+  const month = new Date().toISOString().slice(0, 7);
+  const usageRef = db.collection("config").doc("usage");
+  await usageRef.set(
+    { gemini: { [month]: FieldValue.increment(1) } },
+    { merge: true }
+  );
+
+  return parsed.title.trim();
+}
+
+// Generate a guide_id slug from a submission title. For non-English titles,
+// the title is translated to English via Gemini first so the slug stays
+// human-readable; otherwise makeSlug would strip every CJK glyph and return
+// "untitled". Falls back to makeSlug(original) when Gemini is unavailable or
+// the translation call fails, so submissions never block on slug generation.
+async function generateGuideSlugFromTitle({ apiKey, title, language }) {
+  const lang = language || "en";
+  if (lang === "en" || !apiKey) {
+    return makeSlug(title || "");
+  }
+  try {
+    const englishTitle = await translateTitleToEnglish(apiKey, title || "", lang);
+    const slug = makeSlug(englishTitle);
+    if (slug && slug !== "untitled") return slug;
+    return makeSlug(title || "");
+  } catch (err) {
+    console.warn("[translation] guide_id title translation failed:", err.message);
+    return makeSlug(title || "");
+  }
 }
 
 async function translateGuide(apiKey, sourceLang, targetLang, guideData) {
@@ -215,11 +284,14 @@ module.exports = {
   TRANSLATE_MAX_TOKENS,
   TRANSLATE_SYSTEM_PROMPT,
   RESPONSE_SCHEMA,
+  TITLE_SCHEMA,
   STYLE_NOTES,
   PROMPT_NAMES,
   buildTranslationPrompt,
   getGeminiKey,
   translateGuide,
+  translateTitleToEnglish,
+  generateGuideSlugFromTitle,
   buildTranslatedMarkdown,
   translateMissingVariants,
 };

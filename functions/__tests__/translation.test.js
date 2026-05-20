@@ -13,6 +13,7 @@ jest.mock("firebase-admin/firestore", () => ({
   FieldValue: {
     serverTimestamp: () => "SERVER_TIMESTAMP",
     arrayUnion: (...args) => ({ _arrayUnion: args }),
+    increment: (n) => ({ _increment: n }),
     delete: () => "DELETE_FIELD",
   },
 }));
@@ -23,6 +24,10 @@ jest.mock("firebase-functions/v2/https", () => ({
   },
 }));
 
+jest.mock("@google/generative-ai", () => ({
+  GoogleGenerativeAI: jest.fn(),
+}));
+
 // ── Require the modules under test ──
 
 const {
@@ -31,7 +36,9 @@ const {
   PROMPT_NAMES,
   buildTranslationPrompt,
   buildTranslatedMarkdown,
+  generateGuideSlugFromTitle,
 } = require("../lib/translation");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // ══════════════════════════════════════
 // RESPONSE_SCHEMA
@@ -263,5 +270,89 @@ describe("buildTranslatedMarkdown", () => {
       "zh-CN", authors, "", "test-guide"
     );
     expect(result.markdown).toContain('title: "我的\\"好\\"指南"');
+  });
+});
+
+// ══════════════════════════════════════
+// generateGuideSlugFromTitle
+// ══════════════════════════════════════
+
+describe("generateGuideSlugFromTitle", () => {
+  function mockGeminiTitle(impl) {
+    GoogleGenerativeAI.mockImplementation(() => ({
+      getGenerativeModel: () => ({ generateContent: impl }),
+    }));
+  }
+
+  beforeEach(() => {
+    GoogleGenerativeAI.mockReset();
+  });
+
+  test("English title bypasses Gemini and uses makeSlug directly", async () => {
+    const slug = await generateGuideSlugFromTitle({
+      apiKey: "fake-key", title: "My UWC Experience", language: "en",
+    });
+    expect(slug).toBe("my-uwc-experience");
+    expect(GoogleGenerativeAI).not.toHaveBeenCalled();
+  });
+
+  test("Non-English title with no apiKey falls back to makeSlug of original", async () => {
+    const slug = await generateGuideSlugFromTitle({
+      apiKey: null, title: "关于挫折", language: "zh-CN",
+    });
+    expect(slug).toBe("untitled");
+    expect(GoogleGenerativeAI).not.toHaveBeenCalled();
+  });
+
+  test("Non-English title translates via Gemini and slugs the English result", async () => {
+    mockGeminiTitle(jest.fn().mockResolvedValue({
+      response: { text: () => JSON.stringify({ title: "On Setbacks" }) },
+    }));
+    const slug = await generateGuideSlugFromTitle({
+      apiKey: "fake-key", title: "关于挫折", language: "zh-CN",
+    });
+    expect(slug).toBe("on-setbacks");
+    expect(GoogleGenerativeAI).toHaveBeenCalledTimes(1);
+  });
+
+  test("zh-TW source language is also translated", async () => {
+    mockGeminiTitle(jest.fn().mockResolvedValue({
+      response: { text: () => JSON.stringify({ title: "On Setbacks" }) },
+    }));
+    const slug = await generateGuideSlugFromTitle({
+      apiKey: "fake-key", title: "關於挫折", language: "zh-TW",
+    });
+    expect(slug).toBe("on-setbacks");
+  });
+
+  test("Falls back to makeSlug of original when Gemini call throws", async () => {
+    mockGeminiTitle(jest.fn().mockRejectedValue(new Error("API down")));
+    const slug = await generateGuideSlugFromTitle({
+      apiKey: "fake-key", title: "关于挫折", language: "zh-CN",
+    });
+    expect(slug).toBe("untitled");
+  });
+
+  test("Falls back when Gemini returns an empty title", async () => {
+    mockGeminiTitle(jest.fn().mockResolvedValue({
+      response: { text: () => JSON.stringify({ title: "   " }) },
+    }));
+    const slug = await generateGuideSlugFromTitle({
+      apiKey: "fake-key", title: "关于挫折", language: "zh-CN",
+    });
+    expect(slug).toBe("untitled");
+  });
+
+  test("Falls back when translated title slugs to 'untitled'", async () => {
+    mockGeminiTitle(jest.fn().mockResolvedValue({
+      response: { text: () => JSON.stringify({ title: "!!!" }) },
+    }));
+    const slug = await generateGuideSlugFromTitle({
+      apiKey: "fake-key", title: "关于挫折", language: "zh-CN",
+    });
+    // English translation '!!!' would slug to 'untitled' so we fall back to
+    // the original — which also slugs to 'untitled'. The fallback path is
+    // what's exercised here.
+    expect(slug).toBe("untitled");
   });
 });
