@@ -5,10 +5,8 @@ path_prefix: ""
 nav:
   logo: UWC Survival Guide
   about: About
-  campus_life: Campus Life
-  daily_essentials: Daily Essentials
-  explore_nearby: Explore Nearby
-  all_guides: All Guides
+  contribute: Contribute
+  all_articles: All Articles
 language_labels:
   en: English
   zh-CN: Simplified Chinese
@@ -89,11 +87,6 @@ about:
   recognition_label: Recognition Policy
   recognition_title: How contributors are recognized
   recognition_desc: Editors-in-Chief are listed separately. Core contributors are contributors who have materially contributed to five or more distinct articles. Contributors include everyone else who has written, edited, translated, or materially improved published content.
-  cfa_label: Call for Articles
-  cfa_title: We are looking for contributors
-  cfa_desc: The Survival Guide is only as useful as the knowledge its contributors choose to share. If you are a current or former UWC Changshu China student and have practical advice worth preserving, we invite you to write for the guide.
-  cfa_portal_btn: Go to Contributor Portal
-  cfa_learn_more: Learn More & Contribute
   leadership_label: Leadership
   leadership_title: Editors-in-Chief
   leadership_desc: The editors-in-chief are responsible for the editorial direction of the project and for maintaining the standard of the published guide.
@@ -109,7 +102,7 @@ about:
   contributors_desc: This section records everyone who has materially improved published content and is not already listed as an EDITOR-IN-CHIEF.
   contributors_empty: Additional contributors will be listed here as new articles and revisions are published.
 cfa_page:
-  hero_label: Call for Articles
+  hero_label: Contribute
   hero_title: Write for the Survival Guide
   hero_subtitle: A guide to contributing articles — what we publish, how to submit, and what to expect from the editorial process.
   overview_label: Overview
@@ -145,6 +138,16 @@ section:
   title_suffix: ""
   desc: Each article is listed once, with links to every published language version available on the site.
   empty: No published guides in this section yet.
+all_articles_page:
+  hero_label: All Articles
+  hero_title: Every article in the guide
+  hero_subtitle: A complete index of published articles across all categories and languages.
+  intro_label: Index
+  intro_title: Browse the full guide
+  intro_desc: Each article is listed once, with links to every published language version available on the site.
+  count_singular: article
+  count_plural: articles
+  empty: No published articles yet.
 author:
   author_label: Author
   affiliation_label: Current Affiliation

@@ -5,10 +5,8 @@ path_prefix: /zh-cn
 nav:
   logo: UWC Survival Guide
   about: 关于
-  campus_life: 校园生活
-  daily_essentials: 日常必备
-  explore_nearby: 周边探索
-  all_guides: 全部指南
+  contribute: 投稿
+  all_articles: 全部文章
 language_labels:
   en: 英文
   zh-CN: 简体中文
@@ -89,11 +87,6 @@ about:
   recognition_label: 署名规则
   recognition_title: 贡献者如何被标注
   recognition_desc: 主编单独列出。核心贡献者指对五篇或以上不同文章做出实质性贡献的成员。其他所有撰写、编辑、翻译或实质性改进已发布内容的人都会列为贡献者。
-  cfa_label: 征稿启事
-  cfa_title: 我们正在寻找贡献者
-  cfa_desc: 生存指南的价值取决于贡献者愿意分享的知识。如果你是 UWC 常熟的在读或往届学生，并有值得留存的实用建议，我们邀请你为本指南撰稿。
-  cfa_portal_btn: 前往贡献者门户
-  cfa_learn_more: 了解详情并投稿
   leadership_label: 项目团队
   leadership_title: 主编
   leadership_desc: 主编负责项目的编辑方向，并维护已发布指南的整体标准。
@@ -109,7 +102,7 @@ about:
   contributors_desc: 本部分记录所有对已发布内容做出实质性改进且未被列为主编的成员。
   contributors_empty: 新的贡献者和修订记录会在后续发布中加入这里。
 cfa_page:
-  hero_label: 征稿启事
+  hero_label: 投稿
   hero_title: 为生存指南撰稿
   hero_subtitle: 投稿指南——我们发布什么、如何提交以及编辑流程。
   overview_label: 概述
@@ -145,6 +138,16 @@ section:
   title_suffix: 的全部文章
   desc: 每篇文章只列出一次，并附上站内已发布的所有语言版本链接。
   empty: 这个分区暂时还没有已发布的指南。
+all_articles_page:
+  hero_label: 全部文章
+  hero_title: 指南中的全部文章
+  hero_subtitle: 站内所有已发布文章的完整目录，覆盖全部分类与语言。
+  intro_label: 目录
+  intro_title: 浏览完整指南
+  intro_desc: 每篇文章只列出一次，并附上站内已发布的所有语言版本链接。
+  count_singular: 篇文章
+  count_plural: 篇文章
+  empty: 暂时还没有已发布的文章。
 author:
   author_label: 作者
   affiliation_label: 当前隶属

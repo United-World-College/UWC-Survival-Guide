@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="{{ page.language_code | default: site.lang | default: 'en' }}">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  {% include nav.html %}
+
+  {% assign current_language_code = page.language_code | default: site.lang | default: 'en' %}
+  {% assign current_locale = site.data.i18n[current_language_code] %}
+  {% if current_locale == nil %}
+    {% assign current_locale = site.data.i18n["en"] %}
+  {% endif %}
+  {% assign aap = current_locale.all_articles_page %}
+
+  {% assign all_guides_sorted = site.guides | sort: "order" %}
+  {% assign all_guide_ids = all_guides_sorted | map: "guide_id" | uniq %}
+  {% assign total_article_count = all_guide_ids | size %}
+
+  <header class="hero about-hero">
+    <div class="hero-content">
+      <p class="hero-label">{{ aap.hero_label }}</p>
+      <h1>{{ aap.hero_title }}</h1>
+      <p class="hero-subtitle">{{ aap.hero_subtitle }}</p>
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <div class="section-header">
+      <p class="section-label">{{ total_article_count }} {% if total_article_count == 1 %}{{ aap.count_singular }}{% else %}{{ aap.count_plural }}{% endif %}</p>
+      <h2>{{ aap.intro_title }}</h2>
+      <p class="section-desc">{{ aap.intro_desc }}</p>
+    </div>
+  </section>
+
+  {% if total_article_count == 0 %}
+    <div class="divider"></div>
+    <section class="section">
+      <p class="about-empty">{{ aap.empty }}</p>
+    </section>
+  {% else %}
+    {% assign category_keys = "Academics|Musings|Life after UWC" | split: "|" %}
+    {% assign academics_aliases = "Academics|学业|學業" | split: "|" %}
+    {% assign musings_aliases = "Musings|随想|隨想" | split: "|" %}
+    {% assign life_aliases = "Life after UWC|UWC 之后的日子|UWC 之後的日子" | split: "|" %}
+
+    {% for category_key in category_keys %}
+      {% if category_key == "Academics" %}
+        {% assign current_aliases = academics_aliases %}
+      {% elsif category_key == "Musings" %}
+        {% assign current_aliases = musings_aliases %}
+      {% else %}
+        {% assign current_aliases = life_aliases %}
+      {% endif %}
+
+      {% assign category_guides = "" | split: "" %}
+      {% for guide in all_guides_sorted %}
+        {% if current_aliases contains guide.category %}
+          {% assign category_guides = category_guides | push: guide %}
+        {% endif %}
+      {% endfor %}
+      {% assign category_guide_ids = category_guides | map: "guide_id" | uniq %}
+      {% assign category_count = category_guide_ids | size %}
+      {% if category_count > 0 %}
+        {% assign localized_category_name = current_locale.categories[category_key] %}
+
+        <div class="divider"></div>
+
+        <section class="section">
+          <div class="section-header">
+            <p class="section-label">{{ category_count }} {% if category_count == 1 %}{{ aap.count_singular }}{% else %}{{ aap.count_plural }}{% endif %}</p>
+            <h2>{{ localized_category_name }}</h2>
+          </div>
+          <div class="author-latest-list">
+            {% for gid in category_guide_ids %}
+              {% assign guide_versions = category_guides | where: "guide_id", gid | sort: "language_sort" %}
+              {% assign primary_guide = guide_versions | where: "language_code", current_language_code | first %}
+              {% if primary_guide == nil %}
+                {% assign primary_guide = guide_versions | where: "language_code", "en" | first %}
+              {% endif %}
+              {% if primary_guide == nil %}
+                {% assign primary_guide = guide_versions | first %}
+              {% endif %}
+              <div class="author-latest-item">
+                <span class="author-latest-date">{{ primary_guide.published | date: "%b %-d, %Y" }}</span>
+                <div class="author-latest-body">
+                  <p class="author-latest-category">{{ localized_category_name }}</p>
+                  <h3><a href="{{ primary_guide.url | relative_url }}">{{ primary_guide.title }}</a></h3>
+                  {% if primary_guide.description %}
+                    <p class="author-latest-desc">{{ primary_guide.description }}</p>
+                  {% endif %}
+                  <div class="author-latest-versions">
+                    {% for guide_version in guide_versions %}
+                      <a href="{{ guide_version.url | relative_url }}" class="author-lang-pill{% if guide_version.language_code == guide_version.original_language %} is-original{% endif %}">{{ guide_version.language_name }}{% if guide_version.language_code == guide_version.original_language %} · {{ current_locale.guide.original_label | default: "Original" }}{% endif %}</a>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {% include footer.html %}
+
+  <script src="{{ '/assets/js/script.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
+</body>
+</html>

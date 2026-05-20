@@ -120,20 +120,6 @@
 
   <section class="section">
     <div class="section-header">
-      <p class="section-label">{{ about_copy.cfa_label }}</p>
-      <h2>{{ about_copy.cfa_title }}</h2>
-      <p class="section-desc">{{ about_copy.cfa_desc }}</p>
-    </div>
-    <div class="cfa-body">
-      {% assign cfa_path = current_locale.path_prefix | default: '' | append: '/call-for-articles/' %}
-      <a href="{{ cfa_path | relative_url }}" class="cfa-portal-btn">{{ about_copy.cfa_learn_more }}</a>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <section class="section">
-    <div class="section-header">
       <p class="section-label">{{ about_copy.leadership_label }}</p>
       <h2>{{ about_copy.leadership_title }}</h2>
       <p class="section-desc">{{ about_copy.leadership_desc }}</p>

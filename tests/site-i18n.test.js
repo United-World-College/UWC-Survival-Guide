@@ -178,7 +178,7 @@ describe("i18n navigation strings", () => {
   });
 
   test("required nav keys exist in all locales", () => {
-    const navKeys = ["logo", "about", "campus_life", "daily_essentials", "explore_nearby", "all_guides"];
+    const navKeys = ["logo", "about", "contribute", "all_articles"];
     for (const code of ["en", "zh-CN", "zh-TW"]) {
       const nav = getLocale(code).nav;
       for (const key of navKeys) {

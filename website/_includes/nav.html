@@ -23,10 +23,8 @@
     <div class="nav-actions">
       <div class="nav-links">
         <a href="{{ path_prefix | append: '/about/' | relative_url }}">{{ current_locale.nav.about }}</a>
-        <a href="{{ path_prefix | append: '/#experiences' | relative_url }}">{{ current_locale.nav.campus_life }}</a>
-        <a href="{{ path_prefix | append: '/#essentials' | relative_url }}">{{ current_locale.nav.daily_essentials }}</a>
-        <a href="{{ path_prefix | append: '/#explore' | relative_url }}">{{ current_locale.nav.explore_nearby }}</a>
-        <a href="{{ path_prefix | append: '/#guides' | relative_url }}">{{ current_locale.nav.all_guides }}</a>
+        <a href="{{ path_prefix | append: '/call-for-articles/' | relative_url }}">{{ current_locale.nav.contribute }}</a>
+        <a href="{{ path_prefix | append: '/articles/' | relative_url }}">{{ current_locale.nav.all_articles }}</a>
       </div>
       {% if translation_items.size > 1 %}
       <div class="nav-language-switch" aria-label="{{ current_locale.common.language_switch_label }}">
@@ -50,8 +48,6 @@
 
 <div class="mobile-menu" id="mobile-menu">
   <a href="{{ path_prefix | append: '/about/' | relative_url }}">{{ current_locale.nav.about }}</a>
-  <a href="{{ path_prefix | append: '/#experiences' | relative_url }}">{{ current_locale.nav.campus_life }}</a>
-  <a href="{{ path_prefix | append: '/#essentials' | relative_url }}">{{ current_locale.nav.daily_essentials }}</a>
-  <a href="{{ path_prefix | append: '/#explore' | relative_url }}">{{ current_locale.nav.explore_nearby }}</a>
-  <a href="{{ path_prefix | append: '/#guides' | relative_url }}">{{ current_locale.nav.all_guides }}</a>
+  <a href="{{ path_prefix | append: '/call-for-articles/' | relative_url }}">{{ current_locale.nav.contribute }}</a>
+  <a href="{{ path_prefix | append: '/articles/' | relative_url }}">{{ current_locale.nav.all_articles }}</a>
 </div>
