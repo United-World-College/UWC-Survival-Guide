@@ -312,6 +312,13 @@ body {
   padding: 4rem 2.5rem;
 }
 
+/* First .section on a page with no hero (e.g., category pages) needs extra
+   top padding so it clears the fixed nav with the same breathing room as
+   the section's natural bottom padding. */
+.section.section--page-top {
+  padding-top: 8rem;
+}
+
 .page-header {
   padding-top: 8.5rem;
   padding-bottom: 3.5rem;

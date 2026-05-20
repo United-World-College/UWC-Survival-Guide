@@ -126,8 +126,6 @@ content_rights:
 section:
   article_singular: 篇文章
   article_plural: 篇文章
-  title_prefix: ""
-  title_suffix: 的全部文章
   desc: 每篇文章只列出一次，并附上站内已发布的所有语言版本链接。
   empty: 这个分区暂时还没有已发布的指南。
 author:

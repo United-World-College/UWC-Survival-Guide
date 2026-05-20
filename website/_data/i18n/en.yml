@@ -126,8 +126,6 @@ content_rights:
 section:
   article_singular: article
   article_plural: articles
-  title_prefix: "All articles in "
-  title_suffix: ""
   desc: Each article is listed once, with links to every published language version available on the site.
   empty: No published guides in this section yet.
 author:

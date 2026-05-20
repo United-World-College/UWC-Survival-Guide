@@ -22,17 +22,6 @@
   {% assign guide_ids = section_guides | map: "guide_id" | uniq %}
   {% assign article_count = guide_ids | size %}
 
-  <section class="section page-header">
-    <div class="section-header">
-      <h1>{{ page.title }}</h1>
-      {% if page.description %}
-      <p class="section-desc">{{ page.description }}</p>
-      {% endif %}
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
   {% capture section_body %}{{ content | strip }}{% endcapture %}
   {% if section_body != "" %}
     <article class="guide-content">
@@ -41,10 +30,10 @@
     <div class="divider"></div>
   {% endif %}
 
-  <section class="section">
+  <section class="section section--page-top">
     <div class="section-header">
       <p class="section-label">{{ article_count }} {% if article_count == 1 %}{{ current_locale.section.article_singular }}{% else %}{{ current_locale.section.article_plural }}{% endif %}</p>
-      <h2>{{ current_locale.section.title_prefix }}{{ page.section_category }}{{ current_locale.section.title_suffix }}</h2>
+      <h2>{{ page.section_category }}</h2>
       <p class="section-desc">{{ current_locale.section.desc }}</p>
     </div>
     {% if article_count > 0 %}
