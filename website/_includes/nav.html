@@ -24,7 +24,8 @@
       <div class="nav-links">
         <a href="{{ path_prefix | append: '/about/' | relative_url }}">{{ current_locale.nav.about }}</a>
         <a href="{{ path_prefix | append: '/call-for-articles/' | relative_url }}">{{ current_locale.nav.contribute }}</a>
-        <a href="{{ path_prefix | append: '/articles/' | relative_url }}">{{ current_locale.nav.all_articles }}</a>
+        <a href="{{ path_prefix | append: '/#categories' | relative_url }}">{{ current_locale.nav.categories }}</a>
+        <a href="{{ path_prefix | append: '/#articles' | relative_url }}">{{ current_locale.nav.all_articles }}</a>
       </div>
       {% if translation_items.size > 1 %}
       <div class="nav-language-switch" aria-label="{{ current_locale.common.language_switch_label }}">
@@ -49,5 +50,6 @@
 <div class="mobile-menu" id="mobile-menu">
   <a href="{{ path_prefix | append: '/about/' | relative_url }}">{{ current_locale.nav.about }}</a>
   <a href="{{ path_prefix | append: '/call-for-articles/' | relative_url }}">{{ current_locale.nav.contribute }}</a>
-  <a href="{{ path_prefix | append: '/articles/' | relative_url }}">{{ current_locale.nav.all_articles }}</a>
+  <a href="{{ path_prefix | append: '/#categories' | relative_url }}">{{ current_locale.nav.categories }}</a>
+  <a href="{{ path_prefix | append: '/#articles' | relative_url }}">{{ current_locale.nav.all_articles }}</a>
 </div>

@@ -298,6 +298,13 @@ body {
   background: var(--border);
 }
 
+/* Anchor-scroll targets on the home page sit on the divider line above each
+   section, so clicking a nav anchor lands with the line at the top of the
+   viewport. scroll-margin-top clears the fixed top nav (≈4rem high). */
+.divider[id] {
+  scroll-margin-top: 4.5rem;
+}
+
 /* ── Sections ── */
 .section {
   max-width: 1100px;

@@ -6,6 +6,7 @@ nav:
   logo: UWC Survival Guide
   about: 关于
   contribute: 投稿
+  categories: 分类
   all_articles: 全部文章
 language_labels:
   en: 英文
@@ -45,81 +46,72 @@ home:
   hero_label: 由学生撰写，为学生服务
   hero_title_line_one: UWC Changshu China
   hero_title_line_two: 生存指南
-  hero_subtitle: 一份由学生共同编写的指南，帮你在这里生活、学习，并找到自己的方向。
-  hero_cta: 开始探索
-  experiences_label: 校园生活
-  experiences_title: 每一天都从这里开始
-  experiences_desc: 从湖边安静的清晨，到公共休息室里的深夜长谈，校园生活塑造了你在 UWC 的每一天。
-  essentials_label: 初来乍到
-  essentials_title: 必备信息，一目了然
-  essentials_desc: 让日常生活更顺畅的实用细节，从支付到交通，都集中在这里。
+  hero_subtitle: 一份关于在 UWC 常熟生活、学习的学生指南。
+  hero_cta: 开始浏览
+  experiences_label: 内容分类
+  experiences_title: 按主题浏览
+  experiences_desc: 学业、随想、UWC 之后的日子 —— 文章按这三类分组。
+  essentials_label: 日常生活
+  essentials_title: 实用信息
+  essentials_desc: 支付、交通、购物、饮食，这些在常熟生活会用到的事。
   explore_label: 走出校园
-  explore_title: 附近有很多值得去的地方
-  explore_desc: 常熟只是起点。苏州、上海，以及江南水乡都在可到达的范围内。
-  full_guide_label: 完整指南
-  full_guide_title: 浏览全部主题
-  full_guide_desc: 每篇指南都由学生撰写并持续维护。先按语言浏览，再打开你需要的主题。
-  contribute_label: 共同建设
-  contribute_title: 这份指南会和我们一起成长
-  contribute_desc: 每一条建议、修正和经验，都会让下一位来到这里的同学少走一些弯路。
-  steps:
-    - Fork 仓库
-    - 添加或更新内容
-    - 提交 Pull Request
+  explore_title: 周边城市
+  explore_desc: 苏州、上海、昆山，都在高铁可达范围内。
+  full_guide_label: 完整目录
+  full_guide_title: 全部文章
+  full_guide_desc: 按语言列出网站上所有已发布的文章。
 about:
   hero_label: 关于
   hero_title: UWC 常熟生存指南
   hero_subtitle: 对本项目、编辑宗旨以及参与学生的正式介绍。
   overview_label: 项目概览
-  overview_title: 为 UWC 常熟社群持续维护的学生编辑资源
-  overview_desc: 本指南希望把学生之间容易随届流失的实用经验沉淀下来，让后来的同学继续补充和改进。
+  overview_title: 由学生编辑、长期维护的 UWC 常熟指南
+  overview_desc: 这份指南把每届学生积累下来的实用经验集中起来，让后来的同学接着补充。
   introduction:
-    - UWC 常熟生存指南是一份由学生维护的知识库，服务于即将入学和正在就读的同学。
-    - 它的目标是保存那些最容易在一届又一届之间散失的实践经验：如何安顿下来，如何适应学业体系，以及如何更好地利用校园和周边的机会。
-    - 这个项目被当作一份持续更新的出版物来维护。主编负责方向与标准，贡献者则持续撰写、修订、翻译并实质性完善各篇文章。
+    - UWC 常熟生存指南是一份由学生维护的知识库，面向即将入学和在读的同学。
+    - 它要保存的是届与届之间最容易丢失的那些经验——怎么安顿下来、怎么应对学业、怎么用好校园内外的资源。
+    - 这是一份长期维护的出版物。主编负责方向和审稿，贡献者持续撰写、修订现有文章。
   principles:
     - title: 学生共建
-      description: 这份指南建立在真实的学生经验之上，关注的是在实际生活里真正有用的信息，而不只是正式文件上的内容。
+      description: 内容来自学生自己的经验，关注实际生活里用得上的事，不只是官方文件里写的那些。
     - title: 编辑维护
-      description: 我们把它当作一份长期更新的出版物来对待，拥有明确署名、清晰标准，以及随着学校环境变化持续修订的空间。
+      description: 主编负责方向和审稿，每篇文章有署名，会随学校情况变化持续更新。
     - title: 超越一届
-      description: 仓库把学校的集体记忆集中保存下来，让每一届毕业生都能把更有用的经验交给下一届，而不是留下零散建议。
+      description: 每届的经验集中存在一个地方，下一届不用从零摸索。
   recognition_label: 署名规则
-  recognition_title: 贡献者如何被标注
-  recognition_desc: 主编单独列出。核心贡献者指对五篇或以上不同文章做出实质性贡献的成员。其他所有撰写、编辑、翻译或实质性改进已发布内容的人都会列为贡献者。
+  recognition_title: 贡献者署名方式
+  recognition_desc: 主编单独列出。核心贡献者指对五篇或以上文章做出实质性贡献的成员。其他撰写、编辑或实质性改进已发布内容的人，均列为贡献者。
   leadership_label: 项目团队
   leadership_title: 主编
-  leadership_desc: 主编负责项目的编辑方向，并维护已发布指南的整体标准。
+  leadership_desc: 主编负责项目的编辑方向，并维护已发布文章的整体标准。
   editor_in_chief_label: 主编
   core_label: 贡献者
   core_title: 核心贡献者
-  core_desc: 核心贡献者指对五篇或以上不同文章做出实质性贡献的成员。
+  core_desc: 核心贡献者指对五篇或以上文章做出实质性贡献的成员。
   core_contributor_label: 核心贡献者
-  core_empty: 随着项目发展，新的核心贡献者会列在这里。
+  core_empty: 新的核心贡献者将在此列出。
   contributors_label: 贡献者
   contributor_label: 贡献者
   contributors_title: 其他贡献者
-  contributors_desc: 本部分记录所有对已发布内容做出实质性改进且未被列为主编的成员。
-  contributors_empty: 新的贡献者和修订记录会在后续发布中加入这里。
+  contributors_desc: 对已发布内容做出实质性改进、且未列入主编名单的成员，均列于此处。
+  contributors_empty: 新贡献者与修订记录将陆续在此列出。
 cfa_page:
   hero_label: 投稿
-  hero_title: 为生存指南撰稿
-  hero_subtitle: 投稿指南——我们发布什么、如何提交以及编辑流程。
+  hero_title: 征稿启事
+  hero_subtitle: 我们接受什么样的文章、如何投稿，以及编辑审稿流程。
   overview_label: 概述
-  overview_title: 我们在寻找什么
-  overview_desc: 生存指南的价值取决于贡献者愿意分享的知识。如果你是 UWC 常熟的在读或往届学生，并有值得留存的实用建议，我们邀请你为本指南撰稿。
+  overview_title: 谁可以投稿
+  overview_desc: 如果你有值得记录的经验或建议，欢迎撰文投稿。
   guidelines_label: 准则
   guidelines_title: 投稿准则
-  guidelines_desc: 撰写文章时请注意以下几点。
+  guidelines_desc: 撰稿前请留意以下几点。
   guidelines:
-    - title: 只要有帮助就行
-      description: 标准很简单——只要对 UWC 常熟的同学有帮助，就适合发在这里。实用指南、个人故事、心得感悟、小贴士——任何形式都欢迎，只要别人能从中学到东西。
+    - title: 对读者有用
+      description: 只要对 UWC 常熟的同学有用即可。实用指南、个人故事、心得体会、小贴士，形式不限。
     - title: 要有实质性贡献
-      description: 每篇文章应当贡献全新的内容，不接受对已有文章的增量补充——如果你想改进现有文章，请联系主编。但是，对已发布文章提出有理有据的反驳或不同观点非常欢迎。
-    - title: 一篇一题
-      description: 每篇文章应聚焦一个明确的主题。如果你发现自己在写多个话题，请考虑拆分为多篇文章。
-    - title: 支持多种语言
-      description: 你可以用英文、简体中文或繁体中文撰写。任何支持语言的文章都同样欢迎。
+      description: 每篇文章应贡献新的内容。不接受对已发表文章的小修小补——如需改进现有文章，请联系主编。对已发表文章提出有理有据的反驳或不同观点则欢迎投稿。
+    - title: 任意支持语言
+      description: 英文、简体中文、繁体中文均可投稿，三种语言同等欢迎。
   portal_btn: 前往贡献者门户
   updated_label: 更新于：
 content_rights:
@@ -138,16 +130,6 @@ section:
   title_suffix: 的全部文章
   desc: 每篇文章只列出一次，并附上站内已发布的所有语言版本链接。
   empty: 这个分区暂时还没有已发布的指南。
-all_articles_page:
-  hero_label: 全部文章
-  hero_title: 指南中的全部文章
-  hero_subtitle: 站内所有已发布文章的完整目录，覆盖全部分类与语言。
-  intro_label: 目录
-  intro_title: 浏览完整指南
-  intro_desc: 每篇文章只列出一次，并附上站内已发布的所有语言版本链接。
-  count_singular: 篇文章
-  count_plural: 篇文章
-  empty: 暂时还没有已发布的文章。
 author:
   author_label: 作者
   affiliation_label: 当前隶属

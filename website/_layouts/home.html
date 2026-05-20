@@ -30,13 +30,13 @@
       <p class="hero-label">{{ current_locale.home.hero_label }}</p>
       <h1>{{ current_locale.home.hero_title_line_one }}<br>{{ current_locale.home.hero_title_line_two }}</h1>
       <p class="hero-subtitle">{{ current_locale.home.hero_subtitle }}</p>
-      <a href="#experiences" class="hero-cta">{{ current_locale.home.hero_cta }}</a>
+      <a href="#categories" class="hero-cta">{{ current_locale.home.hero_cta }}</a>
     </div>
   </header>
 
-  <div class="divider"></div>
+  <div class="divider" id="categories"></div>
 
-  <section class="section" id="experiences">
+  <section class="section">
     <div class="section-header">
       <p class="section-label">{{ current_locale.home.experiences_label }}</p>
       <h2>{{ current_locale.home.experiences_title }}</h2>
@@ -53,9 +53,9 @@
     </div>
   </section>
 
-  <div class="divider"></div>
+  <div class="divider" id="daily-life"></div>
 
-  <section class="section" id="essentials">
+  <section class="section">
     <div class="section-header">
       <p class="section-label">{{ current_locale.home.essentials_label }}</p>
       <h2>{{ current_locale.home.essentials_title }}</h2>
@@ -74,9 +74,9 @@
     </div>
   </section>
 
-  <div class="divider"></div>
+  <div class="divider" id="off-campus"></div>
 
-  <section class="section" id="explore">
+  <section class="section">
     <div class="section-header">
       <p class="section-label">{{ current_locale.home.explore_label }}</p>
       <h2>{{ current_locale.home.explore_title }}</h2>
@@ -93,9 +93,9 @@
     </div>
   </section>
 
-  <div class="divider"></div>
+  <div class="divider" id="articles"></div>
 
-  <section class="section" id="guides">
+  <section class="section">
     <div class="section-header">
       <p class="section-label">{{ current_locale.home.full_guide_label }}</p>
       <h2>{{ current_locale.home.full_guide_title }}</h2>
@@ -122,24 +122,6 @@
       </div>
     </div>
     {% endif %}
-  </section>
-
-  <div class="divider"></div>
-
-  <section class="section" id="contribute">
-    <div class="section-header">
-      <p class="section-label">{{ current_locale.home.contribute_label }}</p>
-      <h2>{{ current_locale.home.contribute_title }}</h2>
-      <p class="section-desc">{{ current_locale.home.contribute_desc }}</p>
-    </div>
-    <div class="steps">
-      {% for step in current_locale.home.steps %}
-      <div class="step">
-        <span class="step-num">{{ forloop.index }}</span>
-        <p>{{ step }}</p>
-      </div>
-      {% endfor %}
-    </div>
   </section>
 
   {% include footer.html %}

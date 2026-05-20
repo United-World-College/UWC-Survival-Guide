@@ -6,6 +6,7 @@ nav:
   logo: UWC Survival Guide
   about: About
   contribute: Contribute
+  categories: Categories
   all_articles: All Articles
 language_labels:
   en: English
@@ -45,81 +46,72 @@ home:
   hero_label: By Students, For Students
   hero_title_line_one: UWC Changshu China
   hero_title_line_two: Survival Guide
-  hero_subtitle: A student-built guide to living, studying, and finding your way here.
-  hero_cta: Begin exploring
-  experiences_label: Life on Campus
-  experiences_title: Where every day begins
-  experiences_desc: From quiet mornings by the lake to late-night conversations in the common room, campus life shapes every part of your UWC experience.
-  essentials_label: Settling In
-  essentials_title: The essentials, simplified
-  essentials_desc: The practical details that make daily life seamless, from payments to transportation, all in one place.
-  explore_label: Beyond Campus
-  explore_title: There is so much to see
-  explore_desc: Changshu is your starting point. Suzhou, Shanghai, and the waterways of Jiangsu are all within reach.
-  full_guide_label: The Full Guide
-  full_guide_title: Browse all topics
-  full_guide_desc: Each guide is written and maintained by students. Browse by language, then open the topic you need.
-  contribute_label: Built Together
-  contribute_title: This guide grows with us
-  contribute_desc: Every recommendation, correction, and insight makes this resource better for the next student who arrives.
-  steps:
-    - Fork the repository
-    - Add or update content
-    - Submit a pull request
+  hero_subtitle: A student-written guide to living and studying at UWC Changshu.
+  hero_cta: Start browsing
+  experiences_label: Categories
+  experiences_title: Browse by topic
+  experiences_desc: Academics, Musings, and Life after UWC — articles are grouped under these three.
+  essentials_label: Daily life
+  essentials_title: Practical info
+  essentials_desc: Payments, transit, shopping, food — the things you'll actually use in Changshu.
+  explore_label: Off campus
+  explore_title: Nearby cities
+  explore_desc: Suzhou, Shanghai, and Kunshan are all within easy reach by high-speed rail.
+  full_guide_label: Full index
+  full_guide_title: All articles
+  full_guide_desc: Every article published on the site, listed by language.
 about:
   hero_label: About
   hero_title: UWC Changshu China Survival Guide
   hero_subtitle: A formal introduction to the project, its editorial mission, and the students who build it.
   overview_label: Project Overview
-  overview_title: A living editorial resource for the UWC Changshu China community
-  overview_desc: The guide is intended to preserve practical student knowledge in a form that future cohorts can keep improving.
+  overview_title: A student-edited, long-maintained guide to UWC Changshu
+  overview_desc: The guide collects the practical experience students build up over time, so each new cohort can add to it.
   introduction:
-    - The UWC Changshu China Survival Guide is a student-run knowledge base for incoming and current students at UWC Changshu China.
-    - "It exists to preserve practical knowledge that is easy to lose between cohorts: how to settle in, how to navigate the academic system, and how to make use of the opportunities around campus and beyond."
-    - The project is maintained as a living publication. Editors set direction and uphold editorial standards, while contributors write, revise, translate, and materially improve individual articles over time.
+    - The UWC Changshu China Survival Guide is a student-maintained knowledge base for incoming and current students at UWC Changshu China.
+    - "It preserves the kind of practical knowledge that tends to get lost between cohorts: how to settle in, how to handle the academics, and how to make use of what's around campus."
+    - The project is maintained as a long-running publication. Editors set direction and review submissions; contributors write and revise articles.
   principles:
     - title: Student-built
-      description: The guide is grounded in lived student experience and focuses on what is useful in practice, not just what is formally documented.
+      description: Content comes from students' own experience and focuses on what's actually useful day-to-day, not just what shows up in official documents.
     - title: Editorially maintained
-      description: This is treated as a continuing publication with named leadership, clear attribution, and room for revision as the school environment changes.
+      description: Editors handle direction and review. Every article is signed, and the text gets updated as things at school change.
     - title: Built to outlast a cohort
-      description: The repository keeps institutional memory in one place so each graduating class can hand forward something more useful than scattered advice.
+      description: Each cohort's experience accumulates in one place, so the next group doesn't have to start from scratch.
   recognition_label: Recognition Policy
-  recognition_title: How contributors are recognized
-  recognition_desc: Editors-in-Chief are listed separately. Core contributors are contributors who have materially contributed to five or more distinct articles. Contributors include everyone else who has written, edited, translated, or materially improved published content.
+  recognition_title: How contributors are credited
+  recognition_desc: Editors-in-Chief are listed separately. Core contributors are those who have materially contributed to five or more distinct articles. Anyone else who has written, edited, or materially improved published content is listed as a contributor.
   leadership_label: Leadership
   leadership_title: Editors-in-Chief
-  leadership_desc: The editors-in-chief are responsible for the editorial direction of the project and for maintaining the standard of the published guide.
+  leadership_desc: The Editors-in-Chief set the editorial direction of the project and maintain the standard of published articles.
   editor_in_chief_label: Editor-in-Chief
   core_label: Contributors
   core_title: Core Contributors
-  core_desc: Core contributors are contributors who have materially contributed to five or more distinct articles.
+  core_desc: Core contributors are those who have materially contributed to five or more distinct articles.
   core_contributor_label: Core Contributor
-  core_empty: Additional core contributors will be listed here as the project grows.
+  core_empty: New core contributors will be listed here.
   contributors_label: Contributors
   contributor_label: Contributor
   contributors_title: Contributors
-  contributors_desc: This section records everyone who has materially improved published content and is not already listed as an EDITOR-IN-CHIEF.
-  contributors_empty: Additional contributors will be listed here as new articles and revisions are published.
+  contributors_desc: Anyone who has materially improved published content and is not listed as an Editor-in-Chief is listed here.
+  contributors_empty: New contributors and revisions will be added here over time.
 cfa_page:
   hero_label: Contribute
-  hero_title: Write for the Survival Guide
-  hero_subtitle: A guide to contributing articles — what we publish, how to submit, and what to expect from the editorial process.
+  hero_title: Call for articles
+  hero_subtitle: What we accept, how to submit, and how editing works.
   overview_label: Overview
-  overview_title: What we are looking for
-  overview_desc: The Survival Guide is only as useful as the knowledge its contributors choose to share. If you are a current or former UWC Changshu China student and have practical advice worth preserving, we invite you to write for the guide.
+  overview_title: Who can submit
+  overview_desc: If you have practical advice or experiences worth recording, we welcome your submission.
   guidelines_label: Guidelines
-  guidelines_title: Contributor guidelines
-  guidelines_desc: Please keep the following in mind when writing your article.
+  guidelines_title: Submission guidelines
+  guidelines_desc: Please note the following before submitting.
   guidelines:
-    - title: Anything that helps
-      description: The bar is simple — if it helps students at UWC Changshu China, it belongs here. Practical guides, personal stories, reflections, tips — any format is welcome as long as someone can learn from it.
+    - title: Useful to readers
+      description: Anything useful to UWC Changshu students is welcome. Practical guides, personal stories, reflections, tips — any format works.
     - title: Make a material contribution
-      description: Each article should contribute something substantially new. Incremental additions to existing articles are not accepted — if you want to improve an existing piece, contact the Editors-in-Chief. That said, well-reasoned rebuttals or alternative perspectives on published articles are very welcome.
-    - title: One topic per article
-      description: Each article should cover a single, well-defined topic. If you find yourself writing about multiple subjects, consider splitting them into separate articles.
+      description: Each article should make a substantively new contribution. Incremental edits to existing articles are not accepted — to improve an existing article, contact the Editors-in-Chief. Well-reasoned rebuttals or alternative takes on published articles are welcome as new submissions.
     - title: Any supported language
-      description: You may write in English, Simplified Chinese, or Traditional Chinese. Articles in any of these languages are equally welcome.
+      description: Submissions in English, Simplified Chinese, or Traditional Chinese are equally welcome.
   portal_btn: Go to Contributor Portal
   updated_label: "Updated:"
 content_rights:
@@ -138,16 +130,6 @@ section:
   title_suffix: ""
   desc: Each article is listed once, with links to every published language version available on the site.
   empty: No published guides in this section yet.
-all_articles_page:
-  hero_label: All Articles
-  hero_title: Every article in the guide
-  hero_subtitle: A complete index of published articles across all categories and languages.
-  intro_label: Index
-  intro_title: Browse the full guide
-  intro_desc: Each article is listed once, with links to every published language version available on the site.
-  count_singular: article
-  count_plural: articles
-  empty: No published articles yet.
 author:
   author_label: Author
   affiliation_label: Current Affiliation
