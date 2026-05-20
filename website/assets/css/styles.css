@@ -813,10 +813,11 @@ body {
 }
 
 /* Within the guide article reading area, CJK glyphs render in PingFang SC
-   (Hei sans, dense at any weight). Dropping bold weights one step keeps the
-   bold/regular contrast visually balanced with the Latin Playfair Display:
-   - headings: 700 / 600 → 400
-   - inline strong / b: 700 → 500
+   (Hei sans, dense at any weight). Headings drop one step (700/600 → 500)
+   so the bold/regular contrast in display type stays visually balanced with
+   the Latin Playfair Display. Inline strong / b is left at the browser
+   default (700) so emphasized words stand out at body-copy size as clearly
+   as their Latin counterparts.
    Home page chrome (which renders CJK in Noto Serif SC — a Song serif with
    lighter strokes than PingFang) intentionally keeps the EN weights, since
    Noto Serif SC needs a heavier numeric weight to match Playfair Display
@@ -827,11 +828,6 @@ html[lang^="zh"] .guide-content h3,
 html[lang^="zh"] .guide-content h4,
 html[lang^="zh"] .guide-content h5,
 html[lang^="zh"] .guide-content h6 {
-  font-weight: 500;
-}
-
-html[lang^="zh"] .guide-content strong,
-html[lang^="zh"] .guide-content b {
   font-weight: 500;
 }
 
