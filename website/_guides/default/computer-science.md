@@ -175,7 +175,7 @@ One more note for younger readers: the survey of directions above is meant to gi
 
 ## Choosing a CS School
 
-Before getting into this section, I'd recommend reading the [*On Choosing Colleges*]({{ '/guides/default/school-selection/' | relative_url }}) guide first, since a lot of what follows builds on the analysis there. One thing to flag upfront: this section sticks with the research-oriented field taxonomy from earlier and looks at schools from the angle of undergraduate teaching and academic research. The career-oriented analysis I'll save for [the next section](#cs-career-paths).
+Before getting into this section, I'd recommend reading the [*On Choosing Colleges*]({{ '/guides/default/school-selection/' | relative_url }}) guide first, since a lot of what follows builds on the analysis there. One thing to flag upfront: this section sticks with the research-oriented field taxonomy from earlier and looks at schools from the angle of undergraduate teaching and academic research. The career-oriented analysis I'll save for the next section.
 
 ### Teaching-style spectrum
 
