@@ -191,7 +191,7 @@ Engineering-heavy 项目的典型特征则是必修课 project load 重、hands-
 
 从就业的角度来看，math-heavy 的训练理论基础更扎实、更接近 computation 的本质；而 engineering-heavy 的训练所适配的工作岗位对本科生来说更多，对本科毕业直接就业也更友好。具体情况会放在后面的 [career path 部分](#cs-career-path)具体分析。
 
-从学习知识的角度来看，我个人觉得 math-heavy 和 engineering-heavy 这两端本身并没有高下之分，关键始终是在于你能不能在所选的方向上发展出真正的泛化能力（详见前文的 [*The Bitter Lesson*](#the-bitter-lesson)）。Math-heavy 的训练不等于只是在纸上推公式、做毫无意义的抽象，engineering-heavy 的训练也不等于只是在刷题、调 bug、做机械的重复；对一个只会按部就班努力的人来说，无论在 spectrum 的哪一端都不会真的变强，而对一个真正具备泛化能力的人来说，在这两端都可以走出自己的路。所以这个 spectrum 里其实并没有一个永远正确的选项，我觉得它更像是一个 self-auditing tool，你需要问自己："我喜欢的是 proof 还是 implementation？是理论还是 applied science？是 mathematical clarity 还是 engineering elegance？" 然后选 spectrum 上适合自己的位置。
+从学习知识的角度来看，我个人觉得 math-heavy 和 engineering-heavy 这两端本身并没有高下之分，关键始终是在于你能不能在所选的方向上发展出真正的泛化能力（详见前文的 [*The Bitter Lesson*](#the-bitter-lesson)）。Math-heavy 的训练不等于只是在纸上推公式、做毫无意义的抽象，engineering-heavy 的训练也不等于只是在刷题、调 bug、做机械的重复；对一个只会按部就班努力的人来说，无论在 spectrum 的哪一端都不会真的变强，而对一个真正具备泛化能力的人来说，在这两端都可以走出自己的路。所以这个 spectrum 里其实并没有一个永远正确的选项，我觉得它更像是一个 self-auditing tool，你需要问自己： "我喜欢的是 proof 还是 implementation？是理论还是 applied science？是 mathematical clarity 还是 engineering elegance？" 然后选 spectrum 上适合自己的位置。
 
 当然对于比较好的 R1 CS program 而言，不论学校本身是 math-heavy 还是 engineering-heavy，在每个领域里都会有世界级的教授，所以即使现在 commit 了一个教学重心没那么契合的学校，在之后也完全可以多上一点自己感兴趣方向的选修课或者去找对应领域的专家一起做 research。这其实就是 faculty 数量多的学校的一个非常大的好处。
 

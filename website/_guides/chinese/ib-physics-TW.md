@@ -421,9 +421,9 @@ updated: 2026-05-20
 
 下面提供一些我通過AI學習時**常用的prompt或者關鍵詞**：
 
-- "Explain ... **intuitively**"：intuitively這個詞能讓AI以非形式化的角度介紹知識，通常給出的答案會很容易看懂。同時，我個人觀察到AI比較喜歡副詞。
+- "Explain ... **intuitively"**：intuitively這個詞能讓AI以非形式化的角度介紹知識，通常給出的答案會很容易看懂。同時，我個人觀察到AI比較喜歡副詞。
 - "Explain ... step by step"/ "Explain ... using logic chain"：在需要詳細的邏輯過程時很有用。
-- "Explain ... **with a real-life example**"：當覺得某個物理概念過於抽象時，可以讓AI舉現實例子。
+- "Explain ... **with a real-life example"**：當覺得某個物理概念過於抽象時，可以讓AI舉現實例子。
 - "You can use tables, analogies etc to help explain this concept"：可以指定任意思維或者技巧，讓AI用那個方式傳遞知識
 
 # 如何考試
