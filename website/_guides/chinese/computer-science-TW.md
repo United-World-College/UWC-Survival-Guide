@@ -191,7 +191,7 @@ Engineering-heavy 項目的典型特徵則是必修課 project load 重、hands-
 
 從就業的角度來看，math-heavy 的訓練理論基礎更扎實、更接近 computation 的本質；而 engineering-heavy 的訓練所適配的工作崗位對本科生來說更多，對本科畢業直接就業也更友好。具體情況會放在後面的 [career path 部分](#cs-career-path)具體分析。
 
-從學習知識的角度來看，我個人覺得 math-heavy 和 engineering-heavy 這兩端本身並沒有高下之分，關鍵始終是在於你能不能在所選的方向上發展出真正的泛化能力（詳見前文的 [*The Bitter Lesson*](#the-bitter-lesson)）。Math-heavy 的訓練不等於只是在紙上推公式、做毫無意義的抽象，engineering-heavy 的訓練也不等於只是在刷題、調 bug、做機械的重複；對一個只會按部就班努力的人來說，無論在 spectrum 的哪一端都不會真的變強，而對一個真正具備泛化能力的人來說，在這兩端都可以走出自己的路。所以這個 spectrum 裡其實並沒有一個永遠正確的選項，我覺得它更像是一個 self-auditing tool，你需要問自己: "我喜歡的是 proof 還是 implementation？是理論還是 applied science？是 mathematical clarity 還是 engineering elegance？" 然後選 spectrum 上適合自己的位置。
+從學習知識的角度來看，我個人覺得 math-heavy 和 engineering-heavy 這兩端本身並沒有高下之分，關鍵始終是在於你能不能在所選的方向上發展出真正的泛化能力（詳見前文的 [*The Bitter Lesson*](#the-bitter-lesson)）。Math-heavy 的訓練不等於只是在紙上推公式、做毫無意義的抽象，engineering-heavy 的訓練也不等於只是在刷題、調 bug、做機械的重複；對一個只會按部就班努力的人來說，無論在 spectrum 的哪一端都不會真的變強，而對一個真正具備泛化能力的人來說，在這兩端都可以走出自己的路。所以這個 spectrum 裡其實並沒有一個永遠正確的選項，我覺得它更像是一個 self-auditing tool，你需要問自己： "我喜歡的是 proof 還是 implementation？是理論還是 applied science？是 mathematical clarity 還是 engineering elegance？" 然後選 spectrum 上適合自己的位置。
 
 當然對於比較好的 R1 CS program 而言，不論學校本身是 math-heavy 還是 engineering-heavy，在每個領域裡都會有世界級的教授，所以即使現在 commit 了一個教學重心沒那麼契合的學校，在之後也完全可以多上一點自己感興趣方向的選修課或者去找對應領域的專家一起做 research。這其實就是 faculty 數量多的學校的一個非常大的好處。
 
@@ -205,7 +205,7 @@ Engineering-heavy 項目的典型特徵則是必修課 project load 重、hands-
 
 這些榮譽往往會比任何排名都更能反映出一個學校的真實水平，但調研起來也會很麻煩。好在隨著現在各類 AI 工具的普及，在具體操作上同學們其實不需要自己一個一個去翻系裡的網站，直接讓 AI agent（比如 Claude 或 ChatGPT 的 deep research 模式）幫你列出來就行，這種查找類的任務 AI 往往比人快得多也準得多。
 
-不過歸根結底，這些榮譽的評審過程和任何排名的評分過程一樣，都不是完美的。在[〈關於選校〉]({{ '/guides/chinese/school-selection-TW/' | relative_url }})中我大概提了一下 [faculty hiring 的隨機性]({{ '/guides/chinese/school-selection-TW/#faculty-hiring-的隨機性' | relative_url }})，但其實這些榮譽評審過程中的隨機性一點也不比 faculty hiring 少。所以我希望同學們在不唯排名論的同時也盡量做到不唯榮譽論。我在[〈關於選校〉]({{ '/guides/chinese/school-selection-TW/' | relative_url }})裡提到的["愛馬仕還是帆布袋" 理論]({{ '/guides/chinese/school-selection-TW/#愛馬仕還是帆布袋' | relative_url }})在這裡同樣適用。因為榮譽本就應該被看作是 capacity 的間接 signal 之一，而不是 capacity 本身；任何 metric 的本質其實都是把一個活生生的人壓縮成了一個低維向量。（詳情請見本文最後一章：[〈從 feature engineering 到 representation learning〉](#從-feature-engineering-到-representation-learning)）
+不過歸根結底，這些榮譽的評審過程和任何排名的評分過程一樣，都不是完美的。在[〈關於選校〉]({{ '/guides/chinese/school-selection-TW/' | relative_url }})中我大概提了一下 [faculty hiring 的隨機性]({{ '/guides/chinese/school-selection-TW/#faculty-hiring-的隨機性' | relative_url }})，但其實這些榮譽評審過程中的隨機性一點也不比 faculty hiring 少。所以我希望同學們在不唯排名論的同時也盡量做到不唯榮譽論。我在[〈關於選校〉]({{ '/guides/chinese/school-selection-TW/' | relative_url }})裡提到的["愛馬仕還是帆布袋" 理論]({{ '/guides/chinese/school-selection-TW/#愛馬仕還是帆布袋' | relative_url }})在這裡同樣適用。因為榮譽本就應該被看作是 capacity 的間接 signal 之一，而不是 capacity 本身；任何 metric 的本質其實都是把一個活生生的人壓縮成了一個沒有靈魂的低維向量。（詳情請見本文最後一章：[〈從 feature engineering 到 representation learning〉](#從-feature-engineering-到-representation-learning)）
 
 ### Sweet spot framework
 
