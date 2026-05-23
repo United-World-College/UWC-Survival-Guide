@@ -65,7 +65,7 @@ For universities, though, this logic doesn't really apply. The vast majority of 
 
 But the logic of taking pride in selectivity is exactly the reverse: it treats "how many people we filtered out" as proof of its own value. The more a school prides itself on selectivity, the more it endorses a "scarcity equals value" commercial logic. That commercial logic is fine in the context of luxury-goods marketing, but it sits a bit awkwardly inside a non-profit higher-education institution whose mission is "serving humanity."
 
-So I think how many people a school admitted—how many people from different backgrounds ended up meeting and changing each other because of it—is actually closer to what "serving humanity" was originally meant to mean than how many people it turned away.
+So I think how many people a school admitted—how many people from different backgrounds got to come in and receive the best education in the world—is actually closer to what "serving humanity" was originally meant to mean than how many people it turned away.
 
 ## Why Great Professors Aren't Concentrated at Top Schools
 
