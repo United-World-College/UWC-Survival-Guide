@@ -11,7 +11,7 @@ language_name: "简体中文"
 language_folder: "chinese"
 language_sort: 2
 published: 2026-03-25
-updated: 2026-05-19
+updated: 2026-05-24
 ---
 
 本篇是想借着聊选校这个话题讲一讲在上了大学之后才了解到的美国大学，可能是因为本人之前比较孤陋寡闻吧，来了美国之后才发现大学和想象中的模样天差地别。
