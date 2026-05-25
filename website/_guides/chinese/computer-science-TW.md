@@ -233,7 +233,7 @@ Engineering-heavy 項目的典型特徵則是必修課 project load 重、hands-
 
 ### Machine Learning Engineer
 
-最後是偏向 AI 的 Machine Learning Engineer（MLE）。這個崗位和 systems engineer 一樣，本質上還是工程師，他們的工作不是推導公式，而是怎麼把 researcher 訓練出的模型真正部署到生產當中。每天要做的事情包括處理海量訓練資料、寫訓練 pipeline、把模型在手機端做低功耗運行、保證大規模推理的低延遲、做 model serving 的擴縮容等等。具體落地上，OpenAI、Anthropic、Google deepmind 這種 frontier lab 的 MLE 更多是和 researcher 一起把模型訓練跑起來；而 Meta、Google 內部業務驅動的團隊的 MLE 則主要是把 ranking model、recommendation system 這類東西做落地調優。這個崗位不僅需要對常用的 AI 模型有理論上的理解，更要能熟練使用 PyTorch、CUDA 這些技術棧。過去兩三年隨著 GenAI 的爆發，這條線也成了 SWE 裡對本科生而言增長最快、薪水也最高的方向之一，但與此同時它對 candidate 的要求也很高。
+最後是偏向 AI 的 Machine Learning Engineer（MLE）。這個崗位和 systems engineer 一樣，本質上還是工程師，他們的工作不是推導公式，而是怎麼把 researcher 訓練出的模型真正部署到生產當中。每天要做的事情包括處理海量訓練資料、寫訓練 pipeline、把模型在手機端做低功耗運行、保證大規模推理的低延遲、做 model serving 的擴縮容等等。具體落地上，OpenAI、Anthropic、Google DeepMind 這種 frontier lab 的 MLE 更多是和 researcher 一起把模型訓練跑起來；而 Meta、Google 內部業務驅動的團隊的 MLE 則主要是把 ranking model、recommendation system 這類東西做落地調優。這個崗位不僅需要對常用的 AI 模型有理論上的理解，更要能熟練使用 PyTorch、CUDA 這些技術棧。過去兩三年隨著 GenAI 的爆發，這條線也成了 SWE 裡對本科生而言增長最快、薪水也最高的方向之一，但與此同時它對 candidate 的要求也很高。
 
 ### S&P 500 SWE
 
