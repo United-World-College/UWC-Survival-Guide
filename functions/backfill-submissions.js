@@ -28,6 +28,21 @@ const GUIDE_FILES = [
   "victims-of-the-system.md",
 ];
 
+// Guides whose Firestore `content` field is in a non-English source language
+// (these went through the normal submission flow, so the source-language body
+// is canonical in Firestore, not English).
+// legacyGuideIds: older Firestore guide_id values that should be migrated to guideId.
+const NON_EN_SOURCE_GUIDES = [
+  { guideId: "ib-physics", lang: "zh-CN", legacyGuideIds: ["ib"] },
+];
+
+const LANG_MAP = {
+  "en":    { folder: "default", suffix: "" },
+  "zh-CN": { folder: "chinese", suffix: "-CN" },
+  "zh-TW": { folder: "chinese", suffix: "-TW" },
+};
+const GUIDES_BASE = path.resolve(__dirname, "../website/_guides");
+
 function parseGuide(filePath) {
   const raw = fs.readFileSync(filePath, "utf-8");
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
@@ -172,15 +187,79 @@ async function main() {
 
   console.log(`\nDone. Created: ${created}, Skipped: ${skipped}`);
 
+  // ── Phase 1b: Sync content for non-EN source guides ──
+  console.log("\n=== Phase 1b: Sync content for non-EN source guides ===\n");
+
+  let nonEnUpdated = 0;
+  let nonEnSkipped = 0;
+
+  for (const { guideId, lang, legacyGuideIds = [] } of NON_EN_SOURCE_GUIDES) {
+    const info = LANG_MAP[lang];
+    if (!info) {
+      console.log(`SKIP  ${guideId} — unknown lang ${lang}`);
+      nonEnSkipped++;
+      continue;
+    }
+    const filePath = path.join(GUIDES_BASE, info.folder, guideId + info.suffix + ".md");
+    if (!fs.existsSync(filePath)) {
+      console.log(`SKIP  ${guideId} — file not found at ${filePath}`);
+      nonEnSkipped++;
+      continue;
+    }
+    const { frontmatter, content: srcContent } = parseGuide(filePath);
+
+    // Try canonical guide_id first, then any legacy values.
+    let existing = await findSubmission(guideId);
+    if (!existing) {
+      for (const legacy of legacyGuideIds) {
+        existing = await findSubmission(legacy);
+        if (existing) {
+          console.log(`  (found ${guideId} via legacy guide_id="${legacy}", will migrate)`);
+          break;
+        }
+      }
+    }
+    if (!existing) {
+      console.log(`SKIP  ${guideId} — no submission found`);
+      nonEnSkipped++;
+      continue;
+    }
+    const data = existing.data();
+    const updates = {};
+    if ((data.guide_id || "") !== guideId) updates.guide_id = guideId;
+    if ((data.content || "") !== srcContent) updates.content = srcContent;
+    if ((data.title || "") !== (frontmatter.title || "")) updates.title = frontmatter.title || "";
+    if ((data.category || "") !== (frontmatter.category || "")) updates.category = frontmatter.category || "";
+    if ((data.description || "") !== (frontmatter.description || "")) updates.description = frontmatter.description || "";
+
+    if (Object.keys(updates).length === 0) {
+      console.log(`SKIP  ${guideId} — already up to date`);
+      nonEnSkipped++;
+      continue;
+    }
+
+    const updatedDate = frontmatter.updated
+      ? Timestamp.fromDate(new Date(frontmatter.updated + "T00:00:00Z"))
+      : Timestamp.now();
+    updates.updatedAt = updatedDate;
+
+    if (dryRun) {
+      console.log(`WOULD UPDATE  ${guideId} (${existing.id}):`);
+      Object.entries(updates).forEach(([k, v]) => {
+        const preview = typeof v === "string" && v.length > 80 ? v.slice(0, 80) + "…" : v;
+        console.log(`  ${k}: ${preview}`);
+      });
+    } else {
+      await existing.ref.update(updates);
+      console.log(`UPDATED  ${guideId} → ${existing.id} (${Object.keys(updates).join(", ")})`);
+    }
+    nonEnUpdated++;
+  }
+
+  console.log(`\nNon-EN source: Updated: ${nonEnUpdated}, Skipped: ${nonEnSkipped}`);
+
   // ── Phase 2: Backfill translations map from existing guide files ──
   console.log("\n=== Phase 2: Backfill translations map ===\n");
-
-  const LANG_MAP = {
-    "en":    { folder: "default", suffix: "" },
-    "zh-CN": { folder: "chinese", suffix: "-CN" },
-    "zh-TW": { folder: "chinese", suffix: "-TW" },
-  };
-  const GUIDES_BASE = path.resolve(__dirname, "../website/_guides");
 
   const allSubmissions = await db.collection("submissions")
     .where("status", "==", "approved").get();
