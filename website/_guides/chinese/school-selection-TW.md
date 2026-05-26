@@ -11,7 +11,7 @@ language_name: "台灣繁體"
 language_folder: "chinese"
 language_sort: 3
 published: 2026-03-25
-updated: 2026-05-24
+updated: 2026-05-26
 ---
 
 
@@ -87,7 +87,9 @@ updated: 2026-05-24
 
 需要補充的兩點是：一，這裡用 IMO / IOI 舉例只是因為 CS 和數學方向的 outlier marker 最 well-known，但同樣的金字塔結構對所有學科都成立；二，實際上不論是在頂校還是非頂校都有相當大比例的同學參與 undergrad research，但是這樣的數據是沒有意義的，因為「參與 undergrad research」把 wash dishes 跑 script 和獲得 substantive guidance 完全混為一談了。而且頂校 supply 端真正的優勢是在 top-tier faculty 這一檔，但他們的 bandwidth 大概率會被 outlier 吸走。不過值得一提的是頂校的 institutional design，比如 MIT 的 [UROP](https://urop.mit.edu/) 會讓即使是 bottom 10% 的同學也會有機會參與到 research 當中。但這種「參與」實際獲得的關注和產出跟他們在非頂校能接觸到的水準是 comparable 的，因為他們的 absolute ability 已經不低了。所以 institutional design 提供的 floor 是真實的，但它給很多學生提供的 access advantage 沒有看起來那麼大。
 
-前面已經把圍繞 faculty 的供需結構講得差不多了，但本科 research experience 還有一個離日常更近的 supply 端的維度經常被忽視：PhD student 和 postdoc 的品質。因為教授大部分時間都在化緣，所以本科生在 lab 裡日常接觸的其實是 PhD student 和 postdoc，他們的水準才是本科生 research experience 真正的 ceiling。這裡有一個關鍵的不對稱：undergrad admission 很多時候是 prestige-driven 的，但 PhD admission 是 field-specific 的（看一個 program 在領域內的學術實力，絕大部分時候甚至是具體到 PhD advisor 的實力）。所以對於一個綜排較弱但學科內頂尖的學校或者水準很高的教授，招生品質完全可以輕鬆碾壓綜排前五但 field 較弱的學校。當然大部分學校在面對 [Stanford](https://en.wikipedia.org/wiki/Stanford_University) 這種全學科都很強的學校的時候就相形見絀了。但要注意這只是 supply-side 的 ceiling，結合前面 demand-side 的分析，「普通優秀」的 UWC 學生到底能不能真正 access 到這個 ceiling 又是另一回事。所以對大部分人而言，一個 sweet spot 其實是 field-specific 頂尖的非頂校：ceiling 已經足夠高，競爭者 pool 又比頂校友好得多。
+前面已經把圍繞 faculty 的供需結構講得差不多了，但本科 research experience 還有一個離日常更近的 supply 端的維度經常被忽視：PhD student 和 postdoc 的品質。因為教授大部分時間都在化緣，所以本科生在 lab 裡日常接觸的其實是 PhD student 和 postdoc，他們的水準才是本科生 research experience 真正的 ceiling。這裡有一個關鍵的不對稱：undergrad admission 很多時候是 prestige-driven 的，但 PhD admission 是 field-specific 的（看一個 program 在領域內的學術實力，絕大部分時候甚至是具體到 PhD advisor 的實力）。所以對於一個綜排較弱但學科內頂尖的學校或者水準很高的教授，招生品質完全可以輕鬆碾壓綜排前五但 field 較弱的學校。而且這還只是從生源，也就是博士入學時的「存量優秀」的角度進行分析；在此基礎上，在 [Prof. Josh Angrist](https://en.wikipedia.org/wiki/Joshua_Angrist) 等人 2026 年最新的 [working paper](https://www.nber.org/papers/w35244) 裡，他們以經濟學這個學科的 field-specific 強校為例，進一步指出即便 control 生源品質，經濟學強校博士的 long-run research output 仍比其他學校博士高出一大截，也就是說 program 本身還會在「增量優秀」上再一次拉開差距。這樣一來再疊加上本來的「存量優秀」，field-top program 出來的博士的平均科研產出和其他學校的差距會相當大。
+
+所以這就是為什麼一個 program 在特定領域內的實力會比綜合排名重要得多。當然大部分學校在面對 [Stanford](https://en.wikipedia.org/wiki/Stanford_University) 這種所有學科都很強的頂校的時候就相形見絀了。但要注意這只是 supply-side 的 ceiling，結合前面 demand-side 的分析，「普通優秀」的 UWC 學生到底能不能真正 access 到這個 ceiling 又是另一回事。所以對大部分人而言，一個 sweet spot 其實是 field-specific 頂尖的非頂校：ceiling 已經足夠高，競爭者 pool 又比頂校友好得多。
 
 > 這裡要特別注意一下，上面的論證主要適用於依賴 lab / 大型 collaborator team / research infrastructure 的 lab-based research，包括實驗物理、化學、生物、工程、實驗 CS、醫學 research 等等很多方向。但對於依賴 advisor 1-on-1 + reading group / seminar 這種 mentorship mode 的方向——包括 STEM 裡的理論方向（純數、理論 CS、理論物理）、humanities（哲學、文學、歷史、古典學、藝術史）、social sciences（economics、political science、sociology、anthropology 等，不論 empirical 還是 theoretical）、business research（finance、accounting、marketing）等——它們的 ceiling driver 完全不一樣：mentorship 主要靠跟 advisor 直接 1-on-1 討論加上 reading group / seminar 的 peer effect，所以 advisor individual reputation 和 daily peer 濃度反而更重要。雖然做這些方向的研究同樣會被 outlier 在 access 上碾壓（每個教授的 bandwidth 依然有限），但由於在這些領域內 reading group 和 seminar 也是學習和研究中的重要一環，所以 daily peer effect 比在 lab-based research 裡重要得多。因此，對於這類情況，上述供需框架的部分論證不直接適用，需要單獨分析，我們會在後續篇章中專門討論。
 
@@ -99,7 +101,7 @@ updated: 2026-05-24
 
 所以對一個想做 STEM research 的「普通優秀」UWC 學生而言，最優解既不是綜合排名最高的學校，也不是 reputation 最響的學校，而是 ceiling 已經足夠高、demand 端又沒那麼擠的學校——可能是 field-specific 頂尖的公立旗艦（比如 [Penn State](https://en.wikipedia.org/wiki/Pennsylvania_State_University) 的材料科學和 Texas A&M 的石油工程），可能是某些綜排靠前但不被 outlier 扎堆的私校（比如 [Duke](https://en.wikipedia.org/wiki/Duke_University)、JHU 和 [Northwestern](https://en.wikipedia.org/wiki/Northwestern_University) 的強勢學科），也可能是有著強勢領域的 mid-tier R1（比如 UIC 的資料探勘、UTK 的高效能運算和 [University of Utah](https://en.wikipedia.org/wiki/University_of_Utah) 的圖形學）。
 
-順帶提一句，「頂校 premium 沒有 reputation 暗示得那麼大」這個觀察其實早就在經濟學裡有過經典的 empirical 驗證。Dale 和 Krueger 在 2002 年的 [Quarterly Journal of Economics](https://en.wikipedia.org/wiki/The_Quarterly_Journal_of_Economics) 上發表的[論文](https://www.jstor.org/stable/4132484)裡通過匹配那些申請了同一組學校並都被錄取的學生（即用申請清單作為 unobserved ability 的 proxy 來吸收 selection bias），發現進入頂校帶來的 earnings premium 對大部分學生而言基本不顯著，低收入家庭學生是例外。不過需要說明的是，Dale-Krueger 估計的是平均效應——也就是「平均而言，去頂校對 earnings 的邊際貢獻有多大」——而沒有直接討論校內的 access 是怎麼分配的。本文 demand-side outlier 的論證恰好是從 research opportunity 的角度補上了這一層：即便在頂校內部，research access 也是被 outlier 集中度調節的，所以一個「普通優秀」的學生在頂校實際能 access 到的邊際價值，還要再在 Dale-Krueger 測出的平均效應之上被 demand-side dynamics 折損一次。換句話說，他們在 earnings 這個 outcome 上發現平均 premium 已經很小，而本文在 research access 這個維度上進一步指出：即便平均 premium 不為零，它在校內的分配也極不均勻，這就意味著「普通優秀」學生拿到的份額比平均還要更低。
+順帶提一句，「頂校對本科生的 premium 沒有 reputation 暗示得那麼大」這個觀察其實早就在經濟學裡有過經典的 empirical 驗證。Stacy Berg Dale 和 [Prof. Alan Krueger](https://en.wikipedia.org/wiki/Alan_Krueger) 在 2002 年的 [Quarterly Journal of Economics](https://en.wikipedia.org/wiki/The_Quarterly_Journal_of_Economics) 上發表的[論文](https://www.jstor.org/stable/4132484)裡通過匹配那些申請了同一組學校並都被錄取的高中生（即用申請清單作為 unobserved ability 的 proxy 來吸收 selection bias），發現進入頂校帶來的 earnings premium 對大部分學生而言基本不顯著，低收入家庭學生是例外。不過需要說明的是，Dale-Krueger 估計的是平均效應——也就是「平均而言，去頂校對 earnings 的邊際貢獻有多大」——而沒有直接討論校內的 access 是怎麼分配的。本文 demand-side outlier 的論證恰好是從 research opportunity 的角度補上了這一層：即便在頂校內部，research access 也是被 outlier 集中度調節的，所以一個「普通優秀」的本科生在頂校實際能 access 到的邊際價值，還要再在 Dale-Krueger 測出的平均效應之上被 demand-side dynamics 折損一次。換句話說，他們在 earnings 這個 outcome 上發現平均 premium 已經很小，而本文在 research access 這個維度上進一步指出：即便平均 premium 不為零，它在校內的分配也極不均勻，這就意味著「普通優秀」學生拿到的份額比平均還要更低。
 
 ## 選校之於就業
 
