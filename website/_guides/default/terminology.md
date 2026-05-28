@@ -11,7 +11,7 @@ language_name: "English"
 language_folder: "default"
 language_sort: 1
 published: 2026-03-25
-updated: 2026-05-26
+updated: 2026-05-27
 ---
 
 
@@ -58,10 +58,6 @@ I've noticed that people tend to swing to one of two extremes when dealing with 
 - **They are not your essay editor**: a good counselor will give you suggestions, but they have no obligation to polish every sentence of your grammar. What they care about more is whether the big picture of your application makes sense.
 - **They need material**: remember, recommendation letters need material. If you never show your counselor your distinctive thinking, the letter they end up writing will just be a pile of "this student performs excellently" fluff.
 - **Professionalism matters more than a personal connection**: a counselor's work is highly professional. Rather than trying to get special treatment through a personal relationship, you'll earn their respect with your professionalism, punctuality (meeting deadlines), and a clear sense of self-awareness. A student who can clearly articulate their own motivation and passion is exactly the kind of student every counselor most wants to endorse. That said, professionalism is only the foundation, not the upper bound. Once you've established yourself as someone reliable to work with, a good counselor will be willing to see you as a whole person. And that ability — to see a student as a whole person — is really what separates a great counselor from an average one. This deeper kind of connection can't be engineered on purpose, and it can only take root on top of a professional foundation.
-
-Let me use my own college counselor, Alison, as an example. I've always thought Alison was an amazingly good counselor, and that was honestly one of the biggest strokes of luck I had during my application season. To be honest, back then I was someone with a bit of social anxiety — the kind who gets nervous even talking to strangers — so before I pushed open Alison's office door for the first time, I was genuinely on edge. To me at the time, this felt like one of the most important things in my life. But the moment the door opened and I saw her, I felt an immediate sense of ease, and all the nerves and unease vanished in an instant. After that, we met every so often at a regular pace; once DP2 formally started, the frequency naturally picked up, and during that time we really did end up talking about a lot of things.
-
-The most important thing about the relationship with your counselor, I think, is building a kind of mutual understanding. This isn't something you can deliberately engineer — or more accurately, the moment you try to engineer it, it's guaranteed not to happen. You have to fully trust her and open up, laying out all your thoughts, questions, and doubts, so she can understand you as completely as possible and then actually help you in a targeted way. The whole thing is a fairly spontaneous process.
 
 ### An Important Nuance About Recommendation Letters
 
