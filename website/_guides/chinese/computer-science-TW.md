@@ -11,7 +11,7 @@ language_name: "台灣繁體"
 language_folder: "chinese"
 language_sort: 3
 published: 2026-05-10
-updated: 2026-05-24
+updated: 2026-06-07
 ---
 
 
@@ -201,7 +201,7 @@ Engineering-heavy 項目的典型特徵則是必修課 project load 重、hands-
 
 接下來我想給對 research 感興趣的同學大概介紹一下每個學校的強勢領域。首先 Top 4 的 CMU、MIT、Stanford 和 UC Berkeley 就不用多說了，這四所學校在大部分主流方向都是最厲害的，基本不需要 audit specific subarea。對於除此之外的其他學校，AI 方向 [University of Washington](https://en.wikipedia.org/wiki/University_of_Washington) 是最好的，systems 方向最強的是 UIUC，而 theory 方向最好的則是 Princeton。但我們真的可以做這樣的排序嗎？這種 single-label 的描述當然是舒服的，因為它為讀者用最少的 cognitive cost 建立起來了一個 mental model，但實際上這是一個很不負責任的簡化。 "在這個領域內某學校特別強" 這句話的意思實際上更接近 "這個學校在這個領域裡的 visibility 特別高 / historically 出名"，但絕不是 "這個學校只在這個領域內強"，也不是 "這個領域只有這一所強校"，更不是 "排名比較一般的學校就不存在最頂尖的教授"。所以假如各位讀者有一個自己具體感興趣的方向，建議直接上 CSRankings 選 specific subarea filter 來看看這個領域內的生態究竟是什麼樣的，而不是只憑這種粗略的 label。
 
-當然 CSRankings 也不絕對，它反映的是一個學校歷史上的 publication record，沒法體現一個 program 當前的 trajectory，更沒法體現出每個 faculty 在社區裡實際的影響力。比如最近新招進來的 rising star 潛力無限但無法在資料裡體現，已經退休的 senior faculty 反而可能還在 count，而一個圖靈獎得主可能整個職業生涯都沒發過太多論文。所以一個比較 practical 的補充辦法是去看一個學校裡 faculty 拿到的 peer-reviewed recognition。對於 early-career 的年輕教授可以看 [Sloan Research Fellowship](https://en.wikipedia.org/wiki/Sloan_Research_Fellowship)、[NSF CAREER Award](https://en.wikipedia.org/wiki/National_Science_Foundation_CAREER_Award) 這一類獎項，反映的是業內同行對這群人未來幾年潛力的判斷；對於 senior faculty 可以看 [ACM Fellow](https://en.wikipedia.org/wiki/ACM_Fellow)、[IEEE Fellow](https://en.wikipedia.org/wiki/IEEE_Fellow)、[NAE](https://en.wikipedia.org/wiki/National_Academy_of_Engineering) / [NAS](https://en.wikipedia.org/wiki/United_States_National_Academy_of_Sciences) 院士等 bar 更高的榮譽，這些反映的是同行對一個學者長期 sustained impact 的認可；除此之外，對於單篇 paper 而言的頂會 Best Paper 和 Test of Time Award 也很有 signal 價值，前者反映一項 single work 的 immediate impact，後者則反映一項工作經過時間檢驗依然 holds up 的長期價值。
+當然 CSRankings 也不絕對，它反映的是一個學校歷史上的 publication record，沒法體現一個 program 當前的 trajectory，更沒法體現出每個 faculty 在社區裡實際的影響力。比如最近新招進來的 rising star 潛力無限但無法在資料裡體現，已經退休的 senior faculty 反而可能還在 count，而一個圖靈獎得主可能整個職業生涯都沒發過太多論文。所以一個比較 practical 的補充辦法是去看一個學校裡 faculty 拿到的 peer-reviewed recognition。對於 early-career 的年輕教授可以看 [Sloan Research Fellowship](https://en.wikipedia.org/wiki/Sloan_Research_Fellowship)、[NSF CAREER Award](https://en.wikipedia.org/wiki/National_Science_Foundation_CAREER_Award) 這一類獎項，反映的是業內同行對這群人未來幾年潛力的判斷；對於 senior faculty 可以看 [ACM Fellow](https://en.wikipedia.org/wiki/ACM_Fellow)、[IEEE Fellow](https://en.wikipedia.org/wiki/IEEE_Fellow)、[NAE](https://en.wikipedia.org/wiki/National_Academy_of_Engineering) / [NAS](https://en.wikipedia.org/wiki/United_States_National_Academy_of_Sciences) 院士等 bar 更高的榮譽，這些反映的是同行對一個學者長期 sustained impact 的認可；除此之外，對於單篇 paper 而言的頂會 Best Paper 和 Test of Time Award 也很有 signal 價值，前者反映一項 single work 的 immediate impact，後者則反映一項工作經過時間檢驗依然 holds up 的長期價值。除此之外，一個教授組裡博士生的 placement 也是一個重要參考指標。
 
 這些榮譽往往會比任何排名都更能反映出一個學校的真實水平，但調研起來也會很麻煩。好在隨著現在各類 AI 工具的普及，在具體操作上同學們其實不需要自己一個一個去翻系裡的網站，直接讓 AI agent（比如 Claude 或 ChatGPT 的 deep research 模式）幫你列出來就行，這種查找類的任務 AI 往往比人快得多也準得多。
 

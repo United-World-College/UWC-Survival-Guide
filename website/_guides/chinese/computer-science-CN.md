@@ -11,7 +11,7 @@ language_name: "简体中文"
 language_folder: "chinese"
 language_sort: 2
 published: 2026-05-10
-updated: 2026-05-24
+updated: 2026-06-07
 ---
 
 
@@ -201,7 +201,7 @@ Engineering-heavy 项目的典型特征则是必修课 project load 重、hands-
 
 接下来我想给对 research 感兴趣的同学大概介绍一下每个学校的强势领域。首先 Top 4 的 CMU、MIT、Stanford 和 UC Berkeley 就不用多说了，这四所学校在大部分主流方向都是最厉害的，基本不需要 audit specific subarea。对于除此之外的其他学校，AI 方向 [University of Washington](https://en.wikipedia.org/wiki/University_of_Washington) 是最好的，systems 方向最强的是 UIUC，而 theory 方向最好的则是 Princeton。但我们真的可以做这样的排序吗？这种 single-label 的描述当然是舒服的，因为它为读者用最少的 cognitive cost 建立起来了一个 mental model，但实际上这是一个很不负责任的简化。 "在这个领域内某学校特别强" 这句话的意思实际上更接近 "这个学校在这个领域里的 visibility 特别高 / historically 出名"，但绝不是 "这个学校只在这个领域内强"，也不是 "这个领域只有这一所强校"，更不是 "排名比较一般的学校就不存在最顶尖的教授"。所以假如各位读者有一个自己具体感兴趣的方向，建议直接上 CSRankings 选 specific subarea filter 来看看这个领域内的生态究竟是什么样的，而不是只凭这种粗略的 label。
 
-当然 CSRankings 也不绝对，它反映的是一个学校历史上的 publication record，没法体现一个 program 当前的 trajectory，更没法体现出每个 faculty 在社区里实际的影响力。比如最近新招进来的 rising star 潜力无限但无法在数据里体现，已经退休的 senior faculty 反而可能还在 count，而一个图灵奖得主可能整个职业生涯都没发过太多论文。所以一个比较 practical 的补充办法是去看一个学校里 faculty 拿到的 peer-reviewed recognition。对于 early-career 的年轻教授可以看 [Sloan Research Fellowship](https://en.wikipedia.org/wiki/Sloan_Research_Fellowship)、[NSF CAREER Award](https://en.wikipedia.org/wiki/National_Science_Foundation_CAREER_Award) 这一类奖项，反映的是业内同行对这群人未来几年潜力的判断；对于 senior faculty 可以看 [ACM Fellow](https://en.wikipedia.org/wiki/ACM_Fellow)、[IEEE Fellow](https://en.wikipedia.org/wiki/IEEE_Fellow)、[NAE](https://en.wikipedia.org/wiki/National_Academy_of_Engineering) / [NAS](https://en.wikipedia.org/wiki/United_States_National_Academy_of_Sciences) 院士等 bar 更高的荣誉，这些反映的是同行对一个学者长期 sustained impact 的认可；除此之外，对于单篇 paper 而言的顶会 Best Paper 和 Test of Time Award 也很有 signal 价值，前者反映一项 single work 的 immediate impact，后者则反映一项工作经过时间检验依然 holds up 的长期价值。当然对于一个具体的领域也可以看该学校有没有教授担任过该领域内的顶刊主编和顶会主席之类的职务，这些职务往往也能反映出这个学校的教授在领域内的影响力究竟如何。
+当然 CSRankings 也不绝对，它反映的是一个学校历史上的 publication record，没法体现一个 program 当前的 trajectory，更没法体现出每个 faculty 在社区里实际的影响力。比如最近新招进来的 rising star 潜力无限但无法在数据里体现，已经退休的 senior faculty 反而可能还在 count，而一个图灵奖得主可能整个职业生涯都没发过太多论文。所以一个比较 practical 的补充办法是去看一个学校里 faculty 拿到的 peer-reviewed recognition。对于 early-career 的年轻教授可以看 [Sloan Research Fellowship](https://en.wikipedia.org/wiki/Sloan_Research_Fellowship)、[NSF CAREER Award](https://en.wikipedia.org/wiki/National_Science_Foundation_CAREER_Award) 这一类奖项，反映的是业内同行对这群人未来几年潜力的判断；对于 senior faculty 可以看 [ACM Fellow](https://en.wikipedia.org/wiki/ACM_Fellow)、[IEEE Fellow](https://en.wikipedia.org/wiki/IEEE_Fellow)、[NAE](https://en.wikipedia.org/wiki/National_Academy_of_Engineering) / [NAS](https://en.wikipedia.org/wiki/United_States_National_Academy_of_Sciences) 院士等 bar 更高的荣誉，这些反映的是同行对一个学者长期 sustained impact 的认可；除此之外，对于单篇 paper 而言的顶会 Best Paper 和 Test of Time Award 也很有 signal 价值，前者反映一项 single work 的 immediate impact，后者则反映一项工作经过时间检验依然 holds up 的长期价值。当然对于一个具体的领域也可以看该学校有没有教授担任过该领域内的顶刊主编和顶会主席之类的职务，这些职务往往也能反映出这个学校的教授在领域内的影响力究竟如何。除此之外，一个教授组里博士生的 placement 也是一个重要参考指标。
 
 一般来说，上面提到的这些荣誉会比任何排名都更能反应出一个学校的真实学术水平，但调研起来也会很麻烦。好在随着现在各类 AI 工具的普及，在具体操作上同学们其实不需要自己一个一个去翻系里的网站，直接让 AI agent（比如 Claude 或 ChatGPT 的 deep research 模式）帮你列出来就行，这种查找类的任务 AI 往往比人快得多也准得多。
 
