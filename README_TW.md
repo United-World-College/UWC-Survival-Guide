@@ -10,9 +10,9 @@
 
 ## 主編
 
-- William Huang 黃靖然 (University of Illinois Urbana-Champaign, UWC Changshu China 24')
-- Tom Li 李東源 (University of Florida, UWC Changshu China 24')
-- E_P_silon (Columbia University, UWC Changshu China 24')
+- William Huang 黃靖然 (University of Illinois Urbana-Champaign, UWC Changshu China '24)
+- Tom Li 李東源 (University of Florida, UWC Changshu China '24)
+- E_P_silon (Columbia University, UWC Changshu China '24)
 
 ## 目錄
 
