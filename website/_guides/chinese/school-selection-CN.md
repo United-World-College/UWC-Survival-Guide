@@ -11,7 +11,7 @@ language_name: "简体中文"
 language_folder: "chinese"
 language_sort: 2
 published: 2026-03-25
-updated: 2026-06-02
+updated: 2026-06-11
 ---
 
 本篇是想借着聊选校这个话题讲一讲在上了大学之后才了解到的美国大学，可能是因为本人之前比较孤陋寡闻吧，来了美国之后才发现大学和想象中的模样天差地别。
@@ -133,6 +133,18 @@ updated: 2026-06-02
 最后我想说说 LAC 和 R1 之间的 combined degree program，这其实是另一条部分绕过前面 STEM 短板的路径。最经典的是 Columbia Engineering 的 [3-2 plan](https://undergrad.admissions.columbia.edu/apply/combinedplan)：学生在 LAC 读 3 年完成 pre-engineering 的 core coursework 和 GPA 要求，然后转到 Columbia 再读 2 年，最后拿到两个学位（LAC 的 BA 加上 Columbia 的 BS in engineering）。[Dartmouth Thayer](https://engineering.dartmouth.edu/undergraduate/dual)、[WashU McKelvey](https://engineering.washu.edu/academics/dual-degree-program/index.html)、[Case Western](https://case.edu/engineering/academics/undergraduate/32-program) 等学校也都有类似的 dual-degree partnership。我们 UWC 的知名校友 [Mira Murati](https://en.wikipedia.org/wiki/Mira_Murati)（OpenAI 前 CTO，现 [Thinking Machines Lab](https://en.wikipedia.org/wiki/Thinking_Machines_Lab) 创始人）走的就是这条路：从 [Pearson College UWC](https://en.wikipedia.org/wiki/Pearson_College_UWC) 毕业后先在 [Colby](https://en.wikipedia.org/wiki/Colby_College) 读 3 年拿到 math BA，再到 Dartmouth 读 2 年拿到 mechanical engineering 的 BE。
 
 这听起来像是两全其美的方案：既保留了 LAC 的 liberal arts 体验和相对宽松的 GPA 环境，又能拿到工程学院的文凭和 alumni network。但实际情况比想象中复杂。第一，整个项目要 5 年，多一年的学费和机会成本都不小，而且 [Davis Scholarship](https://en.wikipedia.org/wiki/Davis_United_World_College_Scholars_Program) 一般只 cover 前 4 年。（对于这一点请详细咨询你的 counselor。）第二，虽说 GPA requirement 看起来不高，但在 LAC 一路维持要求的 GPA 门槛修完 calculus、physics、programming、linear algebra 这些 pre-engineering 课并不是躺平就行，每年都有不少人中途放弃转到 LAC 自己的 BA 轨；而且现在随着越来越多的人选择这条路线，engineering school 的录取门槛也变得越来越高，通过这个项目只是比直接录取容易但并不是 guaranteed admission。第三也是最容易被忽略的，是 5 年下来你会有一半时间在一个完全陌生的 campus 里，UWC-style 的 community 早就没有了，但你又没有 4 年都在 Columbia 的同学那种从第一天就积累起来的 peer group。所以这种项目更适合作为一个 optional hedge——如果你到了 junior year 才确定要走 engineering 又不想完全放弃 LAC 的体验，可以考虑；但如果你从一开始就知道自己要做 STEM，一开始就去 R1 仍然是更简单直接的路径。
+
+### 关于博雅教育的一点思考
+
+说回 liberal arts education 本身。其实我从 UWC 开始就愈发觉得跨学科的泛化能力很重要。很多看似毫不相干领域的问题在结构上往往都是 isomorphic 的，一个问题在一个领域里想透了，等到换一个领域，同构的问题在很多时候也就顺势解开了。这种 cross-domain 的迁移能力，某种程度上才是博雅教育真正想指向的东西。
+
+但我上了大学之后才慢慢发现，这种能力其实很难靠刻意的 "教育" 被培养出来，不论是 liberal arts education 还是 engineering-heavy 的训练可能都做不到。因为它更像是一个人在某个学科里钻得足够深之后，自发生长出来的东西，而不是一个能被直接 teach 的技能。很多时候我觉得所谓的泛化能力是得先在一个领域里待到足够深，深到看见它底层的 structure，才比较有可能在另一个领域里认出同样的 structure。所以泛化更像是 depth 的涌现，而不是 breadth 的堆叠。
+
+而且说实话，我觉得即使在本科按部就班地把一个学科学完，也就是顺着学校规定的课纲一门门修过去，那常常也很难真正触到一个领域的底层；此外就更不用说美国很多学校还要求修一系列 "通识教育" 课程才能毕业（[Brown](https://en.wikipedia.org/wiki/Brown_University) 著名的 [Open Curriculum](https://www.brown.edu/academics/undergraduate/open-curriculum) 是个极端个例）。这些通识课很多时候只是让同学们浅浅碰一下某个领域，给个入口。这对完全不了解某个学科的同学来说有可能是更多探索的机会，但也有可能是一个失真的入口。比方说我在 UWC 时 humanities 那个 category 选的是经济，说实话 IB 经济真的只是沧海一粟，而且里面有太多需要 memorize 的东西，所以我当时只觉得它无聊。但上了大学之后，我出于对 market 的好奇心所以去看了一些经济和金融的概念，才发现在不少场景下它和我的本行 CS 在底层是相通的。比如所谓 [Efficient Market Hypothesis](https://en.wikipedia.org/wiki/Efficient-market_hypothesis)，大致就是说市场价格已经把世界上所有公开信息都吸收进去了，于是单凭公开信息就再也榨不出超额收益；而对冲基金所追求的 alpha，本质上测量的就是 "你对世界的判断" 和 "市场对世界的判断" 之间差了多远。你领先市场越多，能榨出的超额收益就越多。有意思的是，这个 "两个判断之间差多远" 在 CS 的[信息论](https://en.wikipedia.org/wiki/Information_theory)里恰恰就是用来衡量两个概率分布距离的那把尺子，也就是 [KL 散度](https://en.wikipedia.org/wiki/Kullback–Leibler_divergence)。也就是说，经济金融里所谓的 alpha 其实放到信息论里就是你的信念分布相对市场信念分布的 KL 散度。现在回头去看，虽然 IB 经济也教过有效市场的概念，但假如我当年止步于 IB 经济那个失真的入口，大概就永远不会看见经济学的 Efficient Market Hypothesis 和 CS 的信息论在底层居然是同一件事。
+
+不过话说回来，我觉得这种跨学科的泛化能力，其实主要是对 frontier research 之类的少数场景才真正用得上；对绝大多数人而言，没有它也完全可以过上很精彩的人生。所以真正可惜的，反而是那种 "两头空" 的情况：有些刻意追求博雅的教育既没能让学生长出这种 cross-domain 的泛化能力，又不像 engineering-heavy 的教育那样至少让人踏踏实实学到一门傍身的技能，导致 breadth 没有换来泛化能力的涌现，depth 本身也没怎么攒下，这可能才是真正值得遗憾的。（推荐阅读[《关于 Computer Science》]({{ '/guides/chinese/computer-science-CN/' | relative_url }})一文中的 [*The Bitter Lesson*]({{ '/guides/chinese/computer-science-CN/#the-bitter-lesson' | relative_url }}) 一节）
+
+而如果再往上想一层，对于现在主流的教育体系，不管是美国学校 "通识教育" 的硬性毕业要求，还是英国、中国等学校那种从一开始就被规划好、不容偏离的扎实路径，本质上都是在玩一套别人定的游戏，区别只在于具体规则不同罢了。但博雅教育真正想强调的，从来都不是 breadth 本身，而是我们有没有空间自由探索，去玩一套自己的游戏。
 
 ## 学校只是平台，成长靠自己
 

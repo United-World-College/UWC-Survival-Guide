@@ -11,7 +11,7 @@ language_name: "台灣繁體"
 language_folder: "chinese"
 language_sort: 3
 published: 2026-03-25
-updated: 2026-06-02
+updated: 2026-06-11
 ---
 
 
@@ -134,6 +134,18 @@ updated: 2026-06-02
 最後我想說說 LAC 和 R1 之間的 combined degree program，這其實是另一條部分繞過前面 STEM 短板的路徑。最經典的是 Columbia Engineering 的 [3-2 plan](https://undergrad.admissions.columbia.edu/apply/combinedplan)：學生在 LAC 讀 3 年完成 pre-engineering 的 core coursework 和 GPA 要求，然後轉到 Columbia 再讀 2 年，最後拿到兩個學位（LAC 的 BA 加上 Columbia 的 BS in engineering）。[Dartmouth Thayer](https://engineering.dartmouth.edu/undergraduate/dual)、[WashU McKelvey](https://engineering.washu.edu/academics/dual-degree-program/index.html)、[Case Western](https://case.edu/engineering/academics/undergraduate/32-program) 等學校也都有類似的 dual-degree partnership。我們 UWC 的知名校友 [Mira Murati](https://en.wikipedia.org/wiki/Mira_Murati)（OpenAI 前 CTO，現 [Thinking Machines Lab](https://en.wikipedia.org/wiki/Thinking_Machines_Lab) 創始人）走的就是這條路：從 [Pearson College UWC](https://en.wikipedia.org/wiki/Pearson_College_UWC) 畢業後先在 [Colby](https://en.wikipedia.org/wiki/Colby_College) 讀 3 年拿到 math BA，再到 Dartmouth 讀 2 年拿到 mechanical engineering 的 BE。
 
 這聽起來像是兩全其美的方案：既保留了 LAC 的 liberal arts 體驗和相對寬鬆的 GPA 環境，又能拿到工程學院的文憑和 alumni network。但實際情況比想像中複雜。第一，整個項目要 5 年，多一年的學費和機會成本都不小，而且 [Davis Scholarship](https://en.wikipedia.org/wiki/Davis_United_World_College_Scholars_Program) 一般只 cover 前 4 年。（對於這一點請詳細諮詢你的 counselor。）第二，雖說 GPA requirement 看起來不高，但在 LAC 一路維持要求的 GPA 門檻修完 calculus、physics、programming、linear algebra 這些 pre-engineering 課並不是躺平就行，每年都有不少人中途放棄轉到 LAC 自己的 BA 軌；而且現在隨著越來越多的人選擇這條路線，engineering school 的錄取門檻也變得越來越高，通過這個項目只是比直接錄取容易但並不是 guaranteed admission。第三也是最容易被忽略的，是 5 年下來你會有一半時間在一個完全陌生的 campus 裡，UWC-style 的 community 早就沒有了，但你又沒有 4 年都在 Columbia 的同學那種從第一天就積累起來的 peer group。所以這種項目更適合作為一個 optional hedge——如果你到了 junior year 才確定要走 engineering 又不想完全放棄 LAC 的體驗，可以考慮；但如果你從一開始就知道自己要做 STEM，一開始就去 R1 仍然是更簡單直接的路徑。
+
+### 關於博雅教育的一點思考
+
+說回 liberal arts education 本身。其實我從 UWC 開始就愈發覺得跨學科的泛化能力很重要。很多看似毫不相干領域的問題在結構上往往都是 isomorphic 的，一個問題在一個領域裡想透了，等到換一個領域，同構的問題在很多時候也就順勢解開了。這種 cross-domain 的遷移能力，某種程度上才是博雅教育真正想指向的東西。
+
+但我上了大學之後才慢慢發現，這種能力其實很難靠刻意的 "教育" 被培養出來，不論是 liberal arts education 還是 engineering-heavy 的訓練可能都做不到。因為它更像是一個人在某個學科裡鑽得足夠深之後，自發生長出來的東西，而不是一個能被直接 teach 的技能。很多時候我覺得所謂的泛化能力是得先在一個領域裡待到足夠深，深到看見它底層的 structure，才比較有可能在另一個領域裡認出同樣的 structure。所以泛化更像是 depth 的湧現，而不是 breadth 的堆疊。
+
+而且說實話，我覺得即使在本科按部就班地把一個學科學完，也就是順著學校規定的課綱一門門修過去，那常常也很難真正觸到一個領域的底層；此外就更不用說美國很多學校還要求修一系列 "通識教育" 課程才能畢業（[Brown](https://en.wikipedia.org/wiki/Brown_University) 著名的 [Open Curriculum](https://www.brown.edu/academics/undergraduate/open-curriculum) 是個極端個例）。這些通識課很多時候只是讓同學們淺淺碰一下某個領域，給個入口。這對完全不了解某個學科的同學來說有可能是更多探索的機會，但也有可能是一個失真的入口。比方說我在 UWC 時 humanities 那個 category 選的是經濟，說實話 IB 經濟真的只是滄海一粟，而且裡面有太多需要 memorize 的東西，所以我當時只覺得它無聊。但上了大學之後，我出於對 market 的好奇心所以去看了一些經濟和金融的概念，才發現在不少場景下它和我的本行 CS 在底層是相通的。比如所謂 [Efficient Market Hypothesis](https://en.wikipedia.org/wiki/Efficient-market_hypothesis)，大致就是說市場價格已經把世界上所有公開資訊都吸收進去了，於是單憑公開資訊就再也榨不出超額收益；而對沖基金所追求的 alpha，本質上測量的就是 "你對世界的判斷" 和 "市場對世界的判斷" 之間差了多遠。你領先市場越多，能榨出的超額收益就越多。有意思的是，這個 "兩個判斷之間差多遠" 在 CS 的[資訊理論](https://en.wikipedia.org/wiki/Information_theory)裡恰恰就是用來衡量兩個機率分布距離的那把尺子，也就是 [KL 散度](https://en.wikipedia.org/wiki/Kullback–Leibler_divergence)。也就是說，經濟金融裡所謂的 alpha 其實放到資訊理論裡就是你的信念分布相對市場信念分布的 KL 散度。現在回頭去看，雖然 IB 經濟也教過有效市場的概念，但假如我當年止步於 IB 經濟那個失真的入口，大概就永遠不會看見經濟學的 Efficient Market Hypothesis 和 CS 的資訊理論在底層居然是同一件事。
+
+不過話說回來，我覺得這種跨學科的泛化能力，其實主要是對 frontier research 之類的少數場景才真正用得上；對絕大多數人而言，沒有它也完全可以過上很精彩的人生。所以真正可惜的，反而是那種 "兩頭空" 的情況：有些刻意追求博雅的教育既沒能讓學生長出這種 cross-domain 的泛化能力，又不像 engineering-heavy 的教育那樣至少讓人踏踏實實學到一門傍身的技能，導致 breadth 沒有換來泛化能力的湧現，depth 本身也沒怎麼攢下，這可能才是真正值得遺憾的。（推薦閱讀[〈關於 Computer Science〉]({{ '/guides/chinese/computer-science-TW/' | relative_url }})一文中的 [*The Bitter Lesson*]({{ '/guides/chinese/computer-science-TW/#the-bitter-lesson' | relative_url }}) 一節）
+
+而如果再往上想一層，對於現在主流的教育體系，不管是美國學校 "通識教育" 的硬性畢業要求，還是英國、中國等學校那種從一開始就被規劃好、不容偏離的扎實路徑，本質上都是在玩一套別人定的遊戲，區別只在於具體規則不同罷了。但博雅教育真正想強調的，從來都不是 breadth 本身，而是我們有沒有空間自由探索，去玩一套自己的遊戲。
 
 ## 學校只是平台，成長靠自己
 
