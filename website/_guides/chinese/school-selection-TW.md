@@ -143,9 +143,9 @@ updated: 2026-06-11
 
 而且說實話，我覺得即使在本科按部就班地把一個學科學完，也就是順著學校規定的課綱一門門修過去，那常常也很難真正觸到一個領域的底層；此外就更不用說美國很多學校還要求修一系列 "通識教育" 課程才能畢業（[Brown](https://en.wikipedia.org/wiki/Brown_University) 著名的 [Open Curriculum](https://www.brown.edu/academics/undergraduate/open-curriculum) 是個極端個例）。這些通識課很多時候只是讓同學們淺淺碰一下某個領域，給個入口。這對完全不了解某個學科的同學來說有可能是更多探索的機會，但也有可能是一個失真的入口。比方說我在 UWC 時 humanities 那個 category 選的是經濟，說實話 IB 經濟真的只是滄海一粟，而且裡面有太多需要 memorize 的東西，所以我當時只覺得它無聊。反倒是上了大學之後，出於對 market 的好奇心，我自己去看了不少經濟和金融的概念，越看越感興趣——因為我漸漸發現，在不少場景下它和我的本行 CS 在底層其實是相通的。比如所謂 [Efficient Market Hypothesis](https://en.wikipedia.org/wiki/Efficient-market_hypothesis)，大致就是說市場價格已經把世界上所有公開資訊都吸收進去了，於是單憑公開資訊就再也榨不出超額收益；而對沖基金所追求的 alpha，某種意義上衡量的就是 "你對世界的判斷" 和 "市場對世界的判斷" 之間差了多遠——你領先市場越多，能榨出的超額收益就越多。有意思的是，兩個判斷之間差多遠這件事，在 CS 的[資訊理論](https://en.wikipedia.org/wiki/Information_theory)裡恰恰有一把現成的尺子，也就是 [KL 散度](https://en.wikipedia.org/wiki/Kullback–Leibler_divergence)，量的就是兩個機率分布之間的距離。嚴格說 alpha 是個收益數字，並不完全等價於 KL 散度；但只要把判斷建模成機率分布，就會發現經濟學裡的 "資訊優勢越大、超額收益越多" 和資訊理論裡的 "兩個分布離得越遠、KL 散度越大" 在底層測量的其實是同一套東西。現在回頭去看，IB 經濟其實也教過有效市場的概念，只是假如我當年就停在那個失真的入口上，大概永遠不會發現經濟學的 Efficient Market Hypothesis 和 CS 的資訊理論在底層居然指向同一種 structure。
 
-不過話說回來，我覺得這種跨學科的泛化能力，其實主要是對 frontier research 之類的少數場景才真正用得上；對絕大多數人而言，沒有它也完全可以過上很精彩的人生。所以真正可惜的，反而是那種 "兩頭空" 的情況：有些刻意追求博雅的教育既沒能讓學生長出這種 cross-domain 的泛化能力，又不像 engineering-heavy 的教育那樣至少讓人踏踏實實學到一門傍身的技能，導致 breadth 沒有換來泛化能力的湧現，depth 本身也沒怎麼攢下，這可能才是真正值得遺憾的。（推薦閱讀[〈關於 Computer Science〉]({{ '/guides/chinese/computer-science-TW/' | relative_url }})一文中的 [*The Bitter Lesson*]({{ '/guides/chinese/computer-science-TW/#the-bitter-lesson' | relative_url }}) 一節）
+不過話說回來，我覺得這種跨學科的泛化能力，其實主要是對 frontier research 之類的少數場景才真正用得上；對絕大多數人而言，沒有它也完全可以過上很精彩的人生。所以真正可惜的，反而是那種 "兩頭空" 的情況：有些刻意追求博雅的教育既不能讓學生長出這種 cross-domain 的泛化能力，又不能像 engineering-heavy 的教育那樣至少讓人踏踏實實學到一門傍身的技能。這可能才是真正值得遺憾的。（推薦閱讀[〈關於 Computer Science〉]({{ '/guides/chinese/computer-science-TW/' | relative_url }})一文中的 [*The Bitter Lesson*]({{ '/guides/chinese/computer-science-TW/#the-bitter-lesson' | relative_url }}) 一節）
 
-而如果再往上想一層，對於現在主流的教育體系，不管是美國學校 "通識教育" 的硬性畢業要求，還是英國、中國等學校那種從一開始就被規劃好、不容偏離的扎實路徑，本質上都是在玩一套別人定的遊戲，區別只在於具體規則不同罷了。但博雅教育真正想強調的，從來都不是 breadth 本身，而是我們有沒有空間自由探索，去玩一套自己的遊戲。
+而如果再往上想一層，對於現在主流的教育體系，不管是美國學校 "通識教育" 的硬性畢業要求，還是英國、中國等學校那種從一開始就被規劃好、不容偏離的扎實路徑，看似培養方向天差地別，但本質上都是在玩一套別人的遊戲，區別只在於具體規則不同罷了。但博雅教育真正的價值所在，從來都不是 breadth 或是 depth 本身，而是我們有沒有空間自由探索，去玩一套屬於自己的遊戲。
 
 ## 學校只是平台，成長靠自己
 

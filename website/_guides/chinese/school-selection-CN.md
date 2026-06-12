@@ -142,9 +142,9 @@ updated: 2026-06-11
 
 而且说实话，我觉得即使在本科按部就班地把一个学科学完，也就是顺着学校规定的课纲一门门修过去，那常常也很难真正触到一个领域的底层；此外就更不用说美国很多学校还要求修一系列 "通识教育" 课程才能毕业（[Brown](https://en.wikipedia.org/wiki/Brown_University) 著名的 [Open Curriculum](https://www.brown.edu/academics/undergraduate/open-curriculum) 是个极端个例）。这些通识课很多时候只是让同学们浅浅碰一下某个领域，给个入口。这对完全不了解某个学科的同学来说有可能是更多探索的机会，但也有可能是一个失真的入口。比方说我在 UWC 时 humanities 那个 category 选的是经济，说实话 IB 经济真的只是沧海一粟，而且里面有太多需要 memorize 的东西，所以我当时只觉得它无聊。反倒是上了大学之后，出于对 market 的好奇心，我自己去看了不少经济和金融的概念，越看越感兴趣——因为我渐渐发现，在不少场景下它和我的本行 CS 在底层其实是相通的。比如所谓 [Efficient Market Hypothesis](https://en.wikipedia.org/wiki/Efficient-market_hypothesis)，大致就是说市场价格已经把世界上所有公开信息都吸收进去了，于是单凭公开信息就再也榨不出超额收益；而对冲基金所追求的 alpha，某种意义上衡量的就是 "你对世界的判断" 和 "市场对世界的判断" 之间差了多远——你领先市场越多，能榨出的超额收益就越多。有意思的是，两个判断之间差多远这件事，在 CS 的[信息论](https://en.wikipedia.org/wiki/Information_theory)里恰恰有一把现成的尺子，也就是 [KL 散度](https://en.wikipedia.org/wiki/Kullback–Leibler_divergence)，量的就是两个概率分布之间的距离。严格说 alpha 是个收益数字，并不完全等价于 KL 散度；但只要把判断建模成概率分布，就会发现经济学里的 "信息优势越大、超额收益越多" 和信息论里的 "两个分布离得越远、KL 散度越大" 在底层测量的其实是同一套东西。现在回头去看，IB 经济其实也教过有效市场的概念，只是假如我当年就停在那个失真的入口上，大概永远不会发现经济学的 Efficient Market Hypothesis 和 CS 的信息论在底层居然指向同一种 structure。
 
-不过话说回来，我觉得这种跨学科的泛化能力，其实主要是对 frontier research 之类的少数场景才真正用得上；对绝大多数人而言，没有它也完全可以过上很精彩的人生。所以真正可惜的，反而是那种 "两头空" 的情况：有些刻意追求博雅的教育既没能让学生长出这种 cross-domain 的泛化能力，又不像 engineering-heavy 的教育那样至少让人踏踏实实学到一门傍身的技能，导致 breadth 没有换来泛化能力的涌现，depth 本身也没怎么攒下，这可能才是真正值得遗憾的。（推荐阅读[《关于 Computer Science》]({{ '/guides/chinese/computer-science-CN/' | relative_url }})一文中的 [*The Bitter Lesson*]({{ '/guides/chinese/computer-science-CN/#the-bitter-lesson' | relative_url }}) 一节）
+不过话说回来，我觉得这种跨学科的泛化能力，其实主要是对 frontier research 之类的少数场景才真正用得上；对绝大多数人而言，没有它也完全可以过上很精彩的人生。所以真正可惜的，反而是那种 "两头空" 的情况：有些刻意追求博雅的教育既不能让学生长出这种 cross-domain 的泛化能力，又不能像 engineering-heavy 的教育那样至少让人踏踏实实学到一门傍身的技能。这可能才是真正值得遗憾的。（推荐阅读[《关于 Computer Science》]({{ '/guides/chinese/computer-science-CN/' | relative_url }})一文中的 [*The Bitter Lesson*]({{ '/guides/chinese/computer-science-CN/#the-bitter-lesson' | relative_url }}) 一节）
 
-而如果再往上想一层，对于现在主流的教育体系，不管是美国学校 "通识教育" 的硬性毕业要求，还是英国、中国等学校那种从一开始就被规划好、不容偏离的扎实路径，本质上都是在玩一套别人定的游戏，区别只在于具体规则不同罢了。但博雅教育真正想强调的，从来都不是 breadth 本身，而是我们有没有空间自由探索，去玩一套自己的游戏。
+而如果再往上想一层，对于现在主流的教育体系，不管是美国学校 "通识教育" 的硬性毕业要求，还是英国、中国等学校那种从一开始就被规划好、不容偏离的扎实路径，看似培养方向天差地别，但本质上都是在玩一套别人的游戏，区别只在于具体规则不同罢了。但博雅教育真正的价值所在，从来都不是 breadth 或是 depth 本身，而是我们有没有空间自由探索，去玩一套属于自己的游戏。
 
 ## 学校只是平台，成长靠自己
 
