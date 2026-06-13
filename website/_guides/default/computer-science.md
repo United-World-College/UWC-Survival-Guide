@@ -11,7 +11,7 @@ language_name: "English"
 language_folder: "default"
 language_sort: 1
 published: 2026-05-10
-updated: 2026-06-07
+updated: 2026-06-13
 ---
 
 
@@ -311,4 +311,4 @@ But the most interesting thing about this paradigm shift actually lies not in th
 
 Of course, representation learning is never a free lunch on the technical side. It usually requires a massive amount of data and a long stretch of pretraining, and models trained this way often have worse early performance than carefully feature-engineered traditional models. The same is true on the cognitive level. If we stop using ready-made metrics and instead let our judgments about the world emerge from the rawest observations, we'll often end up looking inefficient compared with peers who are dutifully optimizing external metrics — and then we may even start wanting to take shortcuts through feature engineering ourselves. That's exactly the price representation learning demands. Because those judgments that emerge from raw observations only become genuinely more accurate and more robust than any hand-crafted feature after we've processed enough raw data.
 
-So I wouldn't claim that I've gotten very far with representation learning either; I'm most likely still in the stage where I need a lot of data to keep doing pretraining. But anyway, this is a small reflection I've picked up after studying CS for as long as I have, and I wanted to share it with those who are walking the same path.
+So I wouldn't claim that I've gotten very far with representation learning either; I'm probably still in the stage where I need a lot of data to keep doing pretraining. But anyway, this is a small reflection I've picked up after studying CS for as long as I have, and I wanted to share it with those who are walking the same path.

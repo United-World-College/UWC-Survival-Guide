@@ -11,7 +11,7 @@ language_name: "台灣繁體"
 language_folder: "chinese"
 language_sort: 3
 published: 2026-05-10
-updated: 2026-06-07
+updated: 2026-06-13
 ---
 
 
@@ -311,4 +311,4 @@ Quant 這條線上的兩類公司分布略有差異。做市商方面，**Chicag
 
 當然 representation learning 在技術上從來不是 free lunch，它往往需要海量的資料和長時間的 pretraining，而且通過這種方式訓練的模型的早期 performance 經常還不如那些精心 feature-engineered 的傳統模型。這個問題換到 cognitive 層面其實也是一樣的。假如我們不去使用現成的 metric，而是讓自己對事物的判斷從最原始的觀察裡慢慢湧現，那我們往往就很容易在那些按部就班 optimize 外部 metric 的同齡人面前顯得低效率，然後甚至也開始想要通過 feature engineering 的方式來走捷徑。這其實就是 representation learning 必經的代價。因為那些從原始觀察裡湧現出來的判斷，一定是要等到我們處理了足夠多的 raw data 之後才會真正比任何 hand-crafted feature 都更精確也更穩健。
 
-所以我也不敢說自己在 representation learning 上學得有多好，現在大概率還處於需要大量資料來持續做 pretraining 的階段。但 anyway，這算是我學了 CS 這麼久之後自己的一點小感悟，在這裡分享給同樣在路上的你們。
+所以我也不敢說自己在 representation learning 上學得有多好，現在應該還處於需要大量資料來持續做 pretraining 的階段。但 anyway，這算是我學了 CS 這麼久之後自己的一點小感悟，在這裡分享給同樣在路上的你們。
