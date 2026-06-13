@@ -11,7 +11,7 @@ language_name: "简体中文"
 language_folder: "chinese"
 language_sort: 2
 published: 2026-03-25
-updated: 2026-06-12
+updated: 2026-06-13
 ---
 
 本篇是想借着聊选校这个话题讲一讲在上了大学之后才了解到的美国大学，可能是因为本人之前比较孤陋寡闻吧，来了美国之后才发现大学和想象中的模样天差地别。
@@ -140,13 +140,13 @@ updated: 2026-06-12
 
 但我上了大学之后才慢慢发现，这种能力其实很难靠刻意的 "教育" 被培养出来，不论是 liberal arts education 还是 engineering-heavy 的训练可能都做不到。因为它更像是一个人在某个学科里钻得足够深之后，自发生长出来的东西，而不是一个能被直接 teach 的技能。很多时候我觉得所谓的泛化能力是得先在一个领域里待到足够深，深到看见它底层的 structure，才比较有可能在另一个领域里认出同样的 structure。所以泛化更像是 depth 的涌现，而不是 breadth 的堆叠。
 
-而且说实话，我觉得即使在本科按部就班地把一个学科学完，也就是顺着学校规定的课纲一门门修过去，那常常也很难真正触到一个领域的底层；此外就更不用说美国很多学校还要求修一系列 "通识教育" 课程才能毕业（[Brown](https://en.wikipedia.org/wiki/Brown_University) 著名的 [Open Curriculum](https://www.brown.edu/academics/undergraduate/open-curriculum) 是个极端反例）。这些通识课很多时候只是让同学们浅浅碰一下某个领域，给个入口。这对完全不了解某个学科的同学来说有可能是更多探索的机会，但也有可能是一个失真的入口。
+而且说实话，我觉得即使在本科按部就班地把一个学科学完，也就是顺着学校规定的课纲一门门修过去，那常常也很难真正触到一个领域的底层；此外就更不用说美国很多学校还要求修一系列 "通识教育" 课程才能毕业（当然 [Brown](https://en.wikipedia.org/wiki/Brown_University) 著名的 [Open Curriculum](https://www.brown.edu/academics/undergraduate/open-curriculum) 是个极端反例）。这些通识课很多时候只是让同学们浅浅碰一下某个领域，给个入口。这对完全不了解某个学科的同学来说有可能是更多探索的机会，但也有可能是一个失真的入口。
 
-比方说我在 UWC 时 humanities 那个 category 选的是经济，说实话 IB 经济真的只是沧海一粟，而且里面有太多需要 memorize 的东西，所以我当时只觉得它无聊。反倒是上了大学之后，出于对 market 的好奇心，我自己去看了不少商科的概念，越看越感兴趣。然后我渐渐发现，在不少场景下它和我的本行 CS 在底层其实是相通的。比如所谓 [Efficient Market Hypothesis](https://en.wikipedia.org/wiki/Efficient-market_hypothesis)，大致是说，在理想的有效市场里，价格会把所有公开信息都吸收进去，于是单凭公开信息就再也榨不出超额收益。但现实里的市场从来不是完全有效的，总有没被 price in 的信息，而对冲基金的超额收益，本质上就是从这种 inefficiency 里赚来的。说到底，价格里其实就藏着市场对世界的判断；对冲基金要赚取超额收益，就得判断得比市场更准。也就是说，谁对世界的判断越准确，越领先于市场，谁就赚得越多。有意思的是，两个判断之间差多远这件事，在 CS 的[信息论](https://en.wikipedia.org/wiki/Information_theory)里恰恰有一把现成的尺子，也就是 [KL 散度](https://en.wikipedia.org/wiki/Kullback–Leibler_divergence)，量的就是两个概率分布之间的距离。只要把判断建模成概率分布，就会发现经济学和商科里的 "信息优势越大、领先越多" 和信息论里的 "两个分布离得越远、KL 散度越大" 在底层其实是同一把尺子。在意识到这两个概念的关系之后我上网搜了一下，然后才知道原来早在五十年代 [John Larry Kelly Jr.](https://en.wikipedia.org/wiki/John_Larry_Kelly_Jr.) 就已经把信息论和资本的指数增长率挂上了钩；而在理想的下注模型里，信息优势能换来多少超额增长，量的正好就是两个判断分布之间的 KL 散度。
+比方说我在 UWC 时 humanities 那个 category 选的是经济，说实话 IB 经济真的只是沧海一粟，而且里面有太多需要 memorize 的东西，所以我当时只觉得它无聊。反倒是上了大学之后，出于对 market 的好奇心，我自己去看了不少商科的概念，越看越感兴趣。然后我才渐渐发现，在不少场景下它和我的本行 CS 在底层居然是相通的。比如所谓 [Efficient Market Hypothesis](https://en.wikipedia.org/wiki/Efficient-market_hypothesis)，大致是说，在理想的有效市场里，价格会把所有公开信息都吸收进去，于是单凭公开信息就再也榨不出超额收益。但现实里的市场从来不是完全有效的，总有没被 price in 的信息，而对冲基金的超额收益，本质上就是从这种 market inefficiency 里赚钱。说到底，价格里其实就藏着市场对世界的判断；而对冲基金要赚取超额收益，就得判断得比市场更准。也就是说，谁对世界的判断越准确，越领先于市场，谁就赚得越多。有意思的是，两个判断之间差多远这件事，在 CS 的[信息论](https://en.wikipedia.org/wiki/Information_theory)里恰恰有一把现成的尺子，也就是 [KL 散度](https://en.wikipedia.org/wiki/Kullback–Leibler_divergence)，量的就是两个概率分布之间的距离。只要把判断建模成概率分布，就会发现经济学和商科里的 "信息优势越大、领先越多" 和信息论里的 "两个分布离得越远、KL 散度越大" 在底层其实是同一把尺子。在意识到这两个概念的关系之后我上网搜了一下，然后才知道原来早在五十年代 [John Larry Kelly Jr.](https://en.wikipedia.org/wiki/John_Larry_Kelly_Jr.) 就已经把信息论和资本的指数增长率挂上了钩；而在理想的下注模型里，信息优势能换来多少超额增长，量的正好就是两个判断分布之间的 KL 散度。
 
-现在回忆起来，我对这些市场概念的兴趣其实是上大学后读了不少商科的论文才产生的，跟 IB 经济没太大关系。其实 IB 倒也教过有效市场，只是讲得太浅，浅到我对所有模型背后默认的市场有效性假设都觉得理所应当。假如就停在那个失真的入口上，我大概永远也发现不了经济学里的 Efficient Market Hypothesis 和 CS 里的信息论在底层居然指向同一种 structure。
+现在回忆起来，我对这些市场概念的兴趣其实是上大学后读了不少商科的论文才产生的，跟 IB 经济没太大关系。其实 IB 倒也教过有效市场，只是讲得太浅，浅到我对所有模型背后默认的市场有效性假设都觉得理所应当。假如就停在当年那种浅尝辄止的博雅式入口上，我现在大概依旧会觉得经济是个要 memorize 很多概念的无聊学科，然后也就永远发现不了经济学里的 Efficient Market Hypothesis 和 CS 里的信息论在底层居然指向同一种 structure。
 
-不过话说回来，我觉得这种跨学科的泛化能力其实对日常生活的影响很小，甚至连不少哪怕高薪的工作也用不太到它，真正用得上的主要也就 frontier research 等少数场景；无论有没有它，我们都完全可以过上很精彩的人生。所以真正可惜的，反而是那种 "两头空" 的情况：有些刻意追求博雅的教育既不能让学生长出这种 cross-domain 的泛化能力，又不能像 engineering-heavy 的教育那样至少让人踏踏实实学到一门傍身的技能。这可能才是真正值得遗憾的。（推荐阅读[《关于 Computer Science》]({{ '/guides/chinese/computer-science-CN/' | relative_url }})一文中的 [*The Bitter Lesson*]({{ '/guides/chinese/computer-science-CN/#the-bitter-lesson' | relative_url }}) 一节）
+不过话说回来，这只是我个人的一个小 anecdote。而且说实话我觉得这种跨学科的泛化能力其实对日常生活的影响很小，甚至连不少哪怕高薪的工作也不一定要用到它，真正用得上的主要也就 frontier research 等少数场景；无论有没有它，我们都完全可以过上很精彩的人生。所以真正可惜的，反而是那种 "两头空" 的情况：有的刻意追求博雅的教育，既没能换来它本来强调的那种 cross-domain 泛化能力，又没能像 engineering-heavy 的教育那样至少让人学到一门傍身的技术。这可能才是真正值得遗憾的。
 
 其实，对于现在主流的教育体系，不管是美国学校 "通识教育" 的硬性毕业要求，还是英国、中国等学校那种从一开始就被规划好、不容偏离的扎实路径，看似一个强调 breadth，一个强调 depth，培养方向天差地别，但本质上都是在玩一套别人的游戏，区别只在于具体规则不同罢了。但博雅教育真正的价值所在，从来都不应该是 breadth 或是 depth 本身，而是我们有没有空间自由探索，去玩一套属于自己的游戏。
 
